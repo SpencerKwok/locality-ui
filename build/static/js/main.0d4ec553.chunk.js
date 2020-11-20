@@ -1,2 +1,0 @@
-(this["webpackJsonplocality-ui"]=this["webpackJsonplocality-ui"]||[]).push([[0],{9:function(t,e,c){"use strict";c.r(e);var n=c(1),i=c(0),r=c.n(i),o=c(3);var s=function(){return Object(n.jsx)("div",{})};c.n(o).a.render(Object(n.jsx)(r.a.StrictMode,{children:Object(n.jsx)(s,{})}),document.getElementById("root"))}},[[9,1,2]]]);
-//# sourceMappingURL=main.0d4ec553.chunk.js.map
