@@ -5,12 +5,13 @@ const bodyParser = require("body-parser");
 const app = express();
 
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, '../build')));
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/', (req,res) => {
-  res.sendFile(path.join(__dirname, '../build/index.html'));
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.listen(3001, () => {
-    console.log('Server listening on port::3001');
+port = process.env.PORT || 3001
+app.listen(port, () => {
+    console.log('Server listening on port::' + port);
 });
