@@ -20,6 +20,7 @@
     "@types/react": "^16.14.1",
     "@types/react-dom": "^16.9.10",
     "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "formik": "^2.2.5",
     "node": "^14.15.1",
