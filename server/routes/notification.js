@@ -11,6 +11,7 @@ router.get("/", function (req, res, next) {
     Connection: "keep-alive",
     "Content-Type": "text/event-stream",
     "Cache-control": "no-cache",
+    "Access-Control-Allow-Origin": "*",
   });
 
   const listener = (event, data) => {
