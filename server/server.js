@@ -10,6 +10,10 @@ const port = process.env.PORT || 3001;
 // App setup
 const app = express();
 
+// Move static middleware to top to improve load speed
+// See: https://stackoverflow.com/questions/26106399/node-js-express-js-very-slow-serving-static-files
+app.use(express.static(path.join(__dirname, "../build")));
+
 // Setup cookie session
 app.use(
   cookieSession({
@@ -38,7 +42,7 @@ app.use("/login", require("./routes/login"));
 // Handle notifications
 app.use("/notification", require("./routes/notification"));
 
-app.use(express.static(path.join(__dirname, "../build")));
+// Handle everything else
 app.get("/*", (req, res) => {
   res.sendFile(path.join(__dirname, "../build/index.html"));
 });
