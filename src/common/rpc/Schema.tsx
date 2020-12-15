@@ -3,6 +3,10 @@ export interface PostMethods {
     request: NotificationRequest;
     response: NotificationResponse;
   };
+  Login: {
+    request: LoginRequest;
+    response: LoginResponse;
+  };
 }
 
 export interface NotificationRequest {
@@ -10,4 +14,12 @@ export interface NotificationRequest {
   description: string;
 }
 
+export interface LoginRequest {
+  usernameField: string;
+  passwordField: string;
+}
+
 export interface NotificationResponse {}
+export interface LoginResponse {
+  message: string;
+}

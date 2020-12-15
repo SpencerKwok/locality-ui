@@ -9,16 +9,15 @@ interface Notification {
   description: string;
 }
 
-const onSubmit: FormikConfig<Notification>["onSubmit"] = async (values) => {
-  try {
-    console.log(values);
-    NotificationDAO.getInstance().sendNotification(values);
-  } catch (err) {
-    console.log(err);
-  }
-};
-
 function Notifications() {
+  const onSubmit: FormikConfig<Notification>["onSubmit"] = async (values) => {
+    try {
+      NotificationDAO.getInstance().sendNotification(values);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <Formik
       initialValues={{

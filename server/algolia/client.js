@@ -5,7 +5,7 @@ const client = algoliasearch(
 );
 const index = client.initIndex(process.env.ALGOLIA_INDEX || "");
 
-exports.saveObjects = async function saveObjects(objects) {
+exports.saveObjects = async (objects) => {
   try {
     await index
       .saveObjects(objects, {
