@@ -19,10 +19,8 @@ router.get("/", function (req, res, next) {
   res.flushHeaders();
 
   const listener = (event, data) => {
-    console.log(data);
     res.write(`event: ${event}\n`);
     res.write(`data: ${JSON.stringify(data)}\n\n`);
-    res.sendDate();
   };
 
   emitter.addListener("push", listener);
