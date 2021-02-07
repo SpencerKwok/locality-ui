@@ -16,6 +16,15 @@ function SearchBar(props: SearchBarProps) {
     padding: 1em;
     width: ${props.width}px;
   `;
+
+  const StyledButton = styled.button`
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: -2.06em;
+    padding: 0.94em;
+  `;
+
   return (
     <Stack direction="horizontal">
       <StyledInput
@@ -30,7 +39,7 @@ function SearchBar(props: SearchBarProps) {
         placeholder="I want..."
         autoFocus
       />
-      <button onClick={props.onEnter}>Enter</button>
+      <StyledButton onClick={props.onEnter}>Enter</StyledButton>
     </Stack>
   );
 }
