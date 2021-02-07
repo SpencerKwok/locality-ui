@@ -15,6 +15,9 @@ export default class SearchDAO {
   constructor(private rpc: GetRpcClient) {}
 
   async search(searchRequest: SearchRequest): Promise<SearchResponse> {
-    return await this.rpc.call("Search", "/search?q=" + searchRequest.query);
+    return await this.rpc.call(
+      "Search",
+      "/api/search?q=" + searchRequest.query
+    );
   }
 }

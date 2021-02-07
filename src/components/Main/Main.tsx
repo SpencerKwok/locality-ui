@@ -4,7 +4,9 @@ import { ReactSVG } from "react-svg";
 import Search from "../Search/Search";
 import Stack from "../Stack/Stack";
 
-export interface MainProps extends React.HTMLProps<HTMLDivElement> {}
+export interface MainProps extends React.HTMLProps<HTMLDivElement> {
+  query?: string;
+}
 
 function Main(props: MainProps) {
   return (
@@ -13,7 +15,7 @@ function Main(props: MainProps) {
         <div style={{ width: 500, margin: "auto" }}>
           <ReactSVG src="./locality-logo.svg" alt="Locality Logo" />
         </div>
-        <Search />
+        <Search query={props.query} />
       </div>
     </Stack>
   );

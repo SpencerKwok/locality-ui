@@ -19,7 +19,7 @@ const customStopwords = new Set([
   "wouldn't",
 ]);
 
-router.get("/", async function (req, res, next) {
+router.get("/search", async function (req, res, next) {
   let q = req.query["q"];
   if (!q) {
     res.end();

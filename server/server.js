@@ -45,7 +45,7 @@ app.use(express.json());
 //app.use("/notification", require("./routes/notification"));
 
 // Handle search
-app.use("/search", require("./routes/search"));
+app.use("/api", require("./routes/api"));
 
 // Handle everything else
 app.get("/*", (req, res) => {

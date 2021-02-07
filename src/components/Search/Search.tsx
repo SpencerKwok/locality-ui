@@ -1,16 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import SearchBar from "./SearchBar";
 import SearchDAO from "./SearchDAO";
 import SearchResults, { Product } from "./SearchResults";
 import Stack from "../Stack/Stack";
 import Window from "../../utils/window";
+import { useHistory } from "react-router-dom";
 
-export interface SearchProps extends React.HTMLProps<HTMLDivElement> {}
+export interface SearchProps extends React.HTMLProps<HTMLDivElement> {
+  query?: string;
+}
 
 function Search(props: SearchProps) {
   const windowSize = Window();
-  const [query, setQuery] = useState("");
+  const history = useHistory();
+  const [query, setQuery] = useState(props.query || "");
   const [hits, setHits] = useState<Array<Product>>([
     /*
     {
@@ -23,19 +27,25 @@ function Search(props: SearchProps) {
     */
   ]);
 
+  useEffect(() => {
+    if (props.query) {
+      SearchDAO.getInstance()
+        .search({ query: props.query })
+        .then(({ hits }) => {
+          setHits(hits);
+        });
+    }
+  }, [props.query]);
+
   const searchBarOnChange = (e: React.FormEvent<HTMLInputElement>) => {
     setQuery((e.target as HTMLInputElement).value);
   };
 
   const searchBarOnEnter = () => {
-    if (query === "") {
+    if (query === "" || props.query === query) {
       return;
     }
-    SearchDAO.getInstance()
-      .search({ query })
-      .then(({ hits }) => {
-        setHits(hits);
-      });
+    history.push("/search?q=" + query);
   };
 
   return (

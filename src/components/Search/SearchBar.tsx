@@ -7,37 +7,42 @@ export interface SearchBarProps extends React.HTMLProps<HTMLInputElement> {
   onEnter?: () => void;
 }
 
+const StyledInput = styled.input`
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: -40px;
+  padding: 10px;
+  width: ${({ width }) => width}px;
+`;
+
+const StyledButton = styled.button`
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: -40px;
+  padding: 10px;
+  @supports (-moz-appearance: none) {
+    padding: 9px;
+    margin-top: -41px;
+  }
+`;
+
 function SearchBar(props: SearchBarProps) {
-  const StyledInput = styled.input`
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: -2em;
-    padding: 1em;
-    width: ${props.width}px;
-  `;
-
-  const StyledButton = styled.button`
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: -2.06em;
-    padding: 0.94em;
-  `;
-
   return (
     <Stack direction="horizontal">
       <StyledInput
+        autoFocus
         onChange={props.onChange}
         onKeyPress={(event) => {
           if (event.key === "Enter" && props.onEnter) {
             props.onEnter();
           }
         }}
-        value={props.value}
-        type="text"
         placeholder="I want..."
-        autoFocus
+        type="text"
+        value={props.value}
+        width={props.width}
       />
       <StyledButton onClick={props.onEnter}>Enter</StyledButton>
     </Stack>
