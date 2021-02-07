@@ -15,6 +15,7 @@ const app = express();
 app.use(express.static(path.join(__dirname, "../build")));
 
 // Setup cookie session
+/*
 app.use(
   cookieSession({
     secret: process.env.SESSION_SECRET,
@@ -23,6 +24,7 @@ app.use(
     maxAge: 8 * 60 * 60 * 1000, // 8 hours
   })
 );
+*/
 
 // Setup passport
 const passport = require("./middleware/localstrategy")();
@@ -36,11 +38,14 @@ app.use(cors());
 app.use(express.json());
 
 // Handle login/logout
-app.use("/login", require("./routes/login"));
+//app.use("/login", require("./routes/login"));
 //app.use("/logout", require("./routes/logout"));
 
 // Handle notifications
-app.use("/notification", require("./routes/notification"));
+//app.use("/notification", require("./routes/notification"));
+
+// Handle search
+app.use("/search", require("./routes/search"));
 
 // Handle everything else
 app.get("/*", (req, res) => {

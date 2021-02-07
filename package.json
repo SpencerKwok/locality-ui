@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node server/server.js",
+    "start-ui": "react-scripts start",
     "build": "react-scripts build"
   },
   "repository": {
@@ -16,12 +17,11 @@
     "url": "https://github.com/SpencerKwok/locality-ui/issues"
   },
   "dependencies": {
-    "@material-ui/core": "^4.11.2",
-    "@types/js-cookie": "^2.2.6",
-    "@types/react": "^16.14.2",
+    "@types/react": "^16.14.3",
     "@types/react-dom": "^16.9.10",
-    "@types/react-router-dom": "^5.1.6",
-    "algoliasearch": "^4.8.3",
+    "@types/react-router-dom": "^5.1.7",
+    "@types/styled-components": "^5.1.7",
+    "algoliasearch": "^4.8.4",
     "body-parser": "^1.19.0",
     "cookie": "^0.4.1",
     "cookie-session": "^1.4.0",
@@ -30,7 +30,7 @@
     "formik": "^2.2.6",
     "js-cookie": "^2.2.1",
     "js-sha512": "^0.8.0",
-    "node": "^14.15.1",
+    "npm": "^7.5.2",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "path": "^0.12.7",
@@ -39,7 +39,11 @@
     "react-dom": "^16.14.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.4",
-    "typescript": "^3.9.7"
+    "react-svg": "^11.2.3",
+    "stopword": "^1.0.6",
+    "styled-components": "^5.2.1",
+    "typescript": "^3.9.7",
+    "wordnet-db": "^3.1.14"
   },
   "browserslist": {
     "production": [

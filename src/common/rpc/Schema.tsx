@@ -1,25 +1,20 @@
-export interface PostMethods {
-  Notification: {
-    request: NotificationRequest;
-    response: NotificationResponse;
-  };
-  Login: {
-    request: LoginRequest;
-    response: LoginResponse;
-  };
+export interface PostMethods {}
+
+export interface GetMethods {
+  Search: SearchResponse;
 }
 
-export interface NotificationRequest {
-  title: string;
-  description: string;
+export interface SearchRequest {
+  query: string;
 }
 
-export interface LoginRequest {
-  usernameField: string;
-  passwordField: string;
+export interface Product {
+  company: string;
+  img: string;
+  price: number;
+  product: string;
 }
 
-export interface NotificationResponse {}
-export interface LoginResponse {
-  message: string;
+export interface SearchResponse {
+  hits: Array<Product>;
 }
