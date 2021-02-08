@@ -11,6 +11,7 @@ export interface SearchRequest {
 export interface Product {
   company: string;
   img: string;
+  link: string;
   price: number;
   product: string;
 }

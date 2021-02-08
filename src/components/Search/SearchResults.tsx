@@ -7,6 +7,7 @@ import Window from "../../utils/window";
 export interface Product {
   company: string;
   img: string;
+  link: string;
   price: number;
   product: string;
 }
@@ -23,13 +24,15 @@ function SearchResults(props: SearchResultsProps) {
       <Stack direction="horizontal" wrap="wrap" spacing={10}>
         {props.hits.map((hit) => {
           return (
-            <Image
-              company={hit.company}
-              name={hit.product}
-              price={hit.price}
-              src={hit.img}
-              width={175}
-            />
+            <a href={hit.link} target="_blank" rel="noopener noreferrer">
+              <Image
+                company={hit.company}
+                name={hit.product}
+                price={hit.price}
+                src={hit.img}
+                width={175}
+              />
+            </a>
           );
         })}
       </Stack>
