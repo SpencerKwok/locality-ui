@@ -2,13 +2,15 @@ const cors = require("cors");
 const express = require("express");
 const http = require("http");
 const path = require("path");
-const cookieSession = require("cookie-session");
+const enforce = require("express-sslify");
+//const cookieSession = require("cookie-session");
 
 // Get port from Heroku dyno
 const port = process.env.PORT || 3001;
 
 // App setup
 const app = express();
+app.use(enforce.HTTPS({ trustProtoHeader: true }));
 
 // Move static middleware to top to improve load speed
 // See: https://stackoverflow.com/questions/26106399/node-js-express-js-very-slow-serving-static-files
