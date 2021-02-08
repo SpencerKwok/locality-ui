@@ -25,7 +25,7 @@ app.use(express.json());
 app.use("/api", require("./routes/api"));
 
 // Handle everything else
-app.get("/", (req, res) => {
+app.get("/*", (req, res) => {
   res.sendFile(path.join(__dirname, "../build/index.html"));
 });
 
