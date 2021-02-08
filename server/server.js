@@ -15,11 +15,6 @@ app.use(enforce.HTTPS({ trustProtoHeader: true }));
 // See: https://stackoverflow.com/questions/26106399/node-js-express-js-very-slow-serving-static-files
 app.use(express.static(path.join(__dirname, "../build")));
 
-// Setup passport
-const passport = require("./middleware/localstrategy")();
-app.use(passport.initialize());
-app.use(passport.session());
-
 // Enforce CORS
 app.use(cors());
 

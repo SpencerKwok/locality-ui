@@ -5,28 +5,6 @@ const client = algoliasearch(
 );
 const index = client.initIndex(process.env.ALGOLIA_INDEX || "");
 
-index.setSettings({
-  searchableAttributes: [
-    "company,unordered(product)",
-    "unordered(product_keywords)",
-    "unordered(company_keywords)",
-  ],
-});
-
-exports.saveObjects = async (objects) => {
-  try {
-    await index
-      .saveObjects(objects, {
-        autoGenerateObjectIDIfNotExist: true,
-      })
-      .then(({ objectIDs }) => {
-        console.log(`Successfully added objects with IDs: ${objectIDs}`);
-      });
-  } catch (err) {
-    console.log(err);
-  }
-};
-
 exports.findObjects = async (query) => {
   let results = [];
   await index
