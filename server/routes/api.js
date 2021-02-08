@@ -19,7 +19,7 @@ const customStopwords = new Set([
   "wouldn't",
 ]);
 
-router.get("/search", async function (req, res, next) {
+router.use("/search", async function (req, res, next) {
   let q = req.query["q"];
   if (!q) {
     res.end();
@@ -29,9 +29,12 @@ router.get("/search", async function (req, res, next) {
     .removeStopwords(q.split(/\s+/g), sw.en.concat(customStopwords))
     .join(" ");
 
-  await algolia.findObjects(q).then((results) => {
-    res.write(JSON.stringify(results));
-  });
+  await algolia
+    .findObjects(q)
+    .then((results) => {
+      res.write(JSON.stringify(results));
+    })
+    .catch((err) => console.log(err));
 
   res.end();
 });
