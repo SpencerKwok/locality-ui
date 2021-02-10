@@ -1,5 +1,5 @@
 import React from "react";
-import { ReactSVG } from "react-svg";
+import { ReactComponent as LocalityLogo } from "./locality-logo.svg";
 
 import Search from "../Search/Search";
 import Stack from "../Stack/Stack";
@@ -13,7 +13,7 @@ function Main(props: MainProps) {
     <Stack direction="horizontal" columnAlign="center">
       <Stack direction="vertical" rowAlign="center">
         <div style={{ width: 500, margin: "auto" }}>
-          <ReactSVG src="./locality-logo.svg" alt="Locality Logo" />
+          <LocalityLogo />
         </div>
         <Search query={props.query} style={{ marginTop: "-24px" }} />
       </Stack>

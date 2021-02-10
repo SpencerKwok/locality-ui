@@ -31,7 +31,6 @@
         "react-is": "^17.0.1",
         "react-router-dom": "^5.2.0",
         "react-scripts": "^3.4.4",
-        "react-svg": "^11.2.3",
         "stopword": "^1.0.6",
         "styled-components": "^5.2.1",
         "typescript": "^3.9.7",
@@ -1849,6 +1848,21 @@
         "node": ">= 6"
       }
     },
+    "node_modules/@npmcli/installed-package-contents": {
+      "version": "1.0.7",
+      "resolved": "https://registry.npmjs.org/@npmcli/installed-package-contents/-/installed-package-contents-1.0.7.tgz",
+      "integrity": "sha512-9rufe0wnJusCQoLpV9ZPKIVP55itrM5BxOXs10DmdbRfgWtHy1LDyskbwRnBghuB0PrF7pNPOqREVtpz4HqzKw==",
+      "dependencies": {
+        "npm-bundled": "^1.1.1",
+        "npm-normalize-package-bin": "^1.0.1"
+      },
+      "bin": {
+        "installed-package-contents": "index.js"
+      },
+      "engines": {
+        "node": ">= 10"
+      }
+    },
     "node_modules/@popperjs/core": {
       "version": "2.6.0",
       "resolved": "https://registry.npmjs.org/@popperjs/core/-/core-2.6.0.tgz",
@@ -2028,21 +2042,6 @@
       "engines": {
         "node": ">=8"
       }
-    },
-    "node_modules/@tanem/svg-injector": {
-      "version": "8.2.3",
-      "resolved": "https://registry.npmjs.org/@tanem/svg-injector/-/svg-injector-8.2.3.tgz",
-      "integrity": "sha512-UaiU78v91iKuyp2J0XQi72iOiKH29SshM/bliYKTghJ66dvr1+SaoGPT+EiesPiwE6DMK+9NtyZQrseNy2U5nw==",
-      "dependencies": {
-        "@babel/runtime": "^7.12.5",
-        "content-type": "^1.0.4",
-        "tslib": "^2.1.0"
-      }
-    },
-    "node_modules/@tanem/svg-injector/node_modules/tslib": {
-      "version": "2.1.0",
-      "resolved": "https://registry.npmjs.org/tslib/-/tslib-2.1.0.tgz",
-      "integrity": "sha512-hcVC3wYEziELGGmEEXue7D75zbwIIVUMWAVbHItGPx0ziyXxrOMQx4rQEVEV45Ut/1IotuEvwqPopzIOkDMf0A=="
     },
     "node_modules/@types/babel__core": {
       "version": "7.1.12",
@@ -5773,9 +5772,9 @@
       "integrity": "sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0="
     },
     "node_modules/electron-to-chromium": {
-      "version": "1.3.660",
-      "resolved": "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.3.660.tgz",
-      "integrity": "sha512-UOSKNfUBY8FDOSo4mfaUsN3KftlNLcYOg9v5apqLvNcWj+Ogy/i9SEDMZpfSVOeDkOcpu9iusucX6jxTWzqGLA=="
+      "version": "1.3.661",
+      "resolved": "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.3.661.tgz",
+      "integrity": "sha512-INNzKoL9ceOpPCpF5J+Fp9AOHY1RegwKViohAyTzV3XbkuRUx04r4v8edsDbevsog8UuL0GvD/Qerr2HwVTlSA=="
     },
     "node_modules/elliptic": {
       "version": "6.5.4",
@@ -10725,180 +10724,7 @@
         "uuid",
         "validate-npm-package-name",
         "which",
-        "write-file-atomic",
-        "@npmcli/disparity-colors",
-        "@npmcli/git",
-        "@npmcli/installed-package-contents",
-        "@npmcli/map-workspaces",
-        "@npmcli/metavuln-calculator",
-        "@npmcli/move-file",
-        "@npmcli/name-from-folder",
-        "@npmcli/node-gyp",
-        "@npmcli/promise-spawn",
-        "@tootallnate/once",
-        "agent-base",
-        "agentkeepalive",
-        "aggregate-error",
-        "ajv",
-        "ansi-regex",
-        "ansi-styles",
-        "aproba",
-        "are-we-there-yet",
-        "asap",
-        "asn1",
-        "assert-plus",
-        "asynckit",
-        "aws-sign2",
-        "aws4",
-        "balanced-match",
-        "bcrypt-pbkdf",
-        "bin-links",
-        "binary-extensions",
-        "brace-expansion",
-        "builtins",
-        "caseless",
-        "cidr-regex",
-        "clean-stack",
-        "clone",
-        "cmd-shim",
-        "code-point-at",
-        "color-convert",
-        "color-name",
-        "colors",
-        "combined-stream",
-        "common-ancestor-path",
-        "concat-map",
-        "console-control-strings",
-        "core-util-is",
-        "dashdash",
-        "debug",
-        "debuglog",
-        "defaults",
-        "delayed-stream",
-        "delegates",
-        "depd",
-        "dezalgo",
-        "ecc-jsbn",
-        "emoji-regex",
-        "encoding",
-        "env-paths",
-        "err-code",
-        "extend",
-        "extsprintf",
-        "fast-deep-equal",
-        "fast-json-stable-stringify",
-        "forever-agent",
-        "form-data",
-        "fs-minipass",
-        "fs.realpath",
-        "function-bind",
-        "gauge",
-        "getpass",
-        "har-schema",
-        "har-validator",
-        "has",
-        "has-flag",
-        "has-unicode",
-        "http-cache-semantics",
-        "http-proxy-agent",
-        "http-signature",
-        "https-proxy-agent",
-        "humanize-ms",
-        "iconv-lite",
-        "ignore-walk",
-        "imurmurhash",
-        "indent-string",
-        "infer-owner",
-        "inflight",
-        "inherits",
-        "ip",
-        "ip-regex",
-        "is-core-module",
-        "is-fullwidth-code-point",
-        "is-lambda",
-        "is-typedarray",
-        "isarray",
-        "isexe",
-        "isstream",
-        "jsbn",
-        "json-schema",
-        "json-schema-traverse",
-        "json-stringify-nice",
-        "json-stringify-safe",
-        "jsonparse",
-        "jsprim",
-        "just-diff",
-        "just-diff-apply",
-        "lru-cache",
-        "mime-db",
-        "mime-types",
-        "minimatch",
-        "minipass-collect",
-        "minipass-fetch",
-        "minipass-flush",
-        "minipass-json-stream",
-        "minipass-sized",
-        "minizlib",
-        "mute-stream",
-        "normalize-package-data",
-        "npm-bundled",
-        "npm-install-checks",
-        "npm-normalize-package-bin",
-        "npm-packlist",
-        "number-is-nan",
-        "oauth-sign",
-        "object-assign",
-        "once",
-        "p-map",
-        "path-is-absolute",
-        "path-parse",
-        "performance-now",
-        "process-nextick-args",
-        "promise-all-reject-late",
-        "promise-call-limit",
-        "promise-inflight",
-        "promise-retry",
-        "promzard",
-        "psl",
-        "puka",
-        "punycode",
-        "qs",
-        "read-cmd-shim",
-        "readable-stream",
-        "request",
-        "resolve",
-        "retry",
-        "safe-buffer",
-        "safer-buffer",
-        "set-blocking",
-        "signal-exit",
-        "smart-buffer",
-        "socks",
-        "socks-proxy-agent",
-        "spdx-correct",
-        "spdx-exceptions",
-        "spdx-expression-parse",
-        "spdx-license-ids",
-        "sshpk",
-        "string_decoder",
-        "string-width",
-        "stringify-package",
-        "strip-ansi",
-        "supports-color",
-        "tunnel-agent",
-        "tweetnacl",
-        "typedarray-to-buffer",
-        "unique-filename",
-        "unique-slug",
-        "uri-js",
-        "util-deprecate",
-        "validate-npm-package-license",
-        "verror",
-        "walk-up-path",
-        "wcwidth",
-        "wide-align",
-        "wrappy",
-        "yallist"
+        "write-file-atomic"
       ],
       "dependencies": {
         "@npmcli/arborist": "^2.2.1",
@@ -10977,6 +10803,19 @@
       "engines": {
         "node": ">=10"
       }
+    },
+    "node_modules/npm-bundled": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/npm-bundled/-/npm-bundled-1.1.1.tgz",
+      "integrity": "sha512-gqkfgGePhTpAEgUsGEgcq1rqPXA+tv/aVBlgEzfXwA1yiUJF7xtEt3CtVwOjNYQOVknDk0F20w58Fnm3EtG0fA==",
+      "dependencies": {
+        "npm-normalize-package-bin": "^1.0.1"
+      }
+    },
+    "node_modules/npm-normalize-package-bin": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/npm-normalize-package-bin/-/npm-normalize-package-bin-1.0.1.tgz",
+      "integrity": "sha512-EPfafl6JL5/rU+ot6P3gRSCpPDW5VmIzX959Ob1+ySFUuuYHWHekXpwdUZcKP5C+DS4GEtdJluwBjnsNDl+fSA=="
     },
     "node_modules/npm-run-path": {
       "version": "2.0.2",
@@ -16323,20 +16162,6 @@
         "typescript": {
           "optional": true
         }
-      }
-    },
-    "node_modules/react-svg": {
-      "version": "11.2.3",
-      "resolved": "https://registry.npmjs.org/react-svg/-/react-svg-11.2.3.tgz",
-      "integrity": "sha512-Hv801wOXZ5+x8NCuWh7W0m0oXIKcftW/nla9WfD1otKXYKWf9xLGeDGl16alz4E48CUBn2YJH5hbgeEr/L+J+w==",
-      "dependencies": {
-        "@babel/runtime": "^7.12.5",
-        "@tanem/svg-injector": "^8.2.2",
-        "prop-types": "^15.7.2"
-      },
-      "peerDependencies": {
-        "react": "^15.5.4 || ^16.0.0 || ^17.0.0",
-        "react-dom": "^15.5.4 || ^16.0.0 || ^17.0.0"
       }
     },
     "node_modules/react-transition-group": {
@@ -21847,6 +21672,14 @@
       "resolved": "https://registry.npmjs.org/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz",
       "integrity": "sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw=="
     },
+    "@npmcli/installed-package-contents": {
+      "version": "https://registry.npmjs.org/@npmcli/installed-package-contents/-/installed-package-contents-1.0.7.tgz",
+      "integrity": "sha512-9rufe0wnJusCQoLpV9ZPKIVP55itrM5BxOXs10DmdbRfgWtHy1LDyskbwRnBghuB0PrF7pNPOqREVtpz4HqzKw==",
+      "requires": {
+        "npm-bundled": "^1.1.1",
+        "npm-normalize-package-bin": "^1.0.1"
+      }
+    },
     "@popperjs/core": {
       "version": "2.6.0",
       "resolved": "https://registry.npmjs.org/@popperjs/core/-/core-2.6.0.tgz",
@@ -21974,23 +21807,6 @@
         "@svgr/plugin-jsx": "^4.3.3",
         "@svgr/plugin-svgo": "^4.3.1",
         "loader-utils": "^1.2.3"
-      }
-    },
-    "@tanem/svg-injector": {
-      "version": "8.2.3",
-      "resolved": "https://registry.npmjs.org/@tanem/svg-injector/-/svg-injector-8.2.3.tgz",
-      "integrity": "sha512-UaiU78v91iKuyp2J0XQi72iOiKH29SshM/bliYKTghJ66dvr1+SaoGPT+EiesPiwE6DMK+9NtyZQrseNy2U5nw==",
-      "requires": {
-        "@babel/runtime": "^7.12.5",
-        "content-type": "^1.0.4",
-        "tslib": "^2.1.0"
-      },
-      "dependencies": {
-        "tslib": {
-          "version": "2.1.0",
-          "resolved": "https://registry.npmjs.org/tslib/-/tslib-2.1.0.tgz",
-          "integrity": "sha512-hcVC3wYEziELGGmEEXue7D75zbwIIVUMWAVbHItGPx0ziyXxrOMQx4rQEVEV45Ut/1IotuEvwqPopzIOkDMf0A=="
-        }
       }
     },
     "@types/babel__core": {
@@ -25066,9 +24882,9 @@
       "integrity": "sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0="
     },
     "electron-to-chromium": {
-      "version": "1.3.660",
-      "resolved": "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.3.660.tgz",
-      "integrity": "sha512-UOSKNfUBY8FDOSo4mfaUsN3KftlNLcYOg9v5apqLvNcWj+Ogy/i9SEDMZpfSVOeDkOcpu9iusucX6jxTWzqGLA=="
+      "version": "1.3.661",
+      "resolved": "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.3.661.tgz",
+      "integrity": "sha512-INNzKoL9ceOpPCpF5J+Fp9AOHY1RegwKViohAyTzV3XbkuRUx04r4v8edsDbevsog8UuL0GvD/Qerr2HwVTlSA=="
     },
     "elliptic": {
       "version": "6.5.4",
@@ -30734,6 +30550,19 @@
         }
       }
     },
+    "npm-bundled": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/npm-bundled/-/npm-bundled-1.1.1.tgz",
+      "integrity": "sha512-gqkfgGePhTpAEgUsGEgcq1rqPXA+tv/aVBlgEzfXwA1yiUJF7xtEt3CtVwOjNYQOVknDk0F20w58Fnm3EtG0fA==",
+      "requires": {
+        "npm-normalize-package-bin": "^1.0.1"
+      }
+    },
+    "npm-normalize-package-bin": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/npm-normalize-package-bin/-/npm-normalize-package-bin-1.0.1.tgz",
+      "integrity": "sha512-EPfafl6JL5/rU+ot6P3gRSCpPDW5VmIzX959Ob1+ySFUuuYHWHekXpwdUZcKP5C+DS4GEtdJluwBjnsNDl+fSA=="
+    },
     "npm-run-path": {
       "version": "2.0.2",
       "resolved": "https://registry.npmjs.org/npm-run-path/-/npm-run-path-2.0.2.tgz",
@@ -33081,16 +32910,6 @@
         "webpack-dev-server": "3.11.0",
         "webpack-manifest-plugin": "2.2.0",
         "workbox-webpack-plugin": "4.3.1"
-      }
-    },
-    "react-svg": {
-      "version": "11.2.3",
-      "resolved": "https://registry.npmjs.org/react-svg/-/react-svg-11.2.3.tgz",
-      "integrity": "sha512-Hv801wOXZ5+x8NCuWh7W0m0oXIKcftW/nla9WfD1otKXYKWf9xLGeDGl16alz4E48CUBn2YJH5hbgeEr/L+J+w==",
-      "requires": {
-        "@babel/runtime": "^7.12.5",
-        "@tanem/svg-injector": "^8.2.2",
-        "prop-types": "^15.7.2"
       }
     },
     "react-transition-group": {
