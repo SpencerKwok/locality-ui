@@ -35,7 +35,7 @@ function SearchResults(props: SearchResultsProps) {
                 name={hit.product}
                 price={hit.price}
                 src={hit.img}
-                width={175}
+                style={{ maxWidth: 175, minWidth: 175 }}
               />
             </a>
           );
