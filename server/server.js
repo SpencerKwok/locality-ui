@@ -9,7 +9,9 @@ const port = process.env.PORT || 3001;
 
 // App setup
 const app = express();
-app.use(enforce.HTTPS({ trustProtoHeader: true }));
+if (process.env.ENV === "PROD") {
+  app.use(enforce.HTTPS({ trustProtoHeader: true }));
+}
 
 // Move static middleware to top to improve load speed
 // See: https://stackoverflow.com/questions/26106399/node-js-express-js-very-slow-serving-static-files

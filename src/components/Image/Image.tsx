@@ -1,6 +1,5 @@
 import React from "react";
-
-import Stack from "../Stack/Stack";
+import styled from "styled-components";
 
 export interface ImageProps extends React.HTMLProps<HTMLDivElement> {
   company: string;
@@ -9,14 +8,27 @@ export interface ImageProps extends React.HTMLProps<HTMLDivElement> {
   src: string;
 }
 
+const StyledH4 = styled.h4`
+  font-size: 120%;
+  margin: 0px;
+`;
+const StyledH5 = styled.h5`
+  font-size: 100%;
+  margin: 0px;
+`;
+const StyledH6 = styled.h6`
+  font-size: 80%;
+  margin: 4px 0px 0px 0px;
+`;
+
 function Image(props: ImageProps) {
   return (
-    <Stack direction="vertical">
+    <div style={{ width: props.width }}>
       <img src={props.src} alt={props.name} width={props.width} />
-      <h6 style={{ margin: 0 }}>{props.company}</h6>
-      <h3 style={{ margin: 0 }}>{props.name}</h3>
-      <h4 style={{ margin: 0 }}>${props.price} CAD</h4>
-    </Stack>
+      <StyledH6>{props.company}</StyledH6>
+      <StyledH4>{props.name}</StyledH4>
+      <StyledH5>${props.price} CAD</StyledH5>
+    </div>
   );
 }
 

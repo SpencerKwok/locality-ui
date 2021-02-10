@@ -20,11 +20,16 @@ function SearchResults(props: SearchResultsProps) {
   const windowSize = Window();
 
   return (
-    <div style={{ width: windowSize.width * 0.9 }}>
+    <div style={{ width: windowSize.width * 0.9, ...props.style }}>
       <Stack direction="horizontal" wrap="wrap" spacing={10}>
         {props.hits.map((hit) => {
           return (
-            <a href={hit.link} target="_blank" rel="noopener noreferrer">
+            <a
+              href={hit.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ textDecoration: "none", color: "black" }}
+            >
               <Image
                 company={hit.company}
                 name={hit.product}

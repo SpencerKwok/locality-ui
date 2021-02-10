@@ -11,12 +11,12 @@ export interface MainProps extends React.HTMLProps<HTMLDivElement> {
 function Main(props: MainProps) {
   return (
     <Stack direction="horizontal" columnAlign="center">
-      <div>
+      <Stack direction="vertical" rowAlign="center">
         <div style={{ width: 500, margin: "auto" }}>
           <ReactSVG src="./locality-logo.svg" alt="Locality Logo" />
         </div>
-        <Search query={props.query} />
-      </div>
+        <Search query={props.query} style={{ marginTop: "-24px" }} />
+      </Stack>
     </Stack>
   );
 }

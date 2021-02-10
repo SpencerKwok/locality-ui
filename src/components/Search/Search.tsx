@@ -19,8 +19,8 @@ function Search(props: SearchProps) {
     /*
     {
       company: "Cantiq Living",
-      img:
-        "https://static.wixstatic.com/media/bc9f9f_5e80f55fc6734cf7bb444eeb35c8909f~mv2.png/v1/fill/w_625,h_834,al_c,q_90,usm_0.66_1.00_0.01/bc9f9f_5e80f55fc6734cf7bb444eeb35c8909f~mv2.webp",
+      img: "/products/cantiq-living/jacquie-sling-bag.webp",
+      link: "",
       price: 90,
       product: "Jacquie Sling Bag",
     },
@@ -49,7 +49,7 @@ function Search(props: SearchProps) {
   };
 
   return (
-    <Stack direction="horizontal" columnAlign="center">
+    <Stack direction="horizontal" columnAlign="center" style={props.style}>
       <Stack direction="vertical" rowAlign="center">
         <SearchBar
           onChange={searchBarOnChange}
@@ -58,7 +58,7 @@ function Search(props: SearchProps) {
           value={query}
           autoFocus
         />
-        <SearchResults hits={hits} />
+        <SearchResults hits={hits} style={{ marginTop: "12px" }} />
       </Stack>
     </Stack>
   );
