@@ -30,7 +30,7 @@ function Image(props: ImageProps) {
         <img src={props.src} alt={props.name} />
         <StyledH6>{props.company}</StyledH6>
         <StyledH4>{props.name}</StyledH4>
-        <StyledH5>${props.price} CAD</StyledH5>
+        <StyledH5>${props.price.toFixed(2)} CAD</StyledH5>
       </Stack>
     </div>
   );
