@@ -1,3 +1,6 @@
+// Add WAF
+require("sqreen");
+
 const cors = require("cors");
 const express = require("express");
 const http = require("http");
