@@ -19,7 +19,7 @@ app.use(
         defaultSrc: ["'self'"],
         scriptSrc: [
           "'self'",
-          "sha256-i2yG/9t5BT8ag9OWwSOKIcSLj4C7OAFDUZ2tgIGvxKw=",
+          "'sha256-i2yG/9t5BT8ag9OWwSOKIcSLj4C7OAFDUZ2tgIGvxKw='",
         ],
         styleSrc: [
           "'self'",
