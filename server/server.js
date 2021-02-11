@@ -2,6 +2,7 @@ const cors = require("cors");
 const express = require("express");
 const http = require("http");
 const path = require("path");
+const helmet = require("helmet");
 const enforce = require("express-sslify");
 
 // Get port from Heroku dyno
@@ -9,6 +10,34 @@ const port = process.env.PORT || 3001;
 
 // App setup
 const app = express();
+
+// Add security layer
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: [
+          "'self'",
+          "'sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU='",
+          "'sha256-zKIMqpb9PngphVHnm5hraLGca6+kaUpcDBuiHrTyzuI='",
+        ],
+        imgSrc: ["'self'", "https://res.cloudinary.com"],
+        connectSrc: ["'self'"],
+        fontSrc: ["'self'"],
+        objectSrc: ["'self'"],
+        mediaSrc: ["'self'"],
+        frameSrc: ["'self'"],
+      },
+    },
+  })
+);
+
+// Enable cors
+app.use(cors());
+
+// Force ssl
 if (process.env.ENV === "PROD") {
   app.use(enforce.HTTPS({ trustProtoHeader: true }));
 }
@@ -16,9 +45,6 @@ if (process.env.ENV === "PROD") {
 // Move static middleware to top to improve load speed
 // See: https://stackoverflow.com/questions/26106399/node-js-express-js-very-slow-serving-static-files
 app.use(express.static(path.join(__dirname, "../build")));
-
-// Enforce CORS
-app.use(cors());
 
 // Allow JSON body
 app.use(express.json());

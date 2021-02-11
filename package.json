@@ -29,22 +29,20 @@
     "express": "^4.17.1",
     "express-sslify": "^1.2.0",
     "formik": "^2.2.6",
+    "helmet": "^4.4.1",
     "js-cookie": "^2.2.1",
     "js-sha512": "^0.8.0",
     "npm": "^7.5.2",
     "path": "^0.12.7",
     "pg": "^8.5.1",
-    "query-string": "^4.3.4",
     "react": "^16.14.0",
     "react-bootstrap": "^1.4.3",
     "react-dom": "^16.14.0",
     "react-is": "^17.0.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.4",
-    "stopword": "^1.0.6",
     "styled-components": "^5.2.1",
-    "typescript": "^3.9.7",
-    "wordnet-db": "^3.1.14"
+    "typescript": "^3.9.7"
   },
   "browserslist": {
     "production": [
