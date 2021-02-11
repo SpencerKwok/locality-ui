@@ -17,12 +17,14 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'"],
+        scriptSrc: [
+          "'self'",
+          "sha256-i2yG/9t5BT8ag9OWwSOKIcSLj4C7OAFDUZ2tgIGvxKw=",
+        ],
         styleSrc: [
           "'self'",
           "'sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU='",
           "'sha256-zKIMqpb9PngphVHnm5hraLGca6+kaUpcDBuiHrTyzuI='",
-          "'sha256-i2yG/9t5BT8ag9OWwSOKIcSLj4C7OAFDUZ2tgIGvxKw='",
         ],
         imgSrc: ["'self'", "https://res.cloudinary.com"],
         connectSrc: ["'self'"],
