@@ -31,20 +31,27 @@ app.use(
         fontSrc: ["'self'"],
         objectSrc: ["'self'"],
         mediaSrc: ["'self'"],
-        frameSrc: ["'self'"],
+        childSrc: ["'self'"],
       },
     },
   })
 );
 
-// Adding permissions policy
+// Adding additional security headers
 app.use((req, res, next) => {
-  res.setHeader("Permissions-Policy", "geolocation=(self)");
+  res.setHeader(
+    "Permissions-Policy",
+    "accelerometer=(), autoplay=(), camera=(), document-domain=(), encrypted-media=(), fullscreen=(), geolocation=(self), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), sync-xhr=(), usb=(), screen-wake-lock=(), xr-spatial-tracking=()"
+  );
+
+  res.setHeader("X-Xss-Protection", "1; mode=block");
   next();
 });
 
 // Enable cors
-app.use(cors());
+app.use(
+  cors({ origin: ["'self'", "https://google.ca", "https://google.com"] })
+);
 
 // Force ssl
 if (process.env.ENV === "PROD") {
