@@ -1,5 +1,7 @@
 // Add WAF
-require("sqreen");
+if (process.env.ENV === "PROD") {
+  require("sqreen");
+}
 
 const cors = require("cors");
 const express = require("express");
@@ -47,13 +49,15 @@ app.use((req, res, next) => {
     "accelerometer=(), autoplay=(), camera=(), document-domain=(), encrypted-media=(), fullscreen=(), geolocation=(self), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), sync-xhr=(), usb=(), screen-wake-lock=(), xr-spatial-tracking=()"
   );
 
-  res.setHeader("X-Xss-Protection", "1; mode=block");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
   next();
 });
 
 // Enable cors
 app.use(
-  cors({ origin: ["'self'", "https://google.ca", "https://google.com"] })
+  cors({
+    origin: ["'self'", "https://www.google.ca", "https://www.google.com"],
+  })
 );
 
 // Force ssl
