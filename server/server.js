@@ -37,6 +37,12 @@ app.use(
   })
 );
 
+// Adding permissions policy
+app.use((req, res, next) => {
+  res.setHeader("Permissions-Policy", "geolocation=(self)");
+  next();
+});
+
 // Enable cors
 app.use(cors());
 
