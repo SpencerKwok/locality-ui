@@ -2,7 +2,7 @@ import React from "react";
 import queryString from "query-string";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
-import { About, Contact, Main, Navigation } from "./components";
+import { About, Contact, Demo, Main, Navigation } from "./components";
 
 function App() {
   return (
@@ -28,6 +28,18 @@ function App() {
               <React.Fragment>
                 <Navigation />
                 <Contact />
+              </React.Fragment>
+            );
+          }}
+        ></Route>
+        <Route
+          exact
+          path="/demo"
+          render={(props) => {
+            return (
+              <React.Fragment>
+                <Navigation />
+                <Demo />
               </React.Fragment>
             );
           }}

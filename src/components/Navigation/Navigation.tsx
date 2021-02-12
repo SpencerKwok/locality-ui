@@ -18,6 +18,7 @@ function Navigation(props: NavigationProps) {
     <StyledNavbar variant="dark">
       <Nav className="ml-auto">
         <StyledNavLink href="/">Home</StyledNavLink>
+        <StyledNavLink href="/demo">Demo</StyledNavLink>
         <StyledNavLink href="/about">About Us</StyledNavLink>
         <StyledNavLink href="/contact">Contact Us</StyledNavLink>
       </Nav>

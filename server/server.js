@@ -31,7 +31,7 @@ app.use(
         connectSrc: ["'self'"],
         fontSrc: ["'self'"],
         objectSrc: ["'self'"],
-        mediaSrc: ["'self'"],
+        mediaSrc: ["'self'", "https://res.cloudinary.com"],
         childSrc: ["'self'"],
       },
     },
