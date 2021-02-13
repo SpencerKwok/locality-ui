@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { ErrorMessage, Formik, FormikConfig } from "formik";
 import { Button, InputGroup, Form, FormControl } from "react-bootstrap";
@@ -38,19 +38,6 @@ const FormSchema = yup.object().shape({
     .max(255, "Too long"),
   message: yup.string().optional().max(500, "Too long"),
 });
-
-const onSubmit: FormikConfig<FormRequest>["onSubmit"] = async (values) => {
-  await ContactDAO.getInstance()
-    .mail({
-      email: XSS(values.email),
-      name: XSS(values.name),
-      productTypes: XSS(values.productTypes),
-      productNum: parseInt(values.productNum),
-      message: XSS(values.message),
-    })
-    .then(() => alert("Sent!"))
-    .catch((err) => console.log(err));
-};
 
 const StyledInputGroup = styled(InputGroup)`
   input:focus {
@@ -102,6 +89,20 @@ const createStyledErrorMessage = (name: string) => {
 
 function Contact(props: ContactProps) {
   const windowSize = Window();
+  const [sent, hasSent] = useState(false);
+
+  const onSubmit: FormikConfig<FormRequest>["onSubmit"] = async (values) => {
+    await ContactDAO.getInstance()
+      .mail({
+        email: XSS(values.email),
+        name: XSS(values.name),
+        productTypes: XSS(values.productTypes),
+        productNum: parseInt(values.productNum),
+        message: XSS(values.message),
+      })
+      .then(() => hasSent(true))
+      .catch((err) => console.log(err));
+  };
 
   return (
     <Stack direction="horizontal" columnAlign="center">
@@ -125,123 +126,127 @@ function Contact(props: ContactProps) {
           in touch as soon as we can.
         </p>
 
-        <Formik
-          initialValues={
-            {
-              email: "",
-              name: "",
-              productTypes: "",
-              productNum: "",
-              message: "",
-            } as FormRequest
-          }
-          onSubmit={onSubmit}
-          validationSchema={FormSchema}
-        >
-          {({
-            isSubmitting,
-            values,
-            handleBlur,
-            handleChange,
-            handleSubmit,
-          }) => (
-            <Form onSubmit={handleSubmit}>
-              <Form.Group>
-                <StyledFormLabel>Name</StyledFormLabel>
-                <StyledInputGroup size="lg" width={windowSize.width * 0.5}>
-                  <FormControl
-                    aria-label="Large"
-                    id="name"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    placeholder="Enter name"
-                    type="text"
-                    value={values.name}
-                  />
-                </StyledInputGroup>
-                {createStyledErrorMessage("name")}
-              </Form.Group>
-              <Form.Group>
-                <StyledFormLabel>Email address</StyledFormLabel>
-                <StyledInputGroup size="lg" width={windowSize.width * 0.5}>
-                  <FormControl
-                    aria-label="Large"
-                    id="email"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    placeholder="Enter email"
-                    type="text"
-                    value={values.email}
-                  />
-                </StyledInputGroup>
-                {createStyledErrorMessage("email")}
-              </Form.Group>
-              <Form.Group>
-                <StyledFormLabel>
-                  What type of products do you sell?
-                </StyledFormLabel>
-                <StyledInputGroup size="lg" width={windowSize.width * 0.5}>
-                  <FormControl
-                    aria-label="Large"
-                    id="productTypes"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    placeholder="Enter types"
-                    type="text"
-                    value={values.productTypes}
-                  />
-                </StyledInputGroup>
-                {createStyledErrorMessage("productTypes")}
-              </Form.Group>
-              <Form.Group>
-                <StyledFormLabel>
-                  How many products do you want to add to Locality?
-                </StyledFormLabel>
-                <StyledInputGroup size="lg" width={windowSize.width * 0.5}>
-                  <FormControl
-                    aria-label="Large"
-                    id="productNum"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    placeholder="Enter number"
-                    type="text"
-                    value={values.productNum}
-                  />
-                </StyledInputGroup>
-                {createStyledErrorMessage("productNum")}
-              </Form.Group>
-              <Form.Group>
-                <Form.Label>Message (Optional)</Form.Label>
-                <StyledInputGroup size="lg" width={windowSize.width * 0.5}>
-                  <FormControl
-                    as="textarea"
-                    aria-label="Large"
-                    id="message"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    placeholder="Enter message"
-                    type="text"
-                    value={values.message}
-                  />
-                </StyledInputGroup>
-                <div
-                  style={{
-                    textAlign: "right",
-                    color: values.message.length > 500 ? "red" : "black",
-                  }}
-                >{`${values.message.length}/500`}</div>
-                {createStyledErrorMessage("message")}
-              </Form.Group>
-              <StyledButton
-                variant="primary"
-                type="submit"
-                disabled={isSubmitting}
-              >
-                Submit
-              </StyledButton>
-            </Form>
-          )}
-        </Formik>
+        {sent ? (
+          <p>Thanks! You should receive a confirmation email</p>
+        ) : (
+          <Formik
+            initialValues={
+              {
+                email: "",
+                name: "",
+                productTypes: "",
+                productNum: "",
+                message: "",
+              } as FormRequest
+            }
+            onSubmit={onSubmit}
+            validationSchema={FormSchema}
+          >
+            {({
+              isSubmitting,
+              values,
+              handleBlur,
+              handleChange,
+              handleSubmit,
+            }) => (
+              <Form onSubmit={handleSubmit}>
+                <Form.Group>
+                  <StyledFormLabel>Name</StyledFormLabel>
+                  <StyledInputGroup size="lg" width={windowSize.width * 0.5}>
+                    <FormControl
+                      aria-label="Large"
+                      id="name"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      placeholder="Enter name"
+                      type="text"
+                      value={values.name}
+                    />
+                  </StyledInputGroup>
+                  {createStyledErrorMessage("name")}
+                </Form.Group>
+                <Form.Group>
+                  <StyledFormLabel>Email address</StyledFormLabel>
+                  <StyledInputGroup size="lg" width={windowSize.width * 0.5}>
+                    <FormControl
+                      aria-label="Large"
+                      id="email"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      placeholder="Enter email"
+                      type="text"
+                      value={values.email}
+                    />
+                  </StyledInputGroup>
+                  {createStyledErrorMessage("email")}
+                </Form.Group>
+                <Form.Group>
+                  <StyledFormLabel>
+                    What type of products do you sell?
+                  </StyledFormLabel>
+                  <StyledInputGroup size="lg" width={windowSize.width * 0.5}>
+                    <FormControl
+                      aria-label="Large"
+                      id="productTypes"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      placeholder="Enter types"
+                      type="text"
+                      value={values.productTypes}
+                    />
+                  </StyledInputGroup>
+                  {createStyledErrorMessage("productTypes")}
+                </Form.Group>
+                <Form.Group>
+                  <StyledFormLabel>
+                    How many products do you want to add to Locality?
+                  </StyledFormLabel>
+                  <StyledInputGroup size="lg" width={windowSize.width * 0.5}>
+                    <FormControl
+                      aria-label="Large"
+                      id="productNum"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      placeholder="Enter number"
+                      type="text"
+                      value={values.productNum}
+                    />
+                  </StyledInputGroup>
+                  {createStyledErrorMessage("productNum")}
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label>Message (Optional)</Form.Label>
+                  <StyledInputGroup size="lg" width={windowSize.width * 0.5}>
+                    <FormControl
+                      as="textarea"
+                      aria-label="Large"
+                      id="message"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      placeholder="Enter message"
+                      type="text"
+                      value={values.message}
+                    />
+                  </StyledInputGroup>
+                  <div
+                    style={{
+                      textAlign: "right",
+                      color: values.message.length > 500 ? "red" : "black",
+                    }}
+                  >{`${values.message.length}/500`}</div>
+                  {createStyledErrorMessage("message")}
+                </Form.Group>
+                <StyledButton
+                  variant="primary"
+                  type="submit"
+                  disabled={isSubmitting}
+                >
+                  Submit
+                </StyledButton>
+              </Form>
+            )}
+          </Formik>
+        )}
       </Stack>
     </Stack>
   );
