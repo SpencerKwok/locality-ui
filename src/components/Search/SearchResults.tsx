@@ -3,14 +3,7 @@ import React from "react";
 import Image from "../Image/Image";
 import Stack from "../Stack/Stack";
 import Window from "../../utils/window";
-
-export interface Product {
-  company: string;
-  img: string;
-  link: string;
-  price: number;
-  product: string;
-}
+import { Product } from "../../common/rpc/Schema";
 
 export interface SearchResultsProps extends React.HTMLProps<HTMLDivElement> {
   hits: Array<Product>;

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import XSS from "xss";
 
 import SearchBar from "./SearchBar";
 import SearchDAO from "./SearchDAO";
-import SearchResults, { Product } from "./SearchResults";
+import SearchResults from "./SearchResults";
 import Stack from "../Stack/Stack";
 import Window from "../../utils/window";
-import { useHistory } from "react-router-dom";
+import { Product } from "../../common/rpc/Schema";
 
 export interface SearchProps extends React.HTMLProps<HTMLDivElement> {
   query?: string;
@@ -15,25 +17,16 @@ function Search(props: SearchProps) {
   const windowSize = Window();
   const history = useHistory();
   const [query, setQuery] = useState(props.query || "");
-  const [hits, setHits] = useState<Array<Product>>([
-    /*
-    {
-      company: "Cantiq Living",
-      img: "/products/cantiq-living/jacquie-sling-bag.webp",
-      link: "",
-      price: 90,
-      product: "Jacquie Sling Bag",
-    },
-    */
-  ]);
+  const [hits, setHits] = useState<Array<Product>>([]);
 
   useEffect(() => {
     if (props.query) {
       SearchDAO.getInstance()
-        .search({ query: props.query })
+        .search({ query: XSS(props.query) })
         .then(({ hits }) => {
           setHits(hits);
-        });
+        })
+        .catch((err) => console.log(err));
     }
   }, [props.query]);
 

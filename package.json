@@ -27,11 +27,13 @@
     "cookie": "^0.4.1",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "express-rate-limit": "^5.2.5",
     "express-sslify": "^1.2.0",
     "formik": "^2.2.6",
     "helmet": "^4.4.1",
     "js-cookie": "^2.2.1",
     "js-sha512": "^0.8.0",
+    "nodemailer": "^6.4.18",
     "npm": "^7.5.2",
     "path": "^0.12.7",
     "pg": "^8.5.1",
@@ -45,7 +47,9 @@
     "react-scripts": "^3.4.4",
     "sqreen": "^1.61.0",
     "styled-components": "^5.2.1",
-    "typescript": "^3.9.7"
+    "typescript": "^3.9.7",
+    "xss": "^1.0.8",
+    "yup": "^0.32.8"
   },
   "browserslist": {
     "production": [

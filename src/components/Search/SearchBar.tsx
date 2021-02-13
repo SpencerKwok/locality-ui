@@ -2,11 +2,12 @@ import React from "react";
 import styled from "styled-components";
 
 import Stack from "../Stack/Stack";
-import { Button, InputGroup } from "react-bootstrap";
+import { Button, InputGroup, FormControl } from "react-bootstrap";
 
 export interface SearchBarProps extends React.HTMLProps<HTMLInputElement> {
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onEnter?: () => void;
+  value?: string;
 }
 
 const StyledInputGroup = styled(InputGroup)`
@@ -50,8 +51,7 @@ function SearchBar(props: SearchBarProps) {
       style={{ marginLeft: (props.width as number) * 0.07 }}
     >
       <StyledInputGroup size="lg" width={props.width}>
-        <input
-          className="form-control"
+        <FormControl
           autoFocus
           aria-label="Large"
           aria-describedby="inputGroup-sizing-sm"
@@ -63,6 +63,7 @@ function SearchBar(props: SearchBarProps) {
           }}
           placeholder="I want..."
           type="text"
+          value={props.value}
         />
       </StyledInputGroup>
       <StyledButton variant="primary" onClick={props.onEnter}>
