@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
 });
 
 router.use((req, res, next) => {
-  if (process.env.SECRET !== req.headers.secret) {
+  if (process.env.SESSION_SECRET !== req.headers.secret) {
     res.status(401).end();
   } else {
     next();

@@ -11,7 +11,7 @@ export class PostRpcClient {
       headers: {
         "content-type": "application/json",
         charset: "utf-8",
-        secret: process.env.REACT_APP_SECRET || "",
+        secret: process.env.REACT_APP_SESSION_SECRET || "",
       },
       body: JSON.stringify(request),
     });
@@ -47,7 +47,7 @@ export class GetRpcClient {
       headers: {
         "content-type": "application/json",
         charset: "utf-8",
-        secret: process.env.REACT_APP_SECRET || "",
+        secret: process.env.REACT_APP_SESSION_SECRET || "",
       },
     });
 
