@@ -89,7 +89,7 @@ const createStyledErrorMessage = (name: string) => {
 
 function Contact(props: ContactProps) {
   const windowSize = Window();
-  const [sent, hasSent] = useState(false);
+  const [sent, setSent] = useState(false);
 
   const onSubmit: FormikConfig<FormRequest>["onSubmit"] = async (values) => {
     await ContactDAO.getInstance()
@@ -100,7 +100,7 @@ function Contact(props: ContactProps) {
         productNum: parseInt(values.productNum),
         message: XSS(values.message),
       })
-      .then(() => hasSent(true))
+      .then(() => setSent(true))
       .catch((err) => console.log(err));
   };
 
@@ -241,7 +241,19 @@ function Contact(props: ContactProps) {
                   type="submit"
                   disabled={isSubmitting}
                 >
-                  Submit
+                  {isSubmitting ? (
+                    <React.Fragment>
+                      <span
+                        className="spinner-border spinner-border-sm"
+                        role="status"
+                        aria-hidden="true"
+                        style={{ marginBottom: "2px", marginRight: "12px" }}
+                      ></span>
+                      Submitting...
+                    </React.Fragment>
+                  ) : (
+                    <React.Fragment>Submit</React.Fragment>
+                  )}
                 </StyledButton>
               </Form>
             )}
