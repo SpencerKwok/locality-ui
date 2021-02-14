@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { ErrorMessage, Formik, FormikConfig } from "formik";
-import { Button, InputGroup, Form, FormControl } from "react-bootstrap";
 import XSS from "xss";
 import * as yup from "yup";
+import { ErrorMessage, Formik, FormikConfig } from "formik";
+import { Button, InputGroup, Form, FormControl } from "react-bootstrap";
 
 import ContactDAO from "./ContactDAO";
 import Stack from "../Stack/Stack";
@@ -55,20 +55,8 @@ const StyledFormLabel = styled(Form.Label)`
 
 const StyledButton = styled(Button)`
   padding: 11px;
-  background-color: #449ed7;
-  border-color: #449ed7;
-  &:link {
-    background-color: #449ed7 !important;
-    border-color: #449ed7 !important;
-  }
-  &:visited {
-    background-color: #449ed7 !important;
-    border-color: #449ed7 !important;
-  }
-  &:focus {
-    background-color: #449ed7 !important;
-    border-color: #449ed7 !important;
-  }
+  background-color: #449ed7 !important;
+  border-color: #449ed7 !important;
   &:hover {
     background-color: #3880ae !important;
     border-color: #3880ae !important;

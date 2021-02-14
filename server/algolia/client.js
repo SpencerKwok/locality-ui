@@ -5,10 +5,10 @@ const client = algoliasearch(
 );
 const index = client.initIndex(process.env.ALGOLIA_INDEX || "");
 
-exports.findObjects = async (query) => {
+exports.findObjects = async (query, parameters) => {
   let results = [];
   await index
-    .search(query)
+    .search(query, parameters)
     .then((res) => {
       results = res;
     })

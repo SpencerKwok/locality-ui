@@ -15,7 +15,7 @@ function Main(props: MainProps) {
         <div style={{ width: 500, margin: "auto" }}>
           <LocalityLogo />
         </div>
-        <Search query={props.query} style={{ marginTop: "-24px" }} />
+        <Search query={props.query} />
       </Stack>
     </Stack>
   );

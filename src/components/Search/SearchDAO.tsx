@@ -15,9 +15,12 @@ export default class SearchDAO {
   constructor(private rpc: GetRpcClient) {}
 
   async search(searchRequest: SearchRequest): Promise<SearchResponse> {
-    return await this.rpc.call(
-      "Search",
-      "/api/search?q=" + searchRequest.query
-    );
+    let endpoint = `/api/search?q=${searchRequest.query}`;
+    if (searchRequest.ip) {
+      endpoint += `&ip=${searchRequest.ip}`;
+    } else if (searchRequest.latitude && searchRequest.longitude) {
+      endpoint += `&lat=${searchRequest.latitude}&lng=${searchRequest.longitude}`;
+    }
+    return await this.rpc.call("Search", endpoint);
   }
 }

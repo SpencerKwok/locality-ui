@@ -25,7 +25,11 @@ app.use(
         scriptSrc: ["'self'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", "https://res.cloudinary.com"],
-        connectSrc: ["'self'"],
+        connectSrc: [
+          "'self'",
+          "https://ipv4.icanhazip.com",
+          "https://api.ipify.org",
+        ],
         fontSrc: ["'self'"],
         objectSrc: ["'self'"],
         mediaSrc: ["'self'", "https://res.cloudinary.com"],

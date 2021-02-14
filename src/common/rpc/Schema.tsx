@@ -29,6 +29,9 @@ export interface Product {
 
 export interface SearchRequest {
   query: string;
+  ip?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface SearchResponse {
