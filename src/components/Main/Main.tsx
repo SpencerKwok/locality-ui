@@ -1,7 +1,7 @@
 import React from "react";
 import { ReactComponent as LocalityLogo } from "./locality-logo.svg";
 
-import Search from "../Search/Search";
+import { Search, GeolocationSearch } from "../Search/Search";
 import Stack from "../Stack/Stack";
 import Window from "../../utils/window";
 
@@ -27,7 +27,11 @@ function Main(props: MainProps) {
             <LocalityLogo />
           </header>
           <main>
-            <Search query={props.query} />
+            {props.query ? (
+              <GeolocationSearch query={props.query} />
+            ) : (
+              <Search query={props.query} />
+            )}
           </main>
         </Stack>
       </Stack>

@@ -23,7 +23,7 @@ export interface SearchProps extends GeolocatedProps {
   query?: string;
 }
 
-function Search(props: SearchProps) {
+export function Search(props: SearchProps) {
   const windowSize = Window();
   const history = useHistory();
   const [query, setQuery] = useState(props.query || "");
@@ -87,7 +87,7 @@ function Search(props: SearchProps) {
   );
 }
 
-export default geolocated({
+export const GeolocationSearch = geolocated({
   positionOptions: {
     enableHighAccuracy: false,
   },
