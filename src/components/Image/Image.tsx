@@ -34,7 +34,11 @@ const StyledPicture = styled.picture`
 function Image(props: ImageProps) {
   return (
     <div>
-      <Stack direction="vertical" rowAlign="flex-start">
+      <Stack
+        direction="vertical"
+        rowAlign="flex-start"
+        style={{ maxWidth: 175 }}
+      >
         <StyledPicture>
           <source srcSet={props.src} type="image/webp" />
           <img src={props.src.replace(".webp", ".jpg")} alt={props.name} />
