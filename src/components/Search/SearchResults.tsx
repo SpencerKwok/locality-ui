@@ -10,7 +10,10 @@ export interface SearchResultsProps extends React.HTMLProps<HTMLDivElement> {
 }
 
 function SearchResults(props: SearchResultsProps) {
-  const itemsPerRow = Math.floor(props.width / 175);
+  const itemsPerRow = Math.min(
+    Math.floor(props.width / 175),
+    props.hits.length
+  );
   const rows = [...Array(Math.ceil(props.hits.length / itemsPerRow)).keys()];
 
   return (

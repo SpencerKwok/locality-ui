@@ -75,11 +75,13 @@ function Search(props: SearchProps) {
           value={query}
           autoFocus
         />
-        <SearchResults
-          width={windowSize.width * 0.9}
-          hits={hits}
-          style={{ marginTop: 12 }}
-        />
+        {hits.length > 0 && (
+          <SearchResults
+            width={windowSize.width * 0.9}
+            hits={hits}
+            style={{ marginTop: 12 }}
+          />
+        )}
       </Stack>
     </Stack>
   );
