@@ -92,161 +92,165 @@ function Contact(props: ContactProps) {
       .catch((err) => console.log(err));
   };
 
+  const width = windowSize.width * 0.5;
+
   return (
     <Stack direction="horizontal" columnAlign="center">
       <Stack
         direction="vertical"
         rowAlign="center"
-        style={{ marginTop: "24px", marginBottom: "24px" }}
+        style={{ marginTop: 24, marginBottom: 24 }}
       >
-        <h1>Contact Us</h1>
+        <header>
+          <h1>Contact Us</h1>
+        </header>
 
-        <p
-          style={{
-            width: windowSize.width * 0.5,
-            minWidth: "350px",
-            marginLeft: "auto",
-            marginRight: "auto",
-          }}
-        >
-          If you are a small business owner looking to add your products to
-          Locality, we are here to help! Fill out the form below and we will get
-          in touch as soon as we can.
-        </p>
-
-        {sent ? (
-          <p>Thanks! You should receive a confirmation email</p>
-        ) : (
-          <Formik
-            initialValues={
-              {
-                email: "",
-                name: "",
-                productTypes: "",
-                productNum: "",
-                message: "",
-              } as FormRequest
-            }
-            onSubmit={onSubmit}
-            validationSchema={FormSchema}
+        <main style={{ width }}>
+          <p
+            style={{
+              marginLeft: "auto",
+              marginRight: "auto",
+            }}
           >
-            {({
-              isSubmitting,
-              values,
-              handleBlur,
-              handleChange,
-              handleSubmit,
-            }) => (
-              <Form onSubmit={handleSubmit}>
-                <Form.Group>
-                  <StyledFormLabel>Name</StyledFormLabel>
-                  <StyledInputGroup size="lg" width={windowSize.width * 0.5}>
-                    <FormControl
-                      aria-label="Large"
-                      id="name"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      placeholder="Enter name"
-                      type="text"
-                      value={values.name}
-                    />
-                  </StyledInputGroup>
-                  {createStyledErrorMessage("name")}
-                </Form.Group>
-                <Form.Group>
-                  <StyledFormLabel>Email address</StyledFormLabel>
-                  <StyledInputGroup size="lg" width={windowSize.width * 0.5}>
-                    <FormControl
-                      aria-label="Large"
-                      id="email"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      placeholder="Enter email"
-                      type="text"
-                      value={values.email}
-                    />
-                  </StyledInputGroup>
-                  {createStyledErrorMessage("email")}
-                </Form.Group>
-                <Form.Group>
-                  <StyledFormLabel>
-                    What type of products do you sell?
-                  </StyledFormLabel>
-                  <StyledInputGroup size="lg" width={windowSize.width * 0.5}>
-                    <FormControl
-                      aria-label="Large"
-                      id="productTypes"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      placeholder="Enter types"
-                      type="text"
-                      value={values.productTypes}
-                    />
-                  </StyledInputGroup>
-                  {createStyledErrorMessage("productTypes")}
-                </Form.Group>
-                <Form.Group>
-                  <StyledFormLabel>
-                    How many products do you want to add to Locality?
-                  </StyledFormLabel>
-                  <StyledInputGroup size="lg" width={windowSize.width * 0.5}>
-                    <FormControl
-                      aria-label="Large"
-                      id="productNum"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      placeholder="Enter number"
-                      type="text"
-                      value={values.productNum}
-                    />
-                  </StyledInputGroup>
-                  {createStyledErrorMessage("productNum")}
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label>Message (Optional)</Form.Label>
-                  <StyledInputGroup size="lg" width={windowSize.width * 0.5}>
-                    <FormControl
-                      as="textarea"
-                      aria-label="Large"
-                      id="message"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      placeholder="Enter message"
-                      type="text"
-                      value={values.message}
-                    />
-                  </StyledInputGroup>
-                  <div
-                    style={{
-                      textAlign: "right",
-                      color: values.message.length > 500 ? "red" : "black",
-                    }}
-                  >{`${values.message.length}/500`}</div>
-                  {createStyledErrorMessage("message")}
-                </Form.Group>
-                <StyledButton
-                  variant="primary"
-                  type="submit"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <React.Fragment>
-                      <span
-                        className="spinner-border spinner-border-sm"
-                        role="status"
-                        aria-hidden="true"
-                        style={{ marginBottom: "2px", marginRight: "12px" }}
-                      ></span>
-                      Submitting...
-                    </React.Fragment>
-                  ) : (
-                    <React.Fragment>Submit</React.Fragment>
-                  )}
-                </StyledButton>
-              </Form>
-            )}
-          </Formik>
-        )}
+            If you are a small business owner looking to add your products to
+            Locality, we are here to help! Fill out the form below and we will
+            get in touch as soon as we can.
+          </p>
+
+          {sent ? (
+            <p>Thanks! You should receive a confirmation email</p>
+          ) : (
+            <Formik
+              initialValues={
+                {
+                  email: "",
+                  name: "",
+                  productTypes: "",
+                  productNum: "",
+                  message: "",
+                } as FormRequest
+              }
+              onSubmit={onSubmit}
+              validationSchema={FormSchema}
+            >
+              {({
+                isSubmitting,
+                values,
+                handleBlur,
+                handleChange,
+                handleSubmit,
+              }) => (
+                <Form onSubmit={handleSubmit}>
+                  <Form.Group>
+                    <StyledFormLabel>Name</StyledFormLabel>
+                    <StyledInputGroup size="lg" width="100%">
+                      <FormControl
+                        aria-label="Large"
+                        id="name"
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        placeholder="Enter name"
+                        type="text"
+                        value={values.name}
+                      />
+                    </StyledInputGroup>
+                    {createStyledErrorMessage("name")}
+                  </Form.Group>
+                  <Form.Group>
+                    <StyledFormLabel>Email address</StyledFormLabel>
+                    <StyledInputGroup size="lg" width="100%">
+                      <FormControl
+                        aria-label="Large"
+                        id="email"
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        placeholder="Enter email"
+                        type="text"
+                        value={values.email}
+                      />
+                    </StyledInputGroup>
+                    {createStyledErrorMessage("email")}
+                  </Form.Group>
+                  <Form.Group>
+                    <StyledFormLabel>
+                      What type of products do you sell?
+                    </StyledFormLabel>
+                    <StyledInputGroup size="lg" width="100%">
+                      <FormControl
+                        aria-label="Large"
+                        id="productTypes"
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        placeholder="Enter types"
+                        type="text"
+                        value={values.productTypes}
+                      />
+                    </StyledInputGroup>
+                    {createStyledErrorMessage("productTypes")}
+                  </Form.Group>
+                  <Form.Group>
+                    <StyledFormLabel>
+                      How many products do you want to add to Locality?
+                    </StyledFormLabel>
+                    <StyledInputGroup size="lg" width="100%">
+                      <FormControl
+                        aria-label="Large"
+                        id="productNum"
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        placeholder="Enter number"
+                        type="text"
+                        value={values.productNum}
+                      />
+                    </StyledInputGroup>
+                    {createStyledErrorMessage("productNum")}
+                  </Form.Group>
+                  <Form.Group>
+                    <Form.Label>Message (Optional)</Form.Label>
+                    <StyledInputGroup size="lg" width="100%">
+                      <FormControl
+                        as="textarea"
+                        aria-label="Large"
+                        id="message"
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        placeholder="Enter message"
+                        type="text"
+                        value={values.message}
+                      />
+                    </StyledInputGroup>
+                    <div
+                      style={{
+                        textAlign: "right",
+                        color: values.message.length > 500 ? "red" : "black",
+                      }}
+                    >{`${values.message.length}/500`}</div>
+                    {createStyledErrorMessage("message")}
+                  </Form.Group>
+                  <StyledButton
+                    variant="primary"
+                    type="submit"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <React.Fragment>
+                        <span
+                          className="spinner-border spinner-border-sm"
+                          role="status"
+                          aria-hidden="true"
+                          style={{ marginBottom: 2, marginRight: 12 }}
+                        ></span>
+                        Submitting...
+                      </React.Fragment>
+                    ) : (
+                      <React.Fragment>Submit</React.Fragment>
+                    )}
+                  </StyledButton>
+                </Form>
+              )}
+            </Formik>
+          )}
+        </main>
       </Stack>
     </Stack>
   );

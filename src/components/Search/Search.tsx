@@ -65,7 +65,7 @@ function Search(props: SearchProps) {
     <Stack
       direction="horizontal"
       columnAlign="center"
-      style={{ marginTop: "-24px" }}
+      style={{ marginTop: -24 }}
     >
       <Stack direction="vertical" rowAlign="center">
         <SearchBar
@@ -75,7 +75,11 @@ function Search(props: SearchProps) {
           value={query}
           autoFocus
         />
-        <SearchResults hits={hits} style={{ marginTop: "12px" }} />
+        <SearchResults
+          width={windowSize.width * 0.9}
+          hits={hits}
+          style={{ marginTop: 12 }}
+        />
       </Stack>
     </Stack>
   );

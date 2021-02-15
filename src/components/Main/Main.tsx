@@ -3,21 +3,35 @@ import { ReactComponent as LocalityLogo } from "./locality-logo.svg";
 
 import Search from "../Search/Search";
 import Stack from "../Stack/Stack";
+import Window from "../../utils/window";
 
 export interface MainProps extends React.HTMLProps<HTMLDivElement> {
   query?: string;
 }
 
 function Main(props: MainProps) {
+  const windowSize = Window();
+
   return (
-    <Stack direction="horizontal" columnAlign="center">
-      <Stack direction="vertical" rowAlign="center">
-        <div style={{ width: 500, margin: "auto" }}>
-          <LocalityLogo />
-        </div>
-        <Search query={props.query} />
+    <main>
+      <Stack direction="horizontal" columnAlign="center">
+        <Stack direction="vertical" rowAlign="center">
+          <header
+            style={{
+              width: windowSize.width,
+              maxWidth: 500,
+              margin: "auto",
+              overflow: "hidden",
+            }}
+          >
+            <LocalityLogo />
+          </header>
+          <main>
+            <Search query={props.query} />
+          </main>
+        </Stack>
       </Stack>
-    </Stack>
+    </main>
   );
 }
 
