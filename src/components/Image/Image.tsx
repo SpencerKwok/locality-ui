@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import Stack from "../Stack/Stack";
 
-export interface ImageProps extends React.HTMLProps<HTMLDivElement> {
+export interface ImageProps extends React.HTMLProps<HTMLElement> {
   company: string;
   name: string;
   price: number;
@@ -33,21 +33,15 @@ const StyledPicture = styled.picture`
 
 function Image(props: ImageProps) {
   return (
-    <div>
-      <Stack
-        direction="vertical"
-        rowAlign="flex-start"
-        style={{ maxWidth: 175 }}
-      >
-        <StyledPicture>
-          <source srcSet={props.src} type="image/webp" />
-          <img src={props.src.replace(".webp", ".jpg")} alt={props.name} />
-        </StyledPicture>
-        <StyledH6>{props.company}</StyledH6>
-        <StyledH4>{props.name}</StyledH4>
-        <StyledH5>${props.price.toFixed(2)} CAD</StyledH5>
-      </Stack>
-    </div>
+    <Stack direction="column" rowAlign="flex-start" style={{ maxWidth: 175 }}>
+      <StyledPicture>
+        <source srcSet={props.src} type="image/webp" />
+        <img src={props.src.replace(".webp", ".jpg")} alt={props.name} />
+      </StyledPicture>
+      <StyledH6>{props.company}</StyledH6>
+      <StyledH4>{props.name}</StyledH4>
+      <StyledH5>${props.price.toFixed(2)} CAD</StyledH5>
+    </Stack>
   );
 }
 

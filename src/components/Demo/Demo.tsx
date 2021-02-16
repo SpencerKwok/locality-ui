@@ -9,8 +9,8 @@ function About(props: AboutProps) {
   const windowSize = Window();
 
   return (
-    <Stack direction="horizontal" columnAlign="center">
-      <Stack direction="vertical" rowAlign="center" style={{ marginTop: 24 }}>
+    <Stack direction="row" columnAlign="center">
+      <Stack direction="column" rowAlign="center" style={{ marginTop: 24 }}>
         <header>
           <h3 style={{ paddingLeft: 24, paddingRight: 24 }}>
             Extension -&gt; Locality -&gt; Store

@@ -95,9 +95,9 @@ function Contact(props: ContactProps) {
   const width = windowSize.width * 0.5;
 
   return (
-    <Stack direction="horizontal" columnAlign="center">
+    <Stack direction="row" columnAlign="center">
       <Stack
-        direction="vertical"
+        direction="column"
         rowAlign="center"
         style={{ marginTop: 24, marginBottom: 24 }}
       >

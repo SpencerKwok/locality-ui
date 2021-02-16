@@ -24,25 +24,19 @@ const StyledInputGroup = styled(InputGroup)`
 `;
 
 const StyledSearchButton = styled(Button)`
-  padding: 11px;
   background-color: #449ed7;
   border-color: #449ed7;
-  &:link {
-    background-color: #449ed7 !important;
-    border-color: #449ed7 !important;
-  }
-  &:visited {
-    background-color: #449ed7 !important;
-    border-color: #449ed7 !important;
-  }
+  height: 49.9px;
+  padding: 11px;
+
+  &:link,
+  &:visited,
   &:focus {
     background-color: #449ed7 !important;
     border-color: #449ed7 !important;
   }
-  &:hover {
-    background-color: #3880ae !important;
-    border-color: #3880ae !important;
-  }
+
+  &:hover,
   &:active {
     background-color: #3880ae !important;
     border-color: #3880ae !important;
@@ -71,7 +65,7 @@ const StyledClearButton = styled.button`
 function SearchBar(props: SearchBarProps) {
   return (
     <Stack
-      direction="horizontal"
+      direction="row"
       spacing={1}
       style={{ marginLeft: (props.width as number) * 0.07 }}
     >

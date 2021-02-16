@@ -14,8 +14,8 @@ function Main(props: MainProps) {
 
   return (
     <main>
-      <Stack direction="horizontal" columnAlign="center">
-        <Stack direction="vertical" rowAlign="center">
+      <Stack direction="row" columnAlign="center">
+        <Stack direction="column" rowAlign="center">
           <header
             style={{
               width: windowSize.width,

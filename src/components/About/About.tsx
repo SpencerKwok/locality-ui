@@ -6,8 +6,8 @@ export interface AboutProps extends React.HTMLProps<HTMLDivElement> {}
 
 function About(props: AboutProps) {
   return (
-    <Stack direction="horizontal" columnAlign="center">
-      <Stack direction="vertical" rowAlign="center" style={{ marginTop: 24 }}>
+    <Stack direction="row" columnAlign="center">
+      <Stack direction="column" rowAlign="center" style={{ marginTop: 24 }}>
         <header>
           <h1>About us</h1>
         </header>

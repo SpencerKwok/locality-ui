@@ -62,12 +62,8 @@ export function Search(props: SearchProps) {
   };
 
   return (
-    <Stack
-      direction="horizontal"
-      columnAlign="center"
-      style={{ marginTop: -24 }}
-    >
-      <Stack direction="vertical" rowAlign="center">
+    <Stack direction="row" columnAlign="center" style={{ marginTop: -24 }}>
+      <Stack direction="column" rowAlign="center">
         <SearchBar
           onChange={searchBarOnChange}
           onEnter={searchBarOnEnter}

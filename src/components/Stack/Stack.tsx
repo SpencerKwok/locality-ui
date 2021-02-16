@@ -1,10 +1,14 @@
-import React, { Children, HTMLProps } from "react";
+import React, { Children } from "react";
 import styled from "styled-components";
 
-export type StackDirection = "horizontal" | "vertical";
+export type StackDirection =
+  | "row"
+  | "row-reverse"
+  | "column"
+  | "column-reverse";
 export type StackAlignment = "flex-start" | "center" | "flex-end";
 
-export interface StackProps extends HTMLProps<HTMLElement> {
+export interface StackProps extends React.HTMLProps<HTMLElement> {
   direction: StackDirection;
   columnAlign?: StackAlignment;
   height?: number;
@@ -12,6 +16,19 @@ export interface StackProps extends HTMLProps<HTMLElement> {
   rowAlign?: StackAlignment;
   spacing?: number;
 }
+
+const directionToMargin = (direction: StackDirection) => {
+  switch (direction) {
+    case "row":
+      return "right";
+    case "row-reverse":
+      return "left";
+    case "column":
+      return "bottom";
+    case "column-reverse":
+      return "top";
+  }
+};
 
 function Stack(props: StackProps) {
   return (
@@ -35,15 +52,13 @@ export default styled(Stack)`
     align-items: ${({ rowAlign }) => rowAlign};
     display: flex;
     flex-wrap: ${({ wrap }) => wrap};
-    flex-direction: ${({ direction }) =>
-      direction === "horizontal" ? "row" : "column"};
+    flex-direction: ${({ direction }) => direction};
     height: ${({ height }) => height}px;
     justify-content: ${({ columnAlign }) => columnAlign};
     > .stackitem {
         margin: ${({ spacing }) => spacing}px;
         &:last-child {
-            margin-${({ direction }) =>
-              direction === "horizontal" ? "right" : "bottom"}: 0px;
+            margin-${({ direction }) => directionToMargin(direction)}: 0px;
         }
     }
 `;

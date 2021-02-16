@@ -18,14 +18,14 @@ function SearchResults(props: SearchResultsProps) {
 
   return (
     <Stack
-      direction="horizontal"
+      direction="row"
       columnAlign="center"
       style={{ width: props.width, ...props.style }}
     >
-      <Stack direction="vertical" rowAlign="center">
+      <Stack direction="column" rowAlign="center">
         {rows.map((value) => {
           return (
-            <Stack direction="horizontal" columnAlign="flex-start" spacing={10}>
+            <Stack direction="row" columnAlign="flex-start" spacing={10}>
               {(() => {
                 const hits = props.hits.slice(
                   value * itemsPerRow,
