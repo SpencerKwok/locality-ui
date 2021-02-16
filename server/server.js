@@ -53,7 +53,12 @@ app.use((req, res, next) => {
 // Enable cors
 app.use(
   cors({
-    origin: ["'self'", "https://www.google.ca", "https://www.google.com"],
+    origin: [
+      "'self'",
+      "https://www.google.ca",
+      "https://www.google.com",
+      "https://www.etsy.com",
+    ],
   })
 );
 
