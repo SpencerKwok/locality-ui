@@ -19,7 +19,7 @@ function About(props: AboutProps) {
         <main>
           <video width={windowSize.width * 0.8} controls>
             <source
-              src="https://res.cloudinary.com/hcory49pf/video/upload/v1613117563/demo/extension-demo.mp4"
+              src="https://res.cloudinary.com/hcory49pf/video/upload/v1613461638/demo/extension.mp4"
               type="video/mp4"
             />
           </video>
