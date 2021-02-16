@@ -71,6 +71,7 @@ export function Search(props: SearchProps) {
         <SearchBar
           onChange={searchBarOnChange}
           onEnter={searchBarOnEnter}
+          onReset={() => setQuery("")}
           width={Math.max(windowSize.width * 0.3, 225)}
           value={query}
           autoFocus
