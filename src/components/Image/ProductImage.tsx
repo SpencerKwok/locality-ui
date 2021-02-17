@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import Stack from "../Stack/Stack";
 
-export interface ImageProps extends React.HTMLProps<HTMLElement> {
+export interface ProductImageProps extends React.HTMLProps<HTMLElement> {
   company: string;
   name: string;
   price: number;
@@ -31,9 +31,9 @@ const StyledPicture = styled.picture`
   overflow: hidden;
 `;
 
-function Image(props: ImageProps) {
+function ProductImage(props: ProductImageProps) {
   return (
-    <Stack direction="column" rowAlign="flex-start" style={{ maxWidth: 175 }}>
+    <Stack direction="column" rowAlign="flex-start" style={props.style}>
       <StyledPicture>
         <source srcSet={props.src} type="image/webp" />
         <img src={props.src.replace(".webp", ".jpg")} alt={props.name} />
@@ -45,4 +45,4 @@ function Image(props: ImageProps) {
   );
 }
 
-export default Image;
+export default ProductImage;

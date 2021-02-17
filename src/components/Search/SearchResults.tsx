@@ -1,6 +1,6 @@
 import React from "react";
 
-import Image from "../Image/Image";
+import ProductImage from "../Image/ProductImage";
 import Stack from "../Stack/Stack";
 import { Product } from "../../common/rpc/Schema";
 
@@ -39,11 +39,12 @@ function SearchResults(props: SearchResultsProps) {
                       rel="noopener noreferrer"
                       style={{ textDecoration: "none", color: "black" }}
                     >
-                      <Image
+                      <ProductImage
                         company={hit.company}
                         name={hit.product}
                         price={hit.price}
                         src={hit.img}
+                        style={{ maxWidth: 175 }}
                       />
                     </a>
                   );

@@ -56,7 +56,9 @@ export default styled(Stack)`
     height: ${({ height }) => height}px;
     justify-content: ${({ columnAlign }) => columnAlign};
     > .stackitem {
-        margin: ${({ spacing }) => spacing}px;
+        margin-${({ direction }) => directionToMargin(direction)}: ${({
+  spacing,
+}) => spacing}px;
         &:last-child {
             margin-${({ direction }) => directionToMargin(direction)}: 0px;
         }
