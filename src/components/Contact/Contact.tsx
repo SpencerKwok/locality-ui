@@ -1,13 +1,18 @@
 import React, { useState } from "react";
-import styled from "styled-components";
 import XSS from "xss";
 import * as yup from "yup";
-import { ErrorMessage, Formik, FormikConfig } from "formik";
-import { Button, InputGroup, Form, FormControl } from "react-bootstrap";
+import { Formik, FormikConfig } from "formik";
+import { Form, FormControl } from "react-bootstrap";
 
 import ContactDAO from "./ContactDAO";
 import Stack from "../Stack/Stack";
 import Window from "../../utils/window";
+import {
+  FormInputGroup,
+  FormLabel,
+  FormButton,
+  createFormErrorMessage,
+} from "../../common/components/Form/Form";
 
 export interface ContactProps extends React.HTMLProps<HTMLDivElement> {}
 
@@ -38,42 +43,6 @@ const FormSchema = yup.object().shape({
     .max(255, "Too long"),
   message: yup.string().optional().max(500, "Too long"),
 });
-
-const StyledInputGroup = styled(InputGroup)`
-  input:focus {
-    box-shadow: none;
-  }
-  width: ${({ width }) => width}px;
-`;
-
-const StyledFormLabel = styled(Form.Label)`
-  &:after {
-    content: " *";
-    color: red;
-  }
-`;
-
-const StyledButton = styled(Button)`
-  padding: 11px;
-  background-color: #449ed7 !important;
-  border-color: #449ed7 !important;
-  &:hover {
-    background-color: #3880ae !important;
-    border-color: #3880ae !important;
-  }
-  &:active {
-    background-color: #3880ae !important;
-    border-color: #3880ae !important;
-  }
-`;
-
-const createStyledErrorMessage = (name: string) => {
-  return (
-    <div style={{ color: "red" }}>
-      <ErrorMessage name={name} />
-    </div>
-  );
-};
 
 function Contact(props: ContactProps) {
   const windowSize = Window();
@@ -142,8 +111,8 @@ function Contact(props: ContactProps) {
               }) => (
                 <Form onSubmit={handleSubmit}>
                   <Form.Group>
-                    <StyledFormLabel>Name</StyledFormLabel>
-                    <StyledInputGroup size="lg" width="100%">
+                    <FormLabel>Name</FormLabel>
+                    <FormInputGroup size="lg" width="100%">
                       <FormControl
                         aria-label="Large"
                         id="name"
@@ -153,12 +122,12 @@ function Contact(props: ContactProps) {
                         type="text"
                         value={values.name}
                       />
-                    </StyledInputGroup>
-                    {createStyledErrorMessage("name")}
+                    </FormInputGroup>
+                    {createFormErrorMessage("name")}
                   </Form.Group>
                   <Form.Group>
-                    <StyledFormLabel>Email address</StyledFormLabel>
-                    <StyledInputGroup size="lg" width="100%">
+                    <FormLabel>Email address</FormLabel>
+                    <FormInputGroup size="lg" width="100%">
                       <FormControl
                         aria-label="Large"
                         id="email"
@@ -168,14 +137,12 @@ function Contact(props: ContactProps) {
                         type="text"
                         value={values.email}
                       />
-                    </StyledInputGroup>
-                    {createStyledErrorMessage("email")}
+                    </FormInputGroup>
+                    {createFormErrorMessage("email")}
                   </Form.Group>
                   <Form.Group>
-                    <StyledFormLabel>
-                      What type of products do you sell?
-                    </StyledFormLabel>
-                    <StyledInputGroup size="lg" width="100%">
+                    <FormLabel>What type of products do you sell?</FormLabel>
+                    <FormInputGroup size="lg" width="100%">
                       <FormControl
                         aria-label="Large"
                         id="productTypes"
@@ -185,14 +152,14 @@ function Contact(props: ContactProps) {
                         type="text"
                         value={values.productTypes}
                       />
-                    </StyledInputGroup>
-                    {createStyledErrorMessage("productTypes")}
+                    </FormInputGroup>
+                    {createFormErrorMessage("productTypes")}
                   </Form.Group>
                   <Form.Group>
-                    <StyledFormLabel>
+                    <FormLabel>
                       How many products do you want to add to Locality?
-                    </StyledFormLabel>
-                    <StyledInputGroup size="lg" width="100%">
+                    </FormLabel>
+                    <FormInputGroup size="lg" width="100%">
                       <FormControl
                         aria-label="Large"
                         id="productNum"
@@ -202,12 +169,12 @@ function Contact(props: ContactProps) {
                         type="text"
                         value={values.productNum}
                       />
-                    </StyledInputGroup>
-                    {createStyledErrorMessage("productNum")}
+                    </FormInputGroup>
+                    {createFormErrorMessage("productNum")}
                   </Form.Group>
                   <Form.Group>
                     <Form.Label>Message (Optional)</Form.Label>
-                    <StyledInputGroup size="lg" width="100%">
+                    <FormInputGroup size="lg" width="100%">
                       <FormControl
                         as="textarea"
                         aria-label="Large"
@@ -218,16 +185,16 @@ function Contact(props: ContactProps) {
                         type="text"
                         value={values.message}
                       />
-                    </StyledInputGroup>
+                    </FormInputGroup>
                     <div
                       style={{
                         textAlign: "right",
                         color: values.message.length > 500 ? "red" : "black",
                       }}
                     >{`${values.message.length}/500`}</div>
-                    {createStyledErrorMessage("message")}
+                    {createFormErrorMessage("message")}
                   </Form.Group>
-                  <StyledButton
+                  <FormButton
                     variant="primary"
                     type="submit"
                     disabled={isSubmitting}
@@ -245,7 +212,7 @@ function Contact(props: ContactProps) {
                     ) : (
                       <React.Fragment>Submit</React.Fragment>
                     )}
-                  </StyledButton>
+                  </FormButton>
                 </Form>
               )}
             </Formik>

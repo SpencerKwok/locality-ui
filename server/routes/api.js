@@ -1,5 +1,6 @@
 const algolia = require("../algolia/client");
 const nodemailer = require("nodemailer");
+const passport = require("passport");
 const rateLimit = require("express-rate-limit");
 const router = require("express").Router();
 const xss = require("xss");
@@ -115,5 +116,28 @@ router.post(
     res.end("{}");
   }
 );
+
+router.post("/signin", (req, res, next) => {
+  passport.authenticate("local", (err, user) => {
+    if (err) {
+      res.write(JSON.stringify({ message: err.message }));
+      res.end();
+    } else if (!user) {
+      res.write(JSON.stringify({ message: "Missing credentials" }));
+      res.end();
+    } else {
+      res.cookie("firstName", user.firstName);
+      res.cookie("lastName", user.lastName);
+      res.cookie("companyId", user.companyId);
+      res.write(
+        JSON.stringify({
+          message: "Successfully signed in",
+          redirectTo: "/inventory",
+        })
+      );
+      res.end();
+    }
+  })(req, next);
+});
 
 module.exports = router;

@@ -13,29 +13,27 @@ function Main(props: MainProps) {
   const windowSize = Window();
 
   return (
-    <main>
-      <Stack direction="row" columnAlign="center">
-        <Stack direction="column" rowAlign="center">
-          <header
-            style={{
-              width: windowSize.width,
-              maxWidth: 500,
-              margin: "auto",
-              overflow: "hidden",
-            }}
-          >
-            <LocalityLogo />
-          </header>
-          <main>
-            {props.query ? (
-              <GeolocationSearch query={props.query} />
-            ) : (
-              <Search query={props.query} />
-            )}
-          </main>
-        </Stack>
+    <Stack direction="row" columnAlign="center">
+      <Stack direction="column" rowAlign="center">
+        <header
+          style={{
+            width: windowSize.width,
+            maxWidth: 500,
+            margin: "auto",
+            overflow: "hidden",
+          }}
+        >
+          <LocalityLogo />
+        </header>
+        <main>
+          {props.query ? (
+            <GeolocationSearch query={props.query} width={windowSize.width} />
+          ) : (
+            <Search query={props.query} width={windowSize.width} />
+          )}
+        </main>
       </Stack>
-    </main>
+    </Stack>
   );
 }
 

@@ -9,6 +9,7 @@ const http = require("http");
 const path = require("path");
 const helmet = require("helmet");
 const enforce = require("express-sslify");
+const cookieSession = require("cookie-session");
 
 // Get port from Heroku dyno
 const port = process.env.PORT || 3001;
@@ -68,6 +69,21 @@ app.use(
 if (process.env.ENV === "PROD") {
   app.use(enforce.HTTPS({ trustProtoHeader: true }));
 }
+
+// Setup cookie session
+app.use(
+  cookieSession({
+    secret: process.env.SESSION_SECRET,
+    secure: true, // Heroku provides TLS connection
+    httpOnly: true,
+    maxAge: 8 * 60 * 60 * 1000, // 8 hours
+  })
+);
+
+// Setup passport
+const passport = require("./middleware/localstrategy")();
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Move static middleware to top to improve load speed
 // See: https://stackoverflow.com/questions/26106399/node-js-express-js-very-slow-serving-static-files

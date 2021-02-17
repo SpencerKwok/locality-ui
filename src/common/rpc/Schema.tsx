@@ -3,6 +3,10 @@ export interface PostMethods {
     request: MailRequest;
     response: MailResponse;
   };
+  SignIn: {
+    request: SignInRequest;
+    response: SignInResponse;
+  };
 }
 
 export interface MailRequest {
@@ -14,6 +18,16 @@ export interface MailRequest {
 }
 
 export interface MailResponse {}
+
+export interface SignInRequest {
+  username: string;
+  password: string;
+}
+
+export interface SignInResponse {
+  message: string;
+  redirectTo?: string;
+}
 
 export interface GetMethods {
   Search: SearchResponse;

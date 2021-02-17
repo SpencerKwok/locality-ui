@@ -2,7 +2,7 @@ import React from "react";
 import queryString from "query-string";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
-import { About, Contact, Demo, Main, Navigation } from "./components";
+import { About, Contact, Demo, Main, Navigation, SignIn } from "./components";
 
 function App() {
   return (
@@ -53,6 +53,18 @@ function App() {
               <React.Fragment>
                 <Navigation />
                 <Main query={params.q} />
+              </React.Fragment>
+            );
+          }}
+        />
+        <Route
+          exact
+          path="/signin"
+          render={(props) => {
+            return (
+              <React.Fragment>
+                <Navigation />
+                <SignIn />
               </React.Fragment>
             );
           }}

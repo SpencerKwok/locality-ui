@@ -8,7 +8,6 @@ import SearchBar from "./SearchBar";
 import SearchDAO from "./SearchDAO";
 import SearchResults from "./SearchResults";
 import Stack from "../Stack/Stack";
-import Window from "../../utils/window";
 import { Product } from "../../common/rpc/Schema";
 
 interface Location {
@@ -21,10 +20,10 @@ const location: Location = {};
 
 export interface SearchProps extends GeolocatedProps {
   query?: string;
+  width: number;
 }
 
 export function Search(props: SearchProps) {
-  const windowSize = Window();
   const history = useHistory();
   const [query, setQuery] = useState(props.query || "");
   const [hits, setHits] = useState<Array<Product>>([]);
@@ -68,13 +67,13 @@ export function Search(props: SearchProps) {
           onChange={searchBarOnChange}
           onEnter={searchBarOnEnter}
           onReset={() => setQuery("")}
-          width={Math.max(windowSize.width * 0.3, 225)}
+          width={Math.max(props.width * 0.3, 225)}
           value={query}
           autoFocus
         />
         {hits.length > 0 && (
           <SearchResults
-            width={windowSize.width * 0.9}
+            width={props.width * 0.9}
             hits={hits}
             style={{ marginTop: 12 }}
           />

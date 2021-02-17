@@ -15,15 +15,16 @@ function About(props: AboutProps) {
         direction="column"
         rowAlign="center"
         spacing={48}
-        style={{ marginTop: 24, width: windowSize.width * 0.5 }}
+        style={{ marginTop: 24, width: Math.max(570, windowSize.width * 0.5) }}
       >
         <header>
           <h1>About Us</h1>
         </header>
         <DescriptionImage
+          alt="Keeping the local connection"
           direction="row"
           spacing={24}
-          src="https://res.cloudinary.com/hcory49pf/image/upload/v1613521665/about/keeping-local.jpg"
+          src="https://res.cloudinary.com/hcory49pf/image/upload/v1613521665/about/keeping-the-local-connection.jpg"
           width={300}
         >
           <h2>Keeping the local connection</h2>
@@ -42,6 +43,7 @@ function About(props: AboutProps) {
           </p>
         </DescriptionImage>
         <DescriptionImage
+          alt="How it works"
           direction="row-reverse"
           spacing={24}
           src="https://res.cloudinary.com/hcory49pf/image/upload/v1613503266/about/how-it-works.jpg"
@@ -58,6 +60,7 @@ function About(props: AboutProps) {
           </p>
         </DescriptionImage>
         <DescriptionImage
+          alt="Rise up and sell"
           direction="row"
           spacing={24}
           src="https://res.cloudinary.com/hcory49pf/image/upload/v1613503277/about/rise-up-and-sell.png"
@@ -73,6 +76,7 @@ function About(props: AboutProps) {
           </p>
         </DescriptionImage>
         <DescriptionImage
+          alt="Buy with purpose"
           direction="row-reverse"
           spacing={24}
           src="https://res.cloudinary.com/hcory49pf/image/upload/v1613521506/about/buy-with-purpose.png"
