@@ -3,7 +3,7 @@ const client = new Client({
   // Must use SSL for Heroku Postgresql.
   // See: https://help.heroku.com/DR0TTWWD/seeing-fatal-no-pg_hba-conf-entry-errors-in-postgres
   // and https://stackoverflow.com/questions/61097695/self-signed-certificate-error-during-query-the-heroku-hosted-postgres-database
-  ssl: { rejectUnauthorized: false },
+  ssl: { rejectUnauthorized: process.env.ENV === "PROD" },
 
   connectionString: process.env.DATABASE_URL,
 });
