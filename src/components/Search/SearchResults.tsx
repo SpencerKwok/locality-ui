@@ -41,9 +41,9 @@ function SearchResults(props: SearchResultsProps) {
                     >
                       <ProductImage
                         company={hit.company}
-                        name={hit.product}
+                        name={hit.name}
                         price={hit.price}
-                        src={hit.img}
+                        src={hit.image}
                         style={{ maxWidth: 175 }}
                       />
                     </a>

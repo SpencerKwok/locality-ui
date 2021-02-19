@@ -1,20 +1,23 @@
 import React from "react";
 
-import Stack, { StackDirection } from "../Stack/Stack";
+import Stack, { StackDirection, StackAlignment } from "../Stack/Stack";
 
-export interface ImageContainerProps extends React.HTMLProps<HTMLElement> {
+export interface DescriptionImageProps extends React.HTMLProps<HTMLElement> {
   direction: StackDirection;
   src: string;
   spacing?: number;
+  rowAlign?: StackAlignment;
+  columnAlign?: StackAlignment;
 }
 
-function ImageContainer(props: ImageContainerProps) {
+function DescriptionImage(props: DescriptionImageProps) {
   return (
     <Stack
       direction={props.direction}
       spacing={props.spacing}
-      rowAlign="center"
-      columnAlign="center"
+      rowAlign={props.rowAlign}
+      columnAlign={props.columnAlign}
+      style={props.style}
     >
       <picture style={{ margin: 0 }}>
         <source srcSet={props.src} type="image/webp" />
@@ -29,4 +32,4 @@ function ImageContainer(props: ImageContainerProps) {
   );
 }
 
-export default ImageContainer;
+export default DescriptionImage;

@@ -5,7 +5,7 @@ const client = algoliasearch(
 );
 const index = client.initIndex(process.env.ALGOLIA_INDEX || "");
 
-exports.findObjects = async (query, parameters) => {
+exports.search = async (query, parameters) => {
   let results = [];
   await index
     .search(query, parameters)
@@ -14,4 +14,13 @@ exports.findObjects = async (query, parameters) => {
     })
     .catch((err) => console.log(err));
   return results;
+};
+
+exports.getObject = async (objectId) => {
+  let result = null;
+  await index
+    .getObject(objectId)
+    .then((res) => (result = res))
+    .catch((err) => console.log(err));
+  return result;
 };

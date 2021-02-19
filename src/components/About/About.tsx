@@ -23,9 +23,11 @@ function About(props: AboutProps) {
         <main>
           <DescriptionImage
             alt="Keeping the local connection"
+            columnAlign="center"
             direction="row"
             spacing={24}
             src="https://res.cloudinary.com/hcory49pf/image/upload/v1613521665/about/keeping-the-local-connection.jpg"
+            rowAlign="center"
             width={300}
           >
             <h2>Keeping the local connection</h2>
@@ -45,9 +47,11 @@ function About(props: AboutProps) {
           </DescriptionImage>
           <DescriptionImage
             alt="How it works"
+            columnAlign="center"
             direction="row-reverse"
             spacing={24}
             src="https://res.cloudinary.com/hcory49pf/image/upload/v1613503266/about/how-it-works.jpg"
+            rowAlign="center"
             width={300}
           >
             <h2>How Locality Works</h2>
@@ -62,9 +66,11 @@ function About(props: AboutProps) {
           </DescriptionImage>
           <DescriptionImage
             alt="Rise up and sell"
+            columnAlign="center"
             direction="row"
             spacing={24}
             src="https://res.cloudinary.com/hcory49pf/image/upload/v1613503277/about/rise-up-and-sell.png"
+            rowAlign="center"
             width={300}
           >
             <h2>Rise Up and Sell</h2>
@@ -78,9 +84,11 @@ function About(props: AboutProps) {
           </DescriptionImage>
           <DescriptionImage
             alt="Buy with purpose"
+            columnAlign="center"
             direction="row-reverse"
             spacing={24}
             src="https://res.cloudinary.com/hcory49pf/image/upload/v1613521506/about/buy-with-purpose.png"
+            rowAlign="center"
             width={300}
           >
             <h2>Buy with Purpose</h2>

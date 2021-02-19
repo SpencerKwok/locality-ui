@@ -1,4 +1,5 @@
 const algolia = require("../algolia/client");
+const psql = require("../postgresql/client");
 const nodemailer = require("nodemailer");
 const passport = require("passport");
 const rateLimit = require("express-rate-limit");
@@ -32,7 +33,7 @@ router.get(
       res.status(400).end();
     } else if (lat !== "" && lng !== "") {
       await algolia
-        .findObjects(q, {
+        .search(q, {
           aroundLatLng: `${lat}, ${lng}`,
         })
         .then((results) => {
@@ -45,7 +46,7 @@ router.get(
         });
     } else if (ip !== "") {
       await algolia
-        .findObjects(q, {
+        .search(q, {
           aroundLatLngViaIP: true,
           headers: {
             "X-Forwarded-For": ip,
@@ -61,7 +62,7 @@ router.get(
         });
     } else {
       await algolia
-        .findObjects(q)
+        .search(q)
         .then((results) => {
           res.write(JSON.stringify(results));
           res.end();
@@ -114,6 +115,103 @@ router.post(
     });
 
     res.end("{}");
+  }
+);
+
+router.post(
+  "/companies",
+  rateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    max: 10,
+    message:
+      "Too many company requests from this IP, please try again after 24hrs",
+  }),
+  async (req, res, next) => {
+    const companyId = req.cookies["companyId"];
+    if (!companyId) {
+      res.status(403);
+      res.end("{}");
+    } else if (companyId === "0") {
+      const companies = await psql.query(
+        "SELECT * FROM companies ORDER BY name"
+      );
+      res.write(JSON.stringify({ companies: companies.rows }));
+      res.end();
+    } else {
+      const companies = await psql.query(
+        `SELECT * FROM companies WHERE company_id=${companyId} ORDER BY name`
+      );
+      res.write(JSON.stringify({ companies: companies.rows }));
+      res.end();
+    }
+  }
+);
+
+router.post(
+  "/products",
+  rateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    max: 100,
+    message:
+      "Too many products requests from this IP, please try again after 24hrs",
+  }),
+  async (req, res, next) => {
+    const companyId = req.cookies["companyId"];
+    if (!companyId) {
+      res.status(403);
+      res.end("{}");
+    } else if (companyId === "0") {
+      const products = await psql.query(
+        `SELECT * FROM products WHERE company_id=${req.body.companyId} ORDER BY name`
+      );
+      res.write(JSON.stringify({ products: products.rows }));
+      res.end();
+    } else {
+      const products = await psql.query(
+        `SELECT * FROM companies WHERE company_id=${companyId} ORDER BY name`
+      );
+      res.write(JSON.stringify({ products: products.rows }));
+      res.end();
+    }
+  }
+);
+
+router.post(
+  "/product",
+  rateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    max: 100,
+    message:
+      "Too many product requests from this IP, please try again after 24hrs",
+  }),
+  async (req, res, next) => {
+    const companyId = req.cookies["companyId"];
+    if (!companyId) {
+      res.status(403);
+      res.end("{}");
+    } else if (companyId === "0") {
+      await algolia
+        .getObject(`${req.body.companyId}_${req.body.productId}`)
+        .then((result) => {
+          res.write(JSON.stringify({ product: result }));
+          res.end();
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(400).end();
+        });
+    } else {
+      await algolia
+        .getObject(`${companyId}_${req.body.productId}`)
+        .then((result) => {
+          res.write(JSON.stringify({ product: result }));
+          res.end();
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(400).end();
+        });
+    }
   }
 );
 
