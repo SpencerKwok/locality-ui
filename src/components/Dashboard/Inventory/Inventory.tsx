@@ -152,7 +152,7 @@ function Inventory(props: InventoryProps) {
         <StyledList
           width={props.width * 0.3}
           height={props.height - 200}
-          rowHeight={50}
+          rowHeight={48}
           rowRenderer={companyRowRenderer}
           rowCount={companies.length}
         />
