@@ -2,7 +2,7 @@ import React from "react";
 import { ReactComponent as LocalityLogo } from "./locality-logo.svg";
 
 import { Search, GeolocationSearch } from "../Search/Search";
-import Stack from "../Stack/Stack";
+import Stack from "../../common/components/Stack/Stack";
 import Window from "../../utils/window";
 
 export interface MainProps extends React.HTMLProps<HTMLDivElement> {

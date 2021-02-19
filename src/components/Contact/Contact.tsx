@@ -5,7 +5,7 @@ import { Formik, FormikConfig } from "formik";
 import { Form, FormControl } from "react-bootstrap";
 
 import ContactDAO from "./ContactDAO";
-import Stack from "../Stack/Stack";
+import Stack from "../../common/components/Stack/Stack";
 import Window from "../../utils/window";
 import {
   FormInputGroup,

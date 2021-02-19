@@ -31,6 +31,8 @@ export interface SignInResponse {
 
 export interface GetMethods {
   Search: SearchResponse;
+  SignOut: SignOutResponse;
+  Company: CompanyResponse;
 }
 
 export interface Product {
@@ -50,4 +52,15 @@ export interface SearchRequest {
 
 export interface SearchResponse {
   hits: Array<Product>;
+}
+
+export interface SignOutRequest {}
+
+export interface SignOutResponse {
+  redirectTo: string;
+}
+
+export interface CompanyRequest {}
+export interface CompanyResponse {
+  companies: Array<string>;
 }

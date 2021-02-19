@@ -6,7 +6,7 @@ import { Form, FormControl } from "react-bootstrap";
 
 import SignInDAO from "./SignInDAO";
 import { ReactComponent as LocalityLogo } from "./locality-logo.svg";
-import Stack from "../Stack/Stack";
+import Stack from "../../common/components/Stack/Stack";
 import Window from "../../utils/window";
 import {
   FormInputGroup,
@@ -60,7 +60,7 @@ function SignIn(props: SignInProps) {
         >
           <LocalityLogo />
         </header>
-        <main style={{ width: Math.max(200, windowSize.width * 0.2) }}>
+        <main style={{ width: 300 }}>
           <Formik
             initialValues={
               {

@@ -2,7 +2,15 @@ import React from "react";
 import queryString from "query-string";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
-import { About, Contact, Demo, Main, Navigation, SignIn } from "./components";
+import {
+  About,
+  Contact,
+  Dashboard,
+  Demo,
+  Main,
+  Navigation,
+  SignIn,
+} from "./components";
 
 function App() {
   return (
@@ -65,6 +73,18 @@ function App() {
               <React.Fragment>
                 <Navigation />
                 <SignIn />
+              </React.Fragment>
+            );
+          }}
+        />
+        <Route
+          exact
+          path="/dashboard"
+          render={(props) => {
+            return (
+              <React.Fragment>
+                <Navigation />
+                <Dashboard />
               </React.Fragment>
             );
           }}

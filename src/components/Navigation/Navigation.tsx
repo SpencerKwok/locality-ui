@@ -1,8 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 import Cookie from "js-cookie";
-
 import { Button, Nav, Navbar } from "react-bootstrap";
+
+import NavigationDAO from "./NavigationDAO";
 
 export interface NavigationProps extends React.HTMLProps<HTMLDivElement> {}
 
@@ -21,8 +22,7 @@ const StyledButton = styled(Button)`
 `;
 
 function Navigation(props: NavigationProps) {
-  const firstName = Cookie.get("firstName");
-  const lastName = Cookie.get("lastName");
+  const companyId = Cookie.get("companyId");
 
   return (
     <StyledNavbar variant="dark">
@@ -31,19 +31,26 @@ function Navigation(props: NavigationProps) {
         <StyledNavLink href="/demo">Demo</StyledNavLink>
         <StyledNavLink href="/about">About Us</StyledNavLink>
         <StyledNavLink href="/contact">Contact Us</StyledNavLink>
-        {firstName && lastName ? (
+        {companyId ? (
           <React.Fragment>
             <StyledButton
               variant="primary"
-              href="/inventory"
+              href="/dashboard"
               style={{ marginLeft: 12 }}
             >
-              Manage Inventory
+              Dashboard
             </StyledButton>
             <StyledButton
               variant="primary"
-              href="/signin"
               style={{ marginLeft: 12 }}
+              onClick={async () => {
+                await NavigationDAO.getInstance()
+                  .signout({})
+                  .then(({ redirectTo }) => {
+                    window.location.href = redirectTo;
+                  })
+                  .catch((err) => console.log(err));
+              }}
             >
               Sign out
             </StyledButton>

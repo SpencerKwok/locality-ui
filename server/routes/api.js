@@ -117,27 +117,54 @@ router.post(
   }
 );
 
-router.post("/signin", (req, res, next) => {
-  passport.authenticate("local", (err, user) => {
-    if (err) {
-      res.write(JSON.stringify({ message: err.message }));
-      res.end();
-    } else if (!user) {
-      res.write(JSON.stringify({ message: "Missing credentials" }));
-      res.end();
-    } else {
-      res.cookie("firstName", user.firstName);
-      res.cookie("lastName", user.lastName);
-      res.cookie("companyId", user.companyId);
-      res.write(
-        JSON.stringify({
-          message: "Successfully signed in",
-          redirectTo: "/inventory",
-        })
-      );
-      res.end();
-    }
-  })(req, next);
-});
+router.post(
+  "/signin",
+  rateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    max: 10,
+    message:
+      "Too many sign in requests from this IP, please try again after 24hrs",
+  }),
+  (req, res, next) => {
+    passport.authenticate("local", (err, user) => {
+      if (err) {
+        res.write(JSON.stringify({ message: err.message }));
+        res.end();
+      } else if (!user) {
+        res.write(JSON.stringify({ message: "Missing credentials" }));
+        res.end();
+      } else {
+        res.cookie("firstName", user.firstName);
+        res.cookie("lastName", user.lastName);
+        res.cookie("companyId", user.companyId);
+        res.write(
+          JSON.stringify({
+            message: "Successfully signed in",
+            redirectTo: "/dashboard",
+          })
+        );
+        res.end();
+      }
+    })(req, next);
+  }
+);
+
+router.get(
+  "/signout",
+  rateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    max: 10,
+    message:
+      "Too many sign out requests from this IP, please try again after 24hrs",
+  }),
+  (req, res) => {
+    req.logout();
+    res.clearCookie("firstName");
+    res.clearCookie("lastName");
+    res.clearCookie("companyId");
+    res.write(JSON.stringify({ redirectTo: "/" }));
+    res.end();
+  }
+);
 
 module.exports = router;

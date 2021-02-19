@@ -7,7 +7,7 @@ import XSS from "xss";
 import SearchBar from "./SearchBar";
 import SearchDAO from "./SearchDAO";
 import SearchResults from "./SearchResults";
-import Stack from "../Stack/Stack";
+import Stack from "../../common/components/Stack/Stack";
 import { Product } from "../../common/rpc/Schema";
 
 interface Location {

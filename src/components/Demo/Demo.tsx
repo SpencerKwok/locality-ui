@@ -1,6 +1,6 @@
 import React from "react";
 
-import Stack from "../Stack/Stack";
+import Stack from "../../common/components/Stack/Stack";
 import Window from "../../utils/window";
 
 export interface AboutProps extends React.HTMLProps<HTMLDivElement> {}

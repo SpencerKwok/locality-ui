@@ -1,7 +1,7 @@
 import React from "react";
 
-import ProductImage from "../Image/ProductImage";
-import Stack from "../Stack/Stack";
+import ProductImage from "../../common/components/Image/ProductImage";
+import Stack from "../../common/components/Stack/Stack";
 import { Product } from "../../common/rpc/Schema";
 
 export interface SearchResultsProps extends React.HTMLProps<HTMLDivElement> {
