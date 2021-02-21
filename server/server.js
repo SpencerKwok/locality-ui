@@ -95,7 +95,7 @@ app.use(passport.session());
 app.use(express.static(path.join(__dirname, "../build")));
 
 // Allow JSON body
-app.use(express.json());
+app.use(express.json({ limit: "100mb" }));
 
 // Handle search
 app.use("/api", require("./routes/api"));

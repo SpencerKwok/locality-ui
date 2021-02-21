@@ -6,6 +6,8 @@ import {
   ProductsResponse,
   ProductRequest,
   ProductResponse,
+  ProductAddRequest,
+  ProductAddResponse,
   ProductUpdateRequest,
   ProductUpdateResponse,
 } from "../../../common/rpc/Schema";
@@ -43,7 +45,17 @@ export default class InventoryDAO {
     return await this.rpc.call(
       "ProductUpdate",
       productUpdateRequest,
-      "/api/productUpdate"
+      "/api/product/update"
+    );
+  }
+
+  async productAdd(
+    productAddRequest: ProductAddRequest
+  ): Promise<ProductAddResponse> {
+    return await this.rpc.call(
+      "ProductAdd",
+      productAddRequest,
+      "/api/product/add"
     );
   }
 }

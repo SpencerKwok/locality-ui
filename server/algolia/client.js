@@ -14,10 +14,14 @@ exports.getObject = async (objectId) => {
   return result;
 };
 
-exports.partialUpdateObject = async (object) => {
+exports.partialUpdateObject = async (object, options) => {
   await index
-    .partialUpdateObject(object, { createIfNotExists: false })
+    .partialUpdateObject(object, options)
     .catch((err) => console.log(err));
+};
+
+exports.saveObject = async (object, options) => {
+  await index.saveObject(object, options).catch((err) => console.log(err));
 };
 
 exports.search = async (query, parameters) => {

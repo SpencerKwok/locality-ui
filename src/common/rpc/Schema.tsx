@@ -23,6 +23,10 @@ export interface PostMethods {
     request: ProductUpdateRequest;
     response: ProductUpdateResponse;
   };
+  ProductAdd: {
+    request: ProductAddRequest;
+    response: ProductAddResponse;
+  };
 }
 
 export interface MailRequest {
@@ -48,6 +52,12 @@ export interface SignInResponse {
 export interface BaseCompany {
   company_id: number;
   name: string;
+  address: string;
+  city: string;
+  province: string;
+  country: string;
+  latitude: string;
+  longitude: string;
 }
 
 export interface CompaniesRequest {}
@@ -112,6 +122,14 @@ export interface ProductUpdateRequest {
 }
 
 export interface ProductUpdateResponse {}
+
+export interface ProductAddRequest extends ProductUpdateRequest {
+  companyName: string;
+  latitude: string;
+  longitude: string;
+}
+
+export interface ProductAddResponse {}
 
 export interface GetMethods {
   Search: SearchResponse;

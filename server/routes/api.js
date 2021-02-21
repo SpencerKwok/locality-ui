@@ -217,7 +217,7 @@ router.post(
 );
 
 router.post(
-  "/productUpdate",
+  "/product/update",
   rateLimit({
     windowMs: 5 * 60 * 1000, // 5 minutes
     max: 100,
@@ -239,17 +239,78 @@ router.post(
         overwrite: true,
         width: 175,
       });
-      await algolia.partialUpdateObject({
-        objectID: `${req.body.companyId}_${req.body.productId}`,
-        name: req.body.product.name,
-        primary_keywords: req.body.product.primaryKeywords,
-        secondary_keywords: req.body.product.secondaryKeywords,
-        price: req.body.product.price,
-        link: req.body.product.link,
-        image: url,
-      });
+      await algolia.partialUpdateObject(
+        {
+          objectID: `${req.body.companyId}_${req.body.productId}`,
+          name: req.body.product.name,
+          primary_keywords: req.body.product.primaryKeywords,
+          secondary_keywords: req.body.product.secondaryKeywords,
+          price: req.body.product.price,
+          link: req.body.product.link,
+          image: url,
+        },
+        { createIfNotExists: false }
+      );
       await psql.query(
         `UPDATE products SET name='${req.body.product.name}', image='${url}' WHERE company_id=${req.body.companyId} AND product_id=${req.body.productId}`
+      );
+    } else {
+      console.log(req.body);
+    }
+    res.end("{}");
+  }
+);
+
+router.post(
+  "/product/add",
+  rateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    max: 100,
+    message:
+      "Too many product update requests from this IP, please try again after 24hrs",
+  }),
+  async (req, res, next) => {
+    const companyId = req.cookies["companyId"];
+    if (!companyId) {
+      res.status(403);
+      res.end("{}");
+    } else if (companyId === "0") {
+      const url = await cloudinary.upload(req.body.product.image, {
+        crop: "scale",
+        exif: false,
+        format: "webp",
+        public_id: `${req.body.companyId}/${req.body.productId}`,
+        unique_filename: false,
+        overwrite: true,
+        width: 175,
+      });
+
+      const geolocation = [];
+      const latitude = req.body.latitude.split(",");
+      const longitude = req.body.longitude.split(",");
+      for (let i = 0; i < Math.min(latitude.length, longitude.length); ++i) {
+        geolocation.push({
+          lat: latitude[i],
+          lng: longitude[i],
+        });
+      }
+
+      await algolia.saveObject(
+        {
+          objectID: `${req.body.companyId}_${req.body.productId}`,
+          _geoloc: geolocation,
+          name: req.body.product.name,
+          company: req.body.companyName,
+          primary_keywords: req.body.product.primaryKeywords,
+          secondary_keywords: req.body.product.secondaryKeywords,
+          price: req.body.product.price,
+          link: req.body.product.link,
+          image: url,
+        },
+        { autoGenerateObjectIDIfNotExist: false }
+      );
+      await psql.query(
+        `INSERT INTO products (company_id, product_id, name, image) VALUES (${req.body.companyId}, ${req.body.productId}, '${req.body.product.name}', '${url}')`
       );
     } else {
       console.log(req.body);

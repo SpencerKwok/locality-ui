@@ -7,7 +7,7 @@ import { List } from "react-virtualized";
 import Cookie from "js-cookie";
 import { decode } from "html-entities";
 import { Formik, FormikConfig } from "formik";
-import { Form, FormControl } from "react-bootstrap";
+import { Button, Form, FormControl } from "react-bootstrap";
 
 import InventoryDAO from "./InventoryDAO";
 import Stack from "../../../common/components/Stack/Stack";
@@ -82,6 +82,7 @@ function Inventory(props: InventoryProps) {
   const [companies, setCompanies] = useState<Array<BaseCompany>>([]);
   const [products, setProducts] = useState<Array<BaseProduct>>([]);
   const [product, setProduct] = useState<Product>(EmptyProduct);
+  const [informationLabel, setInformationLabel] = useState("Information");
 
   useEffect(() => {
     InventoryDAO.getInstance()
@@ -109,24 +110,48 @@ function Inventory(props: InventoryProps) {
       image = await toBase64(image);
     } catch (err) {}
 
-    await InventoryDAO.getInstance()
-      .productUpdate({
-        companyId: companies[companyIndex].company_id,
-        productId: products[productIndex].product_id,
-        product: {
-          name: values.name,
-          primaryKeywords: values.primaryKeywords
-            .split(",")
-            .map((x) => x.trim()),
-          secondaryKeywords: values.secondaryKeywords
-            .split(",")
-            .map((x) => x.trim()),
-          price: parseFloat(values.price),
-          link: values.link,
-          image: image,
-        },
-      })
-      .catch((err) => console.log(err));
+    if (productIndex > products.length) {
+      await InventoryDAO.getInstance()
+        .productAdd({
+          companyName: companies[companyIndex].name,
+          latitude: companies[companyIndex].latitude,
+          longitude: companies[companyIndex].longitude,
+          companyId: companies[companyIndex].company_id,
+          productId: productIndex,
+          product: {
+            name: values.name,
+            primaryKeywords: values.primaryKeywords
+              .split(",")
+              .map((x) => x.trim()),
+            secondaryKeywords: values.secondaryKeywords
+              .split(",")
+              .map((x) => x.trim()),
+            price: parseFloat(values.price),
+            link: values.link,
+            image: image,
+          },
+        })
+        .catch((err) => console.log(err));
+    } else {
+      await InventoryDAO.getInstance()
+        .productUpdate({
+          companyId: companies[companyIndex].company_id,
+          productId: products[productIndex].product_id,
+          product: {
+            name: values.name,
+            primaryKeywords: values.primaryKeywords
+              .split(",")
+              .map((x) => x.trim()),
+            secondaryKeywords: values.secondaryKeywords
+              .split(",")
+              .map((x) => x.trim()),
+            price: parseFloat(values.price),
+            link: values.link,
+            image: image,
+          },
+        })
+        .catch((err) => console.log(err));
+    }
   };
 
   const createCompanyOnClick = (index: number) => {
@@ -136,6 +161,7 @@ function Inventory(props: InventoryProps) {
         .then(({ products }) => setProducts(products))
         .catch((err) => console.log(err));
       setCompanyIndex(index);
+      setInformationLabel("Information");
     };
   };
 
@@ -173,6 +199,7 @@ function Inventory(props: InventoryProps) {
         .then(({ product }) => setProduct(product))
         .catch((err) => console.log(err));
       setProductIndex(index);
+      setInformationLabel("Information");
     };
   };
 
@@ -242,7 +269,26 @@ function Inventory(props: InventoryProps) {
         />
       </Stack>
       <Stack direction="column" rowAlign="flex-start">
-        <h3>Products</h3>
+        <Stack
+          direction="row"
+          columnAlign="flex-start"
+          priority={[0, 1, 0]}
+          style={{ width: props.width * 0.2 }}
+        >
+          <h3>Products</h3>
+          <div></div>
+          {companyIndex >= 0 && (
+            <Button
+              onClick={() => {
+                setInformationLabel("New Item");
+                setProduct(EmptyProduct);
+                setProductIndex(products.length + 1);
+              }}
+            >
+              Add Item
+            </Button>
+          )}
+        </Stack>
         <StyledList
           width={props.width * 0.2}
           height={props.height - 200}
@@ -252,7 +298,7 @@ function Inventory(props: InventoryProps) {
         />
       </Stack>
       <Stack direction="column" rowAlign="flex-start">
-        <h3>Information</h3>
+        <h3>{informationLabel}</h3>
         {productIndex >= 0 && (
           <Formik
             initialValues={
@@ -260,7 +306,8 @@ function Inventory(props: InventoryProps) {
                 name: product.name,
                 primaryKeywords: product.primary_keywords.join(", "),
                 secondaryKeywords: product.secondary_keywords.join(", "),
-                price: product.price.toFixed(2).toString(),
+                price:
+                  product.price >= 0 ? product.price.toFixed(2).toString() : "",
                 image: product.image,
                 link: product.link,
               } as ProductRequest
