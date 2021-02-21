@@ -1,4 +1,5 @@
 const algolia = require("../algolia/client");
+const cloudinary = require("../cloudinary/client");
 const psql = require("../postgresql/client");
 const nodemailer = require("nodemailer");
 const passport = require("passport");
@@ -212,6 +213,48 @@ router.post(
           res.status(400).end();
         });
     }
+  }
+);
+
+router.post(
+  "/productUpdate",
+  rateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    max: 100,
+    message:
+      "Too many product update requests from this IP, please try again after 24hrs",
+  }),
+  async (req, res, next) => {
+    const companyId = req.cookies["companyId"];
+    if (!companyId) {
+      res.status(403);
+      res.end("{}");
+    } else if (companyId === "0") {
+      const url = await cloudinary.upload(req.body.product.image, {
+        crop: "scale",
+        exif: false,
+        format: "webp",
+        public_id: `${req.body.companyId}/${req.body.productId}`,
+        unique_filename: false,
+        overwrite: true,
+        width: 175,
+      });
+      await algolia.partialUpdateObject({
+        objectID: `${req.body.companyId}_${req.body.productId}`,
+        name: req.body.product.name,
+        primary_keywords: req.body.product.primaryKeywords,
+        secondary_keywords: req.body.product.secondaryKeywords,
+        price: req.body.product.price,
+        link: req.body.product.link,
+        image: url,
+      });
+      await psql.query(
+        `UPDATE products SET name='${req.body.product.name}', image='${url}' WHERE company_id=${req.body.companyId} AND product_id=${req.body.productId}`
+      );
+    } else {
+      console.log(req.body);
+    }
+    res.end("{}");
   }
 );
 

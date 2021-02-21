@@ -26,11 +26,12 @@ app.use(
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", "https://res.cloudinary.com"],
+        imgSrc: ["'self'", "https://res.cloudinary.com", "blob:"],
         connectSrc: [
           "'self'",
           "https://ipv4.icanhazip.com",
           "https://api.ipify.org",
+          "https://api.cloudinary.com",
         ],
         fontSrc: ["'self'"],
         objectSrc: ["'self'"],

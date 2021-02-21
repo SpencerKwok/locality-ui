@@ -11,13 +11,17 @@ export interface PostMethods {
     request: CompaniesRequest;
     response: CompaniesResponse;
   };
+  Product: {
+    request: ProductRequest;
+    response: ProductResponse;
+  };
   Products: {
     request: ProductsRequest;
     response: ProductsResponse;
   };
-  Product: {
-    request: ProductRequest;
-    response: ProductResponse;
+  ProductUpdate: {
+    request: ProductUpdateRequest;
+    response: ProductUpdateResponse;
   };
 }
 
@@ -60,6 +64,8 @@ export interface BaseProduct {
 
 export interface Product extends BaseProduct {
   company: string;
+  primary_keywords: Array<string>;
+  secondary_keywords: Array<string>;
   link: string;
   price: number;
 }
@@ -69,6 +75,8 @@ export const EmptyProduct = {
   name: "",
   image: "",
   company: "",
+  primary_keywords: [],
+  secondary_keywords: [],
   link: "",
   price: -1,
 };
@@ -89,6 +97,21 @@ export interface ProductRequest {
 export interface ProductResponse {
   product: Product;
 }
+
+export interface ProductUpdateRequest {
+  companyId: number;
+  productId: number;
+  product: {
+    name: string;
+    primaryKeywords: Array<string>;
+    secondaryKeywords: Array<string>;
+    price: number;
+    link: string;
+    image: string;
+  };
+}
+
+export interface ProductUpdateResponse {}
 
 export interface GetMethods {
   Search: SearchResponse;
