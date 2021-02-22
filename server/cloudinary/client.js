@@ -8,3 +8,9 @@ exports.upload = async (file, options) => {
     .catch((err) => console.log(err));
   return url;
 };
+
+exports.delete = async (public_ids) => {
+  await cloudinary.api
+    .delete_resources(public_ids)
+    .catch((err) => console.log(err));
+};

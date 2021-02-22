@@ -27,6 +27,10 @@ export interface PostMethods {
     request: ProductAddRequest;
     response: ProductAddResponse;
   };
+  ProductDelete: {
+    request: ProductDeleteRequest;
+    response: ProductDeleteResponse;
+  };
 }
 
 export interface MailRequest {
@@ -123,13 +127,29 @@ export interface ProductUpdateRequest {
 
 export interface ProductUpdateResponse {}
 
-export interface ProductAddRequest extends ProductUpdateRequest {
+export interface ProductAddRequest {
+  companyId: number;
   companyName: string;
   latitude: string;
   longitude: string;
+  product: {
+    name: string;
+    primaryKeywords: Array<string>;
+    secondaryKeywords: Array<string>;
+    price: number;
+    link: string;
+    image: string;
+  };
 }
 
 export interface ProductAddResponse {}
+
+export interface ProductDeleteRequest {
+  companyId: number;
+  productId: number;
+}
+
+export interface ProductDeleteResponse {}
 
 export interface GetMethods {
   Search: SearchResponse;

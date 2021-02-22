@@ -275,11 +275,17 @@ router.post(
       res.status(403);
       res.end("{}");
     } else if (companyId === "0") {
+      const company = await psql.query(
+        `SELECT next_product_id FROM companies WHERE company_id=${req.body.companyId}`
+      );
+
+      const next_product_id = company.rows[0].next_product_id;
+
       const url = await cloudinary.upload(req.body.product.image, {
         crop: "scale",
         exif: false,
         format: "webp",
-        public_id: `${req.body.companyId}/${req.body.productId}`,
+        public_id: `${req.body.companyId}/${next_product_id}`,
         unique_filename: false,
         overwrite: true,
         width: 175,
@@ -297,7 +303,7 @@ router.post(
 
       await algolia.saveObject(
         {
-          objectID: `${req.body.companyId}_${req.body.productId}`,
+          objectID: `${req.body.companyId}_${next_product_id}`,
           _geoloc: geolocation,
           name: req.body.product.name,
           company: req.body.companyName,
@@ -309,8 +315,41 @@ router.post(
         },
         { autoGenerateObjectIDIfNotExist: false }
       );
+
       await psql.query(
-        `INSERT INTO products (company_id, product_id, name, image) VALUES (${req.body.companyId}, ${req.body.productId}, '${req.body.product.name}', '${url}')`
+        `INSERT INTO products (company_id, product_id, name, image) VALUES (${req.body.companyId}, ${next_product_id}, '${req.body.product.name}', '${url}')`
+      );
+
+      await psql.query(
+        `UPDATE companies SET next_product_id=${
+          next_product_id + 1
+        } WHERE company_id=${req.body.companyId}`
+      );
+    } else {
+      console.log(req.body);
+    }
+    res.end("{}");
+  }
+);
+
+router.post(
+  "/product/delete",
+  rateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    max: 100,
+    message:
+      "Too many product delete requests from this IP, please try again after 24hrs",
+  }),
+  async (req, res, next) => {
+    const companyId = req.cookies["companyId"];
+    if (!companyId) {
+      res.status(403);
+      res.end("{}");
+    } else if (companyId === "0") {
+      cloudinary.delete([`${req.body.companyId}/${req.body.productId}`]);
+      algolia.deleteObject(`${req.body.companyId}_${req.body.productId}`);
+      psql.query(
+        `DELETE FROM products WHERE company_id=${req.body.companyId} AND product_id=${req.body.productId}`
       );
     } else {
       console.log(req.body);

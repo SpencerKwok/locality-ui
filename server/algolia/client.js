@@ -24,6 +24,10 @@ exports.saveObject = async (object, options) => {
   await index.saveObject(object, options).catch((err) => console.log(err));
 };
 
+exports.deleteObject = async (objectID) => {
+  await index.deleteObject(objectID).catch((err) => console.log(err));
+};
+
 exports.search = async (query, parameters) => {
   let results = [];
   await index

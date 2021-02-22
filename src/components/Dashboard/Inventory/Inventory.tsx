@@ -37,6 +37,7 @@ interface ProductRequest {
   price: string;
   image: any;
   link: string;
+  option: "new" | "edit" | "delete";
 }
 
 const ProductSchema = yup.object().shape({
@@ -76,13 +77,41 @@ const StyledPicture = styled.picture`
   overflow: hidden;
 `;
 
+const StyledListGroupItem = styled(ListGroup.Item)`
+  ${({ active }) =>
+    active &&
+    "background-color: #3880ae !important; border-color: #3880ae !important"}
+  &:hover {
+    background-color: #449ed7;
+    color: #ffffff;
+  }
+`;
+
+export const StyledButton = styled(Button)`
+  background-color: #449ed7;
+  border-color: #449ed7;
+
+  &:link,
+  &:visited,
+  &:focus {
+    background-color: #449ed7 !important;
+    border-color: #449ed7 !important;
+  }
+
+  &:hover,
+  &:active {
+    background-color: #3880ae !important;
+    border-color: #3880ae !important;
+  }
+`;
+
 function Inventory(props: InventoryProps) {
   const [companyIndex, setCompanyIndex] = useState(-1);
   const [productIndex, setProductIndex] = useState(-1);
   const [companies, setCompanies] = useState<Array<BaseCompany>>([]);
   const [products, setProducts] = useState<Array<BaseProduct>>([]);
   const [product, setProduct] = useState<Product>(EmptyProduct);
-  const [informationLabel, setInformationLabel] = useState("Information");
+  const [isNewItem, setIsNewItem] = useState(false);
 
   useEffect(() => {
     InventoryDAO.getInstance()
@@ -110,14 +139,13 @@ function Inventory(props: InventoryProps) {
       image = await toBase64(image);
     } catch (err) {}
 
-    if (productIndex > products.length) {
+    if (isNewItem) {
       await InventoryDAO.getInstance()
         .productAdd({
           companyName: companies[companyIndex].name,
           latitude: companies[companyIndex].latitude,
           longitude: companies[companyIndex].longitude,
           companyId: companies[companyIndex].company_id,
-          productId: productIndex,
           product: {
             name: values.name,
             primaryKeywords: values.primaryKeywords
@@ -130,6 +158,13 @@ function Inventory(props: InventoryProps) {
             link: values.link,
             image: image,
           },
+        })
+        .catch((err) => console.log(err));
+    } else if (values.option === "delete") {
+      await InventoryDAO.getInstance()
+        .productDelete({
+          companyId: companies[companyIndex].company_id,
+          productId: products[productIndex].product_id,
         })
         .catch((err) => console.log(err));
     } else {
@@ -156,12 +191,13 @@ function Inventory(props: InventoryProps) {
 
   const createCompanyOnClick = (index: number) => {
     return async () => {
-      await InventoryDAO.getInstance()
-        .products({ companyId: companies[index].company_id })
-        .then(({ products }) => setProducts(products))
-        .catch((err) => console.log(err));
-      setCompanyIndex(index);
-      setInformationLabel("Information");
+      if (index !== companyIndex) {
+        await InventoryDAO.getInstance()
+          .products({ companyId: companies[index].company_id })
+          .then(({ products }) => setProducts(products))
+          .catch((err) => console.log(err));
+        setCompanyIndex(index);
+      }
     };
   };
 
@@ -176,58 +212,30 @@ function Inventory(props: InventoryProps) {
   }) => {
     return (
       <div key={key} style={style}>
-        {companyIndex === index ? (
-          <ListGroup.Item active onClick={createCompanyOnClick(index)}>
-            {decode(companies[index].name)}
-          </ListGroup.Item>
-        ) : (
-          <ListGroup.Item onClick={createCompanyOnClick(index)}>
-            {decode(companies[index].name)}
-          </ListGroup.Item>
-        )}
+        <StyledListGroupItem
+          active={companyIndex === index}
+          onClick={createCompanyOnClick(index)}
+        >
+          {decode(companies[index].name)}
+        </StyledListGroupItem>
       </div>
     );
   };
 
   const createProductOnClick = (index: number) => {
     return async () => {
-      await InventoryDAO.getInstance()
-        .product({
-          companyId: companies[companyIndex].company_id,
-          productId: products[index].product_id,
-        })
-        .then(({ product }) => setProduct(product))
-        .catch((err) => console.log(err));
-      setProductIndex(index);
-      setInformationLabel("Information");
+      if (index !== productIndex) {
+        await InventoryDAO.getInstance()
+          .product({
+            companyId: companies[companyIndex].company_id,
+            productId: products[index].product_id,
+          })
+          .then(({ product }) => setProduct(product))
+          .catch((err) => console.log(err));
+        setProductIndex(index);
+        setIsNewItem(false);
+      }
     };
-  };
-
-  const productRow = (index: number, a: boolean) => {
-    return (
-      <ListGroup.Item
-        active={a}
-        onClick={createProductOnClick(index)}
-        style={{ height: 92 }}
-      >
-        <Stack
-          direction="column"
-          columnAlign="center"
-          style={{ height: "100%" }}
-        >
-          <DescriptionImage
-            direction="row"
-            src={products[index].image}
-            spacing={12}
-            columnAlign="flex-start"
-            style={{ width: props.width * 0.3 }}
-            width={48}
-          >
-            {decode(products[index].name)}
-          </DescriptionImage>
-        </Stack>
-      </ListGroup.Item>
-    );
   };
 
   const productRowRenderer = ({
@@ -246,7 +254,28 @@ function Inventory(props: InventoryProps) {
         rowAlign="flex-start"
         style={{ ...style, height: 92 }}
       >
-        {productRow(index, productIndex === index)}
+        <StyledListGroupItem
+          active={productIndex === index}
+          onClick={createProductOnClick(index)}
+          style={{ height: 92 }}
+        >
+          <Stack
+            direction="column"
+            columnAlign="center"
+            style={{ height: "100%" }}
+          >
+            <DescriptionImage
+              direction="row"
+              src={products[index].image}
+              spacing={12}
+              columnAlign="flex-start"
+              style={{ width: props.width * 0.3 }}
+              width={48}
+            >
+              {decode(products[index].name)}
+            </DescriptionImage>
+          </Stack>
+        </StyledListGroupItem>
       </Stack>
     );
   };
@@ -273,24 +302,24 @@ function Inventory(props: InventoryProps) {
           direction="row"
           columnAlign="flex-start"
           priority={[0, 1, 0]}
-          style={{ width: props.width * 0.2 }}
+          style={{ width: props.width * 0.25 }}
         >
           <h3>Products</h3>
           <div></div>
           {companyIndex >= 0 && (
-            <Button
+            <StyledButton
               onClick={() => {
-                setInformationLabel("New Item");
                 setProduct(EmptyProduct);
-                setProductIndex(products.length + 1);
+                setProductIndex(-1);
+                setIsNewItem(true);
               }}
             >
               Add Item
-            </Button>
+            </StyledButton>
           )}
         </Stack>
         <StyledList
-          width={props.width * 0.2}
+          width={props.width * 0.25}
           height={props.height - 200}
           rowHeight={91}
           rowRenderer={productRowRenderer}
@@ -298,8 +327,8 @@ function Inventory(props: InventoryProps) {
         />
       </Stack>
       <Stack direction="column" rowAlign="flex-start">
-        <h3>{informationLabel}</h3>
-        {productIndex >= 0 && (
+        <h3>{isNewItem ? "New Item" : "Information"}</h3>
+        {(productIndex >= 0 || isNewItem) && (
           <Formik
             initialValues={
               {
@@ -404,25 +433,59 @@ function Inventory(props: InventoryProps) {
                     </FormInputGroup>
                     {createFormErrorMessage("link")}
                   </Form.Group>
-                  <FormButton
-                    variant="primary"
-                    type="submit"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <React.Fragment>
-                        <span
-                          className="spinner-border spinner-border-sm"
-                          role="status"
-                          aria-hidden="true"
-                          style={{ marginBottom: 2, marginRight: 12 }}
-                        ></span>
-                        Saving...
-                      </React.Fragment>
-                    ) : (
-                      <React.Fragment>Save</React.Fragment>
+                  <Stack direction="row" columnAlign="flex-end" spacing={12}>
+                    {!isNewItem && (
+                      <Button
+                        variant="danger"
+                        type="submit"
+                        disabled={isSubmitting}
+                        style={{ padding: "11px 24px 11px 24px" }}
+                        onClick={() => {
+                          setFieldValue("option", "delete", false);
+                          handleSubmit();
+                        }}
+                      >
+                        {isSubmitting && values.option === "delete" ? (
+                          <React.Fragment>
+                            <span
+                              className="spinner-border spinner-border-sm"
+                              role="status"
+                              aria-hidden="true"
+                              style={{ marginBottom: 2, marginRight: 12 }}
+                            ></span>
+                            Deleting...
+                          </React.Fragment>
+                        ) : (
+                          <React.Fragment>Delete</React.Fragment>
+                        )}
+                      </Button>
                     )}
-                  </FormButton>
+                    <FormButton
+                      variant="primary"
+                      type="submit"
+                      disabled={isSubmitting}
+                      style={{ paddingLeft: 24, paddingRight: 24 }}
+                      onClick={() => {
+                        setFieldValue("option", "save", false);
+                        handleSubmit();
+                      }}
+                    >
+                      {isSubmitting &&
+                      (values.option === "edit" || values.option === "new") ? (
+                        <React.Fragment>
+                          <span
+                            className="spinner-border spinner-border-sm"
+                            role="status"
+                            aria-hidden="true"
+                            style={{ marginBottom: 2, marginRight: 12 }}
+                          ></span>
+                          Saving...
+                        </React.Fragment>
+                      ) : (
+                        <React.Fragment>Save</React.Fragment>
+                      )}
+                    </FormButton>
+                  </Stack>
                 </Form>
                 <Stack direction="column">
                   <FormLabel>Image</FormLabel>
@@ -474,7 +537,7 @@ function Inventory(props: InventoryProps) {
                           event.target.files &&
                           event.target.files.length > 0
                         ) {
-                          setFieldValue("image", event.target.files[0]);
+                          setFieldValue("image", event.target.files[0], false);
                         }
                       }}
                     />
