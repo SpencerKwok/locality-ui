@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import Cookie from "js-cookie";
 import * as yup from "yup";
@@ -32,11 +32,16 @@ interface ChangePasswordForm {
 }
 
 const ChangePasswordSchema = yup.object().shape({
-  currentPassword: yup.string().required("Required").max(255, "Too long"),
-  newPassword1: yup.string().required("Required").max(255, "Too long"),
+  currentPassword: yup.string().required("Required"),
+  newPassword1: yup
+    .string()
+    .required("Required")
+    .min(8, "Too short")
+    .max(255, "Too long"),
   newPassword2: yup
     .string()
     .required("Required")
+    .min(8, "Too short")
     .max(255, "Too long")
     .oneOf([yup.ref("newPassword1")], "New passwords do not match"),
 });
@@ -45,6 +50,8 @@ function Profile(props: ProfileProps) {
   const firstName = Cookie.get("firstName");
   const lastName = Cookie.get("lastName");
   const companyName = Cookie.get("companyName");
+  const [error, setError] = useState("");
+  const [updatedPassword, setUpdatedPassword] = useState(false);
 
   if (!firstName || !lastName || !companyName) {
     return <Redirect to="/signin" />;
@@ -58,7 +65,18 @@ function Profile(props: ProfileProps) {
         currentPassword: values.currentPassword,
         newPassword: values.newPassword1,
       })
-      .catch((err) => console.log(err));
+      .then(({ error }) => {
+        if (error) {
+          console.log(error);
+          setError(error.message);
+        } else {
+          setUpdatedPassword(true);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setError(err.message);
+      });
   };
 
   return (
@@ -100,7 +118,7 @@ function Profile(props: ProfileProps) {
             }) => (
               <Form onSubmit={handleSubmit}>
                 <Form.Group>
-                  <FormLabel>Current Password</FormLabel>
+                  <FormLabel>Current password</FormLabel>
                   <FormInputGroup size="lg" width="100%">
                     <FormControl
                       aria-label="Large"
@@ -114,7 +132,7 @@ function Profile(props: ProfileProps) {
                   {createFormErrorMessage("currentPassword")}
                 </Form.Group>
                 <Form.Group>
-                  <FormLabel>New Password</FormLabel>
+                  <FormLabel>New password</FormLabel>
                   <FormInputGroup size="lg" width="100%">
                     <FormControl
                       aria-label="Large"
@@ -128,7 +146,7 @@ function Profile(props: ProfileProps) {
                   {createFormErrorMessage("newPassword1")}
                 </Form.Group>
                 <Form.Group>
-                  <FormLabel>Re-enter New Password</FormLabel>
+                  <FormLabel>Re-enter new password</FormLabel>
                   <FormInputGroup size="lg" width="100%">
                     <FormControl
                       aria-label="Large"
@@ -141,6 +159,12 @@ function Profile(props: ProfileProps) {
                   </FormInputGroup>
                   {createFormErrorMessage("newPassword2")}
                 </Form.Group>
+                <div style={{ color: "red" }}>{error}</div>
+                {updatedPassword && error === "" && (
+                  <div style={{ color: "green" }}>
+                    Successfully updated password!
+                  </div>
+                )}
                 <Stack direction="row-reverse">
                   <FormButton
                     variant="primary"

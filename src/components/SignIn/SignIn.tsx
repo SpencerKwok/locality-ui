@@ -28,8 +28,7 @@ const FormSchema = yup.object().shape({
 });
 
 function SignIn(props: SignInProps) {
-  const windowSize = Window();
-  const [errorMessage, setErrorMessage] = useState("");
+  const [error, setError] = useState("");
 
   const onSubmit: FormikConfig<SignInRequest>["onSubmit"] = async (values) => {
     await SignInDAO.getInstance()
@@ -37,14 +36,14 @@ function SignIn(props: SignInProps) {
         username: XSS(values.username),
         password: values.password,
       })
-      .then(({ message, redirectTo }) => {
-        if (redirectTo) {
+      .then(({ error, redirectTo }) => {
+        if (error) {
+          setError(error.message);
+        } else if (redirectTo) {
           window.location.href = redirectTo;
-        } else {
-          setErrorMessage(message);
         }
       })
-      .catch((err) => setErrorMessage(err.message));
+      .catch((err) => setError(err.message));
   };
 
   return (
@@ -52,7 +51,7 @@ function SignIn(props: SignInProps) {
       <Stack direction="column" rowAlign="center" spacing={-24}>
         <header
           style={{
-            width: windowSize.width,
+            width: props.width,
             maxWidth: 500,
             margin: "auto",
             overflow: "hidden",
@@ -107,28 +106,28 @@ function SignIn(props: SignInProps) {
                   </FormInputGroup>
                   {createFormErrorMessage("password")}
                 </Form.Group>
-                <FormButton
-                  variant="primary"
-                  type="submit"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <React.Fragment>
-                      <span
-                        className="spinner-border spinner-border-sm"
-                        role="status"
-                        aria-hidden="true"
-                        style={{ marginBottom: 2, marginRight: 12 }}
-                      ></span>
-                      Signing in...
-                    </React.Fragment>
-                  ) : (
-                    <React.Fragment>Sign in</React.Fragment>
-                  )}
-                </FormButton>
-                <div style={{ color: "red", marginTop: 12 }}>
-                  {errorMessage}
-                </div>
+                <div style={{ color: "red", marginTop: 12 }}>{error}</div>
+                <Stack direction="row-reverse">
+                  <FormButton
+                    variant="primary"
+                    type="submit"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <React.Fragment>
+                        <span
+                          className="spinner-border spinner-border-sm"
+                          role="status"
+                          aria-hidden="true"
+                          style={{ marginBottom: 2, marginRight: 12 }}
+                        ></span>
+                        Signing in...
+                      </React.Fragment>
+                    ) : (
+                      <React.Fragment>Sign in</React.Fragment>
+                    )}
+                  </FormButton>
+                </Stack>
               </Form>
             )}
           </Formik>

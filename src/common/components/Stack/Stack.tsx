@@ -11,6 +11,7 @@ export type StackAlignment = "flex-start" | "center" | "flex-end";
 export interface StackProps extends React.HTMLProps<HTMLElement> {
   direction: StackDirection;
   columnAlign?: StackAlignment;
+  width?: number;
   height?: number;
   priority?: Array<number>;
   rowAlign?: StackAlignment;
@@ -54,6 +55,7 @@ export default styled(Stack)`
     flex-wrap: ${({ wrap }) => wrap};
     flex-direction: ${({ direction }) => direction};
     height: ${({ height }) => height}px;
+    width: ${({ width }) => width}px;
     justify-content: ${({ columnAlign }) => columnAlign};
     > .stackitem {
         margin-${({ direction }) => directionToMargin(direction)}: ${({

@@ -1,20 +1,21 @@
 import React from "react";
 import { Tabs, Tab } from "react-bootstrap";
+import { NumberSchema } from "yup";
 
 import Inventory from "./Inventory/Inventory";
 import Profile from "./Profile/Profile";
-import Window from "../../utils/window";
 
-export interface DashboardProps extends React.HTMLProps<HTMLDivElement> {}
+export interface DashboardProps extends React.HTMLProps<HTMLDivElement> {
+  height: number;
+  width: number;
+}
 
 function Dashboard(props: DashboardProps) {
-  const windowSize = Window();
-
   return (
     <div style={{ padding: 12 }}>
       <Tabs defaultActiveKey="inventory">
         <Tab eventKey="inventory" title="Inventory">
-          <Inventory width={windowSize.width} height={windowSize.height} />
+          <Inventory width={props.width} height={props.height} />
         </Tab>
         <Tab eventKey="profile" title="Profile">
           <Profile />

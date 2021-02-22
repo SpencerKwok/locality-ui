@@ -1,7 +1,7 @@
 import { PostRpcClient } from "../../../common/rpc/RpcClient";
 import {
-  ProfilePasswordUpdateRequest,
-  ProfilePasswordUpdateResponse,
+  PasswordUpdateRequest,
+  PasswordUpdateResponse,
 } from "../../../common/rpc/Schema";
 
 let instance: ProfileDAO;
@@ -18,12 +18,12 @@ export default class ProfileDAO {
   constructor(private rpc: PostRpcClient) {}
 
   async passwordUpdate(
-    profilePasswordUpdateRequest: ProfilePasswordUpdateRequest
-  ): Promise<ProfilePasswordUpdateResponse> {
+    passwordUpdateRequest: PasswordUpdateRequest
+  ): Promise<PasswordUpdateResponse> {
     return await this.rpc.call(
-      "ProfilePasswordUpdate",
-      profilePasswordUpdateRequest,
-      "/api/profile/password/update"
+      "PasswordUpdate",
+      passwordUpdateRequest,
+      "/api/dashboard/profile/password/update"
     );
   }
 }

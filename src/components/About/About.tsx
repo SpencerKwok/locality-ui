@@ -1,22 +1,23 @@
 import React from "react";
+import styled from "styled-components";
 
 import Stack from "../../common/components/Stack/Stack";
 import DescriptionImage from "../../common/components/Image/DescriptionImage";
-import Window from "../../utils/window";
 
 export interface AboutProps extends React.HTMLProps<HTMLDivElement> {}
 
-function About(props: AboutProps) {
-  const windowSize = Window();
+const StyledStack = styled(Stack)`
+  margin-top: 24px;
+  padding: 12px;
+  width: ${({ width }) => width}px;
+  min-width: 570px;
+  max-width: 1000px;
+`;
 
+function About(props: AboutProps) {
   return (
     <Stack direction="row" columnAlign="center">
-      <Stack
-        direction="column"
-        rowAlign="center"
-        spacing={48}
-        style={{ marginTop: 24, width: Math.max(570, windowSize.width * 0.5) }}
-      >
+      <StyledStack direction="column" rowAlign="center" spacing={64}>
         <header>
           <h1>About Us</h1>
         </header>
@@ -100,7 +101,7 @@ function About(props: AboutProps) {
             </p>
           </DescriptionImage>
         </main>
-      </Stack>
+      </StyledStack>
     </Stack>
   );
 }

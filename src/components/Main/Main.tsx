@@ -3,21 +3,19 @@ import { ReactComponent as LocalityLogo } from "./locality-logo.svg";
 
 import { Search, GeolocationSearch } from "../Search/Search";
 import Stack from "../../common/components/Stack/Stack";
-import Window from "../../utils/window";
 
 export interface MainProps extends React.HTMLProps<HTMLDivElement> {
   query?: string;
+  width: number;
 }
 
 function Main(props: MainProps) {
-  const windowSize = Window();
-
   return (
     <Stack direction="row" columnAlign="center">
       <Stack direction="column" rowAlign="center">
         <header
           style={{
-            width: windowSize.width,
+            width: props.width,
             maxWidth: 500,
             margin: "auto",
             overflow: "hidden",
@@ -27,9 +25,9 @@ function Main(props: MainProps) {
         </header>
         <main>
           {props.query ? (
-            <GeolocationSearch query={props.query} width={windowSize.width} />
+            <GeolocationSearch query={props.query} width={props.width} />
           ) : (
-            <Search query={props.query} width={windowSize.width} />
+            <Search query={props.query} width={props.width} />
           )}
         </main>
       </Stack>

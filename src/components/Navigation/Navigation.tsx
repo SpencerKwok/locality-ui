@@ -46,8 +46,12 @@ function Navigation(props: NavigationProps) {
               onClick={async () => {
                 await NavigationDAO.getInstance()
                   .signout({})
-                  .then(({ redirectTo }) => {
-                    window.location.href = redirectTo;
+                  .then(({ error, redirectTo }) => {
+                    if (error) {
+                      console.log(error.message);
+                    } else if (redirectTo) {
+                      window.location.href = redirectTo;
+                    }
                   })
                   .catch((err) => console.log(err));
               }}

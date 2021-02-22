@@ -6,7 +6,6 @@ import { Form, FormControl } from "react-bootstrap";
 
 import ContactDAO from "./ContactDAO";
 import Stack from "../../common/components/Stack/Stack";
-import Window from "../../utils/window";
 import {
   FormInputGroup,
   FormLabel,
@@ -14,7 +13,9 @@ import {
   createFormErrorMessage,
 } from "../../common/components/Form/Form";
 
-export interface ContactProps extends React.HTMLProps<HTMLDivElement> {}
+export interface ContactProps extends React.HTMLProps<HTMLDivElement> {
+  width: number;
+}
 
 interface FormRequest {
   email: string;
@@ -45,23 +46,31 @@ const FormSchema = yup.object().shape({
 });
 
 function Contact(props: ContactProps) {
-  const windowSize = Window();
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState("");
 
   const onSubmit: FormikConfig<FormRequest>["onSubmit"] = async (values) => {
     await ContactDAO.getInstance()
-      .mail({
+      .contactus({
         email: XSS(values.email),
         name: XSS(values.name),
         productTypes: XSS(values.productTypes),
         productNum: parseInt(values.productNum),
         message: XSS(values.message),
       })
-      .then(() => setSent(true))
-      .catch((err) => console.log(err));
+      .then((res) => {
+        if (res.error) {
+          console.log(res.error.message);
+          setError(res.error.message);
+        } else {
+          setSent(true);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setError(error);
+      });
   };
-
-  const width = windowSize.width * 0.5;
 
   return (
     <Stack direction="row" columnAlign="center">
@@ -74,7 +83,7 @@ function Contact(props: ContactProps) {
           <h1>Contact Us</h1>
         </header>
 
-        <main style={{ width }}>
+        <main style={{ width: props.width * 0.5 }}>
           <p
             style={{
               marginLeft: "auto",
@@ -194,25 +203,35 @@ function Contact(props: ContactProps) {
                     >{`${values.message.length}/500`}</div>
                     {createFormErrorMessage("message")}
                   </Form.Group>
-                  <FormButton
-                    variant="primary"
-                    type="submit"
-                    disabled={isSubmitting}
+                  <Stack direction="row-reverse">
+                    <FormButton
+                      variant="primary"
+                      type="submit"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <React.Fragment>
+                          <span
+                            className="spinner-border spinner-border-sm"
+                            role="status"
+                            aria-hidden="true"
+                            style={{ marginBottom: 2, marginRight: 12 }}
+                          ></span>
+                          Submitting...
+                        </React.Fragment>
+                      ) : (
+                        <React.Fragment>Submit</React.Fragment>
+                      )}
+                    </FormButton>
+                  </Stack>
+                  <div
+                    color="red"
+                    style={{
+                      textAlign: "right",
+                    }}
                   >
-                    {isSubmitting ? (
-                      <React.Fragment>
-                        <span
-                          className="spinner-border spinner-border-sm"
-                          role="status"
-                          aria-hidden="true"
-                          style={{ marginBottom: 2, marginRight: 12 }}
-                        ></span>
-                        Submitting...
-                      </React.Fragment>
-                    ) : (
-                      <React.Fragment>Submit</React.Fragment>
-                    )}
-                  </FormButton>
+                    {error}
+                  </div>
                 </Form>
               )}
             </Formik>

@@ -76,7 +76,7 @@ router.get(
 );
 
 router.post(
-  "/mail",
+  "/contactus",
   rateLimit({
     windowMs: 24 * 60 * 60 * 1000, // 24hrs
     max: 5,
@@ -135,7 +135,7 @@ router.post(
 );
 
 router.post(
-  "/companies",
+  "/dashboard/inventory/companies",
   rateLimit({
     windowMs: 5 * 60 * 1000, // 5 minutes
     max: 10,
@@ -145,8 +145,8 @@ router.post(
   async (req, res, next) => {
     const f = async (companyId) => {
       const [companies, error] = await psql.query(
-        `SELECT * FROM companies WHERE ${
-          companyId !== 0 ? `company_id=${companyId}` : ""
+        `SELECT * FROM companies ${
+          companyId !== 0 ? `WHERE company_id=${companyId}` : ""
         } ORDER BY name`
       );
       if (error) {
@@ -165,7 +165,13 @@ router.post(
           })
         );
       } else {
-        res.end(JSON.stringify({ companies: companies.rows }));
+        res.end(
+          JSON.stringify({
+            companies: companies.rows.map((row) => {
+              return { ...row, companyId: row.company_id };
+            }),
+          })
+        );
       }
     };
 
@@ -181,7 +187,7 @@ router.post(
 );
 
 router.post(
-  "/products",
+  "/dashboard/inventory/products",
   rateLimit({
     windowMs: 5 * 60 * 1000, // 5 minutes
     max: 100,
@@ -201,7 +207,13 @@ router.post(
           })
         );
       } else {
-        res.end(JSON.stringify({ products: products.rows }));
+        res.end(
+          JSON.stringify({
+            products: products.rows.map((row) => {
+              return { ...row, productId: row.product_id };
+            }),
+          })
+        );
       }
     };
 
@@ -217,7 +229,7 @@ router.post(
 );
 
 router.post(
-  "/product",
+  "/dashboard/inventory/product/get",
   rateLimit({
     windowMs: 5 * 60 * 1000, // 5 minutes
     max: 100,
@@ -247,7 +259,16 @@ router.post(
           })
         );
       } else {
-        res.end(JSON.stringify({ product: object }));
+        res.end(
+          JSON.stringify({
+            product: {
+              ...object,
+              productId: object.product_id,
+              primaryKeywords: object.primary_keywords || [],
+              secondaryKeywords: object.secondary_keywords || [],
+            },
+          })
+        );
       }
     };
 
@@ -263,7 +284,7 @@ router.post(
 );
 
 router.post(
-  "/product/update",
+  "/dashboard/inventory/product/update",
   rateLimit({
     windowMs: 5 * 60 * 1000, // 5 minutes
     max: 100,
@@ -339,7 +360,7 @@ router.post(
 );
 
 router.post(
-  "/product/add",
+  "/dashboard/inventory/product/add",
   rateLimit({
     windowMs: 5 * 60 * 1000, // 5 minutes
     max: 100,
@@ -469,7 +490,7 @@ router.post(
 );
 
 router.post(
-  "/product/delete",
+  "/dashboard/inventory/product/delete",
   rateLimit({
     windowMs: 5 * 60 * 1000, // 5 minutes
     max: 100,
@@ -526,7 +547,7 @@ router.post(
 );
 
 router.post(
-  "/profile/password/update",
+  "/dashboard/profile/password/update",
   rateLimit({
     windowMs: 24 * 60 * 60 * 1000, // 5 minutes
     max: 5,
@@ -584,7 +605,9 @@ router.post(
               }
             } else {
               res.end(
-                JSON.stringify({ code: 403, message: "Incorrect Password" })
+                JSON.stringify({
+                  error: { code: 403, message: "Incorrect Password" },
+                })
               );
             }
           }

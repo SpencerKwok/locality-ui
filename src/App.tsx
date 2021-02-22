@@ -11,8 +11,11 @@ import {
   Navigation,
   SignIn,
 } from "./components";
+import Window from "./utils/window";
 
 function App() {
+  const { width, height } = Window();
+
   return (
     <Router>
       <Switch>
@@ -23,7 +26,7 @@ function App() {
             return (
               <React.Fragment>
                 <Navigation />
-                <About />
+                <About width={width} />
               </React.Fragment>
             );
           }}
@@ -35,7 +38,7 @@ function App() {
             return (
               <React.Fragment>
                 <Navigation />
-                <Contact />
+                <Contact width={width} />
               </React.Fragment>
             );
           }}
@@ -47,7 +50,7 @@ function App() {
             return (
               <React.Fragment>
                 <Navigation />
-                <Demo />
+                <Demo width={width} />
               </React.Fragment>
             );
           }}
@@ -60,7 +63,7 @@ function App() {
             return (
               <React.Fragment>
                 <Navigation />
-                <Main query={params.q} />
+                <Main width={width} query={params.q} />
               </React.Fragment>
             );
           }}
@@ -72,7 +75,7 @@ function App() {
             return (
               <React.Fragment>
                 <Navigation />
-                <SignIn />
+                <SignIn width={width} />
               </React.Fragment>
             );
           }}
@@ -84,7 +87,7 @@ function App() {
             return (
               <React.Fragment>
                 <Navigation />
-                <Dashboard />
+                <Dashboard width={width} height={height} />
               </React.Fragment>
             );
           }}
@@ -94,7 +97,7 @@ function App() {
           render={(props) => (
             <React.Fragment>
               <Navigation />
-              <Main />
+              <Main width={width} />
             </React.Fragment>
           )}
         />

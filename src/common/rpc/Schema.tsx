@@ -1,7 +1,7 @@
 export interface PostMethods {
-  Mail: {
-    request: MailRequest;
-    response: MailResponse;
+  ContactUs: {
+    request: ContactUsRequest;
+    response: ContactUsResponse;
   };
   SignIn: {
     request: SignInRequest;
@@ -31,34 +31,40 @@ export interface PostMethods {
     request: ProductDeleteRequest;
     response: ProductDeleteResponse;
   };
-  ProfilePasswordUpdate: {
-    request: ProfilePasswordUpdateRequest;
-    response: ProfilePasswordUpdateResponse;
+  PasswordUpdate: {
+    request: PasswordUpdateRequest;
+    response: PasswordUpdateResponse;
   };
 }
 
-export interface MailRequest {
-  email: string;
-  name: string;
-  productTypes: string;
-  productNum: number;
-  message: string;
+export interface BaseResponse {
+  error?: {
+    code: number;
+    message: string;
+  };
 }
 
-export interface MailResponse {}
+export interface ContactUsRequest {
+  email: string;
+  message: string;
+  name: string;
+  productNum: number;
+  productTypes: string;
+}
+
+export interface ContactUsResponse extends BaseResponse {}
 
 export interface SignInRequest {
   username: string;
   password: string;
 }
 
-export interface SignInResponse {
-  message: string;
+export interface SignInResponse extends BaseResponse {
   redirectTo?: string;
 }
 
 export interface BaseCompany {
-  company_id: number;
+  companyId: number;
   name: string;
   address: string;
   city: string;
@@ -70,31 +76,31 @@ export interface BaseCompany {
 
 export interface CompaniesRequest {}
 
-export interface CompaniesResponse {
+export interface CompaniesResponse extends BaseResponse {
   companies: Array<BaseCompany>;
 }
 
 export interface BaseProduct {
-  product_id: number;
+  productId: number;
   name: string;
   image: string;
 }
 
 export interface Product extends BaseProduct {
   company: string;
-  primary_keywords: Array<string>;
-  secondary_keywords: Array<string>;
+  primaryKeywords: Array<string>;
+  secondaryKeywords: Array<string>;
   link: string;
   price: number;
 }
 
-export const EmptyProduct = {
-  product_id: -1,
+export const EmptyProduct: Product = {
+  productId: -1,
   name: "",
   image: "",
   company: "",
-  primary_keywords: [],
-  secondary_keywords: [],
+  primaryKeywords: [],
+  secondaryKeywords: [],
   link: "",
   price: -1,
 };
@@ -103,7 +109,7 @@ export interface ProductsRequest {
   companyId: number;
 }
 
-export interface ProductsResponse {
+export interface ProductsResponse extends BaseResponse {
   products: Array<BaseProduct>;
 }
 
@@ -112,7 +118,7 @@ export interface ProductRequest {
   productId: number;
 }
 
-export interface ProductResponse {
+export interface ProductResponse extends BaseResponse {
   product: Product;
 }
 
@@ -129,7 +135,7 @@ export interface ProductUpdateRequest {
   };
 }
 
-export interface ProductUpdateResponse {}
+export interface ProductUpdateResponse extends BaseResponse {}
 
 export interface ProductAddRequest {
   companyId: number;
@@ -146,21 +152,21 @@ export interface ProductAddRequest {
   };
 }
 
-export interface ProductAddResponse {}
+export interface ProductAddResponse extends BaseResponse {}
 
 export interface ProductDeleteRequest {
   companyId: number;
   productId: number;
 }
 
-export interface ProductDeleteResponse {}
+export interface ProductDeleteResponse extends BaseResponse {}
 
-export interface ProfilePasswordUpdateRequest {
+export interface PasswordUpdateRequest {
   currentPassword: string;
   newPassword: string;
 }
 
-export interface ProfilePasswordUpdateResponse {}
+export interface PasswordUpdateResponse extends BaseResponse {}
 
 export interface GetMethods {
   Search: SearchResponse;
@@ -180,6 +186,6 @@ export interface SearchResponse {
 
 export interface SignOutRequest {}
 
-export interface SignOutResponse {
-  redirectTo: string;
+export interface SignOutResponse extends BaseResponse {
+  redirectTo?: string;
 }

@@ -37,7 +37,7 @@ interface ProductRequest {
   price: string;
   image: any;
   link: string;
-  option: "new" | "edit" | "delete";
+  option: "add" | "edit" | "delete";
 }
 
 const ProductSchema = yup.object().shape({
@@ -87,7 +87,7 @@ const StyledListGroupItem = styled(ListGroup.Item)`
   }
 `;
 
-export const StyledButton = styled(Button)`
+const StyledButton = styled(Button)`
   background-color: #449ed7;
   border-color: #449ed7;
 
@@ -112,20 +112,32 @@ function Inventory(props: InventoryProps) {
   const [products, setProducts] = useState<Array<BaseProduct>>([]);
   const [product, setProduct] = useState<Product>(EmptyProduct);
   const [isNewItem, setIsNewItem] = useState(false);
+  const [error, setError] = useState("");
+  const [sent, setSent] = useState(false);
 
   useEffect(() => {
     InventoryDAO.getInstance()
       .companies({})
-      .then(({ companies }) => {
-        setCompanies(companies);
-        if (companies.length === 1) {
-          setCompanyIndex(0);
-          (async () => {
-            await InventoryDAO.getInstance()
-              .products({ companyId: companies[0].company_id })
-              .then(({ products }) => setProducts(products))
-              .catch((err) => console.log(err));
-          })();
+      .then(({ error, companies }) => {
+        if (error) {
+          console.log(error);
+        } else {
+          setCompanies(companies);
+          if (companies.length === 1) {
+            setCompanyIndex(0);
+            (async () => {
+              await InventoryDAO.getInstance()
+                .products({ companyId: companies[0].companyId })
+                .then(({ error, products }) => {
+                  if (error) {
+                    console.log(error);
+                  } else {
+                    setProducts(products);
+                  }
+                })
+                .catch((err) => console.log(err));
+            })();
+          }
         }
       })
       .catch((err) => console.log(err));
@@ -150,13 +162,13 @@ function Inventory(props: InventoryProps) {
       image = await toBase64(image);
     } catch (err) {}
 
-    if (isNewItem) {
+    if (values.option === "add") {
       await InventoryDAO.getInstance()
         .productAdd({
           companyName: companies[companyIndex].name,
           latitude: companies[companyIndex].latitude,
           longitude: companies[companyIndex].longitude,
-          companyId: companies[companyIndex].company_id,
+          companyId: companies[companyIndex].companyId,
           product: {
             name: values.name,
             primaryKeywords: values.primaryKeywords
@@ -170,19 +182,41 @@ function Inventory(props: InventoryProps) {
             image: image,
           },
         })
-        .catch((err) => console.log(err));
+        .then(({ error }) => {
+          if (error) {
+            console.log(error);
+            setError(error.message);
+          } else {
+            setSent(true);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          setError(err.message);
+        });
     } else if (values.option === "delete") {
       await InventoryDAO.getInstance()
         .productDelete({
-          companyId: companies[companyIndex].company_id,
-          productId: products[productIndex].product_id,
+          companyId: companies[companyIndex].companyId,
+          productId: products[productIndex].productId,
         })
-        .catch((err) => console.log(err));
+        .then(({ error }) => {
+          if (error) {
+            console.log(error);
+            setError(error.message);
+          } else {
+            setSent(true);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          setError(err.message);
+        });
     } else {
       await InventoryDAO.getInstance()
         .productUpdate({
-          companyId: companies[companyIndex].company_id,
-          productId: products[productIndex].product_id,
+          companyId: companies[companyIndex].companyId,
+          productId: products[productIndex].productId,
           product: {
             name: values.name,
             primaryKeywords: values.primaryKeywords
@@ -196,7 +230,18 @@ function Inventory(props: InventoryProps) {
             image: image,
           },
         })
-        .catch((err) => console.log(err));
+        .then(({ error }) => {
+          if (error) {
+            console.log(error);
+            setError(error.message);
+          } else {
+            setSent(true);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          setError(err.message);
+        });
     }
   };
 
@@ -204,7 +249,7 @@ function Inventory(props: InventoryProps) {
     return async () => {
       if (index !== companyIndex) {
         await InventoryDAO.getInstance()
-          .products({ companyId: companies[index].company_id })
+          .products({ companyId: companies[index].companyId })
           .then(({ products }) => setProducts(products))
           .catch((err) => console.log(err));
         setCompanyIndex(index);
@@ -238,8 +283,8 @@ function Inventory(props: InventoryProps) {
       if (index !== productIndex) {
         await InventoryDAO.getInstance()
           .product({
-            companyId: companies[companyIndex].company_id,
-            productId: products[index].product_id,
+            companyId: companies[companyIndex].companyId,
+            productId: products[index].productId,
           })
           .then(({ product }) => setProduct(product))
           .catch((err) => console.log(err));
@@ -346,12 +391,13 @@ function Inventory(props: InventoryProps) {
             initialValues={
               {
                 name: product.name,
-                primaryKeywords: product.primary_keywords.join(", "),
-                secondaryKeywords: product.secondary_keywords.join(", "),
+                primaryKeywords: product.primaryKeywords.join(", "),
+                secondaryKeywords: product.secondaryKeywords.join(", "),
                 price:
                   product.price >= 0 ? product.price.toFixed(2).toString() : "",
                 image: product.image,
                 link: product.link,
+                option: isNewItem ? "new" : "edit",
               } as ProductRequest
             }
             enableReinitialize={true}
@@ -379,7 +425,7 @@ function Inventory(props: InventoryProps) {
                         id="name"
                         onBlur={handleBlur}
                         onChange={handleChange}
-                        placeholder="Enter name"
+                        placeholder="e.g. Wooden Cutlery"
                         type="text"
                         value={values.name}
                       />
@@ -387,14 +433,14 @@ function Inventory(props: InventoryProps) {
                     {createFormErrorMessage("name")}
                   </Form.Group>
                   <Form.Group>
-                    <Form.Label>Primary Keywords</Form.Label>
+                    <Form.Label>Primary Keywords (max 3 terms)</Form.Label>
                     <FormInputGroup size="md" width="100%">
                       <FormControl
                         aria-label="Large"
                         id="primaryKeywords"
                         onBlur={handleBlur}
                         onChange={handleChange}
-                        placeholder="Enter keywords"
+                        placeholder="e.g. fork, knife, spoon"
                         type="text"
                         value={values.primaryKeywords}
                       />
@@ -402,14 +448,14 @@ function Inventory(props: InventoryProps) {
                     {createFormErrorMessage("primaryKeywords")}
                   </Form.Group>
                   <Form.Group>
-                    <Form.Label>Secondary Keywords</Form.Label>
+                    <Form.Label>Secondary Keywords (max 5 terms)</Form.Label>
                     <FormInputGroup size="md" width="100%">
                       <FormControl
                         aria-label="Large"
                         id="secondaryKeywords"
                         onBlur={handleBlur}
                         onChange={handleChange}
-                        placeholder="Enter keywords"
+                        placeholder="e.g. reusable, eco-friendly"
                         type="text"
                         value={values.secondaryKeywords}
                       />
@@ -424,7 +470,7 @@ function Inventory(props: InventoryProps) {
                         id="price"
                         onBlur={handleBlur}
                         onChange={handleChange}
-                        placeholder="Enter keywords"
+                        placeholder="e.g. 18.64"
                         type="text"
                         value={values.price}
                       />
@@ -439,13 +485,29 @@ function Inventory(props: InventoryProps) {
                         id="link"
                         onBlur={handleBlur}
                         onChange={handleChange}
-                        placeholder="Enter keywords"
+                        placeholder="e.g. www.mywebsite.com/wooden-cutlery"
                         type="text"
                         value={values.link}
                       />
                     </FormInputGroup>
                     {createFormErrorMessage("link")}
                   </Form.Group>
+                  <div
+                    style={{
+                      color: "red",
+                    }}
+                  >
+                    {error}
+                  </div>
+                  {sent && error === "" && (
+                    <div
+                      style={{
+                        color: "green",
+                      }}
+                    >
+                      {`Successfully ${values.option}ed item`}
+                    </div>
+                  )}
                   <Stack direction="row" columnAlign="flex-end" spacing={12}>
                     {!isNewItem && (
                       <Button
@@ -478,13 +540,10 @@ function Inventory(props: InventoryProps) {
                       type="submit"
                       disabled={isSubmitting}
                       style={{ paddingLeft: 24, paddingRight: 24 }}
-                      onClick={() => {
-                        setFieldValue("option", "save", false);
-                        handleSubmit();
-                      }}
+                      onClick={handleSubmit}
                     >
                       {isSubmitting &&
-                      (values.option === "edit" || values.option === "new") ? (
+                      (values.option === "add" || values.option === "edit") ? (
                         <React.Fragment>
                           <span
                             className="spinner-border spinner-border-sm"
