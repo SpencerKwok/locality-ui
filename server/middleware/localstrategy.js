@@ -1,5 +1,5 @@
 const passport = require("passport");
-const postgresql = require("../postgresql/client");
+const psql = require("../postgresql/client");
 const bcrypt = require("bcryptjs");
 
 const LocalStrategy = require("passport-local").Strategy;
@@ -13,8 +13,10 @@ const setup = function () {
         passwordField: "password",
       },
       (usernameField, passwordField, done) => {
-        postgresql
-          .query(`SELECT * FROM users WHERE username='${usernameField}'`)
+        psql
+          .query(
+            `SELECT first_name, last_name, companies.company_id AS company_id, companies.name AS company_name, password FROM users INNER JOIN companies ON users.company_id=companies.company_id WHERE username='${usernameField}'`
+          )
           .then((response) => {
             const rows = response.rows;
             if (rows.length === 0) {
@@ -25,7 +27,9 @@ const setup = function () {
                   done(null, {
                     firstName: rows[0].first_name,
                     lastName: rows[0].last_name,
+                    username: usernameField,
                     companyId: rows[0].company_id,
+                    companyName: rows[0].company_name,
                   });
                 } else {
                   done(new Error("Incorrect password"), null);

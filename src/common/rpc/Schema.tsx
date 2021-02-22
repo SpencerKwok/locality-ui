@@ -31,6 +31,10 @@ export interface PostMethods {
     request: ProductDeleteRequest;
     response: ProductDeleteResponse;
   };
+  ProfilePasswordUpdate: {
+    request: ProfilePasswordUpdateRequest;
+    response: ProfilePasswordUpdateResponse;
+  };
 }
 
 export interface MailRequest {
@@ -150,6 +154,13 @@ export interface ProductDeleteRequest {
 }
 
 export interface ProductDeleteResponse {}
+
+export interface ProfilePasswordUpdateRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface ProfilePasswordUpdateResponse {}
 
 export interface GetMethods {
   Search: SearchResponse;

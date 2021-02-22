@@ -1,4 +1,5 @@
 const algolia = require("../algolia/client");
+const bcrypt = require("bcryptjs");
 const cloudinary = require("../cloudinary/client");
 const psql = require("../postgresql/client");
 const nodemailer = require("nodemailer");
@@ -125,7 +126,7 @@ router.post(
     windowMs: 5 * 60 * 1000, // 5 minutes
     max: 10,
     message:
-      "Too many company requests from this IP, please try again after 24hrs",
+      "Too many company requests from this IP, please try again after 5 minutes",
   }),
   async (req, res, next) => {
     const companyId = req.cookies["companyId"];
@@ -183,7 +184,7 @@ router.post(
     windowMs: 5 * 60 * 1000, // 5 minutes
     max: 100,
     message:
-      "Too many product requests from this IP, please try again after 24hrs",
+      "Too many product requests from this IP, please try again after 5 minutes",
   }),
   async (req, res, next) => {
     const companyId = req.cookies["companyId"];
@@ -222,7 +223,7 @@ router.post(
     windowMs: 5 * 60 * 1000, // 5 minutes
     max: 100,
     message:
-      "Too many product update requests from this IP, please try again after 24hrs",
+      "Too many product update requests from this IP, please try again after 5 minutes",
   }),
   async (req, res, next) => {
     const companyId = req.cookies["companyId"];
@@ -267,7 +268,7 @@ router.post(
     windowMs: 5 * 60 * 1000, // 5 minutes
     max: 100,
     message:
-      "Too many product update requests from this IP, please try again after 24hrs",
+      "Too many product update requests from this IP, please try again after 5 minutes",
   }),
   async (req, res, next) => {
     const companyId = req.cookies["companyId"];
@@ -338,7 +339,7 @@ router.post(
     windowMs: 5 * 60 * 1000, // 5 minutes
     max: 100,
     message:
-      "Too many product delete requests from this IP, please try again after 24hrs",
+      "Too many product delete requests from this IP, please try again after 5 minutes",
   }),
   async (req, res, next) => {
     const companyId = req.cookies["companyId"];
@@ -359,12 +360,57 @@ router.post(
 );
 
 router.post(
+  "/profile/password/update",
+  rateLimit({
+    windowMs: 24 * 60 * 60 * 1000, // 5 minutes
+    max: 5,
+    message:
+      "Too many password update requests from this IP, please try again after 5 minutes",
+  }),
+  async (req, res, next) => {
+    const username = req.cookies["username"];
+    if (!username) {
+      res.status(403);
+      res.end("{}");
+    } else {
+      const user = await psql.query(
+        `SELECT password FROM users WHERE username='${username}'`
+      );
+      user.rows[0].password;
+
+      bcrypt.compare(
+        req.body.currentPassword,
+        user.rows[0].password,
+        async (err, result) => {
+          if (result) {
+            const newPasswordHash = await bcrypt.hash(req.body.newPassword, 12);
+            await psql.query(
+              `UPDATE users SET password='${newPasswordHash}' WHERE username='${username}'`
+            );
+            res.end(
+              JSON.stringify({
+                code: 200,
+                message: "Successfully updated password",
+              })
+            );
+          } else {
+            res.end(
+              JSON.stringify({ code: 403, message: "Incorrect Password" })
+            );
+          }
+        }
+      );
+    }
+  }
+);
+
+router.post(
   "/signin",
   rateLimit({
     windowMs: 5 * 60 * 1000, // 5 minutes
     max: 10,
     message:
-      "Too many sign in requests from this IP, please try again after 24hrs",
+      "Too many sign in requests from this IP, please try again after 5 minutes",
   }),
   (req, res, next) => {
     passport.authenticate("local", (err, user) => {
@@ -377,7 +423,9 @@ router.post(
       } else {
         res.cookie("firstName", user.firstName);
         res.cookie("lastName", user.lastName);
+        res.cookie("username", user.username);
         res.cookie("companyId", user.companyId);
+        res.cookie("companyName", user.companyName);
         res.write(
           JSON.stringify({
             message: "Successfully signed in",
@@ -396,13 +444,15 @@ router.get(
     windowMs: 5 * 60 * 1000, // 5 minutes
     max: 10,
     message:
-      "Too many sign out requests from this IP, please try again after 24hrs",
+      "Too many sign out requests from this IP, please try again after 5 minutes",
   }),
   (req, res) => {
     req.logout();
     res.clearCookie("firstName");
     res.clearCookie("lastName");
+    res.clearCookie("username");
     res.clearCookie("companyId");
+    res.clearCookie("companyName");
     res.write(JSON.stringify({ redirectTo: "/" }));
     res.end();
   }

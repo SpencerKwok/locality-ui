@@ -122,7 +122,7 @@ function Inventory(props: InventoryProps) {
 
   const companyId = Cookie.get("companyId");
   if (!companyId) {
-    return <Redirect to="/" />;
+    return <Redirect to="/signin" />;
   }
 
   const onSubmit: FormikConfig<ProductRequest>["onSubmit"] = async (values) => {
@@ -290,7 +290,7 @@ function Inventory(props: InventoryProps) {
       <Stack direction="column" rowAlign="flex-start">
         <h3>Company</h3>
         <StyledList
-          width={props.width * 0.2}
+          width={Math.min(props.width * 0.2, 230)}
           height={props.height - 200}
           rowHeight={48}
           rowRenderer={companyRowRenderer}
@@ -302,7 +302,7 @@ function Inventory(props: InventoryProps) {
           direction="row"
           columnAlign="flex-start"
           priority={[0, 1, 0]}
-          style={{ width: props.width * 0.25 }}
+          style={{ width: Math.min(props.width * 0.25, 285) }}
         >
           <h3>Products</h3>
           <div></div>

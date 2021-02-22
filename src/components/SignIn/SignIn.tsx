@@ -35,7 +35,7 @@ function SignIn(props: SignInProps) {
     await SignInDAO.getInstance()
       .signin({
         username: XSS(values.username),
-        password: XSS(values.password),
+        password: values.password,
       })
       .then(({ message, redirectTo }) => {
         if (redirectTo) {
