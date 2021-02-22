@@ -30,49 +30,47 @@ router.get(
     const lat = xss(req.query["lat"] || "");
     const lng = xss(req.query["lng"] || "");
 
-    if (q === "") {
-      console.log("Missing query parameter");
-      res.status(400).end();
-    } else if (lat !== "" && lng !== "") {
-      await algolia
-        .search(q, {
-          aroundLatLng: `${lat}, ${lng}`,
-        })
-        .then((results) => {
-          res.write(JSON.stringify(results));
-          res.end();
-        })
-        .catch((err) => {
-          console.log(err);
-          res.status(400).end();
-        });
+    if (lat !== "" && lng !== "") {
+      const [hits, error] = await algolia.search(q, {
+        aroundLatLng: `${lat}, ${lng}`,
+      });
+      if (error) {
+        res.end(
+          JSON.stringify({
+            error: { code: 400, message: error.message },
+            hits: null,
+          })
+        );
+      } else {
+        res.end(JSON.stringify({ hits: hits }));
+      }
     } else if (ip !== "") {
-      await algolia
-        .search(q, {
-          aroundLatLngViaIP: true,
-          headers: {
-            "X-Forwarded-For": ip,
-          },
-        })
-        .then((results) => {
-          res.write(JSON.stringify(results));
-          res.end();
-        })
-        .catch((err) => {
-          console.log(err);
-          res.status(400).end();
-        });
+      const [hits, error] = await algolia.search(q, {
+        aroundLatLngViaIP: true,
+        headers: { "X-Forwarded-For": ip },
+      });
+      if (error) {
+        res.end(
+          JSON.stringify({
+            error: { code: 400, message: error.message },
+            hits: null,
+          })
+        );
+      } else {
+        res.end(JSON.stringify({ hits: hits }));
+      }
     } else {
-      await algolia
-        .search(q)
-        .then((results) => {
-          res.write(JSON.stringify(results));
-          res.end();
-        })
-        .catch((err) => {
-          console.log(err);
-          res.status(400).end();
-        });
+      const [hits, error] = await algolia.search(q);
+      if (error) {
+        res.end(
+          JSON.stringify({
+            error: { code: 400, message: error.message },
+            hits: null,
+          })
+        );
+      } else {
+        res.end(JSON.stringify({ hits: hits }));
+      }
     }
   }
 );
@@ -106,17 +104,33 @@ router.post(
       html: `<html><head><style type="text/css">.localityTable {border-collapse: collapse;}.localityBody {height: 100%;margin: 0;padding: 0;width: 100%;}.localityGreeting {display: block;margin: 0;margin-top: -24px;padding: 0;color: #444444;font-family: Helvetica;font-size: 22px;font-style: normal;font-weight: bold;line-height: 150%;letter-spacing: normal;text-align: left;}.localityContent {background-color: #ffffff;color: #757575;font-family: Helvetica;font-size: 16px;line-height: 150%;width: 60%;padding: 36px;}.localityFooter{background-color: #333333;color: #ffffff;font-family: Helvetica;font-size: 12px;line-height: 150%;padding-top: 36px;padding-bottom: 36px;text-align: center;}</style></head><body class="localityBody"><table class="localityTable" width="100%"><tr><td><center><img alt="Locality Logo" src="https://res.cloudinary.com/hcory49pf/image/upload/v1613266097/email/locality-logo.png" style="width: 400px" /></center></td></tr><tr><td class="localityContent"><center><table><tr><td><h3 class="localityGreeting">Hi ${name},</h3><br />Thank you for reaching out! We will get back to you as soon as we can.<br /><br />- The Locality Team</td></tr></table></center></td></tr><tr><td class="localityFooter"><em>Copyright © 2021 Locality, All rights reserved.</em></td></tr></table></body></html>`,
     };
 
+    let customerMailError = null;
     await transporter.sendMail(customerMailOptions).catch((err) => {
       console.log(err);
-      res.status(400);
+      customerMailError = {
+        code: 400,
+        message: err.message,
+      };
     });
 
-    await transporter.sendMail(selfMailOptions).catch((err) => {
-      console.log(err);
-      res.status(400);
-    });
+    if (customerMailError) {
+      res.end(JSON.stringify({ error: customerMailError }));
+    } else {
+      let selfMailError = null;
+      await transporter.sendMail(selfMailOptions).catch((err) => {
+        console.log(err);
+        selfMailError = {
+          code: 400,
+          message: err.message,
+        };
+      });
 
-    res.end("{}");
+      if (selfMailError) {
+        res.end(JSON.stringify({ error: selfMailError }));
+      } else {
+        res.end(JSON.stringify({}));
+      }
+    }
   }
 );
 
@@ -129,22 +143,39 @@ router.post(
       "Too many company requests from this IP, please try again after 5 minutes",
   }),
   async (req, res, next) => {
-    const companyId = req.cookies["companyId"];
+    const f = async (companyId) => {
+      const [companies, error] = await psql.query(
+        `SELECT * FROM companies WHERE ${
+          companyId !== 0 ? `company_id=${companyId}` : ""
+        } ORDER BY name`
+      );
+      if (error) {
+        res.end(
+          JSON.stringify({
+            error: { code: 400, message: error.message },
+            companies,
+          })
+        );
+      } else if (companies.rows.length === 0) {
+        console.log(new Error("Company does not exist"));
+        res.end(
+          JSON.stringify({
+            error: { code: 400, message: "Company does not exist" },
+            companies,
+          })
+        );
+      } else {
+        res.end(JSON.stringify({ companies: companies.rows }));
+      }
+    };
+
+    let companyId = req.cookies["companyId"];
     if (!companyId) {
-      res.status(403);
-      res.end("{}");
+      res.status(403).end();
     } else if (companyId === "0") {
-      const companies = await psql.query(
-        "SELECT * FROM companies ORDER BY name"
-      );
-      res.write(JSON.stringify({ companies: companies.rows }));
-      res.end();
+      await f(0);
     } else {
-      const companies = await psql.query(
-        `SELECT * FROM companies WHERE company_id=${companyId} ORDER BY name`
-      );
-      res.write(JSON.stringify({ companies: companies.rows }));
-      res.end();
+      await f(companyId);
     }
   }
 );
@@ -158,22 +189,29 @@ router.post(
       "Too many products requests from this IP, please try again after 24hrs",
   }),
   async (req, res, next) => {
+    const f = async (companyId) => {
+      const [products, error] = await psql.query(
+        `SELECT * FROM products WHERE company_id=${companyId} ORDER BY name`
+      );
+      if (error) {
+        res.end(
+          JSON.stringify({
+            error: { code: 400, message: error.message },
+            products,
+          })
+        );
+      } else {
+        res.end(JSON.stringify({ products: products.rows }));
+      }
+    };
+
     const companyId = req.cookies["companyId"];
     if (!companyId) {
-      res.status(403);
-      res.end("{}");
+      res.status(403).end();
     } else if (companyId === "0") {
-      const products = await psql.query(
-        `SELECT * FROM products WHERE company_id=${req.body.companyId} ORDER BY name`
-      );
-      res.write(JSON.stringify({ products: products.rows }));
-      res.end();
+      await f(req.body.companyId);
     } else {
-      const products = await psql.query(
-        `SELECT * FROM companies WHERE company_id=${companyId} ORDER BY name`
-      );
-      res.write(JSON.stringify({ products: products.rows }));
-      res.end();
+      await f(companyId);
     }
   }
 );
@@ -187,32 +225,39 @@ router.post(
       "Too many product requests from this IP, please try again after 5 minutes",
   }),
   async (req, res, next) => {
+    const f = async (companyId) => {
+      const objectID = `${companyId}_${req.body.productId}`;
+      const [object, error] = await algolia.getObject(objectID);
+      if (error) {
+        res.end(
+          JSON.stringify({
+            error: { code: 400, message: error.message },
+            object,
+          })
+        );
+      } else if (object === null) {
+        console.log(new Error(`ObjectID: ${objectID} does not exist`));
+        res.end(
+          JSON.stringify({
+            error: {
+              code: 400,
+              message: `ObjectID: ${objectID} does not exist`,
+            },
+            hits,
+          })
+        );
+      } else {
+        res.end(JSON.stringify({ product: object }));
+      }
+    };
+
     const companyId = req.cookies["companyId"];
     if (!companyId) {
-      res.status(403);
-      res.end("{}");
+      res.status(403).end();
     } else if (companyId === "0") {
-      await algolia
-        .getObject(`${req.body.companyId}_${req.body.productId}`)
-        .then((result) => {
-          res.write(JSON.stringify({ product: result }));
-          res.end();
-        })
-        .catch((err) => {
-          console.log(err);
-          res.status(400).end();
-        });
+      await f(req.body.companyId);
     } else {
-      await algolia
-        .getObject(`${companyId}_${req.body.productId}`)
-        .then((result) => {
-          res.write(JSON.stringify({ product: result }));
-          res.end();
-        })
-        .catch((err) => {
-          console.log(err);
-          res.status(400).end();
-        });
+      await f(companyId);
     }
   }
 );
@@ -226,39 +271,70 @@ router.post(
       "Too many product update requests from this IP, please try again after 5 minutes",
   }),
   async (req, res, next) => {
+    const f = async (companyId) => {
+      const [url, cloudinaryError] = await cloudinary.upload(
+        req.body.product.image,
+        {
+          crop: "scale",
+          exif: false,
+          format: "webp",
+          public_id: `${companyId}/${req.body.productId}`,
+          unique_filename: false,
+          overwrite: true,
+          width: 175,
+        }
+      );
+      if (cloudinaryError) {
+        res.end(
+          JSON.stringify({
+            error: { code: 400, message: cloudinaryError.message },
+          })
+        );
+      } else {
+        const algoliaError = await algolia.partialUpdateObject(
+          {
+            objectID: `${companyId}_${req.body.productId}`,
+            name: req.body.product.name,
+            primary_keywords: req.body.product.primaryKeywords,
+            secondary_keywords: req.body.product.secondaryKeywords,
+            price: req.body.product.price,
+            link: req.body.product.link,
+            image: url,
+          },
+          { createIfNotExists: false }
+        );
+
+        if (algoliaError) {
+          res.end(
+            JSON.stringify({
+              error: { code: 400, message: algoliaError.message },
+            })
+          );
+        } else {
+          const [_, psqlError] = await psql.query(
+            `UPDATE products SET name='${req.body.product.name}', image='${url}' WHERE company_id=${companyId} AND product_id=${req.body.productId}`
+          );
+          if (psqlError) {
+            res.end(
+              JSON.stringify({
+                error: { code: 400, message: psqlError.message },
+              })
+            );
+          } else {
+            res.end(JSON.stringify({}));
+          }
+        }
+      }
+    };
+
     const companyId = req.cookies["companyId"];
     if (!companyId) {
-      res.status(403);
-      res.end("{}");
+      res.status(403).end();
     } else if (companyId === "0") {
-      const url = await cloudinary.upload(req.body.product.image, {
-        crop: "scale",
-        exif: false,
-        format: "webp",
-        public_id: `${req.body.companyId}/${req.body.productId}`,
-        unique_filename: false,
-        overwrite: true,
-        width: 175,
-      });
-      await algolia.partialUpdateObject(
-        {
-          objectID: `${req.body.companyId}_${req.body.productId}`,
-          name: req.body.product.name,
-          primary_keywords: req.body.product.primaryKeywords,
-          secondary_keywords: req.body.product.secondaryKeywords,
-          price: req.body.product.price,
-          link: req.body.product.link,
-          image: url,
-        },
-        { createIfNotExists: false }
-      );
-      await psql.query(
-        `UPDATE products SET name='${req.body.product.name}', image='${url}' WHERE company_id=${req.body.companyId} AND product_id=${req.body.productId}`
-      );
+      await f(req.body.companyId);
     } else {
-      console.log(req.body);
+      await f(companyId);
     }
-    res.end("{}");
   }
 );
 
@@ -271,65 +347,124 @@ router.post(
       "Too many product update requests from this IP, please try again after 5 minutes",
   }),
   async (req, res, next) => {
+    const f = async (companyId) => {
+      const [nextIdResponse, psqlErrorGetNextId] = await psql.query(
+        `SELECT next_product_id FROM companies WHERE company_id=${companyId}`
+      );
+
+      if (psqlErrorGetNextId) {
+        res.end(
+          JSON.stringify({
+            error: { code: 400, message: psqlErrorGetNextId.message },
+          })
+        );
+      } else if (nextIdResponse.rows.length === 0) {
+        res.end(
+          JSON.stringify({
+            error: { code: 400, message: psqlErrorGetNextId.message },
+          })
+        );
+      } else {
+        const next_product_id = nextIdResponse.rows[0].next_product_id;
+        const [url, cloudinaryError] = await cloudinary.upload(
+          req.body.product.image,
+          {
+            crop: "scale",
+            exif: false,
+            format: "webp",
+            public_id: `${companyId}/${next_product_id}`,
+            unique_filename: false,
+            overwrite: true,
+            width: 175,
+          }
+        );
+
+        if (cloudinaryError) {
+          res.end(
+            JSON.stringify({
+              error: { code: 400, message: cloudinaryError.message },
+            })
+          );
+        } else {
+          const geolocation = [];
+          const latitude = req.body.latitude.split(",");
+          const longitude = req.body.longitude.split(",");
+          for (
+            let i = 0;
+            i < Math.min(latitude.length, longitude.length);
+            ++i
+          ) {
+            geolocation.push({
+              lat: latitude[i],
+              lng: longitude[i],
+            });
+          }
+
+          const algoliaError = await algolia.saveObject(
+            {
+              objectID: `${companyId}_${next_product_id}`,
+              _geoloc: geolocation,
+              name: req.body.product.name,
+              company: req.body.companyName,
+              primary_keywords: req.body.product.primaryKeywords,
+              secondary_keywords: req.body.product.secondaryKeywords,
+              price: req.body.product.price,
+              link: req.body.product.link,
+              image: url,
+            },
+            { autoGenerateObjectIDIfNotExist: false }
+          );
+
+          if (algoliaError) {
+            res.end(
+              JSON.stringify({
+                error: { code: 400, message: algoliaError.message },
+              })
+            );
+          } else {
+            const [_, psqlErrorAddProduct] = await psql.query(
+              `INSERT INTO products (company_id, product_id, name, image) VALUES (${companyId}, ${next_product_id}, '${req.body.product.name}', '${url}')`
+            );
+
+            if (psqlErrorAddProduct) {
+              res.end(
+                JSON.stringify({
+                  error: { code: 400, message: psqlErrorAddProduct.message },
+                })
+              );
+            } else {
+              const [_, psqlErrorUpdateNextId] = await psql.query(
+                `UPDATE companies SET next_product_id=${
+                  next_product_id + 1
+                } WHERE company_id=${req.body.companyId}`
+              );
+
+              if (psqlErrorUpdateNextId) {
+                res.end(
+                  JSON.stringify({
+                    error: {
+                      code: 400,
+                      message: psqlErrorUpdateNextId.message,
+                    },
+                  })
+                );
+              } else {
+                res.end(JSON.stringify({}));
+              }
+            }
+          }
+        }
+      }
+    };
+
     const companyId = req.cookies["companyId"];
     if (!companyId) {
-      res.status(403);
-      res.end("{}");
+      res.status(403).end();
     } else if (companyId === "0") {
-      const company = await psql.query(
-        `SELECT next_product_id FROM companies WHERE company_id=${req.body.companyId}`
-      );
-
-      const next_product_id = company.rows[0].next_product_id;
-
-      const url = await cloudinary.upload(req.body.product.image, {
-        crop: "scale",
-        exif: false,
-        format: "webp",
-        public_id: `${req.body.companyId}/${next_product_id}`,
-        unique_filename: false,
-        overwrite: true,
-        width: 175,
-      });
-
-      const geolocation = [];
-      const latitude = req.body.latitude.split(",");
-      const longitude = req.body.longitude.split(",");
-      for (let i = 0; i < Math.min(latitude.length, longitude.length); ++i) {
-        geolocation.push({
-          lat: latitude[i],
-          lng: longitude[i],
-        });
-      }
-
-      await algolia.saveObject(
-        {
-          objectID: `${req.body.companyId}_${next_product_id}`,
-          _geoloc: geolocation,
-          name: req.body.product.name,
-          company: req.body.companyName,
-          primary_keywords: req.body.product.primaryKeywords,
-          secondary_keywords: req.body.product.secondaryKeywords,
-          price: req.body.product.price,
-          link: req.body.product.link,
-          image: url,
-        },
-        { autoGenerateObjectIDIfNotExist: false }
-      );
-
-      await psql.query(
-        `INSERT INTO products (company_id, product_id, name, image) VALUES (${req.body.companyId}, ${next_product_id}, '${req.body.product.name}', '${url}')`
-      );
-
-      await psql.query(
-        `UPDATE companies SET next_product_id=${
-          next_product_id + 1
-        } WHERE company_id=${req.body.companyId}`
-      );
+      await f(req.body.companyId);
     } else {
-      console.log(req.body);
+      await f(companyId);
     }
-    res.end("{}");
   }
 );
 
@@ -342,20 +477,51 @@ router.post(
       "Too many product delete requests from this IP, please try again after 5 minutes",
   }),
   async (req, res, next) => {
+    const f = async (companyId) => {
+      const cloudinaryError = await cloudinary.delete([
+        `${companyId}/${req.body.productId}`,
+      ]);
+      if (cloudinaryError) {
+        res.end(
+          JSON.stringify({
+            error: { code: 400, message: cloudinaryError.message },
+          })
+        );
+      } else {
+        const algoliaError = await algolia.deleteObject(
+          `${companyId}_${req.body.productId}`
+        );
+        if (algoliaError) {
+          res.end(
+            JSON.stringify({
+              error: { code: 400, message: algoliaError.message },
+            })
+          );
+        } else {
+          const [_, psqlError] = await psql.query(
+            `DELETE FROM products WHERE company_id=${companyId} AND product_id=${req.body.productId}`
+          );
+          if (psqlError) {
+            res.end(
+              JSON.stringify({
+                error: { code: 400, message: psqlError.message },
+              })
+            );
+          } else {
+            res.end(JSON.stringify({}));
+          }
+        }
+      }
+    };
+
     const companyId = req.cookies["companyId"];
     if (!companyId) {
-      res.status(403);
-      res.end("{}");
+      res.status(403).end();
     } else if (companyId === "0") {
-      cloudinary.delete([`${req.body.companyId}/${req.body.productId}`]);
-      algolia.deleteObject(`${req.body.companyId}_${req.body.productId}`);
-      psql.query(
-        `DELETE FROM products WHERE company_id=${req.body.companyId} AND product_id=${req.body.productId}`
-      );
+      await f(req.body.companyId);
     } else {
-      console.log(req.body);
+      await f(companyId);
     }
-    res.end("{}");
   }
 );
 
@@ -370,36 +536,60 @@ router.post(
   async (req, res, next) => {
     const username = req.cookies["username"];
     if (!username) {
-      res.status(403);
-      res.end("{}");
+      res.status(403).end();
     } else {
-      const user = await psql.query(
+      const [user, psqlError] = await psql.query(
         `SELECT password FROM users WHERE username='${username}'`
       );
-      user.rows[0].password;
 
-      bcrypt.compare(
-        req.body.currentPassword,
-        user.rows[0].password,
-        async (err, result) => {
-          if (result) {
-            const newPasswordHash = await bcrypt.hash(req.body.newPassword, 12);
-            await psql.query(
-              `UPDATE users SET password='${newPasswordHash}' WHERE username='${username}'`
-            );
-            res.end(
-              JSON.stringify({
-                code: 200,
-                message: "Successfully updated password",
-              })
-            );
-          } else {
-            res.end(
-              JSON.stringify({ code: 403, message: "Incorrect Password" })
-            );
+      if (psqlError) {
+        res.end(
+          JSON.stringify({ error: { code: 400, message: psqlError.message } })
+        );
+      } else if (user.rows.length === 0) {
+        console.log(new Error("User does not exist"));
+        res.end(
+          JSON.stringify({
+            error: { code: 400, message: "User does not exist" },
+          })
+        );
+      } else {
+        const hashedPassword = user.rows[0].password;
+        bcrypt.compare(
+          req.body.currentPassword,
+          hashedPassword,
+          async (bcryptError, result) => {
+            if (bcryptError) {
+              res.end(
+                JSON.stringify({
+                  error: { code: 400, message: bcryptError.message },
+                })
+              );
+            } else if (result) {
+              const newPasswordHash = await bcrypt.hash(
+                req.body.newPassword,
+                parseInt(process.env.SALT)
+              );
+              const [_, psqlError] = await psql.query(
+                `UPDATE users SET password='${newPasswordHash}' WHERE username='${username}'`
+              );
+              if (psqlError) {
+                res.end(
+                  JSON.stringify({
+                    error: { code: 400, message: psqlError.message },
+                  })
+                );
+              } else {
+                res.end(JSON.stringify({}));
+              }
+            } else {
+              res.end(
+                JSON.stringify({ code: 403, message: "Incorrect Password" })
+              );
+            }
           }
-        }
-      );
+        );
+      }
     }
   }
 );
@@ -415,24 +605,20 @@ router.post(
   (req, res, next) => {
     passport.authenticate("local", (err, user) => {
       if (err) {
-        res.write(JSON.stringify({ message: err.message }));
-        res.end();
+        res.end(JSON.stringify({ error: { code: 400, message: err.message } }));
       } else if (!user) {
-        res.write(JSON.stringify({ message: "Missing credentials" }));
-        res.end();
+        res.end(
+          JSON.stringify({
+            error: { code: 400, message: "Invalid credentials" },
+          })
+        );
       } else {
         res.cookie("firstName", user.firstName);
         res.cookie("lastName", user.lastName);
         res.cookie("username", user.username);
         res.cookie("companyId", user.companyId);
         res.cookie("companyName", user.companyName);
-        res.write(
-          JSON.stringify({
-            message: "Successfully signed in",
-            redirectTo: "/dashboard",
-          })
-        );
-        res.end();
+        res.end(JSON.stringify({ redirectTo: "/dashboard" }));
       }
     })(req, next);
   }
@@ -453,8 +639,7 @@ router.get(
     res.clearCookie("username");
     res.clearCookie("companyId");
     res.clearCookie("companyName");
-    res.write(JSON.stringify({ redirectTo: "/" }));
-    res.end();
+    res.end(JSON.stringify({ redirectTo: "/signin" }));
   }
 );
 

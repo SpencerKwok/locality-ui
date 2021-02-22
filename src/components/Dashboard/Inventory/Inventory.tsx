@@ -116,7 +116,18 @@ function Inventory(props: InventoryProps) {
   useEffect(() => {
     InventoryDAO.getInstance()
       .companies({})
-      .then(({ companies }) => setCompanies(companies))
+      .then(({ companies }) => {
+        setCompanies(companies);
+        if (companies.length === 1) {
+          setCompanyIndex(0);
+          (async () => {
+            await InventoryDAO.getInstance()
+              .products({ companyId: companies[0].company_id })
+              .then(({ products }) => setProducts(products))
+              .catch((err) => console.log(err));
+          })();
+        }
+      })
       .catch((err) => console.log(err));
   }, []);
 
@@ -287,22 +298,24 @@ function Inventory(props: InventoryProps) {
       spacing={12}
       style={{ marginTop: 12 }}
     >
-      <Stack direction="column" rowAlign="flex-start">
-        <h3>Company</h3>
-        <StyledList
-          width={Math.min(props.width * 0.2, 230)}
-          height={props.height - 200}
-          rowHeight={48}
-          rowRenderer={companyRowRenderer}
-          rowCount={companies.length}
-        />
-      </Stack>
+      {companies.length > 1 && (
+        <Stack direction="column" rowAlign="flex-start">
+          <h3>Company</h3>
+          <StyledList
+            width={Math.min(props.width * 0.2, 230)}
+            height={props.height - 200}
+            rowHeight={48}
+            rowRenderer={companyRowRenderer}
+            rowCount={companies.length}
+          />
+        </Stack>
+      )}
       <Stack direction="column" rowAlign="flex-start">
         <Stack
           direction="row"
           columnAlign="flex-start"
           priority={[0, 1, 0]}
-          style={{ width: Math.min(props.width * 0.25, 285) }}
+          style={{ width: Math.max(props.width * 0.25, 285) }}
         >
           <h3>Products</h3>
           <div></div>
@@ -319,7 +332,7 @@ function Inventory(props: InventoryProps) {
           )}
         </Stack>
         <StyledList
-          width={props.width * 0.25}
+          width={Math.max(props.width * 0.25, 285)}
           height={props.height - 200}
           rowHeight={91}
           rowRenderer={productRowRenderer}
@@ -517,12 +530,16 @@ function Inventory(props: InventoryProps) {
                         } catch (err) {}
                         return (
                           <StyledPicture>
-                            <source srcSet={image} type="image/webp" />
-                            <img
-                              src={image.replace(".webp", ".jpg")}
-                              alt={values.name}
-                              width={175}
-                            />
+                            {image !== "" && (
+                              <React.Fragment>
+                                <source srcSet={image} type="image/webp" />
+                                <img
+                                  src={image.replace(".webp", ".jpg")}
+                                  alt={values.name}
+                                  width={175}
+                                />
+                              </React.Fragment>
+                            )}
                           </StyledPicture>
                         );
                       })()}
@@ -530,7 +547,7 @@ function Inventory(props: InventoryProps) {
                     <input
                       type="file"
                       id="image"
-                      accept="image/jpeg, image/png"
+                      accept="image/jpeg, image/png, image/webp"
                       onBlur={handleBlur}
                       onChange={(event) => {
                         if (

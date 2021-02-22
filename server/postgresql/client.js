@@ -5,8 +5,6 @@ const client = new Client({
   // and https://stackoverflow.com/questions/61097695/self-signed-certificate-error-during-query-the-heroku-hosted-postgres-database
   ssl: { rejectUnauthorized: false },
   connectionString: process.env.DATABASE_URL,
-  client_encoding: "UTF8",
-  server_encoding: "UTF8",
 });
 
 client
@@ -15,10 +13,14 @@ client
   .catch((err) => console.error(err));
 
 exports.query = async (query) => {
-  let response = null;
+  let response,
+    error = null;
   await client
     .query(query)
     .then((res) => (response = res))
-    .catch((err) => console.error(err));
-  return response;
+    .catch((err) => {
+      console.error(err);
+      error = err;
+    });
+  return [response, error];
 };

@@ -12,35 +12,39 @@ const setup = function () {
         usernameField: "username",
         passwordField: "password",
       },
-      (usernameField, passwordField, done) => {
-        psql
-          .query(
-            `SELECT first_name, last_name, companies.company_id AS company_id, companies.name AS company_name, password FROM users INNER JOIN companies ON users.company_id=companies.company_id WHERE username='${usernameField}'`
-          )
-          .then((response) => {
-            const rows = response.rows;
-            if (rows.length === 0) {
-              done(new Error("Incorrect username"), null);
-            } else {
-              bcrypt.compare(passwordField, rows[0].password, (err, result) => {
-                if (result) {
+      async (usernameField, passwordField, done) => {
+        const [users, error] = await psql.query(
+          `SELECT first_name, last_name, companies.company_id AS company_id, companies.name AS company_name, password FROM users INNER JOIN companies ON users.company_id=companies.company_id WHERE username='${usernameField}'`
+        );
+
+        if (error) {
+          done(error, null);
+        } else {
+          if (users.rows.length === 0) {
+            done(new Error("Incorrect username"), null);
+          } else {
+            bcrypt.compare(
+              passwordField,
+              users.rows[0].password,
+              (bcryptError, result) => {
+                if (bcryptError) {
+                  console.log(bcryptError);
+                  done(bcryptError, null);
+                } else if (result) {
                   done(null, {
-                    firstName: rows[0].first_name,
-                    lastName: rows[0].last_name,
+                    firstName: users.rows[0].first_name,
+                    lastName: users.rows[0].last_name,
                     username: usernameField,
-                    companyId: rows[0].company_id,
-                    companyName: rows[0].company_name,
+                    companyId: users.rows[0].company_id,
+                    companyName: users.rows[0].company_name,
                   });
                 } else {
                   done(new Error("Incorrect password"), null);
                 }
-              });
-            }
-          })
-          .catch((err) => {
-            console.error(err);
-            done(err, null);
-          });
+              }
+            );
+          }
+        }
       }
     )
   );
