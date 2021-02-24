@@ -7,7 +7,6 @@ import { Form, FormControl } from "react-bootstrap";
 import SignInDAO from "./SignInDAO";
 import { ReactComponent as LocalityLogo } from "./locality-logo.svg";
 import Stack from "../../common/components/Stack/Stack";
-import Window from "../../utils/window";
 import {
   FormInputGroup,
   FormLabel,
@@ -22,7 +21,7 @@ interface SignInRequest {
   password: string;
 }
 
-const FormSchema = yup.object().shape({
+const SignInSchema = yup.object().shape({
   username: yup.string().required("Required").max(255, "Too long"),
   password: yup.string().required("Required").max(255, "Too long"),
 });
@@ -68,7 +67,7 @@ function SignIn(props: SignInProps) {
               } as SignInRequest
             }
             onSubmit={onSubmit}
-            validationSchema={FormSchema}
+            validationSchema={SignInSchema}
           >
             {({
               isSubmitting,
@@ -79,14 +78,14 @@ function SignIn(props: SignInProps) {
             }) => (
               <Form onSubmit={handleSubmit}>
                 <Form.Group>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormInputGroup size="lg" width="100%">
                     <FormControl
                       aria-label="Large"
                       id="username"
                       onBlur={handleBlur}
                       onChange={handleChange}
-                      type="text"
+                      type="email"
                       value={values.username}
                     />
                   </FormInputGroup>

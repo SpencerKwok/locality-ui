@@ -1,6 +1,7 @@
 const algolia = require("../algolia/client");
 const bcrypt = require("bcryptjs");
 const cloudinary = require("../cloudinary/client");
+const fetch = require("node-fetch");
 const psql = require("../postgresql/client");
 const nodemailer = require("nodemailer");
 const passport = require("passport");
@@ -15,6 +16,12 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASSWORD,
   },
 });
+
+let companyCount = -1;
+(async () => {
+  const response = await psql.query("SELECT COUNT(*) FROM companies");
+  companyCount = parseInt(response[0].rows[0].count);
+})();
 
 router.get(
   "/search",
@@ -655,6 +662,67 @@ router.post(
         res.end(JSON.stringify({ redirectTo: "/dashboard" }));
       }
     })(req, next);
+  }
+);
+
+router.post(
+  "/signup",
+  rateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    max: 10,
+    message:
+      "Too many sign in requests from this IP, please try again after 5 minutes",
+  }),
+  async (req, res, next) => {
+    const {
+      firstName,
+      lastName,
+      email,
+      companyName,
+      address,
+      city,
+      province,
+      country,
+      password,
+    } = req.body;
+    try {
+      let latLng = {};
+      await fetch(
+        `http://www.mapquestapi.com/geocoding/v1/address?key=${proccess.env.MAPQUEST_KEY}&maxResults=1&location=${address},${city},${province},${country}`
+      )
+        .then((res) => res.json())
+        .then(({ results }) => (latLng = results[0].locations[0].latLng));
+
+      const [_, psqlErrorAddCompany] = await psql.query(
+        `INSERT INTO companies (company_id, name, address, city, province, country, latitude, longitude) VALUES ('${companyCount}', '${companyName}', '${address}', '${city}', '${province}', '${country}', '${latLng.lat}', '${latLng.lng}')`
+      );
+
+      if (psqlErrorAddCompany) {
+        res.end(
+          JSON.stringify({
+            error: { code: 400, message: psqlErrorAddCompany.message },
+          })
+        );
+      } else {
+        const hash = await bcrypt.hash(password, 12);
+        const [_, psqlErrorAddUser] = await psql.query(
+          `INSERT INTO users (username, password, first_name, last_name, company_id) VALUES ('${email}', '${hash}', '${firstName}', '${lastName}', ${companyCount})`
+        );
+        if (psqlErrorAddUser) {
+          res.end(
+            JSON.stringify({
+              error: { code: 400, message: psqlErrorAddUser.message },
+            })
+          );
+        } else {
+          companyCount += 1;
+          res.end(JSON.stringify({}));
+        }
+      }
+    } catch (err) {
+      console.log(err);
+      res.end(JSON.stringify({ error: { code: 400, message: err.message } }));
+    }
   }
 );
 

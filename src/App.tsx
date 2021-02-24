@@ -10,6 +10,7 @@ import {
   Main,
   Navigation,
   SignIn,
+  SignUp,
 } from "./components";
 import Window from "./utils/window";
 
@@ -76,6 +77,18 @@ function App() {
               <React.Fragment>
                 <Navigation />
                 <SignIn width={width} />
+              </React.Fragment>
+            );
+          }}
+        />
+        <Route
+          exact
+          path="/signup"
+          render={(props) => {
+            return (
+              <React.Fragment>
+                <Navigation />
+                <SignUp width={width} />
               </React.Fragment>
             );
           }}

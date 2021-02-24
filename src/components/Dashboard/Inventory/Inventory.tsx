@@ -142,11 +142,6 @@ function Inventory(props: InventoryProps) {
       .catch((err) => console.log(err));
   }, []);
 
-  const companyId = Cookie.get("companyId");
-  if (!companyId) {
-    return <Redirect to="/signin" />;
-  }
-
   const onSubmit: FormikConfig<ProductRequest>["onSubmit"] = async (values) => {
     const toBase64 = (file: File) =>
       new Promise((resolve, reject) => {
@@ -161,7 +156,6 @@ function Inventory(props: InventoryProps) {
       image = await toBase64(image);
     } catch (err) {}
 
-    setError("");
     if (values.option === "add") {
       const productToAdd: Product = {
         company: companies[companyIndex].name,
@@ -201,6 +195,7 @@ function Inventory(props: InventoryProps) {
                 break;
               }
             }
+            setError("");
             setProducts([
               ...products.slice(0, index),
               product,
@@ -230,6 +225,7 @@ function Inventory(props: InventoryProps) {
             console.log(error);
             setError(error.message);
           } else {
+            setError("");
             setProducts([
               ...products.slice(0, productIndex),
               ...products.slice(productIndex + 1),
@@ -264,6 +260,7 @@ function Inventory(props: InventoryProps) {
             console.log(error);
             setError(error.message);
           } else if (product) {
+            setError("");
             setProducts([
               ...products.slice(0, productIndex),
               product,

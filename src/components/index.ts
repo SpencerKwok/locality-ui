@@ -5,3 +5,4 @@ export { default as Demo } from "./Demo/Demo";
 export { default as Main } from "./Main/Main";
 export { default as Navigation } from "./Navigation/Navigation";
 export { default as SignIn } from "./SignIn/SignIn";
+export { default as SignUp } from "./SignUp/SignUp";

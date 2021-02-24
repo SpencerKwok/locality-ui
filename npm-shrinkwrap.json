@@ -32,6 +32,7 @@
         "html-entities": "^2.1.0",
         "js-cookie": "^2.2.1",
         "js-sha512": "^0.8.0",
+        "node-fetch": "^2.6.1",
         "nodemailer": "^6.4.18",
         "npm": "^7.5.4",
         "passport": "^0.4.1",
@@ -12565,6 +12566,14 @@
       "integrity": "sha512-rmTZ9kz+f3rCvK2TD1Ue/oZlns7OGoIWP4fc3llxxRXlOkHKoWPPWJOfFYpITabSow43QJbRIoHQXtt10VldyQ==",
       "dependencies": {
         "lower-case": "^1.1.1"
+      }
+    },
+    "node_modules/node-fetch": {
+      "version": "2.6.1",
+      "resolved": "https://registry.npmjs.org/node-fetch/-/node-fetch-2.6.1.tgz",
+      "integrity": "sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==",
+      "engines": {
+        "node": "4.x || >=6.0.0"
       }
     },
     "node_modules/node-forge": {
@@ -35101,6 +35110,11 @@
       "requires": {
         "lower-case": "^1.1.1"
       }
+    },
+    "node-fetch": {
+      "version": "2.6.1",
+      "resolved": "https://registry.npmjs.org/node-fetch/-/node-fetch-2.6.1.tgz",
+      "integrity": "sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw=="
     },
     "node-forge": {
       "version": "0.10.0",

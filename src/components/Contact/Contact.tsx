@@ -143,7 +143,7 @@ function Contact(props: ContactProps) {
                         onBlur={handleBlur}
                         onChange={handleChange}
                         placeholder="Enter email"
-                        type="text"
+                        type="email"
                         value={values.email}
                       />
                     </FormInputGroup>

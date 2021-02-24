@@ -60,13 +60,22 @@ function Navigation(props: NavigationProps) {
             </StyledButton>
           </React.Fragment>
         ) : (
-          <StyledButton
-            variant="primary"
-            href="/signin"
-            style={{ marginLeft: 12 }}
-          >
-            Sign in
-          </StyledButton>
+          <React.Fragment>
+            <StyledButton
+              variant="primary"
+              href="/signin"
+              style={{ marginLeft: 12 }}
+            >
+              Sign in
+            </StyledButton>
+            <StyledButton
+              variant="primary"
+              href="/signup"
+              style={{ marginLeft: 12 }}
+            >
+              Sign up
+            </StyledButton>
+          </React.Fragment>
         )}
       </Nav>
     </StyledNavbar>
