@@ -197,7 +197,7 @@ function SignUp(props: SignUpProps) {
                   </Stack>
                   <Stack direction="row" spacing={12} priority={[1, 1]}>
                     <Form.Group>
-                      <FormLabel>Address</FormLabel>
+                      <FormLabel>Company address</FormLabel>
                       <FormInputGroup size="lg">
                         <FormControl
                           aria-label="Large"
