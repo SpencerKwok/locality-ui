@@ -1,10 +1,8 @@
 import React, { CSSProperties, useState, useEffect } from "react";
 import * as yup from "yup";
 import styled from "styled-components";
-import { Redirect } from "react-router-dom";
 import { ListGroup } from "react-bootstrap";
 import { List } from "react-virtualized";
-import Cookie from "js-cookie";
 import { decode } from "html-entities";
 import { Formik, FormikConfig } from "formik";
 import { Button, Form, FormControl } from "react-bootstrap";

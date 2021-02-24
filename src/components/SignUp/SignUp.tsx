@@ -163,126 +163,134 @@ function SignUp(props: SignUpProps) {
                       {createFormErrorMessage("lastName")}
                     </Form.Group>
                   </Stack>
-                  <Form.Group>
-                    <FormLabel>Email</FormLabel>
-                    <FormInputGroup size="lg">
-                      <FormControl
-                        aria-label="Large"
-                        id="email"
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        placeholder="Enter email"
-                        type="email"
-                        value={values.email}
-                      />
-                    </FormInputGroup>
-                    {createFormErrorMessage("email")}
-                  </Form.Group>
-                  <Form.Group>
-                    <FormLabel>Company Name</FormLabel>
-                    <FormInputGroup size="lg">
-                      <FormControl
-                        aria-label="Large"
-                        id="companyName"
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        placeholder="Enter company name"
-                        type="text"
-                        value={values.companyName}
-                      />
-                    </FormInputGroup>
-                    {createFormErrorMessage("companyName")}
-                  </Form.Group>
-                  <Form.Group>
-                    <FormLabel>Address</FormLabel>
-                    <FormInputGroup size="lg">
-                      <FormControl
-                        aria-label="Large"
-                        id="address"
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        placeholder="Enter address"
-                        type="text"
-                        value={values.address}
-                      />
-                    </FormInputGroup>
-                    {createFormErrorMessage("address")}
-                  </Form.Group>
-                  <Form.Group>
-                    <FormLabel>City</FormLabel>
-                    <FormInputGroup size="lg">
-                      <FormControl
-                        aria-label="Large"
-                        id="city"
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        placeholder="Enter city"
-                        type="text"
-                        value={values.city}
-                      />
-                    </FormInputGroup>
-                    {createFormErrorMessage("city")}
-                  </Form.Group>
-                  <Form.Group>
-                    <FormLabel>Province</FormLabel>
-                    <FormInputGroup size="lg">
-                      <FormControl
-                        aria-label="Large"
-                        id="province"
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        placeholder="Enter province"
-                        type="text"
-                        value={values.province}
-                      />
-                    </FormInputGroup>
-                    {createFormErrorMessage("province")}
-                  </Form.Group>
-                  <Form.Group>
-                    <FormLabel>Country</FormLabel>
-                    <FormInputGroup size="lg">
-                      <FormControl
-                        aria-label="Large"
-                        id="country"
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        placeholder="Enter country"
-                        type="text"
-                        value={values.country}
-                      />
-                    </FormInputGroup>
-                    {createFormErrorMessage("country")}
-                  </Form.Group>
-                  <Form.Group>
-                    <FormLabel>Password</FormLabel>
-                    <FormInputGroup size="lg">
-                      <FormControl
-                        aria-label="Large"
-                        id="password1"
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        placeholder="Enter password"
-                        type="password"
-                        value={values.password1}
-                      />
-                    </FormInputGroup>
-                    {createFormErrorMessage("password1")}
-                  </Form.Group>
-                  <Form.Group>
-                    <FormLabel>Re-enter password</FormLabel>
-                    <FormInputGroup size="lg">
-                      <FormControl
-                        aria-label="Large"
-                        id="password2"
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        placeholder="Re-enter password"
-                        type="password"
-                        value={values.password2}
-                      />
-                    </FormInputGroup>
-                    {createFormErrorMessage("password2")}
-                  </Form.Group>
+                  <Stack direction="row" spacing={12} priority={[1, 1]}>
+                    <Form.Group>
+                      <FormLabel>Email</FormLabel>
+                      <FormInputGroup size="lg">
+                        <FormControl
+                          aria-label="Large"
+                          id="email"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          placeholder="Enter email"
+                          type="email"
+                          value={values.email}
+                        />
+                      </FormInputGroup>
+                      {createFormErrorMessage("email")}
+                    </Form.Group>
+                    <Form.Group>
+                      <FormLabel>Company Name</FormLabel>
+                      <FormInputGroup size="lg">
+                        <FormControl
+                          aria-label="Large"
+                          id="companyName"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          placeholder="Enter company name"
+                          type="text"
+                          value={values.companyName}
+                        />
+                      </FormInputGroup>
+                      {createFormErrorMessage("companyName")}
+                    </Form.Group>
+                  </Stack>
+                  <Stack direction="row" spacing={12} priority={[1, 1]}>
+                    <Form.Group>
+                      <FormLabel>Address</FormLabel>
+                      <FormInputGroup size="lg">
+                        <FormControl
+                          aria-label="Large"
+                          id="address"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          placeholder="Enter address"
+                          type="text"
+                          value={values.address}
+                        />
+                      </FormInputGroup>
+                      {createFormErrorMessage("address")}
+                    </Form.Group>
+                    <Form.Group>
+                      <FormLabel>City</FormLabel>
+                      <FormInputGroup size="lg">
+                        <FormControl
+                          aria-label="Large"
+                          id="city"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          placeholder="Enter city"
+                          type="text"
+                          value={values.city}
+                        />
+                      </FormInputGroup>
+                      {createFormErrorMessage("city")}
+                    </Form.Group>
+                  </Stack>
+                  <Stack direction="row" spacing={12} priority={[1, 1]}>
+                    <Form.Group>
+                      <FormLabel>Province</FormLabel>
+                      <FormInputGroup size="lg">
+                        <FormControl
+                          aria-label="Large"
+                          id="province"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          placeholder="Enter province"
+                          type="text"
+                          value={values.province}
+                        />
+                      </FormInputGroup>
+                      {createFormErrorMessage("province")}
+                    </Form.Group>
+                    <Form.Group>
+                      <FormLabel>Country</FormLabel>
+                      <FormInputGroup size="lg">
+                        <FormControl
+                          aria-label="Large"
+                          id="country"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          placeholder="Enter country"
+                          type="text"
+                          value={values.country}
+                        />
+                      </FormInputGroup>
+                      {createFormErrorMessage("country")}
+                    </Form.Group>
+                  </Stack>
+                  <Stack direction="row" spacing={12} priority={[1, 1]}>
+                    <Form.Group>
+                      <FormLabel>Password</FormLabel>
+                      <FormInputGroup size="lg">
+                        <FormControl
+                          aria-label="Large"
+                          id="password1"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          placeholder="Enter password"
+                          type="password"
+                          value={values.password1}
+                        />
+                      </FormInputGroup>
+                      {createFormErrorMessage("password1")}
+                    </Form.Group>
+                    <Form.Group>
+                      <FormLabel>Re-enter password</FormLabel>
+                      <FormInputGroup size="lg">
+                        <FormControl
+                          aria-label="Large"
+                          id="password2"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          placeholder="Re-enter password"
+                          type="password"
+                          value={values.password2}
+                        />
+                      </FormInputGroup>
+                      {createFormErrorMessage("password2")}
+                    </Form.Group>
+                  </Stack>
                   <div
                     color="red"
                     style={{
