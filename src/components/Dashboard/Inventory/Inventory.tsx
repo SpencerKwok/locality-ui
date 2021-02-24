@@ -113,7 +113,6 @@ function Inventory(props: InventoryProps) {
   const [product, setProduct] = useState<Product>(EmptyProduct);
   const [isNewItem, setIsNewItem] = useState(false);
   const [error, setError] = useState("");
-  const [sent, setSent] = useState(false);
 
   useEffect(() => {
     InventoryDAO.getInstance()
@@ -121,7 +120,7 @@ function Inventory(props: InventoryProps) {
       .then(({ error, companies }) => {
         if (error) {
           console.log(error);
-        } else {
+        } else if (companies) {
           setCompanies(companies);
           if (companies.length === 1) {
             setCompanyIndex(0);
@@ -132,7 +131,7 @@ function Inventory(props: InventoryProps) {
                   if (error) {
                     console.log(error);
                   } else {
-                    setProducts(products);
+                    products && setProducts(products);
                   }
                 })
                 .catch((err) => console.log(err));
@@ -162,7 +161,22 @@ function Inventory(props: InventoryProps) {
       image = await toBase64(image);
     } catch (err) {}
 
+    setError("");
     if (values.option === "add") {
+      const productToAdd: Product = {
+        company: companies[companyIndex].name,
+        name: values.name,
+        primaryKeywords: values.primaryKeywords.split(",").map((x) => x.trim()),
+        secondaryKeywords: values.secondaryKeywords
+          .split(",")
+          .map((x) => x.trim()),
+        price: parseFloat(values.price),
+        link: values.link,
+
+        productId: -1,
+        image: "",
+      };
+
       await InventoryDAO.getInstance()
         .productAdd({
           companyName: companies[companyIndex].name,
@@ -170,24 +184,35 @@ function Inventory(props: InventoryProps) {
           longitude: companies[companyIndex].longitude,
           companyId: companies[companyIndex].companyId,
           product: {
-            name: values.name,
-            primaryKeywords: values.primaryKeywords
-              .split(",")
-              .map((x) => x.trim()),
-            secondaryKeywords: values.secondaryKeywords
-              .split(",")
-              .map((x) => x.trim()),
-            price: parseFloat(values.price),
-            link: values.link,
+            ...productToAdd,
             image: image,
           },
         })
-        .then(({ error }) => {
+        .then(({ product, error }) => {
           if (error) {
             console.log(error);
             setError(error.message);
-          } else {
-            setSent(true);
+          } else if (product) {
+            let index = 0;
+            for (; index < products.length; ++index) {
+              if (products[index].name < product.name) {
+                ++index;
+              } else {
+                break;
+              }
+            }
+            setProducts([
+              ...products.slice(0, index),
+              product,
+              ...products.slice(index),
+            ]);
+            setProduct({
+              ...productToAdd,
+              productId: product.productId,
+              image: product.image,
+            });
+            setProductIndex(index);
+            setIsNewItem(false);
           }
         })
         .catch((err) => {
@@ -205,7 +230,11 @@ function Inventory(props: InventoryProps) {
             console.log(error);
             setError(error.message);
           } else {
-            setSent(true);
+            setProducts([
+              ...products.slice(0, productIndex),
+              ...products.slice(productIndex + 1),
+            ]);
+            setProductIndex(-1);
           }
         })
         .catch((err) => {
@@ -230,12 +259,16 @@ function Inventory(props: InventoryProps) {
             image: image,
           },
         })
-        .then(({ error }) => {
+        .then(({ product, error }) => {
           if (error) {
             console.log(error);
             setError(error.message);
-          } else {
-            setSent(true);
+          } else if (product) {
+            setProducts([
+              ...products.slice(0, productIndex),
+              product,
+              ...products.slice(productIndex + 1),
+            ]);
           }
         })
         .catch((err) => {
@@ -250,7 +283,7 @@ function Inventory(props: InventoryProps) {
       if (index !== companyIndex) {
         await InventoryDAO.getInstance()
           .products({ companyId: companies[index].companyId })
-          .then(({ products }) => setProducts(products))
+          .then(({ products }) => products && setProducts(products))
           .catch((err) => console.log(err));
         setCompanyIndex(index);
       }
@@ -286,7 +319,7 @@ function Inventory(props: InventoryProps) {
             companyId: companies[companyIndex].companyId,
             productId: products[index].productId,
           })
-          .then(({ product }) => setProduct(product))
+          .then(({ product }) => product && setProduct(product))
           .catch((err) => console.log(err));
         setProductIndex(index);
         setIsNewItem(false);
@@ -397,7 +430,7 @@ function Inventory(props: InventoryProps) {
                   product.price >= 0 ? product.price.toFixed(2).toString() : "",
                 image: product.image,
                 link: product.link,
-                option: isNewItem ? "new" : "edit",
+                option: isNewItem ? "add" : "edit",
               } as ProductRequest
             }
             enableReinitialize={true}
@@ -411,6 +444,7 @@ function Inventory(props: InventoryProps) {
               handleChange,
               handleSubmit,
               setFieldValue,
+              handleReset,
             }) => (
               <Stack direction="row" columnAlign="flex-start" spacing={24}>
                 <Form
@@ -499,15 +533,6 @@ function Inventory(props: InventoryProps) {
                   >
                     {error}
                   </div>
-                  {sent && error === "" && (
-                    <div
-                      style={{
-                        color: "green",
-                      }}
-                    >
-                      {`Successfully ${values.option}ed item`}
-                    </div>
-                  )}
                   <Stack direction="row" columnAlign="flex-end" spacing={12}>
                     {!isNewItem && (
                       <Button

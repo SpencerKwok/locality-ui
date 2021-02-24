@@ -79,8 +79,7 @@ function About(props: AboutProps) {
               We help locally owned small businesses increase revenue and stay
               competitive against big box retailers while incurring little costs
               (all services are currently free) and minimal risks. Want to be a
-              Locality lister? All it takes is one (insert photo dimensions
-              here) photo to get started.
+              Locality lister? All it takes is one photo to get started.
             </p>
           </DescriptionImage>
           <DescriptionImage

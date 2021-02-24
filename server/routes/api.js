@@ -153,7 +153,6 @@ router.post(
         res.end(
           JSON.stringify({
             error: { code: 400, message: error.message },
-            companies,
           })
         );
       } else if (companies.rows.length === 0) {
@@ -161,7 +160,6 @@ router.post(
         res.end(
           JSON.stringify({
             error: { code: 400, message: "Company does not exist" },
-            companies,
           })
         );
       } else {
@@ -203,7 +201,6 @@ router.post(
         res.end(
           JSON.stringify({
             error: { code: 400, message: error.message },
-            products,
           })
         );
       } else {
@@ -244,7 +241,6 @@ router.post(
         res.end(
           JSON.stringify({
             error: { code: 400, message: error.message },
-            object,
           })
         );
       } else if (object === null) {
@@ -255,7 +251,6 @@ router.post(
               code: 400,
               message: `ObjectID: ${objectID} does not exist`,
             },
-            hits,
           })
         );
       } else {
@@ -342,7 +337,15 @@ router.post(
               })
             );
           } else {
-            res.end(JSON.stringify({}));
+            res.end(
+              JSON.stringify({
+                product: {
+                  productId: req.body.productId,
+                  name: req.body.product.name,
+                  image: url,
+                },
+              })
+            );
           }
         }
       }
@@ -457,7 +460,7 @@ router.post(
               const [_, psqlErrorUpdateNextId] = await psql.query(
                 `UPDATE companies SET next_product_id=${
                   next_product_id + 1
-                } WHERE company_id=${req.body.companyId}`
+                } WHERE company_id=${companyId}`
               );
 
               if (psqlErrorUpdateNextId) {
@@ -470,7 +473,15 @@ router.post(
                   })
                 );
               } else {
-                res.end(JSON.stringify({}));
+                res.end(
+                  JSON.stringify({
+                    product: {
+                      productId: next_product_id,
+                      name: req.body.product.name,
+                      image: url,
+                    },
+                  })
+                );
               }
             }
           }

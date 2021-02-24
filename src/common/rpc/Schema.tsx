@@ -77,7 +77,7 @@ export interface BaseCompany {
 export interface CompaniesRequest {}
 
 export interface CompaniesResponse extends BaseResponse {
-  companies: Array<BaseCompany>;
+  companies?: Array<BaseCompany>;
 }
 
 export interface BaseProduct {
@@ -110,7 +110,7 @@ export interface ProductsRequest {
 }
 
 export interface ProductsResponse extends BaseResponse {
-  products: Array<BaseProduct>;
+  products?: Array<BaseProduct>;
 }
 
 export interface ProductRequest {
@@ -119,7 +119,7 @@ export interface ProductRequest {
 }
 
 export interface ProductResponse extends BaseResponse {
-  product: Product;
+  product?: Product;
 }
 
 export interface ProductUpdateRequest {
@@ -135,7 +135,9 @@ export interface ProductUpdateRequest {
   };
 }
 
-export interface ProductUpdateResponse extends BaseResponse {}
+export interface ProductUpdateResponse extends BaseResponse {
+  product?: BaseProduct;
+}
 
 export interface ProductAddRequest {
   companyId: number;
@@ -152,7 +154,9 @@ export interface ProductAddRequest {
   };
 }
 
-export interface ProductAddResponse extends BaseResponse {}
+export interface ProductAddResponse extends BaseResponse {
+  product?: BaseProduct;
+}
 
 export interface ProductDeleteRequest {
   companyId: number;
