@@ -20,7 +20,10 @@ exports.query = async (query) => {
     .then((res) => (response = res))
     .catch((err) => {
       console.error(err);
-      error = err;
+      error = {
+        code: 500,
+        message: err.message,
+      };
     });
   return [response, error];
 };

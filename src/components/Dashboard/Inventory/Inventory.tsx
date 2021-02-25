@@ -124,7 +124,7 @@ function Inventory(props: InventoryProps) {
             setCompanyIndex(0);
             (async () => {
               await InventoryDAO.getInstance()
-                .products({ companyId: companies[0].companyId })
+                .products({ companyId: companies[0].id })
                 .then(({ error, products }) => {
                   if (error) {
                     console.log(error);
@@ -165,7 +165,7 @@ function Inventory(props: InventoryProps) {
         price: parseFloat(values.price),
         link: values.link,
 
-        productId: -1,
+        id: -1,
         image: "",
       };
 
@@ -174,7 +174,7 @@ function Inventory(props: InventoryProps) {
           companyName: companies[companyIndex].name,
           latitude: companies[companyIndex].latitude,
           longitude: companies[companyIndex].longitude,
-          companyId: companies[companyIndex].companyId,
+          companyId: companies[companyIndex].id,
           product: {
             ...productToAdd,
             image: image,
@@ -201,7 +201,7 @@ function Inventory(props: InventoryProps) {
             ]);
             setProduct({
               ...productToAdd,
-              productId: product.productId,
+              id: product.id,
               image: product.image,
             });
             setProductIndex(index);
@@ -215,8 +215,8 @@ function Inventory(props: InventoryProps) {
     } else if (values.option === "delete") {
       await InventoryDAO.getInstance()
         .productDelete({
-          companyId: companies[companyIndex].companyId,
-          productId: products[productIndex].productId,
+          companyId: companies[companyIndex].id,
+          productId: products[productIndex].id,
         })
         .then(({ error }) => {
           if (error) {
@@ -238,10 +238,10 @@ function Inventory(props: InventoryProps) {
     } else {
       await InventoryDAO.getInstance()
         .productUpdate({
-          companyId: companies[companyIndex].companyId,
-          productId: products[productIndex].productId,
+          companyId: companies[companyIndex].id,
           product: {
             name: values.name,
+            id: products[productIndex].id,
             primaryKeywords: values.primaryKeywords
               .split(",")
               .map((x) => x.trim()),
@@ -277,7 +277,7 @@ function Inventory(props: InventoryProps) {
     return async () => {
       if (index !== companyIndex) {
         await InventoryDAO.getInstance()
-          .products({ companyId: companies[index].companyId })
+          .products({ companyId: companies[index].id })
           .then(({ products }) => products && setProducts(products))
           .catch((err) => console.log(err));
         setCompanyIndex(index);
@@ -311,8 +311,8 @@ function Inventory(props: InventoryProps) {
       if (index !== productIndex) {
         await InventoryDAO.getInstance()
           .product({
-            companyId: companies[companyIndex].companyId,
-            productId: products[index].productId,
+            companyId: companies[companyIndex].id,
+            productId: products[index].id,
           })
           .then(({ product }) => product && setProduct(product))
           .catch((err) => console.log(err));

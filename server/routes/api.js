@@ -23,6 +23,18 @@ let companyCount = -1;
   companyCount = parseInt(response[0].rows[0].count);
 })();
 
+// Change underscore to camelCase
+router.use("/*", (req, res, next) => {
+  const send = res.send;
+  res.send = function () {
+    arguments[0] = arguments[0].replace(/_([a-z])/g, function (g) {
+      return g[1].toUpperCase();
+    });
+    send.apply(res, arguments);
+  };
+  next();
+});
+
 router.get(
   "/search",
   rateLimit({
@@ -42,14 +54,9 @@ router.get(
         aroundLatLng: `${lat}, ${lng}`,
       });
       if (error) {
-        res.end(
-          JSON.stringify({
-            error: { code: 400, message: error.message },
-            hits: null,
-          })
-        );
+        res.send(JSON.stringify({ error }));
       } else {
-        res.end(JSON.stringify({ hits: hits }));
+        res.send(JSON.stringify({ hits: hits }));
       }
     } else if (ip !== "") {
       const [hits, error] = await algolia.search(q, {
@@ -57,26 +64,16 @@ router.get(
         headers: { "X-Forwarded-For": ip },
       });
       if (error) {
-        res.end(
-          JSON.stringify({
-            error: { code: 400, message: error.message },
-            hits: null,
-          })
-        );
+        res.send(JSON.stringify({ error }));
       } else {
-        res.end(JSON.stringify({ hits: hits }));
+        res.send(JSON.stringify({ hits: hits }));
       }
     } else {
       const [hits, error] = await algolia.search(q);
       if (error) {
-        res.end(
-          JSON.stringify({
-            error: { code: 400, message: error.message },
-            hits: null,
-          })
-        );
+        res.send(JSON.stringify({ error }));
       } else {
-        res.end(JSON.stringify({ hits: hits }));
+        res.send(JSON.stringify({ hits: hits }));
       }
     }
   }
@@ -111,32 +108,12 @@ router.post(
       html: `<html><head><style type="text/css">.localityTable {border-collapse: collapse;}.localityBody {height: 100%;margin: 0;padding: 0;width: 100%;}.localityGreeting {display: block;margin: 0;margin-top: -24px;padding: 0;color: #444444;font-family: Helvetica;font-size: 22px;font-style: normal;font-weight: bold;line-height: 150%;letter-spacing: normal;text-align: left;}.localityContent {background-color: #ffffff;color: #757575;font-family: Helvetica;font-size: 16px;line-height: 150%;width: 60%;padding: 36px;}.localityFooter{background-color: #333333;color: #ffffff;font-family: Helvetica;font-size: 12px;line-height: 150%;padding-top: 36px;padding-bottom: 36px;text-align: center;}</style></head><body class="localityBody"><table class="localityTable" width="100%"><tr><td><center><img alt="Locality Logo" src="https://res.cloudinary.com/hcory49pf/image/upload/v1613266097/email/locality-logo.png" style="width: 400px" /></center></td></tr><tr><td class="localityContent"><center><table><tr><td><h3 class="localityGreeting">Hi ${name},</h3><br />Thank you for reaching out! We will get back to you as soon as we can.<br /><br />- The Locality Team</td></tr></table></center></td></tr><tr><td class="localityFooter"><em>Copyright © 2021 Locality, All rights reserved.</em></td></tr></table></body></html>`,
     };
 
-    let customerMailError = null;
-    await transporter.sendMail(customerMailOptions).catch((err) => {
-      console.log(err);
-      customerMailError = {
-        code: 400,
-        message: err.message,
-      };
-    });
-
-    if (customerMailError) {
-      res.end(JSON.stringify({ error: customerMailError }));
-    } else {
-      let selfMailError = null;
-      await transporter.sendMail(selfMailOptions).catch((err) => {
-        console.log(err);
-        selfMailError = {
-          code: 400,
-          message: err.message,
-        };
-      });
-
-      if (selfMailError) {
-        res.end(JSON.stringify({ error: selfMailError }));
-      } else {
-        res.end(JSON.stringify({}));
-      }
+    try {
+      await transporter.sendMail(customerMailOptions);
+      await transporter.sendMail(selfMailOptions);
+      res.send(JSON.stringify({}));
+    } catch (err) {
+      res.send(JSON.stringify({ error: { code: 500, message: err.message } }));
     }
   }
 );
@@ -153,28 +130,15 @@ router.post(
     const f = async (companyId) => {
       const [companies, error] = await psql.query(
         `SELECT * FROM companies ${
-          companyId !== 0 ? `WHERE company_id=${companyId}` : ""
+          companyId !== 0 ? `WHERE id=${companyId}` : ""
         } ORDER BY name`
       );
       if (error) {
-        res.end(
-          JSON.stringify({
-            error: { code: 400, message: error.message },
-          })
-        );
-      } else if (companies.rows.length === 0) {
-        console.log(new Error("Company does not exist"));
-        res.end(
-          JSON.stringify({
-            error: { code: 400, message: "Company does not exist" },
-          })
-        );
+        res.send(JSON.stringify(error));
       } else {
-        res.end(
+        res.send(
           JSON.stringify({
-            companies: companies.rows.map((row) => {
-              return { ...row, companyId: row.company_id };
-            }),
+            companies: companies.rows,
           })
         );
       }
@@ -202,20 +166,14 @@ router.post(
   async (req, res, next) => {
     const f = async (companyId) => {
       const [products, error] = await psql.query(
-        `SELECT * FROM products WHERE company_id=${companyId} ORDER BY name`
+        `SELECT id, name, image FROM products WHERE company_id=${companyId} ORDER BY name`
       );
       if (error) {
-        res.end(
-          JSON.stringify({
-            error: { code: 400, message: error.message },
-          })
-        );
+        res.send(JSON.stringify(error));
       } else {
-        res.end(
+        res.send(
           JSON.stringify({
-            products: products.rows.map((row) => {
-              return { ...row, productId: row.product_id };
-            }),
+            products: products.rows,
           })
         );
       }
@@ -245,30 +203,11 @@ router.post(
       const objectID = `${companyId}_${req.body.productId}`;
       const [object, error] = await algolia.getObject(objectID);
       if (error) {
-        res.end(
-          JSON.stringify({
-            error: { code: 400, message: error.message },
-          })
-        );
-      } else if (object === null) {
-        console.log(new Error(`ObjectID: ${objectID} does not exist`));
-        res.end(
-          JSON.stringify({
-            error: {
-              code: 400,
-              message: `ObjectID: ${objectID} does not exist`,
-            },
-          })
-        );
+        res.send(JSON.stringify({ error }));
       } else {
-        res.end(
+        res.send(
           JSON.stringify({
-            product: {
-              ...object,
-              productId: object.product_id,
-              primaryKeywords: object.primary_keywords || [],
-              secondaryKeywords: object.secondary_keywords || [],
-            },
+            product: { ...object, id: req.body.productId },
           })
         );
       }
@@ -301,22 +240,18 @@ router.post(
           crop: "scale",
           exif: false,
           format: "webp",
-          public_id: `${companyId}/${req.body.productId}`,
+          public_id: `${companyId}/${req.body.product.id}`,
           unique_filename: false,
           overwrite: true,
           width: 175,
         }
       );
       if (cloudinaryError) {
-        res.end(
-          JSON.stringify({
-            error: { code: 400, message: cloudinaryError.message },
-          })
-        );
+        res.send(JSON.stringify({ errror: cloudinaryError }));
       } else {
         const algoliaError = await algolia.partialUpdateObject(
           {
-            objectID: `${companyId}_${req.body.productId}`,
+            objectID: `${companyId}_${req.body.product.id}`,
             name: req.body.product.name,
             primary_keywords: req.body.product.primaryKeywords,
             secondary_keywords: req.body.product.secondaryKeywords,
@@ -328,26 +263,18 @@ router.post(
         );
 
         if (algoliaError) {
-          res.end(
-            JSON.stringify({
-              error: { code: 400, message: algoliaError.message },
-            })
-          );
+          res.send(JSON.stringify({ error: algoliaError }));
         } else {
           const [_, psqlError] = await psql.query(
-            `UPDATE products SET name='${req.body.product.name}', image='${url}' WHERE company_id=${companyId} AND product_id=${req.body.productId}`
+            `UPDATE products SET name='${req.body.product.name}', image='${url}' WHERE company_id=${companyId} AND id=${req.body.product.id}`
           );
           if (psqlError) {
-            res.end(
-              JSON.stringify({
-                error: { code: 400, message: psqlError.message },
-              })
-            );
+            res.send(JSON.stringify({ error: psqlError }));
           } else {
-            res.end(
+            res.send(
               JSON.stringify({
                 product: {
-                  productId: req.body.productId,
+                  id: req.body.product.id,
                   name: req.body.product.name,
                   image: url,
                 },
@@ -380,21 +307,11 @@ router.post(
   async (req, res, next) => {
     const f = async (companyId) => {
       const [nextIdResponse, psqlErrorGetNextId] = await psql.query(
-        `SELECT next_product_id FROM companies WHERE company_id=${companyId}`
+        `SELECT next_product_id FROM companies WHERE id=${companyId}`
       );
 
       if (psqlErrorGetNextId) {
-        res.end(
-          JSON.stringify({
-            error: { code: 400, message: psqlErrorGetNextId.message },
-          })
-        );
-      } else if (nextIdResponse.rows.length === 0) {
-        res.end(
-          JSON.stringify({
-            error: { code: 400, message: psqlErrorGetNextId.message },
-          })
-        );
+        res.send(JSON.stringify({ error: psqlErrorGetNextId }));
       } else {
         const next_product_id = nextIdResponse.rows[0].next_product_id;
         const [url, cloudinaryError] = await cloudinary.upload(
@@ -411,11 +328,7 @@ router.post(
         );
 
         if (cloudinaryError) {
-          res.end(
-            JSON.stringify({
-              error: { code: 400, message: cloudinaryError.message },
-            })
-          );
+          res.send(JSON.stringify({ error: cloudinaryError }));
         } else {
           const geolocation = [];
           const latitude = req.body.latitude.split(",");
@@ -447,43 +360,28 @@ router.post(
           );
 
           if (algoliaError) {
-            res.end(
-              JSON.stringify({
-                error: { code: 400, message: algoliaError.message },
-              })
-            );
+            res.send(JSON.stringify({ error: algoliaError }));
           } else {
             const [_, psqlErrorAddProduct] = await psql.query(
-              `INSERT INTO products (company_id, product_id, name, image) VALUES (${companyId}, ${next_product_id}, '${req.body.product.name}', '${url}')`
+              `INSERT INTO products (company_id, id, name, image) VALUES (${companyId}, ${next_product_id}, '${req.body.product.name}', '${url}')`
             );
 
             if (psqlErrorAddProduct) {
-              res.end(
-                JSON.stringify({
-                  error: { code: 400, message: psqlErrorAddProduct.message },
-                })
-              );
+              res.send(JSON.stringify({ error: psqlErrorAddProduct }));
             } else {
               const [_, psqlErrorUpdateNextId] = await psql.query(
                 `UPDATE companies SET next_product_id=${
                   next_product_id + 1
-                } WHERE company_id=${companyId}`
+                } WHERE id=${companyId}`
               );
 
               if (psqlErrorUpdateNextId) {
-                res.end(
-                  JSON.stringify({
-                    error: {
-                      code: 400,
-                      message: psqlErrorUpdateNextId.message,
-                    },
-                  })
-                );
+                res.send(JSON.stringify({ error: psqlErrorUpdateNextId }));
               } else {
                 res.end(
                   JSON.stringify({
                     product: {
-                      productId: next_product_id,
+                      id: next_product_id,
                       name: req.body.product.name,
                       image: url,
                     },
@@ -521,33 +419,21 @@ router.post(
         `${companyId}/${req.body.productId}`,
       ]);
       if (cloudinaryError) {
-        res.end(
-          JSON.stringify({
-            error: { code: 400, message: cloudinaryError.message },
-          })
-        );
+        res.send(JSON.stringify({ error: cloudinaryError }));
       } else {
         const algoliaError = await algolia.deleteObject(
           `${companyId}_${req.body.productId}`
         );
         if (algoliaError) {
-          res.end(
-            JSON.stringify({
-              error: { code: 400, message: algoliaError.message },
-            })
-          );
+          res.send(JSON.stringify({ error: algoliaError }));
         } else {
           const [_, psqlError] = await psql.query(
-            `DELETE FROM products WHERE company_id=${companyId} AND product_id=${req.body.productId}`
+            `DELETE FROM products WHERE company_id=${companyId} AND id=${req.body.productId}`
           );
           if (psqlError) {
-            res.end(
-              JSON.stringify({
-                error: { code: 400, message: psqlError.message },
-              })
-            );
+            res.send(JSON.stringify({ error: psqlError }));
           } else {
-            res.end(JSON.stringify({}));
+            res.send(JSON.stringify({}));
           }
         }
       }
@@ -582,12 +468,9 @@ router.post(
       );
 
       if (psqlError) {
-        res.end(
-          JSON.stringify({ error: { code: 400, message: psqlError.message } })
-        );
+        res.send(JSON.stringify({ error: psqlError }));
       } else if (user.rows.length === 0) {
-        console.log(new Error("User does not exist"));
-        res.end(
+        res.send(
           JSON.stringify({
             error: { code: 400, message: "User does not exist" },
           })
@@ -698,22 +581,14 @@ router.post(
       );
 
       if (psqlErrorAddCompany) {
-        res.end(
-          JSON.stringify({
-            error: { code: 400, message: psqlErrorAddCompany.message },
-          })
-        );
+        res.send(JSON.stringify({ error: psqlErrorAddCompany }));
       } else {
         const hash = await bcrypt.hash(password, 12);
         const [_, psqlErrorAddUser] = await psql.query(
-          `INSERT INTO users (username, password, first_name, last_name, company_id) VALUES ('${email}', '${hash}', '${firstName}', '${lastName}', ${companyCount})`
+          `INSERT INTO users (username, password, first_name, last_name, id) VALUES ('${email}', '${hash}', '${firstName}', '${lastName}', ${companyCount})`
         );
         if (psqlErrorAddUser) {
-          res.end(
-            JSON.stringify({
-              error: { code: 400, message: psqlErrorAddUser.message },
-            })
-          );
+          res.send(JSON.stringify({ error: psqlErrorAddUser }));
         } else {
           companyCount += 1;
           res.end(JSON.stringify({}));

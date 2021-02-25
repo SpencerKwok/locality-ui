@@ -5,15 +5,18 @@ const client = algoliasearch(
 );
 const index = client.initIndex(process.env.ALGOLIA_INDEX || "");
 
-exports.getObject = async (objectID) => {
+exports.getObject = async (objectID, options) => {
   let object,
     error = null;
   await index
-    .getObject(objectID)
+    .getObject(objectID, options)
     .then((res) => (object = res))
     .catch((err) => {
       console.log(err);
-      error = err;
+      error = {
+        code: 500,
+        message: err.message,
+      };
     });
   return [object, error];
 };
@@ -22,7 +25,10 @@ exports.partialUpdateObject = async (object, options) => {
   let error = null;
   await index.partialUpdateObject(object, options).catch((err) => {
     console.log(err);
-    error = err;
+    error = {
+      code: 500,
+      message: err.message,
+    };
   });
   return error;
 };
@@ -31,7 +37,10 @@ exports.saveObject = async (object, options) => {
   let error = null;
   await index.saveObject(object, options).catch((err) => {
     console.log(err);
-    error = err;
+    error = {
+      code: 500,
+      message: err.message,
+    };
   });
   return error;
 };
@@ -40,20 +49,26 @@ exports.deleteObject = async (objectID) => {
   let error = null;
   await index.deleteObject(objectID).catch((err) => {
     console.log(err);
-    error = err;
+    error = {
+      code: 500,
+      message: err.message,
+    };
   });
   return error;
 };
 
-exports.search = async (query, parameters) => {
+exports.search = async (query, options) => {
   let hits,
     error = null;
   await index
-    .search(query, parameters)
+    .search(query, options)
     .then((res) => (hits = res.hits))
     .catch((err) => {
       console.log(err);
-      error = err;
+      error = {
+        code: 500,
+        message: err.message,
+      };
     });
   return [hits, error];
 };

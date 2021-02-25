@@ -97,7 +97,7 @@ app.use(express.static(path.join(__dirname, "../build")));
 // Allow JSON body
 app.use(express.json({ limit: "100mb" }));
 
-// Handle search
+// Setup API
 app.use("/api", require("./routes/api"));
 
 // Handle everything else

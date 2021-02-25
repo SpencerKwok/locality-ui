@@ -14,7 +14,7 @@ const setup = function () {
       },
       async (usernameField, passwordField, done) => {
         const [users, error] = await psql.query(
-          `SELECT first_name, last_name, companies.company_id AS company_id, companies.name AS company_name, password FROM users INNER JOIN companies ON users.company_id=companies.company_id WHERE username='${usernameField}'`
+          `SELECT first_name, last_name, companies.id AS id, companies.name AS company_name, password FROM users INNER JOIN companies ON users.id=companies.id WHERE username='${usernameField}'`
         );
 
         if (error) {
@@ -35,7 +35,7 @@ const setup = function () {
                     firstName: users.rows[0].first_name,
                     lastName: users.rows[0].last_name,
                     username: usernameField,
-                    companyId: users.rows[0].company_id,
+                    companyId: users.rows[0].id,
                     companyName: users.rows[0].company_name,
                   });
                 } else {

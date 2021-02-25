@@ -82,7 +82,7 @@ export interface SignUpRequest {
 export interface SignUpResponse extends BaseResponse {}
 
 export interface BaseCompany {
-  companyId: number;
+  id: number;
   name: string;
   address: string;
   city: string;
@@ -99,7 +99,7 @@ export interface CompaniesResponse extends BaseResponse {
 }
 
 export interface BaseProduct {
-  productId: number;
+  id: number;
   name: string;
   image: string;
 }
@@ -113,7 +113,7 @@ export interface Product extends BaseProduct {
 }
 
 export const EmptyProduct: Product = {
-  productId: -1,
+  id: -1,
   name: "",
   image: "",
   company: "",
@@ -142,9 +142,9 @@ export interface ProductResponse extends BaseResponse {
 
 export interface ProductUpdateRequest {
   companyId: number;
-  productId: number;
   product: {
     name: string;
+    id: number;
     primaryKeywords: Array<string>;
     secondaryKeywords: Array<string>;
     price: number;
