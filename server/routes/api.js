@@ -17,6 +17,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// Initialization
 let companyCount = -1;
 (async () => {
   const response = await psql.query("SELECT COUNT(*) FROM companies");
@@ -577,7 +578,7 @@ router.post(
         .then(({ results }) => (latLng = results[0].locations[0].latLng));
 
       const [_, psqlErrorAddCompany] = await psql.query(
-        `INSERT INTO companies (company_id, name, address, city, province, country, latitude, longitude) VALUES ('${companyCount}', '${companyName}', '${address}', '${city}', '${province}', '${country}', '${latLng.lat}', '${latLng.lng}')`
+        `INSERT INTO companies (id, name, address, city, province, country, latitude, longitude) VALUES ('${companyCount}', '${companyName}', '${address}', '${city}', '${province}', '${country}', '${latLng.lat}', '${latLng.lng}')`
       );
 
       if (psqlErrorAddCompany) {
