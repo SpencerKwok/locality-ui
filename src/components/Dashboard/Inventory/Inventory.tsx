@@ -1,7 +1,7 @@
 import React, { CSSProperties, useState, useEffect } from "react";
 import * as yup from "yup";
 import styled from "styled-components";
-import { ListGroup } from "react-bootstrap";
+import { ListGroup, Tabs, Tab } from "react-bootstrap";
 import { List } from "react-virtualized";
 import { decode } from "html-entities";
 import { Formik, FormikConfig } from "formik";
@@ -623,20 +623,45 @@ function Inventory(props: InventoryProps) {
                         );
                       })()}
                     </div>
-                    <input
-                      type="file"
-                      id="image"
-                      accept="image/jpeg, image/png, image/webp"
-                      onBlur={handleBlur}
-                      onChange={(event) => {
-                        if (
-                          event.target.files &&
-                          event.target.files.length > 0
-                        ) {
-                          setFieldValue("image", event.target.files[0], false);
-                        }
-                      }}
-                    />
+                    <Tabs defaultActiveKey="url">
+                      <Tab eventKey="url" title="URL">
+                        <Form.Group>
+                          <FormLabel>URL</FormLabel>
+                          <FormInputGroup size="md" width="100%">
+                            <FormControl
+                              aria-label="Large"
+                              id="image"
+                              onBlur={handleBlur}
+                              onChange={handleChange}
+                              placeholder="e.g. www.mywebsite.com/images/wooden-cutlery"
+                              type="url"
+                              value={values.image}
+                            />
+                          </FormInputGroup>
+                          {createFormErrorMessage("image")}
+                        </Form.Group>
+                      </Tab>
+                      <Tab eventKey="local" title="Local Browser">
+                        <input
+                          type="file"
+                          id="image"
+                          accept="image/jpeg, image/png, image/webp"
+                          onBlur={handleBlur}
+                          onChange={(event) => {
+                            if (
+                              event.target.files &&
+                              event.target.files.length > 0
+                            ) {
+                              setFieldValue(
+                                "image",
+                                event.target.files[0],
+                                false
+                              );
+                            }
+                          }}
+                        />
+                      </Tab>
+                    </Tabs>
                   </Stack>
                 </Stack>
               </Stack>

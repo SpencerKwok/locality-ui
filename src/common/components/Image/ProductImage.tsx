@@ -36,7 +36,11 @@ function ProductImage(props: ProductImageProps) {
     <Stack direction="column" rowAlign="flex-start" style={props.style}>
       <StyledPicture>
         <source srcSet={props.src} type="image/webp" />
-        <img src={props.src.replace(".webp", ".jpg")} alt={props.name} />
+        <img
+          src={props.src.replace(".webp", ".jpg")}
+          alt={props.name}
+          width={175}
+        />
       </StyledPicture>
       <StyledH6>{props.company}</StyledH6>
       <StyledH4>{props.name}</StyledH4>

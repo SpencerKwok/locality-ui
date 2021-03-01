@@ -17,13 +17,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Initialization
-let companyCount = -1;
-(async () => {
-  const response = await psql.query("SELECT COUNT(*) FROM companies");
-  companyCount = parseInt(response[0].rows[0].count);
-})();
-
 // Change underscore to camelCase
 router.use("/*", (req, res, next) => {
   const send = res.send;
@@ -238,13 +231,11 @@ router.post(
       const [url, cloudinaryError] = await cloudinary.upload(
         req.body.product.image,
         {
-          crop: "scale",
           exif: false,
           format: "webp",
           public_id: `${companyId}/${req.body.product.id}`,
           unique_filename: false,
           overwrite: true,
-          width: 175,
         }
       );
       if (cloudinaryError) {
@@ -577,22 +568,30 @@ router.post(
         .then((res) => res.json())
         .then(({ results }) => (latLng = results[0].locations[0].latLng));
 
-      const [_, psqlErrorAddCompany] = await psql.query(
-        `INSERT INTO companies (id, name, address, city, province, country, latitude, longitude) VALUES ('${companyCount}', '${companyName}', '${address}', '${city}', '${province}', '${country}', '${latLng.lat}', '${latLng.lng}')`
+      const [company, psqlErrorCompanyId] = await psql.query(
+        "SELECT id FROM companies ORDER BY id DESC LIMIT 1"
       );
 
-      if (psqlErrorAddCompany) {
-        res.send(JSON.stringify({ error: psqlErrorAddCompany }));
+      if (psqlErrorCompanyId) {
+        res.send(JSON.stringify({ error: psqlErrorCompanyId }));
       } else {
-        const hash = await bcrypt.hash(password, 12);
-        const [_, psqlErrorAddUser] = await psql.query(
-          `INSERT INTO users (username, password, first_name, last_name, id) VALUES ('${email}', '${hash}', '${firstName}', '${lastName}', ${companyCount})`
+        const companyCount = parseInt(company[0].rows[0].id);
+        const [_, psqlErrorAddCompany] = await psql.query(
+          `INSERT INTO companies (id, name, address, city, province, country, latitude, longitude) VALUES ('${companyCount}', '${companyName}', '${address}', '${city}', '${province}', '${country}', '${latLng.lat}', '${latLng.lng}')`
         );
-        if (psqlErrorAddUser) {
-          res.send(JSON.stringify({ error: psqlErrorAddUser }));
+
+        if (psqlErrorAddCompany) {
+          res.send(JSON.stringify({ error: psqlErrorAddCompany }));
         } else {
-          companyCount += 1;
-          res.end(JSON.stringify({}));
+          const hash = await bcrypt.hash(password, 12);
+          const [_, psqlErrorAddUser] = await psql.query(
+            `INSERT INTO users (username, password, first_name, last_name, id) VALUES ('${email}', '${hash}', '${firstName}', '${lastName}', ${companyCount})`
+          );
+          if (psqlErrorAddUser) {
+            res.send(JSON.stringify({ error: psqlErrorAddUser }));
+          } else {
+            res.end(JSON.stringify({}));
+          }
         }
       }
     } catch (err) {
