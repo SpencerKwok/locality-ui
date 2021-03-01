@@ -309,13 +309,11 @@ router.post(
         const [url, cloudinaryError] = await cloudinary.upload(
           req.body.product.image,
           {
-            crop: "scale",
             exif: false,
             format: "webp",
             public_id: `${companyId}/${next_product_id}`,
             unique_filename: false,
             overwrite: true,
-            width: 175,
           }
         );
 
