@@ -575,9 +575,9 @@ router.post(
       if (psqlErrorCompanyId) {
         res.send(JSON.stringify({ error: psqlErrorCompanyId }));
       } else {
-        const companyCount = parseInt(company[0].rows[0].id);
+        const companyId = company.rows[0].id + 1;
         const [_, psqlErrorAddCompany] = await psql.query(
-          `INSERT INTO companies (id, name, address, city, province, country, latitude, longitude) VALUES ('${companyCount}', '${companyName}', '${address}', '${city}', '${province}', '${country}', '${latLng.lat}', '${latLng.lng}')`
+          `INSERT INTO companies (id, name, address, city, province, country, latitude, longitude) VALUES ('${companyId}', '${companyName}', '${address}', '${city}', '${province}', '${country}', '${latLng.lat}', '${latLng.lng}')`
         );
 
         if (psqlErrorAddCompany) {
@@ -585,7 +585,7 @@ router.post(
         } else {
           const hash = await bcrypt.hash(password, 12);
           const [_, psqlErrorAddUser] = await psql.query(
-            `INSERT INTO users (username, password, first_name, last_name, id) VALUES ('${email}', '${hash}', '${firstName}', '${lastName}', ${companyCount})`
+            `INSERT INTO users (username, password, first_name, last_name, id) VALUES ('${email}', '${hash}', '${firstName}', '${lastName}', ${companyId})`
           );
           if (psqlErrorAddUser) {
             res.send(JSON.stringify({ error: psqlErrorAddUser }));
