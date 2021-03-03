@@ -58,8 +58,6 @@ app.use(
   cors({
     origin: [
       "'self'",
-      "https://www.google.ca",
-      "https://www.google.com",
       "https://www.etsy.com",
       "https://www.amazon.ca",
       "https://www.amazon.com",

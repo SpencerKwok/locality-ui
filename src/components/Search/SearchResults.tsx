@@ -19,8 +19,8 @@ function SearchResults(props: SearchResultsProps) {
   return (
     <Stack
       direction="row"
-      columnAlign="center"
-      style={{ width: props.width, ...props.style }}
+      columnAlign="flex-start"
+      style={{ ...props.style, width: props.width }}
     >
       <Stack direction="column" rowAlign="center">
         {rows.map((value) => {

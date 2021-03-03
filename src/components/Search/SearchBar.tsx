@@ -20,7 +20,7 @@ function SearchBar(props: SearchBarProps) {
     <Stack
       direction="row"
       spacing={1}
-      style={{ marginLeft: (props.width as number) * 0.07 }}
+      style={{ ...props.style, marginLeft: (props.width as number) * 0.07 }}
     >
       <SearchInputGroup
         size="lg"

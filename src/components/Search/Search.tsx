@@ -9,6 +9,7 @@ import SearchDAO from "./SearchDAO";
 import SearchResults from "./SearchResults";
 import Stack from "../../common/components/Stack/Stack";
 import { Product } from "../../common/rpc/Schema";
+import { ReactComponent as LocalityLogo } from "./locality-logo.svg";
 
 interface Location {
   ip?: string;
@@ -27,12 +28,16 @@ export function Search(props: SearchProps) {
   const history = useHistory();
   const [query, setQuery] = useState(props.query || "");
   const [hits, setHits] = useState<Array<Product>>([]);
+  const [searching, setSearching] = useState(false);
 
   useEffect(() => {
     (async () => {
       if (!props.query) {
         return;
       }
+
+      setSearching(true);
+
       if (!location.ip) {
         location.ip = await PublicIp.v4();
       }
@@ -60,13 +65,66 @@ export function Search(props: SearchProps) {
     history.push("/search?q=" + query);
   };
 
+  if (searching) {
+    return (
+      <Stack direction="column" rowAlign="flex-start">
+        <Stack direction="row" columnAlign="flex-start">
+          <Stack
+            direction="row"
+            columnAlign="flex-start"
+            rowAlign="center"
+            spacing={-96}
+            style={{ marginLeft: -64 }}
+          >
+            <div
+              onClick={() => history.push("/")}
+              style={{
+                width: props.width,
+                maxWidth: 300,
+                overflow: "hidden",
+              }}
+            >
+              <LocalityLogo />
+            </div>
+            <SearchBar
+              onChange={searchBarOnChange}
+              onEnter={searchBarOnEnter}
+              onReset={() => setQuery("")}
+              width={Math.max(props.width * 0.2, 175)}
+              value={query}
+              style={{ marginTop: -4 }}
+              autoFocus
+            />
+          </Stack>
+        </Stack>
+        {hits.length > 0 && (
+          <SearchResults
+            width={props.width - 48}
+            hits={hits}
+            style={{ paddingLeft: 24, marginTop: -8 }}
+          />
+        )}
+      </Stack>
+    );
+  }
+
   return (
     <Stack direction="row" columnAlign="center" style={{ marginTop: -24 }}>
       <Stack direction="column" rowAlign="center">
+        <div
+          style={{
+            width: props.width,
+            maxWidth: 500,
+            overflow: "hidden",
+          }}
+        >
+          <LocalityLogo />
+        </div>
         <SearchBar
           onChange={searchBarOnChange}
           onEnter={searchBarOnEnter}
           onReset={() => setQuery("")}
+          style={{ marginTop: -36 }}
           width={Math.max(props.width * 0.3, 225)}
           value={query}
           autoFocus
