@@ -96,7 +96,7 @@ export function Search(props: SearchProps) {
             <SearchResults
               hits={hits}
               query={query}
-              style={{ marginLeft: 12, marginTop: -8 }}
+              style={{ marginLeft: 24, marginTop: -8 }}
             />
           )}
         </Stack>
