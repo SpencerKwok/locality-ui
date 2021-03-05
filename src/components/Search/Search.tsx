@@ -66,6 +66,7 @@ export function Search(props: SearchProps) {
   };
 
   if (searching) {
+    console.log(props.width);
     if (props.width <= 460) {
       return (
         <Stack direction="column" rowAlign="flex-start">
@@ -84,7 +85,7 @@ export function Search(props: SearchProps) {
             onChange={searchBarOnChange}
             onEnter={searchBarOnEnter}
             onReset={() => setQuery("")}
-            width={Math.max(props.width * 0.2, 200)}
+            width={Math.max(props.width * 0.3, 200)}
             value={query}
             style={{ marginLeft: 24, marginTop: -16, marginBottom: 16 }}
             autoFocus
@@ -123,9 +124,9 @@ export function Search(props: SearchProps) {
               onChange={searchBarOnChange}
               onEnter={searchBarOnEnter}
               onReset={() => setQuery("")}
-              width={Math.max(props.width * 0.2, 200)}
+              width={Math.max(props.width * 0.3, 200)}
               value={query}
-              style={{ marginTop: -4 }}
+              style={{ marginTop: -4, marginLeft: 24 }}
               autoFocus
             />
           </Stack>
