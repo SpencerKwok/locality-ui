@@ -165,7 +165,7 @@ function Inventory(props: InventoryProps) {
         price: parseFloat(values.price),
         link: values.link,
 
-        id: -1,
+        objectID: "",
         image: "",
       };
 
@@ -201,7 +201,7 @@ function Inventory(props: InventoryProps) {
             ]);
             setProduct({
               ...productToAdd,
-              id: product.id,
+              objectID: product.objectID,
               image: product.image,
             });
             setProductIndex(index);
@@ -213,10 +213,11 @@ function Inventory(props: InventoryProps) {
           setError(err.message);
         });
     } else if (values.option === "delete") {
+      const productId = parseInt(products[productIndex].objectID.split("_")[1]);
       await InventoryDAO.getInstance()
         .productDelete({
           companyId: companies[companyIndex].id,
-          productId: products[productIndex].id,
+          productId,
         })
         .then(({ error }) => {
           if (error) {
@@ -236,12 +237,13 @@ function Inventory(props: InventoryProps) {
           setError(err.message);
         });
     } else {
+      const productId = parseInt(products[productIndex].objectID.split("_")[1]);
       await InventoryDAO.getInstance()
         .productUpdate({
           companyId: companies[companyIndex].id,
           product: {
             name: values.name,
-            id: products[productIndex].id,
+            id: productId,
             primaryKeywords: values.primaryKeywords
               .split(",")
               .map((x) => x.trim()),
@@ -296,12 +298,23 @@ function Inventory(props: InventoryProps) {
   }) => {
     return (
       <div key={key} style={style}>
-        <StyledListGroupItem
-          active={companyIndex === index}
-          onClick={createCompanyOnClick(index)}
-        >
-          {decode(companies[index].name)}
-        </StyledListGroupItem>
+        {index === 0 ? (
+          <StyledListGroupItem
+            active={companyIndex === index}
+            onClick={createCompanyOnClick(index)}
+            style={{ height: 48 }}
+          >
+            {decode(companies[index].name)}
+          </StyledListGroupItem>
+        ) : (
+          <StyledListGroupItem
+            active={companyIndex === index}
+            onClick={createCompanyOnClick(index)}
+            style={{ height: 48, borderTop: "none" }}
+          >
+            {decode(companies[index].name)}
+          </StyledListGroupItem>
+        )}
       </div>
     );
   };
@@ -312,7 +325,7 @@ function Inventory(props: InventoryProps) {
         await InventoryDAO.getInstance()
           .product({
             companyId: companies[companyIndex].id,
-            productId: products[index].id,
+            productId: parseInt(products[index].objectID.split("_")[1]),
           })
           .then(({ product }) => product && setProduct(product))
           .catch((err) => console.log(err));
@@ -336,30 +349,56 @@ function Inventory(props: InventoryProps) {
         direction="column"
         key={key}
         rowAlign="flex-start"
-        style={{ ...style, height: 92 }}
+        style={{ ...style, minHeight: 92, maxHeight: 92 }}
       >
-        <StyledListGroupItem
-          active={productIndex === index}
-          onClick={createProductOnClick(index)}
-          style={{ height: 92 }}
-        >
-          <Stack
-            direction="column"
-            columnAlign="center"
-            style={{ height: "100%" }}
+        {index === 0 ? (
+          <StyledListGroupItem
+            active={productIndex === index}
+            onClick={createProductOnClick(index)}
+            style={{ height: 92, paddingTop: 0, paddingBottom: 0 }}
           >
             <DescriptionImage
               direction="row"
               src={products[index].image}
               spacing={12}
               columnAlign="flex-start"
-              style={{ width: props.width * 0.3 }}
+              rowAlign="center"
+              style={{ height: 92, width: props.width * 0.3 }}
               width={48}
             >
               {decode(products[index].name)}
             </DescriptionImage>
-          </Stack>
-        </StyledListGroupItem>
+          </StyledListGroupItem>
+        ) : (
+          <StyledListGroupItem
+            active={productIndex === index}
+            onClick={createProductOnClick(index)}
+            style={{
+              height: 92,
+              paddingTop: 0,
+              paddingBottom: 0,
+              borderTop: "none",
+            }}
+          >
+            <Stack
+              direction="column"
+              columnAlign="center"
+              style={{ height: "100%" }}
+            >
+              <DescriptionImage
+                direction="row"
+                src={products[index].image}
+                spacing={12}
+                columnAlign="flex-start"
+                rowAlign="center"
+                style={{ height: 92, width: props.width * 0.3 }}
+                width={48}
+              >
+                {decode(products[index].name)}
+              </DescriptionImage>
+            </Stack>
+          </StyledListGroupItem>
+        )}
       </Stack>
     );
   };
@@ -407,7 +446,7 @@ function Inventory(props: InventoryProps) {
         <StyledList
           width={Math.max(props.width * 0.25, 285)}
           height={props.height - 200}
-          rowHeight={91}
+          rowHeight={92}
           rowRenderer={productRowRenderer}
           rowCount={products.length}
         />
@@ -439,7 +478,6 @@ function Inventory(props: InventoryProps) {
               handleChange,
               handleSubmit,
               setFieldValue,
-              handleReset,
             }) => (
               <Stack direction="row" columnAlign="flex-start" spacing={24}>
                 <Form
