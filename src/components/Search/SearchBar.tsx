@@ -17,11 +17,7 @@ export interface SearchBarProps extends React.HTMLProps<HTMLInputElement> {
 
 function SearchBar(props: SearchBarProps) {
   return (
-    <Stack
-      direction="row"
-      spacing={1}
-      style={{ ...props.style, marginLeft: (props.width as number) * 0.07 }}
-    >
+    <Stack direction="row" spacing={1} style={{ ...props.style }}>
       <SearchInputGroup
         size="lg"
         width={props.width}

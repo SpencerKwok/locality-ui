@@ -66,15 +66,47 @@ export function Search(props: SearchProps) {
   };
 
   if (searching) {
-    return (
-      <Stack direction="column" rowAlign="flex-start">
-        <Stack direction="row" columnAlign="flex-start">
+    if (props.width <= 460) {
+      return (
+        <Stack direction="column" rowAlign="flex-start">
+          <div
+            onClick={() => history.push("/")}
+            style={{
+              width: props.width,
+              maxWidth: 300,
+              overflow: "hidden",
+              marginLeft: -64,
+            }}
+          >
+            <LocalityLogo />
+          </div>
+          <SearchBar
+            onChange={searchBarOnChange}
+            onEnter={searchBarOnEnter}
+            onReset={() => setQuery("")}
+            width={Math.max(props.width * 0.2, 200)}
+            value={query}
+            style={{ marginLeft: 24, marginTop: -16, marginBottom: 16 }}
+            autoFocus
+          />
+          {hits.length > 0 && (
+            <SearchResults
+              width={props.width - 48}
+              hits={hits}
+              style={{ paddingLeft: 24, marginTop: -8 }}
+            />
+          )}
+        </Stack>
+      );
+    } else {
+      return (
+        <Stack direction="column" rowAlign="flex-start">
           <Stack
             direction="row"
             columnAlign="flex-start"
             rowAlign="center"
             spacing={-96}
-            style={{ marginLeft: -64 }}
+            wrap="wrap"
           >
             <div
               onClick={() => history.push("/")}
@@ -82,6 +114,7 @@ export function Search(props: SearchProps) {
                 width: props.width,
                 maxWidth: 300,
                 overflow: "hidden",
+                marginLeft: -64,
               }}
             >
               <LocalityLogo />
@@ -90,22 +123,22 @@ export function Search(props: SearchProps) {
               onChange={searchBarOnChange}
               onEnter={searchBarOnEnter}
               onReset={() => setQuery("")}
-              width={Math.max(props.width * 0.2, 175)}
+              width={Math.max(props.width * 0.2, 200)}
               value={query}
               style={{ marginTop: -4 }}
               autoFocus
             />
           </Stack>
+          {hits.length > 0 && (
+            <SearchResults
+              width={props.width - 48}
+              hits={hits}
+              style={{ paddingLeft: 24, marginTop: -8 }}
+            />
+          )}
         </Stack>
-        {hits.length > 0 && (
-          <SearchResults
-            width={props.width - 48}
-            hits={hits}
-            style={{ paddingLeft: 24, marginTop: -8 }}
-          />
-        )}
-      </Stack>
-    );
+      );
+    }
   }
 
   return (
@@ -129,13 +162,6 @@ export function Search(props: SearchProps) {
           value={query}
           autoFocus
         />
-        {hits.length > 0 && (
-          <SearchResults
-            width={props.width * 0.9}
-            hits={hits}
-            style={{ marginTop: 12 }}
-          />
-        )}
       </Stack>
     </Stack>
   );

@@ -7,6 +7,7 @@ export type StackDirection =
   | "column"
   | "column-reverse";
 export type StackAlignment = "flex-start" | "center" | "flex-end";
+export type StackWrap = "nowrap" | "wrap" | "wrap-reverse";
 
 export interface StackProps extends React.HTMLProps<HTMLElement> {
   direction: StackDirection;
@@ -16,6 +17,7 @@ export interface StackProps extends React.HTMLProps<HTMLElement> {
   priority?: Array<number>;
   rowAlign?: StackAlignment;
   spacing?: number;
+  wrap?: StackWrap;
 }
 
 const directionToMargin = (direction: StackDirection) => {
