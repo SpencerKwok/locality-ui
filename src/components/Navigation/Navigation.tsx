@@ -1,11 +1,13 @@
 import React from "react";
 import styled from "styled-components";
 import Cookie from "js-cookie";
-import { Button, Nav, Navbar } from "react-bootstrap";
+import { Button, Nav, Navbar, NavDropdown } from "react-bootstrap";
 
 import NavigationDAO from "./NavigationDAO";
 
-export interface NavigationProps extends React.HTMLProps<HTMLDivElement> {}
+export interface NavigationProps extends React.HTMLProps<HTMLDivElement> {
+  width: number;
+}
 
 const StyledNavLink = styled(Nav.Link)`
   color: white !important;
@@ -23,6 +25,49 @@ const StyledButton = styled(Button)`
 
 function Navigation(props: NavigationProps) {
   const companyId = Cookie.get("companyId");
+
+  if (props.width <= 520) {
+    return (
+      <StyledNavbar collapseOnSelect expand="lg" variant="dark">
+        <span></span>
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar.Collapse id="responsive-navbar-nav">
+          <Nav className="mr-auto">
+            <StyledNavLink href="/">Home</StyledNavLink>
+            <StyledNavLink href="/demo">Demo</StyledNavLink>
+            <StyledNavLink href="/about">About Us</StyledNavLink>
+            <StyledNavLink href="/contact">Contact Us</StyledNavLink>
+            {companyId ? (
+              <React.Fragment>
+                <StyledNavLink href="/dashboard">Dashboard</StyledNavLink>
+                <StyledNavLink
+                  onClick={async () => {
+                    await NavigationDAO.getInstance()
+                      .signout({})
+                      .then(({ error, redirectTo }) => {
+                        if (error) {
+                          console.log(error.message);
+                        } else if (redirectTo) {
+                          window.location.href = redirectTo;
+                        }
+                      })
+                      .catch((err) => console.log(err));
+                  }}
+                >
+                  Sign out
+                </StyledNavLink>
+              </React.Fragment>
+            ) : (
+              <React.Fragment>
+                <StyledNavLink href="/signin">Sign in</StyledNavLink>
+                <StyledNavLink href="/signout">Sign up</StyledNavLink>
+              </React.Fragment>
+            )}
+          </Nav>
+        </Navbar.Collapse>
+      </StyledNavbar>
+    );
+  }
 
   return (
     <StyledNavbar variant="dark">
