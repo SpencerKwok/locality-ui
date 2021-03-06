@@ -6,55 +6,30 @@ import { Product } from "../../common/rpc/Schema";
 
 export interface SearchResultsProps extends React.HTMLProps<HTMLDivElement> {
   hits: Array<Product>;
-  width: number;
+  query: string;
 }
 
 function SearchResults(props: SearchResultsProps) {
-  const itemsPerRow = Math.min(
-    Math.floor(props.width / 175),
-    props.hits.length
-  );
-  const rows = [...Array(Math.ceil(props.hits.length / itemsPerRow)).keys()];
-
   return (
-    <Stack
-      direction="row"
-      columnAlign="flex-start"
-      style={{ ...props.style, width: props.width }}
-    >
-      <Stack direction="column" rowAlign="center">
-        {rows.map((value) => {
+    <Stack direction="column" rowAlign="flex-start" style={props.style}>
+      <h4>Results for "{props.query}"</h4>
+      <Stack direction="row" columnAlign="flex-start" wrap="wrap" spacing={12}>
+        {props.hits.map((hit) => {
           return (
-            <Stack direction="row" columnAlign="flex-start" spacing={10}>
-              {(() => {
-                const hits = props.hits.slice(
-                  value * itemsPerRow,
-                  value * itemsPerRow + itemsPerRow
-                );
-                const images = hits.map((hit) => {
-                  return (
-                    <a
-                      href={hit.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ textDecoration: "none", color: "black" }}
-                    >
-                      <ProductImage
-                        company={hit.company}
-                        name={hit.name}
-                        price={hit.price}
-                        src={hit.image}
-                        style={{ maxWidth: 175 }}
-                      />
-                    </a>
-                  );
-                });
-                for (let index = hits.length; index < itemsPerRow; ++index) {
-                  images.push(<div style={{ width: 175 }}></div>);
-                }
-                return images;
-              })()}
-            </Stack>
+            <a
+              href={hit.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ textDecoration: "none", color: "black" }}
+            >
+              <ProductImage
+                company={hit.company}
+                name={hit.name}
+                price={hit.price}
+                src={hit.image}
+                style={{ maxWidth: 175 }}
+              />
+            </a>
           );
         })}
       </Stack>
