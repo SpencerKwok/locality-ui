@@ -349,7 +349,7 @@ function Inventory(props: InventoryProps) {
         direction="column"
         key={key}
         rowAlign="flex-start"
-        style={{ ...style, minHeight: 92, maxHeight: 92 }}
+        style={{ ...style, height: 92 }}
       >
         {index === 0 ? (
           <StyledListGroupItem
