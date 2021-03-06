@@ -4,6 +4,7 @@ import { geolocated, GeolocatedProps } from "react-geolocated";
 import PublicIp from "public-ip";
 import XSS from "xss";
 
+import Businesses from "./Businesses";
 import SearchBar from "./SearchBar";
 import SearchDAO from "./SearchDAO";
 import SearchResults from "./SearchResults";
@@ -29,6 +30,7 @@ export function Search(props: SearchProps) {
   const [query, setQuery] = useState(props.query || "");
   const [hits, setHits] = useState<Array<Product>>([]);
   const [searching, setSearching] = useState(false);
+  const [businessFilter, setBusinessFilter] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -37,6 +39,7 @@ export function Search(props: SearchProps) {
       }
 
       setSearching(true);
+      setBusinessFilter("");
 
       if (!location.ip) {
         location.ip = await PublicIp.v4();
@@ -66,7 +69,6 @@ export function Search(props: SearchProps) {
   };
 
   if (searching) {
-    console.log(props.width);
     if (props.width <= 460) {
       return (
         <Stack direction="column" rowAlign="flex-start">
@@ -92,9 +94,9 @@ export function Search(props: SearchProps) {
           />
           {hits.length > 0 && (
             <SearchResults
-              width={props.width - 48}
               hits={hits}
-              style={{ paddingLeft: 24, marginTop: -8 }}
+              query={query}
+              style={{ marginLeft: 24, marginTop: -8 }}
             />
           )}
         </Stack>
@@ -107,7 +109,6 @@ export function Search(props: SearchProps) {
             columnAlign="flex-start"
             rowAlign="center"
             spacing={-96}
-            wrap="wrap"
           >
             <div
               onClick={() => history.push("/")}
@@ -131,11 +132,29 @@ export function Search(props: SearchProps) {
             />
           </Stack>
           {hits.length > 0 && (
-            <SearchResults
-              width={props.width - 48}
-              hits={hits}
-              style={{ paddingLeft: 24, marginTop: -8 }}
-            />
+            <Stack
+              direction="row"
+              columnAlign="flex-start"
+              style={{ marginTop: -8 }}
+            >
+              <Businesses
+                onBusinessClick={(name) => {
+                  setBusinessFilter(name);
+                }}
+                currentBusiness={businessFilter}
+                hits={hits}
+                style={{ marginLeft: 24 }}
+              />
+              <SearchResults
+                hits={
+                  businessFilter === ""
+                    ? hits
+                    : hits.filter((value) => value.company === businessFilter)
+                }
+                query={query}
+                style={{ marginLeft: 12 }}
+              />
+            </Stack>
           )}
         </Stack>
       );

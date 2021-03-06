@@ -99,7 +99,7 @@ export interface CompaniesResponse extends BaseResponse {
 }
 
 export interface BaseProduct {
-  id: number;
+  objectID: string;
   name: string;
   image: string;
 }
@@ -113,7 +113,7 @@ export interface Product extends BaseProduct {
 }
 
 export const EmptyProduct: Product = {
-  id: -1,
+  objectID: "",
   name: "",
   image: "",
   company: "",

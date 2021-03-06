@@ -160,14 +160,20 @@ router.post(
   async (req, res, next) => {
     const f = async (companyId) => {
       const [products, error] = await psql.query(
-        `SELECT id, name, image FROM products WHERE company_id=${companyId} ORDER BY name`
+        `SELECT CONCAT(company_id, '_', id) AS object_id, name, image FROM products WHERE company_id=${companyId} ORDER BY name`
       );
       if (error) {
         res.send(JSON.stringify(error));
       } else {
         res.send(
           JSON.stringify({
-            products: products.rows,
+            products: products.rows.map(({ object_id, name, image }) => {
+              return {
+                objectID: object_id,
+                name,
+                image,
+              };
+            }),
           })
         );
       }
@@ -201,7 +207,7 @@ router.post(
       } else {
         res.send(
           JSON.stringify({
-            product: { ...object, id: req.body.productId },
+            product: { ...object },
           })
         );
       }
@@ -266,7 +272,7 @@ router.post(
             res.send(
               JSON.stringify({
                 product: {
-                  id: req.body.product.id,
+                  objectID: `${companyId}_${req.body.product.id}`,
                   name: req.body.product.name,
                   image: url,
                 },
@@ -371,7 +377,7 @@ router.post(
                 res.end(
                   JSON.stringify({
                     product: {
-                      id: next_product_id,
+                      objectID: `${companyId}_${next_product_id}`,
                       name: req.body.product.name,
                       image: url,
                     },
