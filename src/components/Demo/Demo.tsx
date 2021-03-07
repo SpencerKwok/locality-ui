@@ -18,7 +18,7 @@ function About(props: AboutProps) {
         <main>
           <video width={props.width * 0.8} controls>
             <source
-              src="https://res.cloudinary.com/hcory49pf/video/upload/v1613461638/demo/extension.mp4"
+              src="https://res.cloudinary.com/hcory49pf/video/upload/v1615108481/demo/extension-v2.mp4"
               type="video/mp4"
             />
           </video>
