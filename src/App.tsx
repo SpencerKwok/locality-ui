@@ -26,7 +26,7 @@ function App() {
           render={(props) => {
             return (
               <React.Fragment>
-                <Navigation />
+                <Navigation width={width} />
                 <About width={width} />
               </React.Fragment>
             );
@@ -38,7 +38,7 @@ function App() {
           render={(props) => {
             return (
               <React.Fragment>
-                <Navigation />
+                <Navigation width={width} />
                 <Contact width={width} />
               </React.Fragment>
             );
@@ -50,7 +50,7 @@ function App() {
           render={(props) => {
             return (
               <React.Fragment>
-                <Navigation />
+                <Navigation width={width} />
                 <Demo width={width} />
               </React.Fragment>
             );
@@ -63,7 +63,7 @@ function App() {
             const params = queryString.parse(props.location.search);
             return (
               <React.Fragment>
-                <Navigation />
+                <Navigation width={width} />
                 <Main width={width} query={params.q} />
               </React.Fragment>
             );
@@ -75,7 +75,7 @@ function App() {
           render={(props) => {
             return (
               <React.Fragment>
-                <Navigation />
+                <Navigation width={width} />
                 <SignIn width={width} />
               </React.Fragment>
             );
@@ -87,7 +87,7 @@ function App() {
           render={(props) => {
             return (
               <React.Fragment>
-                <Navigation />
+                <Navigation width={width} />
                 <SignUp width={width} />
               </React.Fragment>
             );
@@ -99,7 +99,7 @@ function App() {
           render={(props) => {
             return (
               <React.Fragment>
-                <Navigation />
+                <Navigation width={width} />
                 <Dashboard width={width} height={height} />
               </React.Fragment>
             );
@@ -109,7 +109,7 @@ function App() {
           path="/"
           render={(props) => (
             <React.Fragment>
-              <Navigation />
+              <Navigation width={width} />
               <Main width={width} />
             </React.Fragment>
           )}

@@ -26,7 +26,7 @@ app.use(
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", "https://res.cloudinary.com", "blob:"],
+        imgSrc: ["'self'", "https://res.cloudinary.com", "blob:", "data:"],
         connectSrc: [
           "'self'",
           "https://ipv4.icanhazip.com",
