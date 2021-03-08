@@ -95,7 +95,7 @@ export function Search(props: SearchProps) {
           {hits.length > 0 && (
             <SearchResults
               hits={hits}
-              query={query}
+              query={props.query || ""}
               style={{ marginLeft: 24, marginTop: -8 }}
             />
           )}
@@ -151,7 +151,7 @@ export function Search(props: SearchProps) {
                     ? hits
                     : hits.filter((value) => value.company === businessFilter)
                 }
-                query={query}
+                query={props.query || ""}
                 style={{ marginLeft: 12 }}
               />
             </Stack>
