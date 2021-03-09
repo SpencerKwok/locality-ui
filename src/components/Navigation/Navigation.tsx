@@ -15,6 +15,7 @@ const StyledNavLink = styled(Nav.Link)`
 
 const StyledNavbar = styled(Navbar)`
   background-color: #449ed7;
+  width: ${document.body.clientWidth}px;
 `;
 
 const StyledButton = styled(Button)`
