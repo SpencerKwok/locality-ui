@@ -4,19 +4,23 @@ if (process.env.ENV === "PROD") {
 }
 
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const cookieSession = require("cookie-session");
+const compression = require("compression");
 const express = require("express");
 const http = require("http");
 const path = require("path");
 const helmet = require("helmet");
 const enforce = require("express-sslify");
-const cookieParser = require("cookie-parser");
-const cookieSession = require("cookie-session");
 
 // Get port from Heroku dyno
 const port = process.env.PORT || 3001;
 
 // App setup
 const app = express();
+
+// Add gzip compression
+app.use(compression());
 
 // Add security layer
 app.use(

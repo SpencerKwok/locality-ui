@@ -10,6 +10,7 @@ import SearchDAO from "./SearchDAO";
 import SearchResults from "./SearchResults";
 import Stack from "../../common/components/Stack/Stack";
 import { Product } from "../../common/rpc/Schema";
+import { ReactComponent as LocalityLogo } from "./locality-logo.svg";
 
 interface Location {
   ip?: string;
@@ -71,6 +72,17 @@ export function Search(props: SearchProps) {
     if (props.width <= 460) {
       return (
         <Stack direction="column" rowAlign="flex-start">
+          <div
+            onClick={() => history.push("/")}
+            style={{
+              width: props.width,
+              maxWidth: 300,
+              overflow: "hidden",
+              marginLeft: -64,
+            }}
+          >
+            <LocalityLogo />
+          </div>
           <img
             src="/locality-logo.png"
             alt="Locality Logo"
@@ -104,12 +116,17 @@ export function Search(props: SearchProps) {
             rowAlign="center"
             spacing={-96}
           >
-            <img
-              src="/locality-logo.png"
-              alt="Locality Logo"
-              width={300}
-              style={{ marginLeft: -64 }}
-            />
+            <div
+              onClick={() => history.push("/")}
+              style={{
+                width: props.width,
+                maxWidth: 300,
+                overflow: "hidden",
+                marginLeft: -64,
+              }}
+            >
+              <LocalityLogo />
+            </div>
             <SearchBar
               onChange={searchBarOnChange}
               onEnter={searchBarOnEnter}
@@ -153,12 +170,20 @@ export function Search(props: SearchProps) {
   return (
     <Stack direction="row" columnAlign="center" style={{ marginTop: -24 }}>
       <Stack direction="column" rowAlign="center">
-        <img src="/locality-logo.png" alt="Locality Logo" width={500} />
+        <div
+          style={{
+            width: props.width,
+            maxWidth: 500,
+            overflow: "hidden",
+          }}
+        >
+          <LocalityLogo />
+        </div>
         <SearchBar
           onChange={searchBarOnChange}
           onEnter={searchBarOnEnter}
           onReset={() => setQuery("")}
-          style={{ marginTop: -24 }}
+          style={{ marginTop: -36 }}
           width={Math.max(props.width * 0.3, 225)}
           value={query}
           autoFocus
