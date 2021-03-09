@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import Cookie from "js-cookie";
-import { Button, Nav, Navbar, NavDropdown } from "react-bootstrap";
+import { Button, Nav, Navbar } from "react-bootstrap";
 
 import NavigationDAO from "./NavigationDAO";
 
@@ -15,7 +15,6 @@ const StyledNavLink = styled(Nav.Link)`
 
 const StyledNavbar = styled(Navbar)`
   background-color: #449ed7;
-  width: ${document.body.clientWidth}px;
 `;
 
 const StyledButton = styled(Button)`
@@ -27,10 +26,16 @@ const StyledButton = styled(Button)`
 function Navigation(props: NavigationProps) {
   const companyId = Cookie.get("companyId");
 
-  if (props.width <= 520) {
+  if (props.width <= 600) {
     return (
       <StyledNavbar collapseOnSelect expand="lg" variant="dark">
-        <span></span>
+        <a
+          href="https://www.instagram.com/locality.info/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img src="/instagram-logo.png" alt="Locality Instagram" width={32} />
+        </a>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto">
@@ -72,6 +77,13 @@ function Navigation(props: NavigationProps) {
 
   return (
     <StyledNavbar variant="dark">
+      <a
+        href="https://www.instagram.com/locality.info/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img src="/instagram-logo.png" alt="Locality Instagram" width={32} />
+      </a>
       <Nav className="ml-auto">
         <StyledNavLink href="/">Home</StyledNavLink>
         <StyledNavLink href="/demo">Demo</StyledNavLink>
