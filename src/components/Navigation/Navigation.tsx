@@ -83,7 +83,7 @@ function Navigation(props: NavigationProps) {
         target="_blank"
         rel="noopener noreferrer"
       >
-        <img src="/instagram-logo.png" alt="Locality Instagram" width={32} />
+        <InstagramLogo />
       </a>
       <Nav className="ml-auto">
         <StyledNavLink href="/">Home</StyledNavLink>
