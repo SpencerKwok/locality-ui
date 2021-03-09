@@ -18,7 +18,7 @@ function Dashboard(props: DashboardProps) {
   }
 
   return (
-    <div style={{ padding: 12 }}>
+    <div style={{ padding: "12px 0px 0px 12px" }}>
       <Tabs defaultActiveKey="inventory">
         <Tab eventKey="inventory" title="Inventory">
           <Inventory width={props.width} height={props.height} />
