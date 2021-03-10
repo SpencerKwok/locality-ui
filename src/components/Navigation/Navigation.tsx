@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import Cookie from "js-cookie";
 import { Button, Nav, Navbar } from "react-bootstrap";
+import { ReactComponent as InstagramLogo } from "./instagram-logo.svg";
 
 import NavigationDAO from "./NavigationDAO";
 
@@ -34,7 +35,7 @@ function Navigation(props: NavigationProps) {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <img src="/instagram-logo.png" alt="Locality Instagram" width={32} />
+          <InstagramLogo />
         </a>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
@@ -82,7 +83,7 @@ function Navigation(props: NavigationProps) {
         target="_blank"
         rel="noopener noreferrer"
       >
-        <img src="/instagram-logo.png" alt="Locality Instagram" width={32} />
+        <InstagramLogo />
       </a>
       <Nav className="ml-auto">
         <StyledNavLink href="/">Home</StyledNavLink>
