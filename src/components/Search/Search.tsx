@@ -72,7 +72,7 @@ export function Search(props: SearchProps) {
     if (props.width <= 460) {
       return (
         <Stack direction="column" rowAlign="flex-start">
-          <div
+          <header
             onClick={() => history.push("/")}
             style={{
               width: props.width,
@@ -82,7 +82,7 @@ export function Search(props: SearchProps) {
             }}
           >
             <LocalityLogo />
-          </div>
+          </header>
           <img
             src="/locality-logo.png"
             alt="Locality Logo"
@@ -116,7 +116,7 @@ export function Search(props: SearchProps) {
             rowAlign="center"
             spacing={-96}
           >
-            <div
+            <header
               onClick={() => history.push("/")}
               style={{
                 width: props.width,
@@ -126,7 +126,7 @@ export function Search(props: SearchProps) {
               }}
             >
               <LocalityLogo />
-            </div>
+            </header>
             <SearchBar
               onChange={searchBarOnChange}
               onEnter={searchBarOnEnter}
@@ -170,7 +170,7 @@ export function Search(props: SearchProps) {
   return (
     <Stack direction="row" columnAlign="center" style={{ marginTop: -24 }}>
       <Stack direction="column" rowAlign="center">
-        <div
+        <header
           style={{
             width: props.width,
             maxWidth: 500,
@@ -178,7 +178,7 @@ export function Search(props: SearchProps) {
           }}
         >
           <LocalityLogo />
-        </div>
+        </header>
         <SearchBar
           onChange={searchBarOnChange}
           onEnter={searchBarOnEnter}
