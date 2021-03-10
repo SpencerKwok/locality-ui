@@ -20,7 +20,7 @@ const port = process.env.PORT || 3001;
 const app = express();
 
 // Add gzip compression
-app.use(compression());
+app.use(compression({ level: 1 }));
 
 // Add security layer
 app.use(

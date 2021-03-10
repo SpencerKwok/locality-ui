@@ -12,7 +12,7 @@ function About(props: AboutProps) {
       <Stack direction="column" rowAlign="center" style={{ marginTop: 24 }}>
         <header>
           <h3 style={{ paddingLeft: 24, paddingRight: 24 }}>
-            Extension -&gt; Locality -&gt; Store
+            Chrome Extension Demo
           </h3>
         </header>
         <main>
