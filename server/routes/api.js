@@ -249,9 +249,13 @@ router.post(
           {
             objectID: xss(`${companyId}_${req.body.product.id}`),
             name: xss(req.body.product.name),
-            primary_keywords: xss(req.body.product.primaryKeywords),
-            secondary_keywords: xss(req.body.product.secondaryKeywords),
-            price: xss(req.body.product.price),
+            primary_keywords: req.body.product.primaryKeywords.map((x) =>
+              xss(x)
+            ),
+            secondary_keywords: req.body.product.secondaryKeywords.map((x) =>
+              xss(x)
+            ),
+            price: req.body.product.price,
             link: xss(req.body.product.link),
             image: xss(url),
           },
@@ -263,7 +267,12 @@ router.post(
         } else {
           const [_, psqlError] = await psql.query(
             xss(
-              `UPDATE products SET name='${req.body.product.name}', image='${url}' WHERE company_id=${companyId} AND id=${req.body.product.id}`
+              `UPDATE products SET name='${req.body.product.name.replace(
+                "'",
+                "''"
+              )}', image='${url}' WHERE company_id=${companyId} AND id=${
+                req.body.product.id
+              }`
             )
           );
           if (psqlError) {
@@ -327,8 +336,8 @@ router.post(
           res.send(JSON.stringify({ error: cloudinaryError }));
         } else {
           const geolocation = [];
-          const latitude = xss(req.body.latitude.split(","));
-          const longitude = xss(req.body.longitude.split(","));
+          const latitude = req.body.latitude.split(",").map((x) => xss(x));
+          const longitude = req.body.longitude.split(",").map((x) => xss(x));
           for (
             let i = 0;
             i < Math.min(latitude.length, longitude.length);
@@ -346,9 +355,13 @@ router.post(
               _geoloc: geolocation,
               name: xss(req.body.product.name),
               company: xss(req.body.companyName),
-              primary_keywords: xss(req.body.product.primaryKeywords),
-              secondary_keywords: xss(req.body.product.secondaryKeywords),
-              price: xss(req.body.product.price),
+              primary_keywords: req.body.product.primaryKeywords.map((x) =>
+                xss(x)
+              ),
+              secondary_keywords: req.body.product.secondaryKeywords.map((x) =>
+                xss(x)
+              ),
+              price: req.body.product.price,
               link: xss(req.body.product.link),
               image: xss(url),
             },
@@ -360,7 +373,10 @@ router.post(
           } else {
             const [_, psqlErrorAddProduct] = await psql.query(
               xss(
-                `INSERT INTO products (company_id, id, name, image) VALUES (${companyId}, ${next_product_id}, '${req.body.product.name}', '${url}')`
+                `INSERT INTO products (company_id, id, name, image) VALUES (${companyId}, ${next_product_id}, '${req.body.product.name.replace(
+                  "'",
+                  "''"
+                )}', '${url}')`
               )
             );
 
