@@ -14,6 +14,10 @@ function About(props: AboutProps) {
         <header>
           <Stack direction="column" rowAlign="center" style={{ marginTop: 24 }}>
             <h3>Chrome Extension Demo</h3>
+            <h5 style={{ textAlign: "center" }}>
+              Want your products on Locality? <a href="/signup">Click here</a>{" "}
+              to sign up today!
+            </h5>
           </Stack>
         </header>
         <main>
@@ -23,10 +27,6 @@ function About(props: AboutProps) {
               type="video/mp4"
             />
           </video>
-          <h5 style={{ textAlign: "center" }}>
-            Want your products on Locality? <a href="/signup">Click here</a> to
-            sign up today!
-          </h5>
         </main>
       </Stack>
     </Stack>
