@@ -83,12 +83,6 @@ export function Search(props: SearchProps) {
           >
             <LocalityLogo />
           </header>
-          <img
-            src="/locality-logo.png"
-            alt="Locality Logo"
-            width={300}
-            style={{ marginLeft: -64 }}
-          />
           <SearchBar
             onChange={searchBarOnChange}
             onEnter={searchBarOnEnter}
