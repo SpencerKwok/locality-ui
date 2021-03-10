@@ -52,8 +52,6 @@ export interface ContactUsRequest {
   email: string;
   message: string;
   name: string;
-  productNum: number;
-  productTypes: string;
 }
 
 export interface ContactUsResponse extends BaseResponse {}
