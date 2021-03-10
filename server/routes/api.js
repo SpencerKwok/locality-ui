@@ -84,15 +84,13 @@ router.post(
   async (req, res, next) => {
     const email = xss(req.body.email || "");
     const name = xss(req.body.name || "");
-    const productTypes = xss(req.body.productTypes || "");
-    const productNum = xss(req.body.productNum || "");
     const message = xss(req.body.message || "");
 
     const selfMailOptions = {
       from: process.env.EMAIL_USER,
       to: process.env.EMAIL_USER,
       subject: "New Customer!",
-      html: `Name: ${name}<br/>Email: ${email}<br/>Product Types: ${productTypes}<br/>Number of products: ${productNum}<br/>Message: ${message}`,
+      html: `Name: ${name}<br/>Email: ${email}<br/>Message: ${message}`,
     };
 
     const customerMailOptions = {
@@ -239,7 +237,7 @@ router.post(
         {
           exif: false,
           format: "webp",
-          public_id: `${companyId}/${req.body.product.id}`,
+          public_id: xss(`${companyId}/${req.body.product.id}`),
           unique_filename: false,
           overwrite: true,
         }
@@ -249,13 +247,13 @@ router.post(
       } else {
         const algoliaError = await algolia.partialUpdateObject(
           {
-            objectID: `${companyId}_${req.body.product.id}`,
-            name: req.body.product.name,
-            primary_keywords: req.body.product.primaryKeywords,
-            secondary_keywords: req.body.product.secondaryKeywords,
-            price: req.body.product.price,
-            link: req.body.product.link,
-            image: url,
+            objectID: xss(`${companyId}_${req.body.product.id}`),
+            name: xss(req.body.product.name),
+            primary_keywords: xss(req.body.product.primaryKeywords),
+            secondary_keywords: xss(req.body.product.secondaryKeywords),
+            price: xss(req.body.product.price),
+            link: xss(req.body.product.link),
+            image: xss(url),
           },
           { createIfNotExists: false }
         );
@@ -264,7 +262,9 @@ router.post(
           res.send(JSON.stringify({ error: algoliaError }));
         } else {
           const [_, psqlError] = await psql.query(
-            `UPDATE products SET name='${req.body.product.name}', image='${url}' WHERE company_id=${companyId} AND id=${req.body.product.id}`
+            xss(
+              `UPDATE products SET name='${req.body.product.name}', image='${url}' WHERE company_id=${companyId} AND id=${req.body.product.id}`
+            )
           );
           if (psqlError) {
             res.send(JSON.stringify({ error: psqlError }));
@@ -272,9 +272,9 @@ router.post(
             res.send(
               JSON.stringify({
                 product: {
-                  objectID: `${companyId}_${req.body.product.id}`,
-                  name: req.body.product.name,
-                  image: url,
+                  objectID: xss(`${companyId}_${req.body.product.id}`),
+                  name: xss(req.body.product.name),
+                  image: xss(url),
                 },
               })
             );
@@ -317,7 +317,7 @@ router.post(
           {
             exif: false,
             format: "webp",
-            public_id: `${companyId}/${next_product_id}`,
+            public_id: xss(`${companyId}/${next_product_id}`),
             unique_filename: false,
             overwrite: true,
           }
@@ -327,8 +327,8 @@ router.post(
           res.send(JSON.stringify({ error: cloudinaryError }));
         } else {
           const geolocation = [];
-          const latitude = req.body.latitude.split(",");
-          const longitude = req.body.longitude.split(",");
+          const latitude = xss(req.body.latitude.split(","));
+          const longitude = xss(req.body.longitude.split(","));
           for (
             let i = 0;
             i < Math.min(latitude.length, longitude.length);
@@ -342,15 +342,15 @@ router.post(
 
           const algoliaError = await algolia.saveObject(
             {
-              objectID: `${companyId}_${next_product_id}`,
+              objectID: xss(`${companyId}_${next_product_id}`),
               _geoloc: geolocation,
-              name: req.body.product.name,
-              company: req.body.companyName,
-              primary_keywords: req.body.product.primaryKeywords,
-              secondary_keywords: req.body.product.secondaryKeywords,
-              price: req.body.product.price,
-              link: req.body.product.link,
-              image: url,
+              name: xss(req.body.product.name),
+              company: xss(req.body.companyName),
+              primary_keywords: xss(req.body.product.primaryKeywords),
+              secondary_keywords: xss(req.body.product.secondaryKeywords),
+              price: xss(req.body.product.price),
+              link: xss(req.body.product.link),
+              image: xss(url),
             },
             { autoGenerateObjectIDIfNotExist: false }
           );
@@ -359,16 +359,20 @@ router.post(
             res.send(JSON.stringify({ error: algoliaError }));
           } else {
             const [_, psqlErrorAddProduct] = await psql.query(
-              `INSERT INTO products (company_id, id, name, image) VALUES (${companyId}, ${next_product_id}, '${req.body.product.name}', '${url}')`
+              xss(
+                `INSERT INTO products (company_id, id, name, image) VALUES (${companyId}, ${next_product_id}, '${req.body.product.name}', '${url}')`
+              )
             );
 
             if (psqlErrorAddProduct) {
               res.send(JSON.stringify({ error: psqlErrorAddProduct }));
             } else {
               const [_, psqlErrorUpdateNextId] = await psql.query(
-                `UPDATE companies SET next_product_id=${
-                  next_product_id + 1
-                } WHERE id=${companyId}`
+                xss(
+                  `UPDATE companies SET next_product_id=${
+                    next_product_id + 1
+                  } WHERE id=${companyId}`
+                )
               );
 
               if (psqlErrorUpdateNextId) {
@@ -412,19 +416,21 @@ router.post(
   async (req, res, next) => {
     const f = async (companyId) => {
       const cloudinaryError = await cloudinary.delete([
-        `${companyId}/${req.body.productId}`,
+        xss(`${companyId}/${req.body.productId}`),
       ]);
       if (cloudinaryError) {
         res.send(JSON.stringify({ error: cloudinaryError }));
       } else {
         const algoliaError = await algolia.deleteObject(
-          `${companyId}_${req.body.productId}`
+          xss(`${companyId}_${req.body.productId}`)
         );
         if (algoliaError) {
           res.send(JSON.stringify({ error: algoliaError }));
         } else {
           const [_, psqlError] = await psql.query(
-            `DELETE FROM products WHERE company_id=${companyId} AND id=${req.body.productId}`
+            xss(
+              `DELETE FROM products WHERE company_id=${companyId} AND id=${req.body.productId}`
+            )
           );
           if (psqlError) {
             res.send(JSON.stringify({ error: psqlError }));
@@ -567,7 +573,9 @@ router.post(
     try {
       let latLng = {};
       await fetch(
-        `http://www.mapquestapi.com/geocoding/v1/address?key=${process.env.MAPQUEST_KEY}&maxResults=1&location=${address},${city},${province},${country}`
+        xss(
+          `http://www.mapquestapi.com/geocoding/v1/address?key=${process.env.MAPQUEST_KEY}&maxResults=1&location=${address},${city},${province},${country}`
+        )
       )
         .then((res) => res.json())
         .then(({ results }) => (latLng = results[0].locations[0].latLng));
@@ -581,7 +589,9 @@ router.post(
       } else {
         const companyId = company.rows[0].id + 1;
         const [_, psqlErrorAddCompany] = await psql.query(
-          `INSERT INTO companies (id, name, address, city, province, country, latitude, longitude) VALUES ('${companyId}', '${companyName}', '${address}', '${city}', '${province}', '${country}', '${latLng.lat}', '${latLng.lng}')`
+          xss(
+            `INSERT INTO companies (id, name, address, city, province, country, latitude, longitude) VALUES ('${companyId}', '${companyName}', '${address}', '${city}', '${province}', '${country}', '${latLng.lat}', '${latLng.lng}')`
+          )
         );
 
         if (psqlErrorAddCompany) {
@@ -589,7 +599,9 @@ router.post(
         } else {
           const hash = await bcrypt.hash(password, 12);
           const [_, psqlErrorAddUser] = await psql.query(
-            `INSERT INTO users (username, password, first_name, last_name, id) VALUES ('${email}', '${hash}', '${firstName}', '${lastName}', ${companyId})`
+            xss(
+              `INSERT INTO users (username, password, first_name, last_name, id) VALUES ('${email}', '${hash}', '${firstName}', '${lastName}', ${companyId})`
+            )
           );
           if (psqlErrorAddUser) {
             res.send(JSON.stringify({ error: psqlErrorAddUser }));

@@ -20,8 +20,6 @@ export interface ContactProps extends React.HTMLProps<HTMLDivElement> {
 interface FormRequest {
   email: string;
   name: string;
-  productTypes: string;
-  productNum: string;
   message: string;
 }
 
@@ -32,17 +30,7 @@ const FormSchema = yup.object().shape({
     .required("Required")
     .max(255, "Too long"),
   name: yup.string().required("Required").max(255, "Too long"),
-  productTypes: yup
-    .string()
-    .required("Required")
-    .matches(/[a-zA-Z0-9,]+/g, "Alphanumeric and comma characters only")
-    .max(255, "Too long"),
-  productNum: yup
-    .string()
-    .required("Required")
-    .matches(/^[1-9][0-9]*$/g, "Must be a positive integer")
-    .max(255, "Too long"),
-  message: yup.string().optional().max(500, "Too long"),
+  message: yup.string().required("Required").max(500, "Too long"),
 });
 
 function Contact(props: ContactProps) {
@@ -54,8 +42,6 @@ function Contact(props: ContactProps) {
       .contactus({
         email: XSS(values.email),
         name: XSS(values.name),
-        productTypes: XSS(values.productTypes),
-        productNum: parseInt(values.productNum),
         message: XSS(values.message),
       })
       .then((res) => {
@@ -103,8 +89,6 @@ function Contact(props: ContactProps) {
                 {
                   email: "",
                   name: "",
-                  productTypes: "",
-                  productNum: "",
                   message: "",
                 } as FormRequest
               }
@@ -150,39 +134,7 @@ function Contact(props: ContactProps) {
                     {createFormErrorMessage("email")}
                   </Form.Group>
                   <Form.Group>
-                    <FormLabel>What type of products do you sell?</FormLabel>
-                    <FormInputGroup size="lg" width="100%">
-                      <FormControl
-                        aria-label="Large"
-                        id="productTypes"
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        placeholder="Enter types"
-                        type="text"
-                        value={values.productTypes}
-                      />
-                    </FormInputGroup>
-                    {createFormErrorMessage("productTypes")}
-                  </Form.Group>
-                  <Form.Group>
-                    <FormLabel>
-                      How many products do you want to add to Locality?
-                    </FormLabel>
-                    <FormInputGroup size="lg" width="100%">
-                      <FormControl
-                        aria-label="Large"
-                        id="productNum"
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        placeholder="Enter number"
-                        type="text"
-                        value={values.productNum}
-                      />
-                    </FormInputGroup>
-                    {createFormErrorMessage("productNum")}
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>Message (Optional)</Form.Label>
+                    <FormLabel>Message</FormLabel>
                     <FormInputGroup size="lg" width="100%">
                       <FormControl
                         as="textarea"
