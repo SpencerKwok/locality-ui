@@ -1,12 +1,14 @@
 const algolia = require("../algolia/client");
 const bcrypt = require("bcryptjs");
 const cloudinary = require("../cloudinary/client");
+const emailValidator = require("email-validator");
 const fetch = require("node-fetch");
 const psql = require("../postgresql/client");
 const nodemailer = require("nodemailer");
 const passport = require("passport");
 const rateLimit = require("express-rate-limit");
 const router = require("express").Router();
+const sqlString = require("sqlstring");
 const xss = require("xss");
 
 const transporter = nodemailer.createTransport({
@@ -120,11 +122,15 @@ router.post(
   }),
   async (req, res, next) => {
     const f = async (companyId) => {
-      const [companies, error] = await psql.query(
-        `SELECT * FROM companies ${
-          companyId !== 0 ? `WHERE id=${companyId}` : ""
-        } ORDER BY name`
-      );
+      const query =
+        companyId === 0
+          ? "SELECT * FROM companies ORDER BY name"
+          : sqlString.format(
+              "SELECT * FROM companies WHERE id=? ORDER BY name",
+              [companyId]
+            );
+
+      const [companies, error] = await psql.query(query);
       if (error) {
         res.send(JSON.stringify(error));
       } else {
@@ -136,13 +142,20 @@ router.post(
       }
     };
 
-    let companyId = req.cookies["companyId"];
+    const companyId = req.cookies["companyId"];
     if (!companyId) {
       res.status(403).end();
-    } else if (companyId === "0") {
-      await f(0);
-    } else {
-      await f(companyId);
+      return;
+    }
+
+    try {
+      await f(parseInt(companyId));
+    } catch (err) {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid company id" },
+        })
+      );
     }
   }
 );
@@ -158,32 +171,55 @@ router.post(
   async (req, res, next) => {
     const f = async (companyId) => {
       const [products, error] = await psql.query(
-        `SELECT CONCAT(company_id, '_', id) AS object_id, name, image FROM products WHERE company_id=${companyId} ORDER BY name`
+        sqlString.format(
+          "SELECT CONCAT(company_id, '_', id) AS object_id, name, image FROM products WHERE company_id=? ORDER BY name",
+          [companyId]
+        )
       );
       if (error) {
         res.send(JSON.stringify(error));
-      } else {
-        res.send(
-          JSON.stringify({
-            products: products.rows.map(({ object_id, name, image }) => {
-              return {
-                objectID: object_id,
-                name,
-                image,
-              };
-            }),
-          })
-        );
+        return;
       }
+
+      res.send(
+        JSON.stringify({
+          products: products.rows.map(({ object_id, name, image }) => {
+            return {
+              objectID: object_id,
+              name,
+              image,
+            };
+          }),
+        })
+      );
     };
 
     const companyId = req.cookies["companyId"];
     if (!companyId) {
       res.status(403).end();
-    } else if (companyId === "0") {
-      await f(req.body.companyId);
+      return;
+    }
+
+    if (companyId === "0") {
+      if (Number.isInteger(req.body.companyId)) {
+        await f(req.body.companyId);
+      } else {
+        res.send(
+          JSON.stringify({
+            error: { code: 400, message: "Invalid company id" },
+          })
+        );
+      }
     } else {
-      await f(companyId);
+      try {
+        await f(parseInt(companyId));
+      } catch (err) {
+        res.send(
+          JSON.stringify({
+            error: { code: 400, message: "Invalid company id" },
+          })
+        );
+      }
     }
   }
 );
@@ -197,8 +233,8 @@ router.post(
       "Too many product requests from this IP, please try again after 5 minutes",
   }),
   async (req, res, next) => {
-    const f = async (companyId) => {
-      const objectID = `${companyId}_${req.body.productId}`;
+    const f = async (companyId, productId) => {
+      const objectID = `${companyId}_${productId}`;
       const [object, error] = await algolia.getObject(objectID);
       if (error) {
         res.send(JSON.stringify({ error }));
@@ -214,10 +250,39 @@ router.post(
     const companyId = req.cookies["companyId"];
     if (!companyId) {
       res.status(403).end();
-    } else if (companyId === "0") {
-      await f(req.body.companyId);
+      return;
+    }
+
+    const productId = req.body.id;
+    if (!Number.isInteger(productId)) {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid product id" },
+        })
+      );
+      return;
+    }
+
+    if (companyId === "0") {
+      if (Number.isInteger(req.body.companyId)) {
+        await f(req.body.companyId, productId);
+      } else {
+        res.send(
+          JSON.stringify({
+            error: { code: 400, message: "Invalid company id" },
+          })
+        );
+      }
     } else {
-      await f(companyId);
+      try {
+        await f(parseInt(companyId), productId);
+      } catch (err) {
+        res.send(
+          JSON.stringify({
+            error: { code: 400, message: "Invalid company id" },
+          })
+        );
+      }
     }
   }
 );
@@ -231,33 +296,35 @@ router.post(
       "Too many product update requests from this IP, please try again after 5 minutes",
   }),
   async (req, res, next) => {
-    const f = async (companyId) => {
-      const [url, cloudinaryError] = await cloudinary.upload(
-        req.body.product.image,
-        {
-          exif: false,
-          format: "webp",
-          public_id: xss(`${companyId}/${req.body.product.id}`),
-          unique_filename: false,
-          overwrite: true,
-        }
-      );
+    const f = async (
+      companyId,
+      productId,
+      name,
+      image,
+      primaryKeywords,
+      secondaryKeywords,
+      price,
+      link
+    ) => {
+      const [url, cloudinaryError] = await cloudinary.upload(image, {
+        exif: false,
+        format: "webp",
+        public_id: `${companyId}/${productId}`,
+        unique_filename: false,
+        overwrite: true,
+      });
       if (cloudinaryError) {
         res.send(JSON.stringify({ errror: cloudinaryError }));
       } else {
         const algoliaError = await algolia.partialUpdateObject(
           {
-            objectID: xss(`${companyId}_${req.body.product.id}`),
-            name: xss(req.body.product.name),
-            primary_keywords: req.body.product.primaryKeywords.map((x) =>
-              xss(x)
-            ),
-            secondary_keywords: req.body.product.secondaryKeywords.map((x) =>
-              xss(x)
-            ),
-            price: req.body.product.price,
-            link: xss(req.body.product.link),
-            image: xss(url),
+            objectID: `${companyId}_${productId}`,
+            name: name,
+            primary_keywords: primaryKeywords,
+            secondary_keywords: secondaryKeywords,
+            price: price,
+            link: link,
+            image: url,
           },
           { createIfNotExists: false }
         );
@@ -265,25 +332,20 @@ router.post(
         if (algoliaError) {
           res.send(JSON.stringify({ error: algoliaError }));
         } else {
-          const [_, psqlError] = await psql.query(
-            xss(
-              `UPDATE products SET name='${req.body.product.name.replace(
-                "'",
-                "''"
-              )}', image='${url}' WHERE company_id=${companyId} AND id=${
-                req.body.product.id
-              }`
-            )
+          const query = sqlString.format(
+            `UPDATE products SET name=E?, image=? WHERE company_id=? AND id=?`,
+            [name, url, companyId, productId]
           );
+          const [_, psqlError] = await psql.query(query);
           if (psqlError) {
             res.send(JSON.stringify({ error: psqlError }));
           } else {
             res.send(
               JSON.stringify({
                 product: {
-                  objectID: xss(`${companyId}_${req.body.product.id}`),
-                  name: xss(req.body.product.name),
-                  image: xss(url),
+                  objectID: `${companyId}_${productId}`,
+                  name: name,
+                  image: url,
                 },
               })
             );
@@ -295,10 +357,120 @@ router.post(
     const companyId = req.cookies["companyId"];
     if (!companyId) {
       res.status(403).end();
-    } else if (companyId === "0") {
-      await f(req.body.companyId);
+      return;
+    }
+
+    const productId = req.body.product.id;
+    if (!Number.isInteger(productId)) {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid product id" },
+        })
+      );
+      return;
+    }
+
+    const image = xss(req.body.product.image || "");
+    if (image === "") {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid product image" },
+        })
+      );
+      return;
+    }
+
+    const name = xss(req.body.product.name || "");
+    if (name === "") {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid product name" },
+        })
+      );
+      return;
+    }
+
+    let primaryKeywords = req.body.product.primaryKeywords;
+    if (!Array.isArray(primaryKeywords)) {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid primary keywords" },
+        })
+      );
+      return;
+    }
+    primaryKeywords = primaryKeywords.map((x) => xss(x));
+
+    let secondaryKeywords = req.body.product.secondaryKeywords;
+    if (!Array.isArray(primaryKeywords)) {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid secondary keywords" },
+        })
+      );
+      return;
+    }
+    secondaryKeywords = secondaryKeywords.map((x) => xss(x));
+
+    let price = req.body.product.price;
+    if (typeof price !== "number") {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid price" },
+        })
+      );
+      return;
+    }
+    price = parseFloat(price.toFixed(2));
+
+    const link = xss(req.body.product.link || "");
+    if (link === "") {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid product link" },
+        })
+      );
+      return;
+    }
+
+    if (companyId === "0") {
+      if (Number.isInteger(req.body.companyId)) {
+        await f(
+          req.body.companyId,
+          productId,
+          name,
+          image,
+          primaryKeywords,
+          secondaryKeywords,
+          price,
+          link
+        );
+      } else {
+        res.send(
+          JSON.stringify({
+            error: { code: 400, message: "Invalid company id" },
+          })
+        );
+      }
     } else {
-      await f(companyId);
+      try {
+        await f(
+          parseInt(companyId),
+          productId,
+          name,
+          image,
+          primaryKeywords,
+          secondaryKeywords,
+          price,
+          link
+        );
+      } catch (err) {
+        res.send(
+          JSON.stringify({
+            error: { code: 400, message: "Invalid company id" },
+          })
+        );
+      }
     }
   }
 );
@@ -311,33 +483,41 @@ router.post(
     message:
       "Too many product update requests from this IP, please try again after 5 minutes",
   }),
-  async (req, res, next) => {
-    const f = async (companyId) => {
-      const [nextIdResponse, psqlErrorGetNextId] = await psql.query(
-        `SELECT next_product_id FROM companies WHERE id=${companyId}`
-      );
 
+  async (req, res, next) => {
+    const f = async (
+      companyId,
+      companyName,
+      productName,
+      image,
+      latitude,
+      longitude,
+      primaryKeywords,
+      secondaryKeywords,
+      price,
+      link
+    ) => {
+      const [nextIdResponse, psqlErrorGetNextId] = await psql.query(
+        sqlString.format("SELECT next_product_id FROM companies WHERE id=?", [
+          companyId,
+        ])
+      );
       if (psqlErrorGetNextId) {
         res.send(JSON.stringify({ error: psqlErrorGetNextId }));
       } else {
         const next_product_id = nextIdResponse.rows[0].next_product_id;
-        const [url, cloudinaryError] = await cloudinary.upload(
-          req.body.product.image,
-          {
-            exif: false,
-            format: "webp",
-            public_id: xss(`${companyId}/${next_product_id}`),
-            unique_filename: false,
-            overwrite: true,
-          }
-        );
+        const [url, cloudinaryError] = await cloudinary.upload(image, {
+          exif: false,
+          format: "webp",
+          public_id: `${companyId}/${next_product_id}`,
+          unique_filename: false,
+          overwrite: true,
+        });
 
         if (cloudinaryError) {
           res.send(JSON.stringify({ error: cloudinaryError }));
         } else {
           const geolocation = [];
-          const latitude = req.body.latitude.split(",").map((x) => xss(x));
-          const longitude = req.body.longitude.split(",").map((x) => xss(x));
           for (
             let i = 0;
             i < Math.min(latitude.length, longitude.length);
@@ -351,19 +531,15 @@ router.post(
 
           const algoliaError = await algolia.saveObject(
             {
-              objectID: xss(`${companyId}_${next_product_id}`),
+              objectID: `${companyId}_${next_product_id}`,
               _geoloc: geolocation,
-              name: xss(req.body.product.name),
-              company: xss(req.body.companyName),
-              primary_keywords: req.body.product.primaryKeywords.map((x) =>
-                xss(x)
-              ),
-              secondary_keywords: req.body.product.secondaryKeywords.map((x) =>
-                xss(x)
-              ),
-              price: req.body.product.price,
-              link: xss(req.body.product.link),
-              image: xss(url),
+              name: productName,
+              company: companyName,
+              primary_keywords: primaryKeywords,
+              secondary_keywords: secondaryKeywords,
+              price: price,
+              link: link,
+              image: url,
             },
             { autoGenerateObjectIDIfNotExist: false }
           );
@@ -372,25 +548,20 @@ router.post(
             res.send(JSON.stringify({ error: algoliaError }));
           } else {
             const [_, psqlErrorAddProduct] = await psql.query(
-              xss(
-                `INSERT INTO products (company_id, id, name, image) VALUES (${companyId}, ${next_product_id}, '${req.body.product.name.replace(
-                  "'",
-                  "''"
-                )}', '${url}')`
+              sqlString.format(
+                "INSERT INTO products (company_id, id, name, image) VALUES (?, ?, E?, ?)",
+                [companyId, next_product_id, productName, url]
               )
             );
-
             if (psqlErrorAddProduct) {
               res.send(JSON.stringify({ error: psqlErrorAddProduct }));
             } else {
               const [_, psqlErrorUpdateNextId] = await psql.query(
-                xss(
-                  `UPDATE companies SET next_product_id=${
-                    next_product_id + 1
-                  } WHERE id=${companyId}`
+                sqlString.format(
+                  "UPDATE companies SET next_product_id=? WHERE id=?",
+                  [next_product_id + 1, companyId]
                 )
               );
-
               if (psqlErrorUpdateNextId) {
                 res.send(JSON.stringify({ error: psqlErrorUpdateNextId }));
               } else {
@@ -398,7 +569,7 @@ router.post(
                   JSON.stringify({
                     product: {
                       objectID: `${companyId}_${next_product_id}`,
-                      name: req.body.product.name,
+                      name: productName,
                       image: url,
                     },
                   })
@@ -413,10 +584,146 @@ router.post(
     const companyId = req.cookies["companyId"];
     if (!companyId) {
       res.status(403).end();
-    } else if (companyId === "0") {
-      await f(req.body.companyId);
+      return;
+    }
+
+    const companyName = xss(req.body.companyName || "");
+    if (companyName === "") {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid company name" },
+        })
+      );
+      return;
+    }
+
+    const productName = xss(req.body.product.name || "");
+    if (productName === "") {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid product name" },
+        })
+      );
+      return;
+    }
+
+    const image = xss(req.body.product.image || "");
+    if (image === "") {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid product image" },
+        })
+      );
+      return;
+    }
+
+    let latitude = xss(req.body.latitude || "");
+    if (latitude === "") {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid latitude" },
+        })
+      );
+      return;
+    }
+    latitude.split(",").map((x) => xss(x));
+
+    let longitude = xss(req.body.longitude || "");
+    if (longitude === "") {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid longitude" },
+        })
+      );
+      return;
+    }
+    longitude.split(",").map((x) => xss(x));
+
+    let primaryKeywords = req.body.product.primaryKeywords;
+    if (!Array.isArray(primaryKeywords)) {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid primary keywords" },
+        })
+      );
+      return;
+    }
+    primaryKeywords = primaryKeywords.map((x) => xss(x));
+
+    let secondaryKeywords = req.body.product.secondaryKeywords;
+    if (!Array.isArray(primaryKeywords)) {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid secondary keywords" },
+        })
+      );
+      return;
+    }
+    secondaryKeywords = secondaryKeywords.map((x) => xss(x));
+
+    let price = req.body.product.price;
+    if (typeof price !== "number") {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid price" },
+        })
+      );
+      return;
+    }
+    price = parseFloat(price.toFixed(2));
+
+    const link = xss(req.body.product.link || "");
+    if (link === "") {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid product link" },
+        })
+      );
+      return;
+    }
+
+    if (companyId === "0") {
+      if (Number.isInteger(req.body.companyId)) {
+        await f(
+          companyId,
+          companyName,
+          productName,
+          image,
+          latitude,
+          longitude,
+          primaryKeywords,
+          secondaryKeywords,
+          price,
+          link
+        );
+      } else {
+        res.send(
+          JSON.stringify({
+            error: { code: 400, message: "Invalid company id" },
+          })
+        );
+      }
     } else {
-      await f(companyId);
+      try {
+        await f(
+          parseInt(companyId),
+          companyName,
+          productName,
+          image,
+          latitude,
+          longitude,
+          primaryKeywords,
+          secondaryKeywords,
+          price,
+          link
+        );
+      } catch (err) {
+        res.send(
+          JSON.stringify({
+            error: { code: 400, message: "Invalid company id" },
+          })
+        );
+      }
     }
   }
 );
@@ -430,22 +737,23 @@ router.post(
       "Too many product delete requests from this IP, please try again after 5 minutes",
   }),
   async (req, res, next) => {
-    const f = async (companyId) => {
+    const f = async (companyId, productId) => {
       const cloudinaryError = await cloudinary.delete([
-        xss(`${companyId}/${req.body.productId}`),
+        `${companyId}/${productId}`,
       ]);
       if (cloudinaryError) {
         res.send(JSON.stringify({ error: cloudinaryError }));
       } else {
         const algoliaError = await algolia.deleteObject(
-          xss(`${companyId}_${req.body.productId}`)
+          `${companyId}_${productId}`
         );
         if (algoliaError) {
           res.send(JSON.stringify({ error: algoliaError }));
         } else {
           const [_, psqlError] = await psql.query(
-            xss(
-              `DELETE FROM products WHERE company_id=${companyId} AND id=${req.body.productId}`
+            sqlString.format(
+              "DELETE FROM products WHERE company_id=? AND id=?",
+              [companyId, productId]
             )
           );
           if (psqlError) {
@@ -460,10 +768,39 @@ router.post(
     const companyId = req.cookies["companyId"];
     if (!companyId) {
       res.status(403).end();
-    } else if (companyId === "0") {
-      await f(req.body.companyId);
+      return;
+    }
+
+    const productId = req.body.id;
+    if (!Number.isInteger(productId)) {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid product id" },
+        })
+      );
+      return;
+    }
+
+    if (companyId === "0") {
+      if (Number.isInteger(req.body.companyId)) {
+        await f(companyId, productId);
+      } else {
+        res.send(
+          JSON.stringify({
+            error: { code: 400, message: "Invalid company id" },
+          })
+        );
+      }
     } else {
-      await f(companyId);
+      try {
+        await f(parseInt(companyId), productId);
+      } catch (err) {
+        res.send(
+          JSON.stringify({
+            error: { code: 400, message: "Invalid company id" },
+          })
+        );
+      }
     }
   }
 );
@@ -482,9 +819,10 @@ router.post(
       res.status(403).end();
     } else {
       const [user, psqlError] = await psql.query(
-        `SELECT password FROM users WHERE username='${username}'`
+        sqlString.format("SELECT password FROM users WHERE username=E?", [
+          username,
+        ])
       );
-
       if (psqlError) {
         res.send(JSON.stringify({ error: psqlError }));
       } else if (user.rows.length === 0) {
@@ -511,7 +849,10 @@ router.post(
                 parseInt(process.env.SALT)
               );
               const [_, psqlError] = await psql.query(
-                `UPDATE users SET password='${newPasswordHash}' WHERE username='${username}'`
+                sqlString.format(
+                  "UPDATE users SET password=? WHERE username=E?",
+                  [newPasswordHash, username]
+                )
               );
               if (psqlError) {
                 res.end(
@@ -575,23 +916,100 @@ router.post(
       "Too many sign in requests from this IP, please try again after 5 minutes",
   }),
   async (req, res, next) => {
-    const {
-      firstName,
-      lastName,
-      email,
-      companyName,
-      address,
-      city,
-      province,
-      country,
-      password,
-    } = req.body;
+    const firstName = xss(req.body.firstName || "");
+    if (firstName === "") {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid first name" },
+        })
+      );
+      return;
+    }
+
+    const lastName = xss(req.body.lastName || "");
+    if (lastName === "") {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid last name" },
+        })
+      );
+      return;
+    }
+
+    const email = xss(req.body.email || "");
+    if (!emailValidator.validate(email)) {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid email" },
+        })
+      );
+      return;
+    }
+
+    const companyName = xss(req.body.companyName || "");
+    if (companyName === "") {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid company name" },
+        })
+      );
+      return;
+    }
+
+    const address = xss(req.body.address || "");
+    if (address === "") {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid address" },
+        })
+      );
+      return;
+    }
+
+    const city = xss(req.body.city || "");
+    if (city === "") {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid city" },
+        })
+      );
+      return;
+    }
+
+    const province = xss(req.body.province || "");
+    if (province === "") {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid province" },
+        })
+      );
+      return;
+    }
+
+    const country = xss(req.body.country || "");
+    if (country === "") {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid country" },
+        })
+      );
+      return;
+    }
+
+    const password = req.body.password;
+    if (typeof password !== "string" || password.length < 8) {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid password" },
+        })
+      );
+      return;
+    }
+
     try {
       let latLng = {};
       await fetch(
-        xss(
-          `http://www.mapquestapi.com/geocoding/v1/address?key=${process.env.MAPQUEST_KEY}&maxResults=1&location=${address},${city},${province},${country}`
-        )
+        `http://www.mapquestapi.com/geocoding/v1/address?key=${process.env.MAPQUEST_KEY}&maxResults=1&location=${address},${city},${province},${country}`
       )
         .then((res) => res.json())
         .then(({ results }) => (latLng = results[0].locations[0].latLng));
@@ -599,14 +1017,23 @@ router.post(
       const [company, psqlErrorCompanyId] = await psql.query(
         "SELECT id FROM companies ORDER BY id DESC LIMIT 1"
       );
-
       if (psqlErrorCompanyId) {
         res.send(JSON.stringify({ error: psqlErrorCompanyId }));
       } else {
         const companyId = company.rows[0].id + 1;
         const [_, psqlErrorAddCompany] = await psql.query(
-          xss(
-            `INSERT INTO companies (id, name, address, city, province, country, latitude, longitude) VALUES ('${companyId}', '${companyName}', '${address}', '${city}', '${province}', '${country}', '${latLng.lat}', '${latLng.lng}')`
+          sqlString.format(
+            "INSERT INTO companies (id, name, address, city, province, country, latitude, longitude) VALUES (?, E?, E?, E?, E?, E?, ?, ?)",
+            [
+              companyId,
+              companyName,
+              address,
+              city,
+              province,
+              country,
+              latLng.lat,
+              latLng.lng,
+            ]
           )
         );
 
@@ -615,8 +1042,9 @@ router.post(
         } else {
           const hash = await bcrypt.hash(password, 12);
           const [_, psqlErrorAddUser] = await psql.query(
-            xss(
-              `INSERT INTO users (username, password, first_name, last_name, id) VALUES ('${email}', '${hash}', '${firstName}', '${lastName}', ${companyId})`
+            sqlString.format(
+              "INSERT INTO users (username, password, first_name, last_name, id) VALUES (?, ?, E?, E?, ?)",
+              [email, hash, firstName, lastName, companyId]
             )
           );
           if (psqlErrorAddUser) {

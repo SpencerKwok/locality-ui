@@ -1,6 +1,7 @@
 const passport = require("passport");
 const psql = require("../postgresql/client");
 const bcrypt = require("bcryptjs");
+const sqlString = require("sqlstring");
 
 const LocalStrategy = require("passport-local").Strategy;
 
@@ -14,9 +15,11 @@ const setup = function () {
       },
       async (usernameField, passwordField, done) => {
         const [users, error] = await psql.query(
-          `SELECT first_name, last_name, companies.id AS id, companies.name AS company_name, password FROM users INNER JOIN companies ON users.id=companies.id WHERE username='${usernameField}'`
+          sqlString.format(
+            "SELECT first_name, last_name, companies.id AS id, companies.name AS company_name, password FROM users INNER JOIN companies ON users.id=companies.id WHERE username=E?",
+            [usernameField]
+          )
         );
-
         if (error) {
           done(error, null);
         } else {

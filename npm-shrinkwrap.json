@@ -24,6 +24,7 @@
         "cookie-parser": "^1.4.5",
         "cookie-session": "^1.4.0",
         "cors": "^2.8.5",
+        "email-validator": "^2.0.4",
         "express": "^4.17.1",
         "express-rate-limit": "^5.2.6",
         "express-session": "^1.17.1",
@@ -52,6 +53,7 @@
         "react-scripts": "^2.0.5",
         "react-virtualized": "^9.22.3",
         "session": "^0.1.0",
+        "sqlstring": "^2.3.2",
         "sqreen": "^1.61.0",
         "styled-components": "^5.2.1",
         "typescript": "^4.1.5",
@@ -6249,6 +6251,14 @@
       "version": "2.0.4",
       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.4.tgz",
       "integrity": "sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ=="
+    },
+    "node_modules/email-validator": {
+      "version": "2.0.4",
+      "resolved": "https://registry.npmjs.org/email-validator/-/email-validator-2.0.4.tgz",
+      "integrity": "sha512-gYCwo7kh5S3IDyZPLZf6hSS0MnZT8QmJFqYvbqlDZSbwdZlY6QZWxJ4i/6UhITOJ4XzyI647Bm2MXKCLqnJ4nQ==",
+      "engines": {
+        "node": ">4.0"
+      }
     },
     "node_modules/emitter-listener": {
       "version": "1.1.2",
@@ -22201,6 +22211,14 @@
         "tar": "^4.4.13"
       }
     },
+    "node_modules/sqlstring": {
+      "version": "2.3.2",
+      "resolved": "https://registry.npmjs.org/sqlstring/-/sqlstring-2.3.2.tgz",
+      "integrity": "sha512-vF4ZbYdKS8OnoJAWBmMxCQDkiEBkGQYU7UZPtL8flbDRSNkhaXvRJ279ZtI6M+zDaQovVU4tuRgzK5fVhvFAhg==",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
     "node_modules/sqreen": {
       "version": "1.61.0",
       "resolved": "https://registry.npmjs.org/sqreen/-/sqreen-1.61.0.tgz",
@@ -30089,6 +30107,11 @@
           "integrity": "sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ=="
         }
       }
+    },
+    "email-validator": {
+      "version": "2.0.4",
+      "resolved": "https://registry.npmjs.org/email-validator/-/email-validator-2.0.4.tgz",
+      "integrity": "sha512-gYCwo7kh5S3IDyZPLZf6hSS0MnZT8QmJFqYvbqlDZSbwdZlY6QZWxJ4i/6UhITOJ4XzyI647Bm2MXKCLqnJ4nQ=="
     },
     "emitter-listener": {
       "version": "1.1.2",
@@ -42196,6 +42219,11 @@
         "detect-libc": "^1.0.3",
         "tar": "^4.4.13"
       }
+    },
+    "sqlstring": {
+      "version": "2.3.2",
+      "resolved": "https://registry.npmjs.org/sqlstring/-/sqlstring-2.3.2.tgz",
+      "integrity": "sha512-vF4ZbYdKS8OnoJAWBmMxCQDkiEBkGQYU7UZPtL8flbDRSNkhaXvRJ279ZtI6M+zDaQovVU4tuRgzK5fVhvFAhg=="
     },
     "sqreen": {
       "version": "1.61.0",
