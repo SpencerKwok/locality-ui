@@ -545,7 +545,7 @@ function Inventory(props: InventoryProps) {
                     {createFormErrorMessage("price")}
                   </Form.Group>
                   <Form.Group>
-                    <FormLabel>Link</FormLabel>
+                    <FormLabel>Link to Product</FormLabel>
                     <FormInputGroup size="md" width="100%">
                       <FormControl
                         aria-label="Large"
@@ -664,7 +664,7 @@ function Inventory(props: InventoryProps) {
                     <Tabs defaultActiveKey="url">
                       <Tab eventKey="url" title="URL">
                         <Form.Group>
-                          <FormLabel>URL</FormLabel>
+                          <FormLabel>Image URL</FormLabel>
                           <FormInputGroup size="md" width="100%">
                             <FormControl
                               aria-label="Large"
