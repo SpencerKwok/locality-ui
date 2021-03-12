@@ -131,7 +131,7 @@ export interface ProductsResponse extends BaseResponse {
 
 export interface ProductRequest {
   companyId: number;
-  productId: number;
+  id: number;
 }
 
 export interface ProductResponse extends BaseResponse {
@@ -176,7 +176,7 @@ export interface ProductAddResponse extends BaseResponse {
 
 export interface ProductDeleteRequest {
   companyId: number;
-  productId: number;
+  id: number;
 }
 
 export interface ProductDeleteResponse extends BaseResponse {}

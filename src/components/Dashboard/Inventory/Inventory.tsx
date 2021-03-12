@@ -217,7 +217,7 @@ function Inventory(props: InventoryProps) {
       await InventoryDAO.getInstance()
         .productDelete({
           companyId: companies[companyIndex].id,
-          productId,
+          id: productId,
         })
         .then(({ error }) => {
           if (error) {
@@ -325,7 +325,7 @@ function Inventory(props: InventoryProps) {
         await InventoryDAO.getInstance()
           .product({
             companyId: companies[companyIndex].id,
-            productId: parseInt(products[index].objectID.split("_")[1]),
+            id: parseInt(products[index].objectID.split("_")[1]),
           })
           .then(({ product }) => product && setProduct(product))
           .catch((err) => console.log(err));
