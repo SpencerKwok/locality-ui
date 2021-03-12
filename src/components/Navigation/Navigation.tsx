@@ -32,24 +32,12 @@ function Navigation(props: NavigationProps) {
     return (
       <StyledNavbar collapseOnSelect expand="lg" variant="dark">
         <span>
-          <a
-            href="https://www.instagram.com/locality.info/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <InstagramLogo />
-          </a>
-          <a
-            href="https://www.facebook.com/locality.info"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FacebookLogo
-              width={96}
-              height={96}
-              style={{ margin: "-32px -32px -32px -16px" }}
-            />
-          </a>
+          <InstagramLogo />
+          <FacebookLogo
+            width={96}
+            height={96}
+            style={{ margin: "-32px -32px -32px -16px" }}
+          />
         </span>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
@@ -93,24 +81,12 @@ function Navigation(props: NavigationProps) {
   return (
     <StyledNavbar variant="dark">
       <span>
-        <a
-          href="https://www.instagram.com/locality.info/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <InstagramLogo />
-        </a>
-        <a
-          href="https://www.facebook.com/locality.info"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <FacebookLogo
-            width={96}
-            height={96}
-            style={{ margin: "-32px -32px -32px -16px" }}
-          />
-        </a>
+        <InstagramLogo />
+        <FacebookLogo
+          width={96}
+          height={96}
+          style={{ margin: "-32px -32px -32px -16px" }}
+        />
       </span>
       <Nav className="ml-auto">
         <StyledNavLink href="/">Home</StyledNavLink>
