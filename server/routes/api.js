@@ -685,7 +685,7 @@ router.post(
     if (companyId === "0") {
       if (Number.isInteger(req.body.companyId)) {
         await f(
-          companyId,
+          req.body.companyId,
           companyName,
           productName,
           image,
@@ -783,7 +783,7 @@ router.post(
 
     if (companyId === "0") {
       if (Number.isInteger(req.body.companyId)) {
-        await f(companyId, productId);
+        await f(req.body.companyId, productId);
       } else {
         res.send(
           JSON.stringify({

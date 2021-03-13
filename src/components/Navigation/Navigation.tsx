@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Cookie from "js-cookie";
 import { Button, Nav, Navbar } from "react-bootstrap";
 import { ReactComponent as InstagramLogo } from "./instagram-logo.svg";
+import { ReactComponent as FacebookLogo } from "./facebook-logo.svg";
 
 import NavigationDAO from "./NavigationDAO";
 
@@ -27,16 +28,17 @@ const StyledButton = styled(Button)`
 function Navigation(props: NavigationProps) {
   const companyId = Cookie.get("companyId");
 
-  if (props.width <= 600) {
+  if (props.width <= 640) {
     return (
       <StyledNavbar collapseOnSelect expand="lg" variant="dark">
-        <a
-          href="https://www.instagram.com/locality.info/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <span>
           <InstagramLogo />
-        </a>
+          <FacebookLogo
+            width={96}
+            height={96}
+            style={{ margin: "-32px -32px -32px -16px" }}
+          />
+        </span>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto">
@@ -78,13 +80,14 @@ function Navigation(props: NavigationProps) {
 
   return (
     <StyledNavbar variant="dark">
-      <a
-        href="https://www.instagram.com/locality.info/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <span>
         <InstagramLogo />
-      </a>
+        <FacebookLogo
+          width={96}
+          height={96}
+          style={{ margin: "-32px -32px -32px -16px" }}
+        />
+      </span>
       <Nav className="ml-auto">
         <StyledNavLink href="/">Home</StyledNavLink>
         <StyledNavLink href="/demo">Demo</StyledNavLink>
