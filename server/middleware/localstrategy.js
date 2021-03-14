@@ -39,8 +39,6 @@ const setup = function () {
                     lastName: users.rows[0].last_name,
                     username: usernameField,
                     companyId: users.rows[0].id,
-                    companyName: users.rows[0].company_name,
-                    companyLogo: users.rows[0].logo,
                   });
                 } else {
                   done(new Error("Incorrect password"), null);

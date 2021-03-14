@@ -166,7 +166,7 @@ router.post(
   async (req, res, next) => {
     const f = async (companyId) => {
       const [companies, error] = await psql.query(
-        sqlString.format("SELECT * FROM companies WHERE id=E? ORDER BY name", [
+        sqlString.format("SELECT * FROM companies WHERE id=? ORDER BY name", [
           companyId,
         ])
       );
@@ -211,7 +211,7 @@ router.post(
     const f = async (companyId) => {
       const [products, error] = await psql.query(
         sqlString.format(
-          "SELECT CONCAT(company_id, '_', id) AS object_id, name, image FROM products WHERE company_id=E? ORDER BY name",
+          "SELECT CONCAT(company_id, '_', id) AS object_id, name, image FROM products WHERE company_id=? ORDER BY name",
           [companyId]
         )
       );
@@ -341,7 +341,7 @@ router.post(
           res.send(JSON.stringify({ error: algoliaError }));
         } else {
           const query = sqlString.format(
-            `UPDATE products SET name=E?, image=E? WHERE company_id=E? AND id=E?`,
+            `UPDATE products SET name=E?, image=? WHERE company_id=? AND id=?`,
             [name, url, companyId, productId]
           );
           const [_, psqlError] = await psql.query(query);
@@ -501,7 +501,7 @@ router.post(
       link
     ) => {
       const [nextIdResponse, psqlErrorGetNextId] = await psql.query(
-        sqlString.format("SELECT next_product_id FROM companies WHERE id=E?", [
+        sqlString.format("SELECT next_product_id FROM companies WHERE id=?", [
           companyId,
         ])
       );
@@ -552,7 +552,7 @@ router.post(
           } else {
             const [_, psqlErrorAddProduct] = await psql.query(
               sqlString.format(
-                "INSERT INTO products (company_id, id, name, image) VALUES (E?, E?, E?, E?)",
+                "INSERT INTO products (company_id, id, name, image) VALUES (?, ?, E?, ?)",
                 [companyId, next_product_id, productName, url]
               )
             );
@@ -561,7 +561,7 @@ router.post(
             } else {
               const [_, psqlErrorUpdateNextId] = await psql.query(
                 sqlString.format(
-                  "UPDATE companies SET next_product_id=E? WHERE id=E?",
+                  "UPDATE companies SET next_product_id=? WHERE id=?",
                   [next_product_id + 1, companyId]
                 )
               );
@@ -750,7 +750,7 @@ router.post(
         } else {
           const [_, psqlError] = await psql.query(
             sqlString.format(
-              "DELETE FROM products WHERE company_id=E? AND id=E?",
+              "DELETE FROM products WHERE company_id=? AND id=?",
               [companyId, productId]
             )
           );
@@ -820,7 +820,7 @@ router.post(
         res.send(JSON.stringify({ error: cloudinaryError }));
       } else {
         const [_, psqlError] = await psql.query(
-          sqlString.format("UPDATE companies SET logo=E? WHERE id=E?", [
+          sqlString.format("UPDATE companies SET logo=? WHERE id=?", [
             url,
             companyId,
           ])
@@ -879,7 +879,7 @@ router.post(
   async (req, res, next) => {
     const f = async (companyId, homepage) => {
       const [_, psqlError] = await psql.query(
-        sqlString.format("UPDATE companies SET homepage=E? WHERE id=E?", [
+        sqlString.format("UPDATE companies SET homepage=? WHERE id=?", [
           homepage,
           companyId,
         ])
@@ -968,7 +968,7 @@ router.post(
             );
             const [_, psqlError] = await psql.query(
               sqlString.format(
-                "UPDATE users SET password=E? WHERE username=E?",
+                "UPDATE users SET password=? WHERE username=E?",
                 [newPasswordHash, username]
               )
             );
@@ -1017,8 +1017,6 @@ router.post(
         res.cookie("lastName", user.lastName);
         res.cookie("username", user.username);
         res.cookie("companyId", user.companyId);
-        res.cookie("companyName", user.companyName);
-        res.cookie("companyLogo", user.companyLogo);
         res.end(JSON.stringify({ redirectTo: "/dashboard" }));
       }
     })(req, next);
@@ -1141,7 +1139,7 @@ router.post(
         const companyId = company.rows[0].id + 1;
         const [_, psqlErrorAddCompany] = await psql.query(
           sqlString.format(
-            "INSERT INTO companies (id, name, address, city, province, country, latitude, longitude, logo, homepage) VALUES (E?, E?, E?, E?, E?, E?, E?, E?, E?, E?)",
+            "INSERT INTO companies (id, name, address, city, province, country, latitude, longitude, logo, homepage) VALUES (?, E?, E?, E?, E?, E?, ?, ?, ?, ?)",
             [
               companyId,
               companyName,
@@ -1163,7 +1161,7 @@ router.post(
           const hash = await bcrypt.hash(password, 12);
           const [_, psqlErrorAddUser] = await psql.query(
             sqlString.format(
-              "INSERT INTO users (username, password, first_name, last_name, id) VALUES (E?, E?, E?, E?, E?)",
+              "INSERT INTO users (username, password, first_name, last_name, id) VALUES (?, ?, E?, E?, ?)",
               [email, hash, firstName, lastName, companyId]
             )
           );
@@ -1195,8 +1193,6 @@ router.get(
     res.clearCookie("lastName");
     res.clearCookie("username");
     res.clearCookie("companyId");
-    res.clearCookie("companyName");
-    res.clearCookie("companyLogo");
     res.end(JSON.stringify({ redirectTo: "/signin" }));
   }
 );
