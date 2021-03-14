@@ -276,10 +276,12 @@ function Inventory(props: InventoryProps) {
       if (index !== companyIndex) {
         await InventoryDAO.getInstance()
           .products({ id: companies[index].id })
-          .then(
-            ({ products }) =>
-              products && setProducts(products) && setProductIndex(-1)
-          )
+          .then(({ products }) => {
+            if (products) {
+              setProducts(products);
+              setProductIndex(-1);
+            }
+          })
           .catch((err) => console.log(err));
         setCompanyIndex(index);
       }
@@ -294,7 +296,12 @@ function Inventory(props: InventoryProps) {
             companyId: companies[companyIndex].id,
             id: parseInt(products[index].objectID.split("_")[1]),
           })
-          .then(({ product }) => product && setProduct(product) && setError(""))
+          .then(({ product }) => {
+            if (product) {
+              setProduct(product);
+              setError("");
+            }
+          })
           .catch((err) => console.log(err));
         setProductIndex(index);
         setIsNewItem(false);
