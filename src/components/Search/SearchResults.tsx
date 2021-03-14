@@ -97,7 +97,7 @@ function SearchResults(props: SearchResultsProps) {
                 name={hit.name}
                 price={hit.price}
                 src={hit.image}
-                style={{ maxWidth: 175 }}
+                style={{ maxWidth: 175, marginBottom: 12 }}
               />
             </a>
           );

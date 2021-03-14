@@ -4,7 +4,8 @@ import { geolocated, GeolocatedProps } from "react-geolocated";
 import PublicIp from "public-ip";
 import XSS from "xss";
 
-import Businesses from "./Businesses";
+import CompanyList from "./Company/List";
+import CompanyShowcase from "./Company/Showcase";
 import SearchBar from "./SearchBar";
 import SearchDAO from "./SearchDAO";
 import SearchResults from "./SearchResults";
@@ -30,7 +31,7 @@ export function Search(props: SearchProps) {
   const [query, setQuery] = useState(props.query || "");
   const [hits, setHits] = useState<Array<Product>>([]);
   const [searching, setSearching] = useState(false);
-  const [businessFilter, setBusinessFilter] = useState("");
+  const [companyFilter, setCompanyFilter] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -39,7 +40,7 @@ export function Search(props: SearchProps) {
       }
 
       setSearching(true);
-      setBusinessFilter("");
+      setCompanyFilter("");
 
       if (!location.ip) {
         location.ip = await PublicIp.v4();
@@ -137,19 +138,19 @@ export function Search(props: SearchProps) {
               columnAlign="flex-start"
               style={{ marginTop: -8 }}
             >
-              <Businesses
-                onBusinessClick={(name) => {
-                  setBusinessFilter(name);
+              <CompanyList
+                onCompanyClick={(name) => {
+                  setCompanyFilter(name);
                 }}
-                currentBusiness={businessFilter}
+                currentCompany={companyFilter}
                 hits={hits}
                 style={{ marginLeft: 24 }}
               />
               <SearchResults
                 hits={
-                  businessFilter === ""
+                  companyFilter === ""
                     ? hits
-                    : hits.filter((value) => value.company === businessFilter)
+                    : hits.filter((value) => value.company === companyFilter)
                 }
                 query={props.query || ""}
                 style={{ marginLeft: 12 }}
@@ -182,6 +183,9 @@ export function Search(props: SearchProps) {
           value={query}
           autoFocus
         />
+        <div style={{ marginTop: 24, width: props.width * 0.8 }}>
+          <CompanyShowcase />
+        </div>
       </Stack>
     </Stack>
   );

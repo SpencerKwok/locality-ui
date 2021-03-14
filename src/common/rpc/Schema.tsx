@@ -11,9 +11,21 @@ export interface PostMethods {
     request: SignUpRequest;
     response: SignUpResponse;
   };
+  Company: {
+    request: CompanyRequest;
+    response: CompanyResponse;
+  };
   Companies: {
     request: CompaniesRequest;
     response: CompaniesResponse;
+  };
+  HomepageUpdate: {
+    request: HomepageUpdateRequest;
+    response: HomepageUpdateResponse;
+  };
+  LogoUpdate: {
+    request: LogoUpdateRequest;
+    response: LogoUpdateResponse;
   };
   Product: {
     request: ProductRequest;
@@ -88,12 +100,38 @@ export interface BaseCompany {
   country: string;
   latitude: string;
   longitude: string;
+  logo: string;
+  homepage: string;
+}
+
+export interface CompanyRequest {
+  id: number;
+}
+
+export interface CompanyResponse extends BaseResponse {
+  company?: BaseCompany;
 }
 
 export interface CompaniesRequest {}
 
 export interface CompaniesResponse extends BaseResponse {
   companies?: Array<BaseCompany>;
+}
+
+export interface HomepageUpdateRequest {
+  id: number;
+  homepage: string;
+}
+
+export interface HomepageUpdateResponse extends BaseResponse {}
+
+export interface LogoUpdateRequest {
+  id: number;
+  image: string;
+}
+
+export interface LogoUpdateResponse extends BaseResponse {
+  url?: string;
 }
 
 export interface BaseProduct {
@@ -122,7 +160,7 @@ export const EmptyProduct: Product = {
 };
 
 export interface ProductsRequest {
-  companyId: number;
+  id: number;
 }
 
 export interface ProductsResponse extends BaseResponse {

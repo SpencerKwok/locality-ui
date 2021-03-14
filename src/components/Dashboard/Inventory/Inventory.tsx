@@ -1,12 +1,14 @@
 import React, { CSSProperties, useState, useEffect } from "react";
+import Cookie from "js-cookie";
 import * as yup from "yup";
 import styled from "styled-components";
-import { ListGroup, Tabs, Tab } from "react-bootstrap";
-import { List } from "react-virtualized";
 import { decode } from "html-entities";
 import { Formik, FormikConfig } from "formik";
 import { Button, Form, FormControl } from "react-bootstrap";
+import { Redirect } from "react-router-dom";
 
+import CompanyList from "../Company";
+import Image, { toBase64 } from "../Image";
 import InventoryDAO from "./InventoryDAO";
 import Stack from "../../../common/components/Stack/Stack";
 import DescriptionImage from "../../../common/components/Image/DescriptionImage";
@@ -22,6 +24,10 @@ import {
   FormButton,
   createFormErrorMessage,
 } from "../../../common/components/Form/Form";
+import {
+  VirtualList,
+  ListGroupItem,
+} from "../../../common/components/List/List";
 
 export interface InventoryProps extends React.HTMLProps<HTMLDivElement> {
   width: number;
@@ -61,29 +67,11 @@ const ProductSchema = yup.object().shape({
     .required("Required")
     .max(255, "Too long")
     .matches(/^\s*[0-9]+(\.[0-9][0-9])?\s*$/g, "Must be a valid price number"),
-  image: yup.string().required("Required").max(255, "Too long"),
+  image: yup
+    .mixed()
+    .test("Not Null", "Required", (value) => value && value !== ""),
   link: yup.string().required("Required").max(255, "Too long"),
 });
-
-const StyledList = styled(List)`
-  border: none;
-  outline: none;
-`;
-
-const StyledPicture = styled.picture`
-  display: flex;
-  overflow: hidden;
-`;
-
-const StyledListGroupItem = styled(ListGroup.Item)`
-  ${({ active }) =>
-    active &&
-    "background-color: #3880ae !important; border-color: #3880ae !important"}
-  &:hover {
-    background-color: #449ed7;
-    color: #ffffff;
-  }
-`;
 
 const StyledButton = styled(Button)`
   background-color: #449ed7;
@@ -104,6 +92,7 @@ const StyledButton = styled(Button)`
 `;
 
 function Inventory(props: InventoryProps) {
+  const companyId = Cookie.get("companyId");
   const [companyIndex, setCompanyIndex] = useState(-1);
   const [productIndex, setProductIndex] = useState(-1);
   const [companies, setCompanies] = useState<Array<BaseCompany>>([]);
@@ -113,42 +102,49 @@ function Inventory(props: InventoryProps) {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    InventoryDAO.getInstance()
-      .companies({})
-      .then(({ error, companies }) => {
-        if (error) {
-          console.log(error);
-        } else if (companies) {
-          setCompanies(companies);
-          if (companies.length === 1) {
+    if (companyId === "0") {
+      InventoryDAO.getInstance()
+        .companies({})
+        .then(({ error, companies }) => {
+          if (error) {
+            console.log(error);
+          } else if (companies) {
+            setCompanies(companies);
+          }
+        })
+        .catch((err) => console.log(err));
+    } else if (companyId) {
+      InventoryDAO.getInstance()
+        .company({ id: parseInt(companyId) })
+        .then(({ error, company }) => {
+          if (error) {
+            console.log(error);
+          } else if (company) {
+            setCompanies([company]);
             setCompanyIndex(0);
             (async () => {
               await InventoryDAO.getInstance()
-                .products({ companyId: companies[0].id })
+                .products({ id: company.id })
                 .then(({ error, products }) => {
                   if (error) {
                     console.log(error);
-                  } else {
-                    products && setProducts(products);
+                  } else if (products) {
+                    setProducts(products);
                   }
                 })
                 .catch((err) => console.log(err));
             })();
           }
-        }
-      })
-      .catch((err) => console.log(err));
+        })
+        .catch((err) => console.log(err));
+    }
   }, []);
 
-  const onSubmit: FormikConfig<ProductRequest>["onSubmit"] = async (values) => {
-    const toBase64 = (file: File) =>
-      new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = (error) => reject(error);
-      });
+  if (!companyId) {
+    return <Redirect to="/signin" />;
+  }
 
+  const onSubmit: FormikConfig<ProductRequest>["onSubmit"] = async (values) => {
     let image = values.image;
     try {
       image = await toBase64(image);
@@ -279,44 +275,15 @@ function Inventory(props: InventoryProps) {
     return async () => {
       if (index !== companyIndex) {
         await InventoryDAO.getInstance()
-          .products({ companyId: companies[index].id })
-          .then(({ products }) => products && setProducts(products))
+          .products({ id: companies[index].id })
+          .then(
+            ({ products }) =>
+              products && setProducts(products) && setProductIndex(-1)
+          )
           .catch((err) => console.log(err));
         setCompanyIndex(index);
       }
     };
-  };
-
-  const companyRowRenderer = ({
-    index,
-    key,
-    style,
-  }: {
-    index: number;
-    key: string;
-    style: CSSProperties;
-  }) => {
-    return (
-      <div key={key} style={style}>
-        {index === 0 ? (
-          <StyledListGroupItem
-            active={companyIndex === index}
-            onClick={createCompanyOnClick(index)}
-            style={{ height: 48 }}
-          >
-            {decode(companies[index].name)}
-          </StyledListGroupItem>
-        ) : (
-          <StyledListGroupItem
-            active={companyIndex === index}
-            onClick={createCompanyOnClick(index)}
-            style={{ height: 48, borderTop: "none" }}
-          >
-            {decode(companies[index].name)}
-          </StyledListGroupItem>
-        )}
-      </div>
-    );
   };
 
   const createProductOnClick = (index: number) => {
@@ -327,7 +294,7 @@ function Inventory(props: InventoryProps) {
             companyId: companies[companyIndex].id,
             id: parseInt(products[index].objectID.split("_")[1]),
           })
-          .then(({ product }) => product && setProduct(product))
+          .then(({ product }) => product && setProduct(product) && setError(""))
           .catch((err) => console.log(err));
         setProductIndex(index);
         setIsNewItem(false);
@@ -352,7 +319,7 @@ function Inventory(props: InventoryProps) {
         style={{ ...style, height: 92 }}
       >
         {index === 0 ? (
-          <StyledListGroupItem
+          <ListGroupItem
             active={productIndex === index}
             onClick={createProductOnClick(index)}
             style={{ height: 92, paddingTop: 0, paddingBottom: 0 }}
@@ -368,9 +335,9 @@ function Inventory(props: InventoryProps) {
             >
               {decode(products[index].name)}
             </DescriptionImage>
-          </StyledListGroupItem>
+          </ListGroupItem>
         ) : (
-          <StyledListGroupItem
+          <ListGroupItem
             active={productIndex === index}
             onClick={createProductOnClick(index)}
             style={{
@@ -397,7 +364,7 @@ function Inventory(props: InventoryProps) {
                 {decode(products[index].name)}
               </DescriptionImage>
             </Stack>
-          </StyledListGroupItem>
+          </ListGroupItem>
         )}
       </Stack>
     );
@@ -410,17 +377,14 @@ function Inventory(props: InventoryProps) {
       spacing={12}
       style={{ marginTop: 12 }}
     >
-      {companies.length > 1 && (
-        <Stack direction="column" rowAlign="flex-start">
-          <h3>Company</h3>
-          <StyledList
-            width={Math.min(props.width * 0.2, 230)}
-            height={props.height - 200}
-            rowHeight={48}
-            rowRenderer={companyRowRenderer}
-            rowCount={companies.length}
-          />
-        </Stack>
+      {companyId === "0" && (
+        <CompanyList
+          createCompanyOnClick={createCompanyOnClick}
+          companies={companies}
+          height={props.height - 200}
+          index={companyIndex}
+          width={Math.min(props.width * 0.2, 230)}
+        />
       )}
       <Stack direction="column" rowAlign="flex-start">
         <Stack
@@ -443,7 +407,7 @@ function Inventory(props: InventoryProps) {
             </StyledButton>
           )}
         </Stack>
-        <StyledList
+        <VirtualList
           width={Math.max(props.width * 0.25, 285)}
           height={props.height - 200}
           rowHeight={92}
@@ -617,91 +581,15 @@ function Inventory(props: InventoryProps) {
                     </FormButton>
                   </Stack>
                 </Form>
-                <Stack direction="column">
-                  <FormLabel>Image</FormLabel>
-                  <Stack direction="column" spacing={12}>
-                    <div
-                      style={{
-                        alignItems: "center",
-                        border: "1px solid #449ed7",
-                        display: "flex",
-                        justifyContent: "center",
-                        height: 225,
-                        overflow: "hidden",
-                        width: 175,
-                      }}
-                    >
-                      {(() => {
-                        let image = values.image;
-                        try {
-                          const tempUrl = URL.createObjectURL(image);
-                          return (
-                            <StyledPicture>
-                              <img
-                                src={tempUrl}
-                                alt={values.name}
-                                width={175}
-                              />
-                            </StyledPicture>
-                          );
-                        } catch (err) {}
-                        return (
-                          <StyledPicture>
-                            {image !== "" && (
-                              <React.Fragment>
-                                <source srcSet={image} type="image/webp" />
-                                <img
-                                  src={image.replace(".webp", ".jpg")}
-                                  alt={values.name}
-                                  width={175}
-                                />
-                              </React.Fragment>
-                            )}
-                          </StyledPicture>
-                        );
-                      })()}
-                    </div>
-                    <Tabs defaultActiveKey="url">
-                      <Tab eventKey="url" title="URL">
-                        <Form.Group>
-                          <FormLabel>Image URL</FormLabel>
-                          <FormInputGroup size="md" width="100%">
-                            <FormControl
-                              aria-label="Large"
-                              id="image"
-                              onBlur={handleBlur}
-                              onChange={handleChange}
-                              placeholder="e.g. www.mywebsite.com/images/wooden-cutlery"
-                              type="url"
-                              value={values.image}
-                            />
-                          </FormInputGroup>
-                          {createFormErrorMessage("image")}
-                        </Form.Group>
-                      </Tab>
-                      <Tab eventKey="local" title="Local Browser">
-                        <input
-                          type="file"
-                          id="image"
-                          accept="image/jpeg, image/png, image/webp"
-                          onBlur={handleBlur}
-                          onChange={(event) => {
-                            if (
-                              event.target.files &&
-                              event.target.files.length > 0
-                            ) {
-                              setFieldValue(
-                                "image",
-                                event.target.files[0],
-                                false
-                              );
-                            }
-                          }}
-                        />
-                      </Tab>
-                    </Tabs>
-                  </Stack>
-                </Stack>
+                <Image
+                  handleBlur={handleBlur}
+                  handleChange={handleChange}
+                  setFieldValue={setFieldValue}
+                  alt={values.name}
+                  imageId="image"
+                  label="Image"
+                  values={values}
+                />
               </Stack>
             )}
           </Formik>

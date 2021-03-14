@@ -33,7 +33,7 @@ function SearchBar(props: SearchBarProps) {
               props.onEnter();
             }
           }}
-          placeholder="I want..."
+          placeholder="Search for products"
           style={{ border: "none" }}
           type="text"
           value={props.value}

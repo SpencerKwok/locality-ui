@@ -6,7 +6,7 @@ import { Formik, FormikConfig } from "formik";
 import { Form, FormControl } from "react-bootstrap";
 import { Redirect } from "react-router-dom";
 
-import ProfileDAO from "./ProfileDAO";
+import AccountDAO from "./AccountDAO";
 import Stack from "../../../common/components/Stack/Stack";
 import {
   FormInputGroup,
@@ -15,7 +15,7 @@ import {
   createFormErrorMessage,
 } from "../../../common/components/Form/Form";
 
-export interface ProfileProps extends React.HTMLProps<HTMLDivElement> {}
+export interface AccountProps extends React.HTMLProps<HTMLDivElement> {}
 
 const FieldLabel = styled.div`
   font-size: 32px;
@@ -25,13 +25,13 @@ const FieldValue = styled.div`
   font-size: 24px;
 `;
 
-interface ChangePasswordForm {
+interface UpdatePasswordForm {
   currentPassword: string;
   newPassword1: string;
   newPassword2: string;
 }
 
-const ChangePasswordSchema = yup.object().shape({
+const UpdatePasswordSchema = yup.object().shape({
   currentPassword: yup.string().required("Required"),
   newPassword1: yup
     .string()
@@ -46,21 +46,20 @@ const ChangePasswordSchema = yup.object().shape({
     .oneOf([yup.ref("newPassword1")], "New passwords do not match"),
 });
 
-function Profile(props: ProfileProps) {
+function Account(props: AccountProps) {
   const firstName = Cookie.get("firstName");
   const lastName = Cookie.get("lastName");
-  const companyName = Cookie.get("companyName");
   const [error, setError] = useState("");
   const [updatedPassword, setUpdatedPassword] = useState(false);
 
-  if (!firstName || !lastName || !companyName) {
+  if (!firstName || !lastName) {
     return <Redirect to="/signin" />;
   }
 
-  const onSubmit: FormikConfig<ChangePasswordForm>["onSubmit"] = async (
+  const onSubmitPassword: FormikConfig<UpdatePasswordForm>["onSubmit"] = async (
     values
   ) => {
-    await ProfileDAO.getInstance()
+    await AccountDAO.getInstance()
       .passwordUpdate({
         currentPassword: values.currentPassword,
         newPassword: values.newPassword1,
@@ -80,7 +79,7 @@ function Profile(props: ProfileProps) {
   };
 
   return (
-    <Stack direction="row" columnAlign="flex-start" style={{ padding: 12 }}>
+    <Stack direction="row" columnAlign="flex-start" style={{ marginTop: 12 }}>
       <Stack direction="column" rowAlign="flex-start" spacing={32}>
         <Stack direction="row" columnAlign="flex-start" spacing={64}>
           <Stack direction="column" rowAlign="flex-start">
@@ -93,10 +92,6 @@ function Profile(props: ProfileProps) {
           </Stack>
         </Stack>
         <Stack direction="column" rowAlign="flex-start">
-          <FieldLabel>Company</FieldLabel>
-          <FieldValue>{companyName}</FieldValue>
-        </Stack>
-        <Stack direction="column" rowAlign="flex-start">
           <FieldLabel>Change Password</FieldLabel>
           <Formik
             initialValues={
@@ -104,10 +99,10 @@ function Profile(props: ProfileProps) {
                 currentPassword: "",
                 newPassword1: "",
                 newPassword2: "",
-              } as ChangePasswordForm
+              } as UpdatePasswordForm
             }
-            onSubmit={onSubmit}
-            validationSchema={ChangePasswordSchema}
+            onSubmit={onSubmitPassword}
+            validationSchema={UpdatePasswordSchema}
           >
             {({
               isSubmitting,
@@ -195,4 +190,4 @@ function Profile(props: ProfileProps) {
   );
 }
 
-export default Profile;
+export default Account;

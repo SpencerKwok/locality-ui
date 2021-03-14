@@ -16,7 +16,7 @@ const setup = function () {
       async (usernameField, passwordField, done) => {
         const [users, error] = await psql.query(
           sqlString.format(
-            "SELECT first_name, last_name, companies.id AS id, companies.name AS company_name, password FROM users INNER JOIN companies ON users.id=companies.id WHERE username=E?",
+            "SELECT first_name, last_name, companies.id AS id, companies.name AS company_name, password, logo FROM users INNER JOIN companies ON users.id=companies.id WHERE username=E?",
             [usernameField]
           )
         );
@@ -40,6 +40,7 @@ const setup = function () {
                     username: usernameField,
                     companyId: users.rows[0].id,
                     companyName: users.rows[0].company_name,
+                    companyLogo: users.rows[0].logo,
                   });
                 } else {
                   done(new Error("Incorrect password"), null);

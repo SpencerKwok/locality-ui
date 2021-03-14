@@ -4,14 +4,14 @@ import {
   PasswordUpdateResponse,
 } from "../../../common/rpc/Schema";
 
-let instance: ProfileDAO;
-export default class ProfileDAO {
+let instance: AccountDAO;
+export default class AccountDAO {
   static getInstance() {
     if (instance) {
       return instance;
     }
 
-    instance = new ProfileDAO(new PostRpcClient());
+    instance = new AccountDAO(new PostRpcClient());
     return instance;
   }
 
@@ -23,7 +23,7 @@ export default class ProfileDAO {
     return await this.rpc.call(
       "PasswordUpdate",
       passwordUpdateRequest,
-      "/api/dashboard/profile/password/update"
+      "/api/dashboard/password/update"
     );
   }
 }

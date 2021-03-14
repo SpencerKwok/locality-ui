@@ -3,8 +3,9 @@ import Cookie from "js-cookie";
 import { Tabs, Tab } from "react-bootstrap";
 import { Redirect } from "react-router-dom";
 
+import Account from "./Account/Account";
+import Company from "./Company/Company";
 import Inventory from "./Inventory/Inventory";
-import Profile from "./Profile/Profile";
 
 export interface DashboardProps extends React.HTMLProps<HTMLDivElement> {
   height: number;
@@ -23,8 +24,11 @@ function Dashboard(props: DashboardProps) {
         <Tab eventKey="inventory" title="Inventory">
           <Inventory width={props.width} height={props.height} />
         </Tab>
-        <Tab eventKey="profile" title="Profile">
-          <Profile />
+        <Tab eventKey="company" title="Company">
+          <Company width={props.width} height={props.height} />
+        </Tab>
+        <Tab eventKey="account" title="Account">
+          <Account />
         </Tab>
       </Tabs>
     </div>
