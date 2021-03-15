@@ -1,5 +1,7 @@
 import { PostRpcClient } from "../../../common/rpc/RpcClient";
 import {
+  CompanyRequest,
+  CompanyResponse,
   CompaniesRequest,
   CompaniesResponse,
   ProductsRequest,
@@ -30,27 +32,19 @@ export default class InventoryDAO {
   async companies(
     companiesRequest: CompaniesRequest
   ): Promise<CompaniesResponse> {
-    return await this.rpc.call(
-      "Companies",
-      companiesRequest,
-      "/api/dashboard/inventory/companies"
-    );
+    return await this.rpc.call("Companies", companiesRequest, "/api/companies");
+  }
+
+  async company(companyRequest: CompanyRequest): Promise<CompanyResponse> {
+    return await this.rpc.call("Company", companyRequest, "/api/company");
   }
 
   async products(productsRequest: ProductsRequest): Promise<ProductsResponse> {
-    return await this.rpc.call(
-      "Products",
-      productsRequest,
-      "/api/dashboard/inventory/products"
-    );
+    return await this.rpc.call("Products", productsRequest, "/api/products");
   }
 
   async product(productRequest: ProductRequest): Promise<ProductResponse> {
-    return await this.rpc.call(
-      "Product",
-      productRequest,
-      "/api/dashboard/inventory/product/get"
-    );
+    return await this.rpc.call("Product", productRequest, "/api/product");
   }
 
   async productUpdate(
@@ -59,7 +53,7 @@ export default class InventoryDAO {
     return await this.rpc.call(
       "ProductUpdate",
       productUpdateRequest,
-      "/api/dashboard/inventory/product/update"
+      "/api/dashboard/product/update"
     );
   }
 
@@ -69,7 +63,7 @@ export default class InventoryDAO {
     return await this.rpc.call(
       "ProductAdd",
       productAddRequest,
-      "/api/dashboard/inventory/product/add"
+      "/api/dashboard/product/add"
     );
   }
 
@@ -79,7 +73,7 @@ export default class InventoryDAO {
     return await this.rpc.call(
       "ProductDelete",
       productDeleteRequest,
-      "/api/dashboard/inventory/product/delete"
+      "/api/dashboard/product/delete"
     );
   }
 }

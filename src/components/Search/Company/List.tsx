@@ -2,10 +2,10 @@ import React, { CSSProperties } from "react";
 import styled from "styled-components";
 import { List } from "react-virtualized";
 import { ListGroup } from "react-bootstrap";
-import { Product } from "../../common/rpc/Schema";
+import { Product } from "../../../common/rpc/Schema";
 import { decode } from "html-entities";
 
-import Stack from "../../common/components/Stack/Stack";
+import Stack from "../../../common/components/Stack/Stack";
 
 const StyledList = styled(List)`
   border: none;
@@ -22,13 +22,13 @@ const StyledListGroupItem = styled(ListGroup.Item)`
   }
 `;
 
-export interface BusinessesProps extends React.HTMLProps<HTMLDivElement> {
+export interface CompanyListProps extends React.HTMLProps<HTMLDivElement> {
   hits: Array<Product>;
-  currentBusiness: string;
-  onBusinessClick: (name: string) => void;
+  currentCompany: string;
+  onCompanyClick: (name: string) => void;
 }
 
-function Businesses(props: BusinessesProps) {
+function CompanyList(props: CompanyListProps) {
   const numProducts: { [name: string]: number } = {};
   const companies = Array<{ name: string; num: number }>();
 
@@ -57,20 +57,20 @@ function Businesses(props: BusinessesProps) {
       <div key={key} style={style}>
         {index === 0 ? (
           <StyledListGroupItem
-            active={companies[index].name === props.currentBusiness}
+            active={companies[index].name === props.currentCompany}
             style={{ height: 48 }}
             onClick={() => {
-              props.onBusinessClick(decode(companies[index].name));
+              props.onCompanyClick(decode(companies[index].name));
             }}
           >
             {`${decode(companies[index].name)} (${companies[index].num})`}
           </StyledListGroupItem>
         ) : (
           <StyledListGroupItem
-            active={companies[index].name === props.currentBusiness}
+            active={companies[index].name === props.currentCompany}
             style={{ height: 48, borderTop: "none" }}
             onClick={() => {
-              props.onBusinessClick(decode(companies[index].name));
+              props.onCompanyClick(decode(companies[index].name));
             }}
           >
             {`${decode(companies[index].name)} (${companies[index].num})`}
@@ -82,7 +82,7 @@ function Businesses(props: BusinessesProps) {
 
   return (
     <Stack direction="column" rowAlign="flex-start" style={props.style}>
-      <h4>Businesses</h4>
+      <h4>Companies</h4>
       <StyledList
         width={200}
         height={400}
@@ -94,4 +94,4 @@ function Businesses(props: BusinessesProps) {
   );
 }
 
-export default Businesses;
+export default CompanyList;

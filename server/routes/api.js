@@ -31,6 +31,25 @@ router.use("/*", (req, res, next) => {
   next();
 });
 
+router.post(
+  "/dashboard/*",
+  rateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    max: 100,
+    message:
+      "Too many dashboard requests from this IP, please try again after 5 minutes",
+  }),
+  (req, res, next) => {
+    const companyId = req.cookies["companyId"];
+    const username = req.cookies["username"];
+    if (!companyId || !username) {
+      res.status(403).end();
+      return;
+    }
+    next();
+  }
+);
+
 router.get(
   "/search",
   rateLimit({
@@ -113,7 +132,31 @@ router.post(
 );
 
 router.post(
-  "/dashboard/inventory/companies",
+  "/companies",
+  rateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    max: 100,
+    message:
+      "Too many companies requests from this IP, please try again after 5 minutes",
+  }),
+  async (req, res, next) => {
+    const [companies, error] = await psql.query(
+      "SELECT * FROM companies ORDER BY name"
+    );
+    if (error) {
+      res.send(JSON.stringify(error));
+    } else {
+      res.send(
+        JSON.stringify({
+          companies: companies.rows,
+        })
+      );
+    }
+  }
+);
+
+router.post(
+  "/company",
   rateLimit({
     windowMs: 5 * 60 * 1000, // 5 minutes
     max: 10,
@@ -122,35 +165,31 @@ router.post(
   }),
   async (req, res, next) => {
     const f = async (companyId) => {
-      const query =
-        companyId === 0
-          ? "SELECT * FROM companies ORDER BY name"
-          : sqlString.format(
-              "SELECT * FROM companies WHERE id=? ORDER BY name",
-              [companyId]
-            );
-
-      const [companies, error] = await psql.query(query);
+      const [companies, error] = await psql.query(
+        sqlString.format("SELECT * FROM companies WHERE id=? ORDER BY name", [
+          companyId,
+        ])
+      );
       if (error) {
         res.send(JSON.stringify(error));
+      } else if (companies.rows.length != 1) {
+        res.send(
+          JSON.stringify({
+            error: { code: 400, message: "Company does not exist" },
+          })
+        );
       } else {
         res.send(
           JSON.stringify({
-            companies: companies.rows,
+            company: companies.rows[0],
           })
         );
       }
     };
 
-    const companyId = req.cookies["companyId"];
-    if (!companyId) {
-      res.status(403).end();
-      return;
-    }
-
-    try {
-      await f(parseInt(companyId));
-    } catch (err) {
+    if (Number.isInteger(req.body.id)) {
+      await f(req.body.id);
+    } else {
       res.send(
         JSON.stringify({
           error: { code: 400, message: "Invalid company id" },
@@ -161,7 +200,7 @@ router.post(
 );
 
 router.post(
-  "/dashboard/inventory/products",
+  "/products",
   rateLimit({
     windowMs: 5 * 60 * 1000, // 5 minutes
     max: 100,
@@ -178,54 +217,35 @@ router.post(
       );
       if (error) {
         res.send(JSON.stringify(error));
-        return;
-      }
-
-      res.send(
-        JSON.stringify({
-          products: products.rows.map(({ object_id, name, image }) => {
-            return {
-              objectID: object_id,
-              name,
-              image,
-            };
-          }),
-        })
-      );
-    };
-
-    const companyId = req.cookies["companyId"];
-    if (!companyId) {
-      res.status(403).end();
-      return;
-    }
-
-    if (companyId === "0") {
-      if (Number.isInteger(req.body.companyId)) {
-        await f(req.body.companyId);
       } else {
         res.send(
           JSON.stringify({
-            error: { code: 400, message: "Invalid company id" },
+            products: products.rows.map(({ object_id, name, image }) => {
+              return {
+                objectID: object_id,
+                name,
+                image,
+              };
+            }),
           })
         );
       }
+    };
+
+    if (Number.isInteger(req.body.id)) {
+      await f(req.body.id);
     } else {
-      try {
-        await f(parseInt(companyId));
-      } catch (err) {
-        res.send(
-          JSON.stringify({
-            error: { code: 400, message: "Invalid company id" },
-          })
-        );
-      }
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid company id" },
+        })
+      );
     }
   }
 );
 
 router.post(
-  "/dashboard/inventory/product/get",
+  "/product",
   rateLimit({
     windowMs: 5 * 60 * 1000, // 5 minutes
     max: 100,
@@ -238,6 +258,12 @@ router.post(
       const [object, error] = await algolia.getObject(objectID);
       if (error) {
         res.send(JSON.stringify({ error }));
+      } else if (!object) {
+        res.send(
+          JSON.stringify({
+            error: { code: 400, message: "Product does not exist" },
+          })
+        );
       } else {
         res.send(
           JSON.stringify({
@@ -246,12 +272,6 @@ router.post(
         );
       }
     };
-
-    const companyId = req.cookies["companyId"];
-    if (!companyId) {
-      res.status(403).end();
-      return;
-    }
 
     const productId = req.body.id;
     if (!Number.isInteger(productId)) {
@@ -263,32 +283,20 @@ router.post(
       return;
     }
 
-    if (companyId === "0") {
-      if (Number.isInteger(req.body.companyId)) {
-        await f(req.body.companyId, productId);
-      } else {
-        res.send(
-          JSON.stringify({
-            error: { code: 400, message: "Invalid company id" },
-          })
-        );
-      }
+    if (Number.isInteger(req.body.companyId)) {
+      await f(req.body.companyId, productId);
     } else {
-      try {
-        await f(parseInt(companyId), productId);
-      } catch (err) {
-        res.send(
-          JSON.stringify({
-            error: { code: 400, message: "Invalid company id" },
-          })
-        );
-      }
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid company id" },
+        })
+      );
     }
   }
 );
 
 router.post(
-  "/dashboard/inventory/product/update",
+  "/dashboard/product/update",
   rateLimit({
     windowMs: 5 * 60 * 1000, // 5 minutes
     max: 100,
@@ -353,12 +361,6 @@ router.post(
         }
       }
     };
-
-    const companyId = req.cookies["companyId"];
-    if (!companyId) {
-      res.status(403).end();
-      return;
-    }
 
     const productId = req.body.product.id;
     if (!Number.isInteger(productId)) {
@@ -433,6 +435,7 @@ router.post(
       return;
     }
 
+    const companyId = req.cookies["companyId"];
     if (companyId === "0") {
       if (Number.isInteger(req.body.companyId)) {
         await f(
@@ -476,7 +479,7 @@ router.post(
 );
 
 router.post(
-  "/dashboard/inventory/product/add",
+  "/dashboard/product/add",
   rateLimit({
     windowMs: 5 * 60 * 1000, // 5 minutes
     max: 100,
@@ -581,12 +584,6 @@ router.post(
       }
     };
 
-    const companyId = req.cookies["companyId"];
-    if (!companyId) {
-      res.status(403).end();
-      return;
-    }
-
     const companyName = xss(req.body.companyName || "");
     if (companyName === "") {
       res.send(
@@ -682,6 +679,7 @@ router.post(
       return;
     }
 
+    const companyId = req.cookies["companyId"];
     if (companyId === "0") {
       if (Number.isInteger(req.body.companyId)) {
         await f(
@@ -729,7 +727,7 @@ router.post(
 );
 
 router.post(
-  "/dashboard/inventory/product/delete",
+  "/dashboard/product/delete",
   rateLimit({
     windowMs: 5 * 60 * 1000, // 5 minutes
     max: 100,
@@ -765,12 +763,6 @@ router.post(
       }
     };
 
-    const companyId = req.cookies["companyId"];
-    if (!companyId) {
-      res.status(403).end();
-      return;
-    }
-
     const productId = req.body.id;
     if (!Number.isInteger(productId)) {
       res.send(
@@ -781,6 +773,7 @@ router.post(
       return;
     }
 
+    const companyId = req.cookies["companyId"];
     if (companyId === "0") {
       if (Number.isInteger(req.body.companyId)) {
         await f(req.body.companyId, productId);
@@ -806,7 +799,135 @@ router.post(
 );
 
 router.post(
-  "/dashboard/profile/password/update",
+  "/dashboard/logo/update",
+  rateLimit({
+    windowMs: 24 * 60 * 60 * 1000, // 5 minutes
+    max: 5,
+    message:
+      "Too many logo update requests from this IP, please try again after 5 minutes",
+  }),
+  async (req, res, next) => {
+    const f = async (companyId, image) => {
+      const [url, cloudinaryError] = await cloudinary.upload(image, {
+        exif: false,
+        format: "webp",
+        public_id: `logo/${companyId}`,
+        unique_filename: false,
+        overwrite: true,
+      });
+
+      if (cloudinaryError) {
+        res.send(JSON.stringify({ error: cloudinaryError }));
+      } else {
+        const [_, psqlError] = await psql.query(
+          sqlString.format("UPDATE companies SET logo=? WHERE id=?", [
+            url,
+            companyId,
+          ])
+        );
+        if (psqlError) {
+          res.send(JSON.stringify({ error: psqlError }));
+        } else {
+          res.send(JSON.stringify({ url: url }));
+        }
+      }
+    };
+
+    const image = xss(req.body.image || "");
+    if (image === "") {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid logo" },
+        })
+      );
+      return;
+    }
+
+    const companyId = req.cookies["companyId"];
+    if (companyId === "0") {
+      if (Number.isInteger(req.body.id)) {
+        await f(req.body.id, image);
+      } else {
+        res.send(
+          JSON.stringify({
+            error: { code: 400, message: "Invalid company id" },
+          })
+        );
+      }
+    } else {
+      try {
+        await f(parseInt(companyId), image);
+      } catch (err) {
+        res.send(
+          JSON.stringify({
+            error: { code: 400, message: "Invalid company id" },
+          })
+        );
+      }
+    }
+  }
+);
+
+router.post(
+  "/dashboard/homepage/update",
+  rateLimit({
+    windowMs: 24 * 60 * 60 * 1000, // 5 minutes
+    max: 5,
+    message:
+      "Too many homepage update requests from this IP, please try again after 5 minutes",
+  }),
+  async (req, res, next) => {
+    const f = async (companyId, homepage) => {
+      const [_, psqlError] = await psql.query(
+        sqlString.format("UPDATE companies SET homepage=? WHERE id=?", [
+          homepage,
+          companyId,
+        ])
+      );
+      if (psqlError) {
+        res.send(JSON.stringify({ error: psqlError }));
+      } else {
+        res.send(JSON.stringify({}));
+      }
+    };
+
+    const homepage = xss(req.body.homepage || "");
+    if (homepage === "") {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid homepage" },
+        })
+      );
+      return;
+    }
+
+    const companyId = req.cookies["companyId"];
+    if (companyId === "0") {
+      if (Number.isInteger(req.body.id)) {
+        await f(req.body.id, homepage);
+      } else {
+        res.send(
+          JSON.stringify({
+            error: { code: 400, message: "Invalid company id" },
+          })
+        );
+      }
+    } else {
+      try {
+        await f(parseInt(companyId), homepage);
+      } catch (err) {
+        res.send(
+          JSON.stringify({
+            error: { code: 400, message: "Invalid company id" },
+          })
+        );
+      }
+    }
+  }
+);
+
+router.post(
+  "/dashboard/password/update",
   rateLimit({
     windowMs: 24 * 60 * 60 * 1000, // 5 minutes
     max: 5,
@@ -815,64 +936,60 @@ router.post(
   }),
   async (req, res, next) => {
     const username = req.cookies["username"];
-    if (!username) {
-      res.status(403).end();
-    } else {
-      const [user, psqlError] = await psql.query(
-        sqlString.format("SELECT password FROM users WHERE username=E?", [
-          username,
-        ])
+    const [user, psqlError] = await psql.query(
+      sqlString.format("SELECT password FROM users WHERE username=E?", [
+        username,
+      ])
+    );
+    if (psqlError) {
+      res.send(JSON.stringify({ error: psqlError }));
+    } else if (user.rows.length === 0) {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "User does not exist" },
+        })
       );
-      if (psqlError) {
-        res.send(JSON.stringify({ error: psqlError }));
-      } else if (user.rows.length === 0) {
-        res.send(
-          JSON.stringify({
-            error: { code: 400, message: "User does not exist" },
-          })
-        );
-      } else {
-        const hashedPassword = user.rows[0].password;
-        bcrypt.compare(
-          req.body.currentPassword,
-          hashedPassword,
-          async (bcryptError, result) => {
-            if (bcryptError) {
+    } else {
+      const hashedPassword = user.rows[0].password;
+      bcrypt.compare(
+        req.body.currentPassword,
+        hashedPassword,
+        async (bcryptError, result) => {
+          if (bcryptError) {
+            res.end(
+              JSON.stringify({
+                error: { code: 400, message: bcryptError.message },
+              })
+            );
+          } else if (result) {
+            const newPasswordHash = await bcrypt.hash(
+              req.body.newPassword,
+              parseInt(process.env.SALT)
+            );
+            const [_, psqlError] = await psql.query(
+              sqlString.format(
+                "UPDATE users SET password=? WHERE username=E?",
+                [newPasswordHash, username]
+              )
+            );
+            if (psqlError) {
               res.end(
                 JSON.stringify({
-                  error: { code: 400, message: bcryptError.message },
+                  error: { code: 400, message: psqlError.message },
                 })
               );
-            } else if (result) {
-              const newPasswordHash = await bcrypt.hash(
-                req.body.newPassword,
-                parseInt(process.env.SALT)
-              );
-              const [_, psqlError] = await psql.query(
-                sqlString.format(
-                  "UPDATE users SET password=? WHERE username=E?",
-                  [newPasswordHash, username]
-                )
-              );
-              if (psqlError) {
-                res.end(
-                  JSON.stringify({
-                    error: { code: 400, message: psqlError.message },
-                  })
-                );
-              } else {
-                res.end(JSON.stringify({}));
-              }
             } else {
-              res.end(
-                JSON.stringify({
-                  error: { code: 403, message: "Incorrect Password" },
-                })
-              );
+              res.end(JSON.stringify({}));
             }
+          } else {
+            res.end(
+              JSON.stringify({
+                error: { code: 403, message: "Incorrect Password" },
+              })
+            );
           }
-        );
-      }
+        }
+      );
     }
   }
 );
@@ -900,7 +1017,6 @@ router.post(
         res.cookie("lastName", user.lastName);
         res.cookie("username", user.username);
         res.cookie("companyId", user.companyId);
-        res.cookie("companyName", user.companyName);
         res.end(JSON.stringify({ redirectTo: "/dashboard" }));
       }
     })(req, next);
@@ -1023,7 +1139,7 @@ router.post(
         const companyId = company.rows[0].id + 1;
         const [_, psqlErrorAddCompany] = await psql.query(
           sqlString.format(
-            "INSERT INTO companies (id, name, address, city, province, country, latitude, longitude) VALUES (?, E?, E?, E?, E?, E?, ?, ?)",
+            "INSERT INTO companies (id, name, address, city, province, country, latitude, longitude, logo, homepage) VALUES (?, E?, E?, E?, E?, E?, ?, ?, ?, ?)",
             [
               companyId,
               companyName,
@@ -1033,6 +1149,8 @@ router.post(
               country,
               latLng.lat,
               latLng.lng,
+              "",
+              "",
             ]
           )
         );
@@ -1075,7 +1193,6 @@ router.get(
     res.clearCookie("lastName");
     res.clearCookie("username");
     res.clearCookie("companyId");
-    res.clearCookie("companyName");
     res.end(JSON.stringify({ redirectTo: "/signin" }));
   }
 );
