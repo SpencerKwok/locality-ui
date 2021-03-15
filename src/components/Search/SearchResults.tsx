@@ -95,7 +95,9 @@ function SearchResults(props: SearchResultsProps) {
               <ProductImage
                 company={hit.company}
                 name={hit.name}
-                price={hit.price}
+                {...(hit.price === hit.priceRange[1]
+                  ? { price: hit.price }
+                  : { priceRange: hit.priceRange })}
                 src={hit.image}
                 style={{ maxWidth: 175, marginBottom: 12 }}
               />
