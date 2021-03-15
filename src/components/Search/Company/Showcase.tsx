@@ -46,7 +46,8 @@ function CompanyShowcase(props: CompanyShowcaseProps) {
             <CompanyImage
               name={company.name}
               src={company.logo}
-              style={{ maxWidth: 175, marginBottom: 12 }}
+              style={{ maxWidth: 128, marginBottom: 12 }}
+              width={128}
             />
           </a>
         ))}

@@ -9,14 +9,14 @@ export interface CompanyImageProps extends React.HTMLProps<HTMLElement> {
 }
 
 const StyledH4 = styled.h4`
-  font-size: 120%;
+  font-size: 16px;
   margin: 0px;
 `;
 
 const StyledPicture = styled.picture`
   align-items: center;
   display: flex;
-  height: 225px;
+  height: 175px;
   justify-content: center;
   overflow: hidden;
 `;
@@ -52,7 +52,7 @@ function CompanyImage(props: CompanyImageProps) {
             alt={props.name}
             src={props.src.replace(".webp", ".jpg")}
             onLoad={() => setHighResLoaded(true)}
-            width={175}
+            width={props.width}
           />
         </StyledPicture>
       </span>
