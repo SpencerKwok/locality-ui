@@ -312,6 +312,7 @@ router.post(
       primaryKeywords,
       secondaryKeywords,
       price,
+      priceRange,
       link
     ) => {
       const [url, cloudinaryError] = await cloudinary.upload(image, {
@@ -331,6 +332,7 @@ router.post(
             primary_keywords: primaryKeywords,
             secondary_keywords: secondaryKeywords,
             price: price,
+            price_range: priceRange,
             link: link,
             image: url,
           },
@@ -425,6 +427,27 @@ router.post(
     }
     price = parseFloat(price.toFixed(2));
 
+    let priceRange = req.body.product.priceRange;
+    if (!Array.isArray(primaryKeywords) || priceRange.length !== 2) {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid price range" },
+        })
+      );
+      return;
+    }
+    try {
+      priceRange[0] = parseFloat(priceRange[0]);
+      priceRange[1] = parseFloat(priceRange[1]);
+    } catch {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid price range" },
+        })
+      );
+      return;
+    }
+
     const link = xss(req.body.product.link || "");
     if (link === "") {
       res.send(
@@ -446,6 +469,7 @@ router.post(
           primaryKeywords,
           secondaryKeywords,
           price,
+          priceRange,
           link
         );
       } else {
@@ -465,6 +489,7 @@ router.post(
           primaryKeywords,
           secondaryKeywords,
           price,
+          priceRange,
           link
         );
       } catch (err) {
@@ -498,6 +523,7 @@ router.post(
       primaryKeywords,
       secondaryKeywords,
       price,
+      priceRange,
       link
     ) => {
       const [nextIdResponse, psqlErrorGetNextId] = await psql.query(
@@ -541,6 +567,7 @@ router.post(
               primary_keywords: primaryKeywords,
               secondary_keywords: secondaryKeywords,
               price: price,
+              price_range: priceRange,
               link: link,
               image: url,
             },
@@ -669,6 +696,27 @@ router.post(
     }
     price = parseFloat(price.toFixed(2));
 
+    let priceRange = req.body.product.priceRange;
+    if (!Array.isArray(primaryKeywords) || priceRange.length !== 2) {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid price range" },
+        })
+      );
+      return;
+    }
+    try {
+      priceRange[0] = parseFloat(priceRange[0]);
+      priceRange[1] = parseFloat(priceRange[1]);
+    } catch {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid price range" },
+        })
+      );
+      return;
+    }
+
     const link = xss(req.body.product.link || "");
     if (link === "") {
       res.send(
@@ -692,6 +740,7 @@ router.post(
           primaryKeywords,
           secondaryKeywords,
           price,
+          priceRange,
           link
         );
       } else {
@@ -713,6 +762,7 @@ router.post(
           primaryKeywords,
           secondaryKeywords,
           price,
+          priceRange,
           link
         );
       } catch (err) {

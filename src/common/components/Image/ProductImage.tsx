@@ -6,7 +6,8 @@ import Stack from "../Stack/Stack";
 export interface ProductImageProps extends React.HTMLProps<HTMLElement> {
   company: string;
   name: string;
-  price: number;
+  price?: number;
+  priceRange?: Array<number>;
   src: string;
 }
 
@@ -68,7 +69,12 @@ function ProductImage(props: ProductImageProps) {
       </span>
       <StyledH6>{props.company}</StyledH6>
       <StyledH4>{props.name}</StyledH4>
-      <StyledH5>${props.price.toFixed(2)} CAD</StyledH5>
+      {props.price && <StyledH5>${props.price.toFixed(2)} CAD</StyledH5>}
+      {props.priceRange && (
+        <StyledH5>
+          ${props.priceRange[0].toFixed(2)}-{props.priceRange[1].toFixed(2)} CAD
+        </StyledH5>
+      )}
     </Stack>
   );
 }

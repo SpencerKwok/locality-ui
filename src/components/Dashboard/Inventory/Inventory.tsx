@@ -4,7 +4,7 @@ import * as yup from "yup";
 import styled from "styled-components";
 import { decode } from "html-entities";
 import { Formik, FormikConfig } from "formik";
-import { Button, Form, FormControl } from "react-bootstrap";
+import { Button, Form, FormControl, FormCheck } from "react-bootstrap";
 import { Redirect } from "react-router-dom";
 
 import CompanyList from "../Company";
@@ -38,7 +38,10 @@ interface ProductRequest {
   name: string;
   primaryKeywords: string;
   secondaryKeywords: string;
+  isRange: boolean;
   price: string;
+  priceLow: string;
+  priceHigh: string;
   image: any;
   link: string;
   option: "add" | "edit" | "delete";
@@ -51,7 +54,7 @@ const ProductSchema = yup.object().shape({
     .optional()
     .max(255, "Too long")
     .matches(
-      /^\s*[^,]+\s*(,\s*[^,]+){0,2}\s*$/g,
+      /^\s*[^,]+\s*(,(\s*[^,\s]\s*)+){0,2}\s*$/g,
       "Must be a comma seperated list with at most 3 terms"
     ),
   secondaryKeywords: yup
@@ -59,14 +62,48 @@ const ProductSchema = yup.object().shape({
     .optional()
     .max(255, "Too long")
     .matches(
-      /^\s*[^,]+\s*(,\s*[^,]+){0,4}\s*$/g,
+      /^\s*[^,]+\s*(,(\s*[^,\s]\s*)+){0,4}\s*$/g,
       "Must be a comma seperated list with at most 5 terms"
     ),
-  price: yup
-    .string()
-    .required("Required")
-    .max(255, "Too long")
-    .matches(/^\s*[0-9]+(\.[0-9][0-9])?\s*$/g, "Must be a valid price number"),
+  price: yup.mixed().when("isRange", {
+    is: false,
+    then: yup
+      .string()
+      .required("Required")
+      .max(255, "Too long")
+      .matches(/^\s*[0-9]+(\.[0-9][0-9])?\s*$/g, "Invalid price"),
+  }),
+  priceLow: yup.mixed().when("isRange", {
+    is: true,
+    then: yup
+      .string()
+      .required("Required")
+      .max(255, "Too long")
+      .matches(/^\s*[0-9]+(\.[0-9][0-9])?\s*$/g, "Invalid price")
+      .test(
+        "Price Low Test",
+        "Must be lower than the upper price range",
+        (lowPrice, { parent }) => {
+          try {
+            const p1 = parseFloat(lowPrice || "");
+            const p2 = parseFloat(parent.priceHigh);
+            return p1 < p2;
+          } catch {
+            // Error is not a price range
+            // error, so we return true
+            return true;
+          }
+        }
+      ),
+  }),
+  priceHigh: yup.mixed().when("isRange", {
+    is: true,
+    then: yup
+      .string()
+      .required("Required")
+      .max(255, "Too long")
+      .matches(/^\s*[0-9]+(\.[0-9][0-9])?\s*$/g, "Invalid price"),
+  }),
   image: yup
     .mixed()
     .test("Not Null", "Required", (value) => value && value !== ""),
@@ -150,6 +187,13 @@ function Inventory(props: InventoryProps) {
       image = await toBase64(image);
     } catch (err) {}
 
+    const price = values.isRange
+      ? parseFloat(values.priceLow)
+      : parseFloat(values.price);
+    const priceRange = values.isRange
+      ? [parseFloat(values.priceLow), parseFloat(values.priceHigh)]
+      : [price, price];
+
     if (values.option === "add") {
       const productToAdd: Product = {
         company: companies[companyIndex].name,
@@ -158,7 +202,8 @@ function Inventory(props: InventoryProps) {
         secondaryKeywords: values.secondaryKeywords
           .split(",")
           .map((x) => x.trim()),
-        price: parseFloat(values.price),
+        price: price,
+        priceRange: priceRange,
         link: values.link,
 
         objectID: "",
@@ -246,7 +291,8 @@ function Inventory(props: InventoryProps) {
             secondaryKeywords: values.secondaryKeywords
               .split(",")
               .map((x) => x.trim()),
-            price: parseFloat(values.price),
+            price: price,
+            priceRange: priceRange,
             link: values.link,
             image: image,
           },
@@ -431,8 +477,10 @@ function Inventory(props: InventoryProps) {
                 name: product.name,
                 primaryKeywords: product.primaryKeywords.join(", "),
                 secondaryKeywords: product.secondaryKeywords.join(", "),
-                price:
-                  product.price >= 0 ? product.price.toFixed(2).toString() : "",
+                isRange: product.price !== product.priceRange[1],
+                price: isNewItem ? "" : product.price.toFixed(2),
+                priceLow: isNewItem ? "" : product.priceRange[0].toFixed(2),
+                priceHigh: isNewItem ? "" : product.priceRange[1].toFixed(2),
                 image: product.image,
                 link: product.link,
                 option: isNewItem ? "add" : "edit",
@@ -500,21 +548,90 @@ function Inventory(props: InventoryProps) {
                     </FormInputGroup>
                     {createFormErrorMessage("secondaryKeywords")}
                   </Form.Group>
-                  <Form.Group>
-                    <FormLabel>Price</FormLabel>
-                    <FormInputGroup size="md" width="100%">
-                      <FormControl
-                        aria-label="Large"
-                        id="price"
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        placeholder="e.g. 18.64"
-                        type="text"
-                        value={values.price}
-                      />
-                    </FormInputGroup>
-                    {createFormErrorMessage("price")}
-                  </Form.Group>
+                  {values.isRange ? (
+                    <Form.Group>
+                      <Stack direction="row" columnAlign="flex-start">
+                        <FormLabel style={{ paddingRight: 12 }}>
+                          Price Range
+                        </FormLabel>
+                        <Form.Check
+                          aria-label="Large"
+                          id="isRange"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          style={{ paddingTop: 1 }}
+                          type="checkbox"
+                          defaultChecked={values.isRange}
+                        />
+                        <Form.Label>Range</Form.Label>
+                      </Stack>
+                      <Stack
+                        direction="row"
+                        rowAlign="flex-start"
+                        spacing={12}
+                        priority={[1, 1]}
+                      >
+                        <Stack direction="column" columnAlign="flex-start">
+                          <FormInputGroup size="md" width="100%">
+                            <FormControl
+                              aria-label="Large"
+                              id="priceLow"
+                              onBlur={handleBlur}
+                              onChange={handleChange}
+                              placeholder="e.g. 1.50"
+                              type="text"
+                              value={values.priceLow}
+                            />
+                          </FormInputGroup>
+                        </Stack>
+                        <Stack direction="column" columnAlign="flex-start">
+                          <FormInputGroup size="md" width="100%">
+                            <FormControl
+                              aria-label="Large"
+                              id="priceHigh"
+                              onBlur={handleBlur}
+                              onChange={handleChange}
+                              placeholder="e.g. 5.50"
+                              type="text"
+                              value={values.priceHigh}
+                            />
+                          </FormInputGroup>
+                        </Stack>
+                      </Stack>
+                      {createFormErrorMessage("priceLow")}
+                      {createFormErrorMessage("priceHigh")}
+                    </Form.Group>
+                  ) : (
+                    <Form.Group>
+                      <Stack direction="row" columnAlign="flex-start">
+                        <FormLabel style={{ paddingRight: 12 }}>
+                          Price
+                        </FormLabel>
+                        <Form.Check
+                          aria-label="Large"
+                          id="isRange"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          style={{ paddingTop: 1 }}
+                          type="checkbox"
+                          defaultChecked={values.isRange}
+                        />
+                        <Form.Label>Range</Form.Label>
+                      </Stack>
+                      <FormInputGroup size="md" width="100%">
+                        <FormControl
+                          aria-label="Large"
+                          id="price"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          placeholder="e.g. 18.64"
+                          type="text"
+                          value={values.price}
+                        />
+                      </FormInputGroup>
+                      {createFormErrorMessage("price")}
+                    </Form.Group>
+                  )}
                   <Form.Group>
                     <FormLabel>Link to Product</FormLabel>
                     <FormInputGroup size="md" width="100%">
@@ -524,6 +641,7 @@ function Inventory(props: InventoryProps) {
                         onBlur={handleBlur}
                         onChange={handleChange}
                         placeholder="e.g. www.mywebsite.com/wooden-cutlery"
+                        style={{ marginBottom: "0.5rem" }}
                         type="text"
                         value={values.link}
                       />
