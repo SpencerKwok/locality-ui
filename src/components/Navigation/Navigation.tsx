@@ -43,7 +43,7 @@ function Navigation(props: NavigationProps) {
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto">
             <StyledNavLink href="/">Home</StyledNavLink>
-            <StyledNavLink href="/demo">Demo</StyledNavLink>
+            <StyledNavLink href="/extension">Extension</StyledNavLink>
             <StyledNavLink href="/about">About Us</StyledNavLink>
             <StyledNavLink href="/contact">Contact Us</StyledNavLink>
             {companyId ? (
@@ -90,7 +90,7 @@ function Navigation(props: NavigationProps) {
       </span>
       <Nav className="ml-auto">
         <StyledNavLink href="/">Home</StyledNavLink>
-        <StyledNavLink href="/demo">Demo</StyledNavLink>
+        <StyledNavLink href="/extension">Extension</StyledNavLink>
         <StyledNavLink href="/about">About Us</StyledNavLink>
         <StyledNavLink href="/contact">Contact Us</StyledNavLink>
         {companyId ? (
