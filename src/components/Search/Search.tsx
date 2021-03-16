@@ -105,6 +105,31 @@ export function Search(props: SearchProps) {
               style={{ marginLeft: 24, marginTop: -8 }}
             />
           )}
+          <Stack direction="row" columnAlign="center" width={props.width}>
+            <Pagination size="lg">
+              {[...Array(Math.ceil(nbHits / 25)).keys()].map((index) => (
+                <Pagination.Item
+                  active={page === index}
+                  onClick={async () => {
+                    await SearchDAO.getInstance()
+                      .search({
+                        query: query,
+                        page: index,
+                        ...location,
+                      })
+                      .then(({ hits, nbHits }) => {
+                        setHits(hits);
+                        setNbHits(nbHits);
+                        setPage(index);
+                      })
+                      .catch((err) => console.log(err));
+                  }}
+                >
+                  {index + 1}
+                </Pagination.Item>
+              ))}
+            </Pagination>
+          </Stack>
         </Stack>
       );
     } else {
@@ -159,7 +184,7 @@ export function Search(props: SearchProps) {
                       : hits.filter((value) => value.company === companyFilter)
                   }
                   query={props.query || ""}
-                  style={{ marginLeft: 12 }}
+                  style={{ marginLeft: 12, paddingRight: 12 }}
                 />
               </Stack>
               <Stack direction="row" columnAlign="center" width={props.width}>
