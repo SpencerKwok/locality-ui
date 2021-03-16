@@ -90,6 +90,7 @@ function Extension(props: ExtensionProps) {
               items={images}
               slideDuration={1000}
               slideInterval={5000}
+              autoPlay={true}
             />
           </Stack>
         </main>
