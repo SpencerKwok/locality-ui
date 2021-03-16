@@ -58,11 +58,16 @@ exports.deleteObject = async (objectID) => {
 };
 
 exports.search = async (query, options) => {
-  let hits,
-    error = null;
+  let error = null;
+  let results = {};
   await index
     .search(query, options)
-    .then((res) => (hits = res.hits))
+    .then((res) => {
+      results = {
+        hits: res.hits,
+        nbHits: res.nbHits,
+      };
+    })
     .catch((err) => {
       console.log(err);
       error = {
@@ -70,5 +75,5 @@ exports.search = async (query, options) => {
         message: err.message,
       };
     });
-  return [hits, error];
+  return [results, error];
 };
