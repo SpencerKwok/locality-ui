@@ -40,9 +40,9 @@ const images = [
   },
   {
     original:
-      "https://res.cloudinary.com/hcory49pf/image/upload/v1615860788/demo/extension-slide-2.png",
+      "https://res.cloudinary.com/hcory49pf/image/upload/v1615871512/demo/extension-slide-2.png",
     thumbnail:
-      "https://res.cloudinary.com/hcory49pf/image/upload/v1615860788/demo/extension-slide-2.png",
+      "https://res.cloudinary.com/hcory49pf/image/upload/v1615871512/demo/extension-slide-2.png",
     renderItem,
   },
   {
@@ -70,12 +70,14 @@ function Extension(props: ExtensionProps) {
     <Stack direction="row" columnAlign="center">
       <Stack direction="column" rowAlign="center" style={{ marginTop: 24 }}>
         <header style={{ textAlign: "center" }}>
-          <h1>Locality Chrome Extension</h1>
+          <h2>Locality Chrome Extension</h2>
         </header>
         <main>
           <Stack
             direction="column"
             rowAlign="center"
+            minWidth={375}
+            maxWidth={800}
             width={props.width * 0.5}
             spacing={12}
           >
