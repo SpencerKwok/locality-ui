@@ -6,7 +6,7 @@ import {
   About,
   Contact,
   Dashboard,
-  Demo,
+  Extension,
   Main,
   Navigation,
   SignIn,
@@ -46,12 +46,12 @@ function App() {
         ></Route>
         <Route
           exact
-          path="/demo"
+          path="/extension"
           render={(props) => {
             return (
               <React.Fragment>
                 <Navigation width={width} />
-                <Demo width={width} />
+                <Extension width={width} />
               </React.Fragment>
             );
           }}

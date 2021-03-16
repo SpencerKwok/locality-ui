@@ -17,13 +17,6 @@
     "url": "https://github.com/SpencerKwok/locality-ui/issues"
   },
   "dependencies": {
-    "@types/html-entities": "^1.2.16",
-    "@types/js-cookie": "^2.2.6",
-    "@types/react": "^17.0.2",
-    "@types/react-dom": "^17.0.1",
-    "@types/react-router-dom": "^5.1.7",
-    "@types/react-virtualized": "^9.21.11",
-    "@types/styled-components": "^5.1.7",
     "algoliasearch": "^4.8.5",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
@@ -53,11 +46,12 @@
     "pg": "^8.5.1",
     "public-ip": "^4.0.3",
     "query-string": "^6.14.0",
-    "react": "^17.0.1",
+    "react": "^16.14.0",
     "react-bootstrap": "^1.5.0",
-    "react-dom": "^17.0.1",
+    "react-dom": "^16.14.0",
     "react-geolocated": "^3.1.0",
-    "react-is": "^17.0.1",
+    "react-image-gallery": "^1.0.9",
+    "react-is": "^16.8.0",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^2.0.5",
@@ -81,5 +75,15 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/html-entities": "^1.2.16",
+    "@types/js-cookie": "^2.2.6",
+    "@types/react": "^17.0.2",
+    "@types/react-dom": "^17.0.1",
+    "@types/react-image-gallery": "^1.0.2",
+    "@types/react-router-dom": "^5.1.7",
+    "@types/react-virtualized": "^9.21.11",
+    "@types/styled-components": "^5.1.7"
   }
 }
