@@ -29,7 +29,7 @@ export interface SearchProps extends GeolocatedProps {
 
 export function Search(props: SearchProps) {
   const history = useHistory();
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(-1);
   const [nbHits, setNbHits] = useState(0);
   const [hits, setHits] = useState<Array<Product>>([]);
   const [query, setQuery] = useState(props.query || "");
@@ -42,7 +42,11 @@ export function Search(props: SearchProps) {
         return;
       }
 
-      setPage(0);
+      if (page >= 0) {
+        window.scrollTo(0, 0);
+        return;
+      }
+
       setSearching(true);
       setCompanyFilter("");
 
@@ -58,10 +62,11 @@ export function Search(props: SearchProps) {
         .then(({ hits, nbHits }) => {
           setHits(hits);
           setNbHits(nbHits);
+          setPage(-1);
         })
         .catch((err) => console.log(err));
     })();
-  }, [props.query, props.coords]);
+  }, [props.query, props.coords, page]);
 
   const searchBarOnChange = (e: React.FormEvent<HTMLInputElement>) => {
     setQuery((e.target as HTMLInputElement).value);
@@ -117,11 +122,9 @@ export function Search(props: SearchProps) {
                         page: index,
                         ...location,
                       })
-                      .then(({ hits, nbHits }) => {
+                      .then(({ hits }) => {
                         setHits(hits);
-                        setNbHits(nbHits);
                         setPage(index);
-                        window.scrollTo(0, 0);
                       })
                       .catch((err) => console.log(err));
                   }}
@@ -192,7 +195,7 @@ export function Search(props: SearchProps) {
                 <Pagination size="lg">
                   {[...Array(Math.ceil(nbHits / 25)).keys()].map((index) => (
                     <Pagination.Item
-                      active={page === index}
+                      active={page === index || (page < 0 && index === 0)}
                       onClick={async () => {
                         await SearchDAO.getInstance()
                           .search({
@@ -200,11 +203,9 @@ export function Search(props: SearchProps) {
                             page: index,
                             ...location,
                           })
-                          .then(({ hits, nbHits }) => {
+                          .then(({ hits }) => {
                             setHits(hits);
-                            setNbHits(nbHits);
                             setPage(index);
-                            window.scrollTo(0, 0);
                           })
                           .catch((err) => console.log(err));
                       }}
