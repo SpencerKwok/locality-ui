@@ -42,7 +42,7 @@ export function Search(props: SearchProps) {
         return;
       }
 
-      setHits([]);
+      setPage(0);
       setSearching(true);
       setCompanyFilter("");
 
@@ -121,6 +121,7 @@ export function Search(props: SearchProps) {
                         setHits(hits);
                         setNbHits(nbHits);
                         setPage(index);
+                        window.scrollTo(0, 0);
                       })
                       .catch((err) => console.log(err));
                   }}
@@ -203,6 +204,7 @@ export function Search(props: SearchProps) {
                             setHits(hits);
                             setNbHits(nbHits);
                             setPage(index);
+                            window.scrollTo(0, 0);
                           })
                           .catch((err) => console.log(err));
                       }}
