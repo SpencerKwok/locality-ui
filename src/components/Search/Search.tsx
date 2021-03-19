@@ -193,7 +193,7 @@ export function Search(props: SearchProps) {
               </Stack>
               <Stack direction="row" columnAlign="center" width={props.width}>
                 <Pagination size="lg">
-                  {[...Array(Math.ceil(nbHits / 25)).keys()].map((index) => (
+                  {[...Array(Math.ceil(nbHits / 24)).keys()].map((index) => (
                     <Pagination.Item
                       active={page === index || (page < 0 && index === 0)}
                       onClick={async () => {
