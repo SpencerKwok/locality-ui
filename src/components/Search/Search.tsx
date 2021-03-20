@@ -49,10 +49,12 @@ export function Search(props: SearchProps) {
       if (!location.ip) {
         location.ip = await PublicIp.v4();
       }
+
       if (props.coords) {
         location.latitude = props.coords.latitude;
         location.longitude = props.coords.longitude;
       }
+
       await SearchDAO.getInstance()
         .search({ query: XSS(props.query), ...location, page })
         .then(({ hits, nbHits }) => {
@@ -108,22 +110,10 @@ export function Search(props: SearchProps) {
           )}
           <Stack direction="row" columnAlign="center" width={props.width}>
             <Pagination size="lg">
-              {[...Array(Math.ceil(nbHits / 25)).keys()].map((index) => (
+              {[...Array(Math.ceil(nbHits / 24)).keys()].map((index) => (
                 <Pagination.Item
-                  active={page === index}
-                  onClick={async () => {
-                    await SearchDAO.getInstance()
-                      .search({
-                        query: query,
-                        page: index,
-                        ...location,
-                      })
-                      .then(({ hits }) => {
-                        setHits(hits);
-                        setPage(index);
-                      })
-                      .catch((err) => console.log(err));
-                  }}
+                  active={page === index || (page < 0 && index === 0)}
+                  onClick={() => setPage(index)}
                 >
                   {index + 1}
                 </Pagination.Item>

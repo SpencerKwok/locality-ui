@@ -80,10 +80,20 @@ router.get(
       }
     }
 
+    const attributesToRetrieve = [
+      "company",
+      "image",
+      "link",
+      "name",
+      "price",
+      "price_range",
+    ];
+
     if (lat !== "" && lng !== "") {
       const [results, error] = await algolia.search(q, {
         aroundLatLng: `${lat}, ${lng}`,
         page: page,
+        attributesToRetrieve,
       });
       if (error) {
         res.send(JSON.stringify({ error }));
@@ -95,6 +105,7 @@ router.get(
         aroundLatLngViaIP: true,
         headers: { "X-Forwarded-For": ip },
         page: page,
+        attributesToRetrieve,
       });
       if (error) {
         res.send(JSON.stringify({ error }));
@@ -102,7 +113,10 @@ router.get(
         res.send(JSON.stringify(results));
       }
     } else {
-      const [results, error] = await algolia.search(q, { page: page });
+      const [results, error] = await algolia.search(q, {
+        page: page,
+        attributesToRetrieve,
+      });
       if (error) {
         res.send(JSON.stringify({ error }));
       } else {
@@ -329,7 +343,7 @@ router.post(
       name,
       image,
       primaryKeywords,
-      secondaryKeywords,
+      description,
       price,
       priceRange,
       link
@@ -349,7 +363,7 @@ router.post(
             objectID: `${companyId}_${productId}`,
             name: name,
             primary_keywords: primaryKeywords,
-            secondary_keywords: secondaryKeywords,
+            description: description,
             price: price,
             price_range: priceRange,
             link: link,
@@ -424,16 +438,15 @@ router.post(
     }
     primaryKeywords = primaryKeywords.map((x) => xss(x));
 
-    let secondaryKeywords = req.body.product.secondaryKeywords;
-    if (!Array.isArray(primaryKeywords)) {
+    const description = xss(req.body.product.description || "");
+    if (description === "") {
       res.send(
         JSON.stringify({
-          error: { code: 400, message: "Invalid secondary keywords" },
+          error: { code: 400, message: "Invalid description" },
         })
       );
       return;
     }
-    secondaryKeywords = secondaryKeywords.map((x) => xss(x));
 
     let price = req.body.product.price;
     if (typeof price !== "number") {
@@ -486,7 +499,7 @@ router.post(
           name,
           image,
           primaryKeywords,
-          secondaryKeywords,
+          description,
           price,
           priceRange,
           link
@@ -505,7 +518,7 @@ router.post(
         name,
         image,
         primaryKeywords,
-        secondaryKeywords,
+        description,
         price,
         priceRange,
         link
@@ -532,7 +545,7 @@ router.post(
       latitude,
       longitude,
       primaryKeywords,
-      secondaryKeywords,
+      description,
       price,
       priceRange,
       link
@@ -576,7 +589,7 @@ router.post(
               name: productName,
               company: companyName,
               primary_keywords: primaryKeywords,
-              secondary_keywords: secondaryKeywords,
+              description: description,
               price: price,
               price_range: priceRange,
               link: link,
@@ -685,16 +698,15 @@ router.post(
     }
     primaryKeywords = primaryKeywords.map((x) => xss(x));
 
-    let secondaryKeywords = req.body.product.secondaryKeywords;
-    if (!Array.isArray(primaryKeywords)) {
+    const description = xss(req.body.product.description || "");
+    if (description === "") {
       res.send(
         JSON.stringify({
-          error: { code: 400, message: "Invalid secondary keywords" },
+          error: { code: 400, message: "Invalid description" },
         })
       );
       return;
     }
-    secondaryKeywords = secondaryKeywords.map((x) => xss(x));
 
     let price = req.body.product.price;
     if (typeof price !== "number") {
@@ -749,7 +761,7 @@ router.post(
           latitude,
           longitude,
           primaryKeywords,
-          secondaryKeywords,
+          description,
           price,
           priceRange,
           link
@@ -770,7 +782,7 @@ router.post(
         latitude,
         longitude,
         primaryKeywords,
-        secondaryKeywords,
+        description,
         price,
         priceRange,
         link

@@ -143,7 +143,7 @@ export interface BaseProduct {
 export interface Product extends BaseProduct {
   company: string;
   primaryKeywords: Array<string>;
-  secondaryKeywords: Array<string>;
+  description: string;
   link: string;
   price: number;
   priceRange: Array<number>;
@@ -155,7 +155,7 @@ export const EmptyProduct: Product = {
   image: "",
   company: "",
   primaryKeywords: [],
-  secondaryKeywords: [],
+  description: "",
   link: "",
   price: -1,
   priceRange: [-1, -1],
@@ -184,7 +184,7 @@ export interface ProductUpdateRequest {
     name: string;
     id: number;
     primaryKeywords: Array<string>;
-    secondaryKeywords: Array<string>;
+    description: string;
     price: number;
     priceRange: Array<number>;
     link: string;
@@ -204,7 +204,7 @@ export interface ProductAddRequest {
   product: {
     name: string;
     primaryKeywords: Array<string>;
-    secondaryKeywords: Array<string>;
+    description: string;
     price: number;
     priceRange: Array<number>;
     link: string;

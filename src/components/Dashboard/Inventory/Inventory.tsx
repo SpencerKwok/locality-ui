@@ -37,7 +37,7 @@ export interface InventoryProps extends React.HTMLProps<HTMLDivElement> {
 interface ProductRequest {
   name: string;
   primaryKeywords: string;
-  secondaryKeywords: string;
+  description: string;
   isRange: boolean;
   price: string;
   priceLow: string;
@@ -52,19 +52,12 @@ const ProductSchema = yup.object().shape({
   primaryKeywords: yup
     .string()
     .optional()
-    .max(255, "Too long")
+    .max(128, "Too long")
     .matches(
       /^\s*[^,]+\s*(,(\s*[^,\s]\s*)+){0,2}\s*$/g,
       "Must be a comma seperated list with at most 3 terms"
     ),
-  secondaryKeywords: yup
-    .string()
-    .optional()
-    .max(255, "Too long")
-    .matches(
-      /^\s*[^,]+\s*(,(\s*[^,\s]\s*)+){0,4}\s*$/g,
-      "Must be a comma seperated list with at most 5 terms"
-    ),
+  description: yup.string().optional().max(2048, "Too long"),
   price: yup.mixed().when("isRange", {
     is: false,
     then: yup
@@ -199,9 +192,7 @@ function Inventory(props: InventoryProps) {
         company: companies[companyIndex].name,
         name: values.name,
         primaryKeywords: values.primaryKeywords.split(",").map((x) => x.trim()),
-        secondaryKeywords: values.secondaryKeywords
-          .split(",")
-          .map((x) => x.trim()),
+        description: values.description,
         price: price,
         priceRange: priceRange,
         link: values.link,
@@ -288,9 +279,7 @@ function Inventory(props: InventoryProps) {
             primaryKeywords: values.primaryKeywords
               .split(",")
               .map((x) => x.trim()),
-            secondaryKeywords: values.secondaryKeywords
-              .split(",")
-              .map((x) => x.trim()),
+            description: values.description,
             price: price,
             priceRange: priceRange,
             link: values.link,
@@ -476,7 +465,7 @@ function Inventory(props: InventoryProps) {
               {
                 name: product.name,
                 primaryKeywords: product.primaryKeywords.join(", "),
-                secondaryKeywords: product.secondaryKeywords.join(", "),
+                description: product.description,
                 isRange: product.price !== product.priceRange[1],
                 price: isNewItem ? "" : product.price.toFixed(2),
                 priceLow: isNewItem ? "" : product.priceRange[0].toFixed(2),
@@ -534,19 +523,20 @@ function Inventory(props: InventoryProps) {
                     {createFormErrorMessage("primaryKeywords")}
                   </Form.Group>
                   <Form.Group>
-                    <Form.Label>Secondary Keywords (max 5 terms)</Form.Label>
+                    <Form.Label>Description</Form.Label>
                     <FormInputGroup size="md" width="100%">
                       <FormControl
+                        as="textarea"
                         aria-label="Large"
-                        id="secondaryKeywords"
+                        id="description"
                         onBlur={handleBlur}
                         onChange={handleChange}
                         placeholder="e.g. reusable, eco-friendly"
                         type="text"
-                        value={values.secondaryKeywords}
+                        value={values.description}
                       />
                     </FormInputGroup>
-                    {createFormErrorMessage("secondaryKeywords")}
+                    {createFormErrorMessage("description")}
                   </Form.Group>
                   {values.isRange ? (
                     <Form.Group>
