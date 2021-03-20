@@ -427,26 +427,8 @@ router.post(
       return;
     }
 
-    let primaryKeywords = req.body.product.primaryKeywords;
-    if (!Array.isArray(primaryKeywords)) {
-      res.send(
-        JSON.stringify({
-          error: { code: 400, message: "Invalid primary keywords" },
-        })
-      );
-      return;
-    }
-    primaryKeywords = primaryKeywords.map((x) => xss(x));
-
+    const primaryKeywords = xss(req.body.product.primaryKeywords || "");
     const description = xss(req.body.product.description || "");
-    if (description === "") {
-      res.send(
-        JSON.stringify({
-          error: { code: 400, message: "Invalid description" },
-        })
-      );
-      return;
-    }
 
     let price = req.body.product.price;
     if (typeof price !== "number") {
@@ -460,7 +442,7 @@ router.post(
     price = parseFloat(price.toFixed(2));
 
     let priceRange = req.body.product.priceRange;
-    if (!Array.isArray(primaryKeywords) || priceRange.length !== 2) {
+    if (!Array.isArray(priceRange) || priceRange.length !== 2) {
       res.send(
         JSON.stringify({
           error: { code: 400, message: "Invalid price range" },
@@ -711,26 +693,8 @@ router.post(
       }
     }
 
-    let primaryKeywords = req.body.product.primaryKeywords;
-    if (!Array.isArray(primaryKeywords)) {
-      res.send(
-        JSON.stringify({
-          error: { code: 400, message: "Invalid primary keywords" },
-        })
-      );
-      return;
-    }
-    primaryKeywords = primaryKeywords.map((x) => xss(x));
-
+    const primaryKeywords = xss(req.body.product.primaryKeywords || "");
     const description = xss(req.body.product.description || "");
-    if (description === "") {
-      res.send(
-        JSON.stringify({
-          error: { code: 400, message: "Invalid description" },
-        })
-      );
-      return;
-    }
 
     let price = req.body.product.price;
     if (typeof price !== "number") {
@@ -744,7 +708,7 @@ router.post(
     price = parseFloat(price.toFixed(2));
 
     let priceRange = req.body.product.priceRange;
-    if (!Array.isArray(primaryKeywords) || priceRange.length !== 2) {
+    if (!Array.isArray(priceRange) || priceRange.length !== 2) {
       res.send(
         JSON.stringify({
           error: { code: 400, message: "Invalid price range" },

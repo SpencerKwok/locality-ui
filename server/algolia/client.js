@@ -5,6 +5,14 @@ const client = algoliasearch(
 );
 const index = client.initIndex(process.env.ALGOLIA_INDEX || "");
 
+index.setSettings({
+  searchableAttributes: [
+    "unordered(name, primary_keywords)",
+    "unordered(company)",
+    "unordered(description)",
+  ],
+});
+
 exports.getObject = async (objectID, options) => {
   let object,
     error = null;
@@ -75,5 +83,6 @@ exports.search = async (query, options) => {
         message: err.message,
       };
     });
+  console.log(results.hits);
   return [results, error];
 };
