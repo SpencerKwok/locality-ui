@@ -29,7 +29,7 @@ export interface SearchProps extends GeolocatedProps {
 
 export function Search(props: SearchProps) {
   const history = useHistory();
-  const [page, setPage] = useState(-1);
+  const [page, setPage] = useState(0);
   const [nbHits, setNbHits] = useState(0);
   const [hits, setHits] = useState<Array<Product>>([]);
   const [query, setQuery] = useState(props.query || "");
@@ -42,11 +42,7 @@ export function Search(props: SearchProps) {
         return;
       }
 
-      if (page >= 0) {
-        window.scrollTo(0, 0);
-        return;
-      }
-
+      window.scrollTo(0, 0);
       setSearching(true);
       setCompanyFilter("");
 
@@ -58,11 +54,10 @@ export function Search(props: SearchProps) {
         location.longitude = props.coords.longitude;
       }
       await SearchDAO.getInstance()
-        .search({ query: XSS(props.query), ...location })
+        .search({ query: XSS(props.query), ...location, page })
         .then(({ hits, nbHits }) => {
           setHits(hits);
           setNbHits(nbHits);
-          setPage(-1);
         })
         .catch((err) => console.log(err));
     })();
@@ -76,6 +71,7 @@ export function Search(props: SearchProps) {
     if (query === "" || props.query === query) {
       return;
     }
+    setPage(0);
     history.push("/search?q=" + query);
   };
 
@@ -196,19 +192,7 @@ export function Search(props: SearchProps) {
                   {[...Array(Math.ceil(nbHits / 24)).keys()].map((index) => (
                     <Pagination.Item
                       active={page === index || (page < 0 && index === 0)}
-                      onClick={async () => {
-                        await SearchDAO.getInstance()
-                          .search({
-                            query: query,
-                            page: index,
-                            ...location,
-                          })
-                          .then(({ hits }) => {
-                            setHits(hits);
-                            setPage(index);
-                          })
-                          .catch((err) => console.log(err));
-                      }}
+                      onClick={() => setPage(index)}
                     >
                       {index + 1}
                     </Pagination.Item>
