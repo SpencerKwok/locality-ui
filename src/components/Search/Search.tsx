@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { geolocated, GeolocatedProps } from "react-geolocated";
+import { Pagination } from "react-bootstrap";
 import PublicIp from "public-ip";
 import XSS from "xss";
 
@@ -28,8 +29,10 @@ export interface SearchProps extends GeolocatedProps {
 
 export function Search(props: SearchProps) {
   const history = useHistory();
-  const [query, setQuery] = useState(props.query || "");
+  const [page, setPage] = useState(0);
+  const [nbHits, setNbHits] = useState(0);
   const [hits, setHits] = useState<Array<Product>>([]);
+  const [query, setQuery] = useState(props.query || "");
   const [searching, setSearching] = useState(false);
   const [companyFilter, setCompanyFilter] = useState("");
 
@@ -39,6 +42,7 @@ export function Search(props: SearchProps) {
         return;
       }
 
+      window.scrollTo(0, 0);
       setSearching(true);
       setCompanyFilter("");
 
@@ -50,13 +54,14 @@ export function Search(props: SearchProps) {
         location.longitude = props.coords.longitude;
       }
       await SearchDAO.getInstance()
-        .search({ query: XSS(props.query), ...location })
-        .then(({ hits }) => {
+        .search({ query: XSS(props.query), ...location, page })
+        .then(({ hits, nbHits }) => {
           setHits(hits);
+          setNbHits(nbHits);
         })
         .catch((err) => console.log(err));
     })();
-  }, [props.query, props.coords]);
+  }, [props.query, props.coords, page]);
 
   const searchBarOnChange = (e: React.FormEvent<HTMLInputElement>) => {
     setQuery((e.target as HTMLInputElement).value);
@@ -66,6 +71,7 @@ export function Search(props: SearchProps) {
     if (query === "" || props.query === query) {
       return;
     }
+    setPage(0);
     history.push("/search?q=" + query);
   };
 
@@ -100,6 +106,30 @@ export function Search(props: SearchProps) {
               style={{ marginLeft: 24, marginTop: -8 }}
             />
           )}
+          <Stack direction="row" columnAlign="center" width={props.width}>
+            <Pagination size="lg">
+              {[...Array(Math.ceil(nbHits / 25)).keys()].map((index) => (
+                <Pagination.Item
+                  active={page === index}
+                  onClick={async () => {
+                    await SearchDAO.getInstance()
+                      .search({
+                        query: query,
+                        page: index,
+                        ...location,
+                      })
+                      .then(({ hits }) => {
+                        setHits(hits);
+                        setPage(index);
+                      })
+                      .catch((err) => console.log(err));
+                  }}
+                >
+                  {index + 1}
+                </Pagination.Item>
+              ))}
+            </Pagination>
+          </Stack>
         </Stack>
       );
     } else {
@@ -133,28 +163,42 @@ export function Search(props: SearchProps) {
             />
           </Stack>
           {hits.length > 0 && (
-            <Stack
-              direction="row"
-              columnAlign="flex-start"
-              style={{ marginTop: -8 }}
-            >
-              <CompanyList
-                onCompanyClick={(name) => {
-                  setCompanyFilter(name);
-                }}
-                currentCompany={companyFilter}
-                hits={hits}
-                style={{ marginLeft: 24 }}
-              />
-              <SearchResults
-                hits={
-                  companyFilter === ""
-                    ? hits
-                    : hits.filter((value) => value.company === companyFilter)
-                }
-                query={props.query || ""}
-                style={{ marginLeft: 12 }}
-              />
+            <Stack direction="column" rowAlign="flex-start">
+              <Stack
+                direction="row"
+                columnAlign="flex-start"
+                style={{ marginTop: -8 }}
+              >
+                <CompanyList
+                  onCompanyClick={(name) => {
+                    setCompanyFilter(name);
+                  }}
+                  currentCompany={companyFilter}
+                  hits={hits}
+                  style={{ marginLeft: 24 }}
+                />
+                <SearchResults
+                  hits={
+                    companyFilter === ""
+                      ? hits
+                      : hits.filter((value) => value.company === companyFilter)
+                  }
+                  query={props.query || ""}
+                  style={{ marginLeft: 12, paddingRight: 12 }}
+                />
+              </Stack>
+              <Stack direction="row" columnAlign="center" width={props.width}>
+                <Pagination size="lg">
+                  {[...Array(Math.ceil(nbHits / 24)).keys()].map((index) => (
+                    <Pagination.Item
+                      active={page === index || (page < 0 && index === 0)}
+                      onClick={() => setPage(index)}
+                    >
+                      {index + 1}
+                    </Pagination.Item>
+                  ))}
+                </Pagination>
+              </Stack>
             </Stack>
           )}
         </Stack>

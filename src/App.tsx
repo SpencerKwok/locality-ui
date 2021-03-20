@@ -2,6 +2,8 @@ import React from "react";
 import queryString from "query-string";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
+import "./App.css";
+
 import {
   About,
   Contact,

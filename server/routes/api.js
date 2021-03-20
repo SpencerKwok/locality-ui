@@ -64,31 +64,50 @@ router.get(
     const lat = xss(req.query["lat"] || "");
     const lng = xss(req.query["lng"] || "");
 
+    let page = 0;
+    if (req.query["pg"]) {
+      page = parseInt(req.query["pg"]);
+      if (Number.isNaN(page)) {
+        res.send(
+          JSON.stringify({
+            error: {
+              code: 400,
+              message: "Invalid page",
+            },
+          })
+        );
+        return;
+      }
+    }
+
     if (lat !== "" && lng !== "") {
-      const [hits, error] = await algolia.search(q, {
+      const [results, error] = await algolia.search(q, {
         aroundLatLng: `${lat}, ${lng}`,
+        page: page,
       });
       if (error) {
         res.send(JSON.stringify({ error }));
       } else {
-        res.send(JSON.stringify({ hits: hits }));
+        res.send(JSON.stringify(results));
       }
     } else if (ip !== "") {
-      const [hits, error] = await algolia.search(q, {
+      const [results, error] = await algolia.search(q, {
         aroundLatLngViaIP: true,
         headers: { "X-Forwarded-For": ip },
+        page: page,
       });
       if (error) {
         res.send(JSON.stringify({ error }));
       } else {
-        res.send(JSON.stringify({ hits: hits }));
+        res.send(JSON.stringify(results));
       }
     } else {
-      const [hits, error] = await algolia.search(q);
+      const [results, error] = await algolia.search(q, { page: page });
       if (error) {
         res.send(JSON.stringify({ error }));
       } else {
-        res.send(JSON.stringify({ hits: hits }));
+        console.log(results);
+        res.send(JSON.stringify(results));
       }
     }
   }
@@ -480,25 +499,17 @@ router.post(
         );
       }
     } else {
-      try {
-        await f(
-          parseInt(companyId),
-          productId,
-          name,
-          image,
-          primaryKeywords,
-          secondaryKeywords,
-          price,
-          priceRange,
-          link
-        );
-      } catch (err) {
-        res.send(
-          JSON.stringify({
-            error: { code: 400, message: "Invalid company id" },
-          })
-        );
-      }
+      await f(
+        parseInt(companyId),
+        productId,
+        name,
+        image,
+        primaryKeywords,
+        secondaryKeywords,
+        price,
+        priceRange,
+        link
+      );
     }
   }
 );
@@ -751,27 +762,19 @@ router.post(
         );
       }
     } else {
-      try {
-        await f(
-          parseInt(companyId),
-          companyName,
-          productName,
-          image,
-          latitude,
-          longitude,
-          primaryKeywords,
-          secondaryKeywords,
-          price,
-          priceRange,
-          link
-        );
-      } catch (err) {
-        res.send(
-          JSON.stringify({
-            error: { code: 400, message: "Invalid company id" },
-          })
-        );
-      }
+      await f(
+        parseInt(companyId),
+        companyName,
+        productName,
+        image,
+        latitude,
+        longitude,
+        primaryKeywords,
+        secondaryKeywords,
+        price,
+        priceRange,
+        link
+      );
     }
   }
 );
@@ -835,15 +838,7 @@ router.post(
         );
       }
     } else {
-      try {
-        await f(parseInt(companyId), productId);
-      } catch (err) {
-        res.send(
-          JSON.stringify({
-            error: { code: 400, message: "Invalid company id" },
-          })
-        );
-      }
+      await f(parseInt(companyId), productId);
     }
   }
 );
@@ -905,15 +900,7 @@ router.post(
         );
       }
     } else {
-      try {
-        await f(parseInt(companyId), image);
-      } catch (err) {
-        res.send(
-          JSON.stringify({
-            error: { code: 400, message: "Invalid company id" },
-          })
-        );
-      }
+      await f(parseInt(companyId), image);
     }
   }
 );
@@ -963,15 +950,7 @@ router.post(
         );
       }
     } else {
-      try {
-        await f(parseInt(companyId), homepage);
-      } catch (err) {
-        res.send(
-          JSON.stringify({
-            error: { code: 400, message: "Invalid company id" },
-          })
-        );
-      }
+      await f(parseInt(companyId), homepage);
     }
   }
 );

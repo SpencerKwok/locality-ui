@@ -240,10 +240,12 @@ export interface SearchRequest {
   ip?: string;
   latitude?: number;
   longitude?: number;
+  page?: number;
 }
 
 export interface SearchResponse {
   hits: Array<Product>;
+  nbHits: number;
 }
 
 export interface SignOutRequest {}

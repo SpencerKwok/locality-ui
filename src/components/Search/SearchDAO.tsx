@@ -21,6 +21,9 @@ export default class SearchDAO {
     } else if (searchRequest.latitude && searchRequest.longitude) {
       endpoint += `&lat=${searchRequest.latitude}&lng=${searchRequest.longitude}`;
     }
+    if (searchRequest.page) {
+      endpoint += `&pg=${searchRequest.page}`;
+    }
     return await this.rpc.call("Search", endpoint);
   }
 }
