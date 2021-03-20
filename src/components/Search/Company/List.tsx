@@ -84,7 +84,7 @@ function CompanyList(props: CompanyListProps) {
     <Stack direction="column" rowAlign="flex-start" style={props.style}>
       <h4>Companies</h4>
       <StyledList
-        width={200}
+        width={300}
         height={400}
         rowHeight={48}
         rowRenderer={companyRowRenderer}

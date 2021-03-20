@@ -674,7 +674,19 @@ router.post(
       );
       return;
     }
-    latitude.split(",").map((x) => xss(x));
+    latitude = latitude.split(",").map((x) => xss(x));
+    for (let i = 0; i < latitude.length; ++i) {
+      try {
+        latitude[i] = parseFloat(latitude[i]);
+      } catch (err) {
+        console.log(err);
+        res.send(
+          JSON.stringify({
+            error: { code: 400, message: "Invalid latitude" },
+          })
+        );
+      }
+    }
 
     let longitude = xss(req.body.longitude || "");
     if (longitude === "") {
@@ -685,7 +697,19 @@ router.post(
       );
       return;
     }
-    longitude.split(",").map((x) => xss(x));
+    longitude = longitude.split(",").map((x) => xss(x));
+    for (let i = 0; i < longitude.length; ++i) {
+      try {
+        longitude[i] = parseFloat(longitude[i]);
+      } catch (err) {
+        console.log(err);
+        res.send(
+          JSON.stringify({
+            error: { code: 400, message: "Invalid longitude" },
+          })
+        );
+      }
+    }
 
     let primaryKeywords = req.body.product.primaryKeywords;
     if (!Array.isArray(primaryKeywords)) {

@@ -164,7 +164,7 @@ function Company(props: CompanyProps) {
           companies={companies}
           height={props.height - 200}
           index={companyIndex}
-          width={Math.min(props.width * 0.2, 230)}
+          width={300}
         />
       )}
       <Stack direction="column" rowAlign="flex-start" spacing={32}>

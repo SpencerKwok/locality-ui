@@ -191,7 +191,10 @@ function Inventory(props: InventoryProps) {
       const productToAdd: Product = {
         company: companies[companyIndex].name,
         name: values.name,
-        primaryKeywords: values.primaryKeywords.split(",").map((x) => x.trim()),
+        primaryKeywords: values.primaryKeywords
+          .split(",")
+          .map((x) => x.trim())
+          .filter(Boolean),
         description: values.description,
         price: price,
         priceRange: priceRange,
@@ -278,7 +281,8 @@ function Inventory(props: InventoryProps) {
             id: productId,
             primaryKeywords: values.primaryKeywords
               .split(",")
-              .map((x) => x.trim()),
+              .map((x) => x.trim())
+              .filter(Boolean),
             description: values.description,
             price: price,
             priceRange: priceRange,
@@ -364,7 +368,7 @@ function Inventory(props: InventoryProps) {
           <ListGroupItem
             active={productIndex === index}
             onClick={createProductOnClick(index)}
-            style={{ height: 92, paddingTop: 0, paddingBottom: 0 }}
+            style={{ height: 92, paddingTop: 0, paddingBottom: 0, width: 400 }}
           >
             <DescriptionImage
               direction="row"
@@ -372,7 +376,7 @@ function Inventory(props: InventoryProps) {
               spacing={12}
               columnAlign="flex-start"
               rowAlign="center"
-              style={{ height: 92, width: props.width * 0.3 }}
+              style={{ height: 92 }}
               width={48}
             >
               {decode(products[index].name)}
@@ -387,6 +391,7 @@ function Inventory(props: InventoryProps) {
               paddingTop: 0,
               paddingBottom: 0,
               borderTop: "none",
+              width: 400,
             }}
           >
             <Stack
@@ -400,7 +405,7 @@ function Inventory(props: InventoryProps) {
                 spacing={12}
                 columnAlign="flex-start"
                 rowAlign="center"
-                style={{ height: 92, width: props.width * 0.3 }}
+                style={{ height: 92 }}
                 width={48}
               >
                 {decode(products[index].name)}
@@ -425,7 +430,7 @@ function Inventory(props: InventoryProps) {
           companies={companies}
           height={props.height - 200}
           index={companyIndex}
-          width={Math.min(props.width * 0.2, 230)}
+          width={300}
         />
       )}
       <Stack direction="column" rowAlign="flex-start">
@@ -433,7 +438,7 @@ function Inventory(props: InventoryProps) {
           direction="row"
           columnAlign="flex-start"
           priority={[0, 1, 0]}
-          style={{ width: Math.max(props.width * 0.25, 285) }}
+          style={{ width: 400 }}
         >
           <h3>Products</h3>
           <div></div>
@@ -450,7 +455,7 @@ function Inventory(props: InventoryProps) {
           )}
         </Stack>
         <VirtualList
-          width={Math.max(props.width * 0.25, 285)}
+          width={400}
           height={props.height - 200}
           rowHeight={92}
           rowRenderer={productRowRenderer}

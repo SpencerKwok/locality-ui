@@ -78,7 +78,7 @@ export function Search(props: SearchProps) {
   };
 
   if (searching) {
-    if (props.width <= 460) {
+    if (props.width <= 800) {
       return (
         <Stack direction="column" rowAlign="flex-start">
           <header
