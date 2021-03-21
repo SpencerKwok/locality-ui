@@ -542,7 +542,7 @@ function Inventory(props: InventoryProps) {
                           id="description"
                           onBlur={handleBlur}
                           onChange={handleChange}
-                          placeholder="e.g. reusable, eco-friendly"
+                          placeholder={`e.g. White and blue pouch\n1 spoon, 1 fork, 1 pair of chopsticks\nBPA free, toxic free\nLength: 23 cm`}
                           type="text"
                           value={values.description}
                         />
