@@ -470,6 +470,10 @@ router.post(
       );
       return;
     }
+    // Add "https://" to link URL if not included
+    if (!link.includes("https://") && !link.includes("http://")) {
+      link = `https://${link}`;
+    }
 
     const companyId = req.cookies["companyId"];
     if (companyId === "0") {
@@ -725,7 +729,7 @@ router.post(
       return;
     }
 
-    const link = xss(req.body.product.link || "");
+    let link = xss(req.body.product.link || "");
     if (link === "") {
       res.send(
         JSON.stringify({
@@ -733,6 +737,10 @@ router.post(
         })
       );
       return;
+    }
+    // Add "https://" to link URL if not included
+    if (!link.includes("https://") && !link.includes("http://")) {
+      link = `https://${link}`;
     }
 
     const companyId = req.cookies["companyId"];
