@@ -80,10 +80,20 @@ router.get(
       }
     }
 
+    const attributesToRetrieve = [
+      "company",
+      "image",
+      "link",
+      "name",
+      "price",
+      "price_range",
+    ];
+
     if (lat !== "" && lng !== "") {
       const [results, error] = await algolia.search(q, {
         aroundLatLng: `${lat}, ${lng}`,
         page: page,
+        attributesToRetrieve,
       });
       if (error) {
         res.send(JSON.stringify({ error }));
@@ -95,6 +105,7 @@ router.get(
         aroundLatLngViaIP: true,
         headers: { "X-Forwarded-For": ip },
         page: page,
+        attributesToRetrieve,
       });
       if (error) {
         res.send(JSON.stringify({ error }));
@@ -102,11 +113,13 @@ router.get(
         res.send(JSON.stringify(results));
       }
     } else {
-      const [results, error] = await algolia.search(q, { page: page });
+      const [results, error] = await algolia.search(q, {
+        page: page,
+        attributesToRetrieve,
+      });
       if (error) {
         res.send(JSON.stringify({ error }));
       } else {
-        console.log(results);
         res.send(JSON.stringify(results));
       }
     }
@@ -329,7 +342,7 @@ router.post(
       name,
       image,
       primaryKeywords,
-      secondaryKeywords,
+      description,
       price,
       priceRange,
       link
@@ -349,7 +362,7 @@ router.post(
             objectID: `${companyId}_${productId}`,
             name: name,
             primary_keywords: primaryKeywords,
-            secondary_keywords: secondaryKeywords,
+            description: description,
             price: price,
             price_range: priceRange,
             link: link,
@@ -413,27 +426,8 @@ router.post(
       return;
     }
 
-    let primaryKeywords = req.body.product.primaryKeywords;
-    if (!Array.isArray(primaryKeywords)) {
-      res.send(
-        JSON.stringify({
-          error: { code: 400, message: "Invalid primary keywords" },
-        })
-      );
-      return;
-    }
-    primaryKeywords = primaryKeywords.map((x) => xss(x));
-
-    let secondaryKeywords = req.body.product.secondaryKeywords;
-    if (!Array.isArray(primaryKeywords)) {
-      res.send(
-        JSON.stringify({
-          error: { code: 400, message: "Invalid secondary keywords" },
-        })
-      );
-      return;
-    }
-    secondaryKeywords = secondaryKeywords.map((x) => xss(x));
+    const primaryKeywords = xss(req.body.product.primaryKeywords || "");
+    const description = xss(req.body.product.description || "");
 
     let price = req.body.product.price;
     if (typeof price !== "number") {
@@ -447,7 +441,7 @@ router.post(
     price = parseFloat(price.toFixed(2));
 
     let priceRange = req.body.product.priceRange;
-    if (!Array.isArray(primaryKeywords) || priceRange.length !== 2) {
+    if (!Array.isArray(priceRange) || priceRange.length !== 2) {
       res.send(
         JSON.stringify({
           error: { code: 400, message: "Invalid price range" },
@@ -476,6 +470,10 @@ router.post(
       );
       return;
     }
+    // Add "https://" to link URL if not included
+    if (!link.includes("https://") && !link.includes("http://")) {
+      link = `https://${link}`;
+    }
 
     const companyId = req.cookies["companyId"];
     if (companyId === "0") {
@@ -486,7 +484,7 @@ router.post(
           name,
           image,
           primaryKeywords,
-          secondaryKeywords,
+          description,
           price,
           priceRange,
           link
@@ -505,7 +503,7 @@ router.post(
         name,
         image,
         primaryKeywords,
-        secondaryKeywords,
+        description,
         price,
         priceRange,
         link
@@ -532,7 +530,7 @@ router.post(
       latitude,
       longitude,
       primaryKeywords,
-      secondaryKeywords,
+      description,
       price,
       priceRange,
       link
@@ -576,7 +574,7 @@ router.post(
               name: productName,
               company: companyName,
               primary_keywords: primaryKeywords,
-              secondary_keywords: secondaryKeywords,
+              description: description,
               price: price,
               price_range: priceRange,
               link: link,
@@ -661,7 +659,18 @@ router.post(
       );
       return;
     }
-    latitude.split(",").map((x) => xss(x));
+    latitude = latitude.split(",").map((x) => xss(x));
+    for (let i = 0; i < latitude.length; ++i) {
+      try {
+        latitude[i] = parseFloat(latitude[i]);
+      } catch (err) {
+        res.send(
+          JSON.stringify({
+            error: { code: 400, message: "Invalid latitude" },
+          })
+        );
+      }
+    }
 
     let longitude = xss(req.body.longitude || "");
     if (longitude === "") {
@@ -672,29 +681,21 @@ router.post(
       );
       return;
     }
-    longitude.split(",").map((x) => xss(x));
-
-    let primaryKeywords = req.body.product.primaryKeywords;
-    if (!Array.isArray(primaryKeywords)) {
-      res.send(
-        JSON.stringify({
-          error: { code: 400, message: "Invalid primary keywords" },
-        })
-      );
-      return;
+    longitude = longitude.split(",").map((x) => xss(x));
+    for (let i = 0; i < longitude.length; ++i) {
+      try {
+        longitude[i] = parseFloat(longitude[i]);
+      } catch (err) {
+        res.send(
+          JSON.stringify({
+            error: { code: 400, message: "Invalid longitude" },
+          })
+        );
+      }
     }
-    primaryKeywords = primaryKeywords.map((x) => xss(x));
 
-    let secondaryKeywords = req.body.product.secondaryKeywords;
-    if (!Array.isArray(primaryKeywords)) {
-      res.send(
-        JSON.stringify({
-          error: { code: 400, message: "Invalid secondary keywords" },
-        })
-      );
-      return;
-    }
-    secondaryKeywords = secondaryKeywords.map((x) => xss(x));
+    const primaryKeywords = xss(req.body.product.primaryKeywords || "");
+    const description = xss(req.body.product.description || "");
 
     let price = req.body.product.price;
     if (typeof price !== "number") {
@@ -708,7 +709,7 @@ router.post(
     price = parseFloat(price.toFixed(2));
 
     let priceRange = req.body.product.priceRange;
-    if (!Array.isArray(primaryKeywords) || priceRange.length !== 2) {
+    if (!Array.isArray(priceRange) || priceRange.length !== 2) {
       res.send(
         JSON.stringify({
           error: { code: 400, message: "Invalid price range" },
@@ -728,7 +729,7 @@ router.post(
       return;
     }
 
-    const link = xss(req.body.product.link || "");
+    let link = xss(req.body.product.link || "");
     if (link === "") {
       res.send(
         JSON.stringify({
@@ -736,6 +737,10 @@ router.post(
         })
       );
       return;
+    }
+    // Add "https://" to link URL if not included
+    if (!link.includes("https://") && !link.includes("http://")) {
+      link = `https://${link}`;
     }
 
     const companyId = req.cookies["companyId"];
@@ -749,7 +754,7 @@ router.post(
           latitude,
           longitude,
           primaryKeywords,
-          secondaryKeywords,
+          description,
           price,
           priceRange,
           link
@@ -770,7 +775,7 @@ router.post(
         latitude,
         longitude,
         primaryKeywords,
-        secondaryKeywords,
+        description,
         price,
         priceRange,
         link
@@ -928,7 +933,7 @@ router.post(
       }
     };
 
-    const homepage = xss(req.body.homepage || "");
+    let homepage = xss(req.body.homepage || "");
     if (homepage === "") {
       res.send(
         JSON.stringify({
@@ -936,6 +941,10 @@ router.post(
         })
       );
       return;
+    }
+    // Add "https://" to homepage URL if not included
+    if (!homepage.includes("https://") && !homepage.includes("http://")) {
+      homepage = `https://${homepage}`;
     }
 
     const companyId = req.cookies["companyId"];

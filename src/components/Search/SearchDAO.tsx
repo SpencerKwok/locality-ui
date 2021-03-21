@@ -18,7 +18,8 @@ export default class SearchDAO {
     let endpoint = `/api/search?q=${searchRequest.query}`;
     if (searchRequest.ip) {
       endpoint += `&ip=${searchRequest.ip}`;
-    } else if (searchRequest.latitude && searchRequest.longitude) {
+    }
+    if (searchRequest.latitude && searchRequest.longitude) {
       endpoint += `&lat=${searchRequest.latitude}&lng=${searchRequest.longitude}`;
     }
     if (searchRequest.page) {

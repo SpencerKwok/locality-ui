@@ -4,9 +4,10 @@ import * as yup from "yup";
 import styled from "styled-components";
 import { decode } from "html-entities";
 import { Formik, FormikConfig } from "formik";
-import { Button, Form, FormControl, FormCheck } from "react-bootstrap";
+import { Button, Form, FormControl } from "react-bootstrap";
 import { Redirect } from "react-router-dom";
 
+import Help from "../Help/Help";
 import CompanyList from "../Company";
 import Image, { toBase64 } from "../Image";
 import InventoryDAO from "./InventoryDAO";
@@ -37,7 +38,7 @@ export interface InventoryProps extends React.HTMLProps<HTMLDivElement> {
 interface ProductRequest {
   name: string;
   primaryKeywords: string;
-  secondaryKeywords: string;
+  description: string;
   isRange: boolean;
   price: string;
   priceLow: string;
@@ -52,19 +53,12 @@ const ProductSchema = yup.object().shape({
   primaryKeywords: yup
     .string()
     .optional()
-    .max(255, "Too long")
+    .max(128, "Too long")
     .matches(
       /^\s*[^,]+\s*(,(\s*[^,\s]\s*)+){0,2}\s*$/g,
       "Must be a comma seperated list with at most 3 terms"
     ),
-  secondaryKeywords: yup
-    .string()
-    .optional()
-    .max(255, "Too long")
-    .matches(
-      /^\s*[^,]+\s*(,(\s*[^,\s]\s*)+){0,4}\s*$/g,
-      "Must be a comma seperated list with at most 5 terms"
-    ),
+  description: yup.string().optional().max(2048, "Too long"),
   price: yup.mixed().when("isRange", {
     is: false,
     then: yup
@@ -198,10 +192,12 @@ function Inventory(props: InventoryProps) {
       const productToAdd: Product = {
         company: companies[companyIndex].name,
         name: values.name,
-        primaryKeywords: values.primaryKeywords.split(",").map((x) => x.trim()),
-        secondaryKeywords: values.secondaryKeywords
+        primaryKeywords: values.primaryKeywords
           .split(",")
-          .map((x) => x.trim()),
+          .filter(Boolean)
+          .map((x) => x.trim())
+          .join(","),
+        description: values.description,
         price: price,
         priceRange: priceRange,
         link: values.link,
@@ -287,10 +283,10 @@ function Inventory(props: InventoryProps) {
             id: productId,
             primaryKeywords: values.primaryKeywords
               .split(",")
-              .map((x) => x.trim()),
-            secondaryKeywords: values.secondaryKeywords
-              .split(",")
-              .map((x) => x.trim()),
+              .filter(Boolean)
+              .map((x) => x.trim())
+              .join(","),
+            description: values.description,
             price: price,
             priceRange: priceRange,
             link: values.link,
@@ -375,7 +371,7 @@ function Inventory(props: InventoryProps) {
           <ListGroupItem
             active={productIndex === index}
             onClick={createProductOnClick(index)}
-            style={{ height: 92, paddingTop: 0, paddingBottom: 0 }}
+            style={{ height: 92, paddingTop: 0, paddingBottom: 0, width: 400 }}
           >
             <DescriptionImage
               direction="row"
@@ -383,7 +379,7 @@ function Inventory(props: InventoryProps) {
               spacing={12}
               columnAlign="flex-start"
               rowAlign="center"
-              style={{ height: 92, width: props.width * 0.3 }}
+              style={{ height: 92 }}
               width={48}
             >
               {decode(products[index].name)}
@@ -398,6 +394,7 @@ function Inventory(props: InventoryProps) {
               paddingTop: 0,
               paddingBottom: 0,
               borderTop: "none",
+              width: 400,
             }}
           >
             <Stack
@@ -411,7 +408,7 @@ function Inventory(props: InventoryProps) {
                 spacing={12}
                 columnAlign="flex-start"
                 rowAlign="center"
-                style={{ height: 92, width: props.width * 0.3 }}
+                style={{ height: 92 }}
                 width={48}
               >
                 {decode(products[index].name)}
@@ -424,250 +421,278 @@ function Inventory(props: InventoryProps) {
   };
 
   return (
-    <Stack
-      direction="row"
-      columnAlign="flex-start"
-      spacing={12}
-      style={{ marginTop: 12 }}
-    >
-      {companyId === "0" && (
-        <CompanyList
-          createCompanyOnClick={createCompanyOnClick}
-          companies={companies}
-          height={props.height - 200}
-          index={companyIndex}
-          width={Math.min(props.width * 0.2, 230)}
-        />
-      )}
-      <Stack direction="column" rowAlign="flex-start">
-        <Stack
-          direction="row"
-          columnAlign="flex-start"
-          priority={[0, 1, 0]}
-          style={{ width: Math.max(props.width * 0.25, 285) }}
-        >
-          <h3>Products</h3>
-          <div></div>
-          {companyIndex >= 0 && (
-            <StyledButton
-              onClick={() => {
-                setProduct(EmptyProduct);
-                setProductIndex(-1);
-                setIsNewItem(true);
-              }}
-            >
-              Add Item
-            </StyledButton>
-          )}
-        </Stack>
-        <VirtualList
-          width={Math.max(props.width * 0.25, 285)}
-          height={props.height - 200}
-          rowHeight={92}
-          rowRenderer={productRowRenderer}
-          rowCount={products.length}
-        />
-      </Stack>
-      <Stack direction="column" rowAlign="flex-start">
-        <h3>{isNewItem ? "New Item" : "Information"}</h3>
-        {(productIndex >= 0 || isNewItem) && (
-          <Formik
-            initialValues={
-              {
-                name: product.name,
-                primaryKeywords: product.primaryKeywords.join(", "),
-                secondaryKeywords: product.secondaryKeywords.join(", "),
-                isRange: product.price !== product.priceRange[1],
-                price: isNewItem ? "" : product.price.toFixed(2),
-                priceLow: isNewItem ? "" : product.priceRange[0].toFixed(2),
-                priceHigh: isNewItem ? "" : product.priceRange[1].toFixed(2),
-                image: product.image,
-                link: product.link,
-                option: isNewItem ? "add" : "edit",
-              } as ProductRequest
-            }
-            enableReinitialize={true}
-            onSubmit={onSubmit}
-            validationSchema={ProductSchema}
+    <div>
+      <Stack
+        direction="row"
+        columnAlign="flex-start"
+        spacing={12}
+        style={{ marginTop: 12, marginBottom: 24 }}
+      >
+        {companyId === "0" && (
+          <CompanyList
+            createCompanyOnClick={createCompanyOnClick}
+            companies={companies}
+            height={props.height - 200}
+            index={companyIndex}
+            width={300}
+          />
+        )}
+        <Stack direction="column" rowAlign="flex-start">
+          <Stack
+            direction="row"
+            columnAlign="flex-start"
+            priority={[0, 1, 0]}
+            style={{ width: 400 }}
           >
-            {({
-              isSubmitting,
-              values,
-              handleBlur,
-              handleChange,
-              handleSubmit,
-              setFieldValue,
-            }) => (
-              <Stack direction="row" columnAlign="flex-start" spacing={24}>
-                <Form
-                  onSubmit={handleSubmit}
-                  style={{ width: props.width * 0.3 }}
-                >
-                  <Form.Group>
-                    <FormLabel>Name</FormLabel>
-                    <FormInputGroup size="md" width="100%">
-                      <FormControl
-                        aria-label="Large"
-                        id="name"
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        placeholder="e.g. Wooden Cutlery"
-                        type="text"
-                        value={values.name}
-                      />
-                    </FormInputGroup>
-                    {createFormErrorMessage("name")}
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>Primary Keywords (max 3 terms)</Form.Label>
-                    <FormInputGroup size="md" width="100%">
-                      <FormControl
-                        aria-label="Large"
-                        id="primaryKeywords"
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        placeholder="e.g. fork, knife, spoon"
-                        type="text"
-                        value={values.primaryKeywords}
-                      />
-                    </FormInputGroup>
-                    {createFormErrorMessage("primaryKeywords")}
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>Secondary Keywords (max 5 terms)</Form.Label>
-                    <FormInputGroup size="md" width="100%">
-                      <FormControl
-                        aria-label="Large"
-                        id="secondaryKeywords"
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        placeholder="e.g. reusable, eco-friendly"
-                        type="text"
-                        value={values.secondaryKeywords}
-                      />
-                    </FormInputGroup>
-                    {createFormErrorMessage("secondaryKeywords")}
-                  </Form.Group>
-                  {values.isRange ? (
+            <h3>Products</h3>
+            <div></div>
+            {companyIndex >= 0 && (
+              <StyledButton
+                onClick={() => {
+                  setProduct(EmptyProduct);
+                  setProductIndex(-1);
+                  setIsNewItem(true);
+                }}
+              >
+                Add Product
+              </StyledButton>
+            )}
+          </Stack>
+          <VirtualList
+            width={400}
+            height={props.height - 200}
+            rowHeight={92}
+            rowRenderer={productRowRenderer}
+            rowCount={products.length}
+          />
+        </Stack>
+        <Stack direction="column" rowAlign="flex-start">
+          <h3>{isNewItem ? "New Product" : "Product Details"}</h3>
+          {(productIndex >= 0 || isNewItem) && (
+            <Formik
+              initialValues={
+                {
+                  name: product.name,
+                  primaryKeywords: product.primaryKeywords
+                    .split(",")
+                    .join(", "),
+                  description: product.description,
+                  isRange: product.price !== product.priceRange[1],
+                  price: isNewItem ? "" : product.price.toFixed(2),
+                  priceLow: isNewItem ? "" : product.priceRange[0].toFixed(2),
+                  priceHigh: isNewItem ? "" : product.priceRange[1].toFixed(2),
+                  image: product.image,
+                  link: product.link,
+                  option: isNewItem ? "add" : "edit",
+                } as ProductRequest
+              }
+              enableReinitialize={true}
+              onSubmit={onSubmit}
+              validationSchema={ProductSchema}
+            >
+              {({
+                isSubmitting,
+                values,
+                handleBlur,
+                handleChange,
+                handleSubmit,
+                setFieldValue,
+              }) => (
+                <Stack direction="row" columnAlign="flex-start" spacing={24}>
+                  <Form
+                    onSubmit={handleSubmit}
+                    style={{ width: props.width * 0.3 }}
+                  >
                     <Form.Group>
-                      <Stack direction="row" columnAlign="flex-start">
-                        <FormLabel style={{ paddingRight: 12 }}>
-                          Price Range
-                        </FormLabel>
-                        <Form.Check
-                          aria-label="Large"
-                          id="isRange"
-                          onBlur={handleBlur}
-                          onChange={handleChange}
-                          style={{ paddingTop: 1 }}
-                          type="checkbox"
-                          defaultChecked={values.isRange}
-                        />
-                        <Form.Label>Range</Form.Label>
-                      </Stack>
-                      <Stack
-                        direction="row"
-                        rowAlign="flex-start"
-                        spacing={12}
-                        priority={[1, 1]}
-                      >
-                        <Stack direction="column" columnAlign="flex-start">
-                          <FormInputGroup size="md" width="100%">
-                            <FormControl
-                              aria-label="Large"
-                              id="priceLow"
-                              onBlur={handleBlur}
-                              onChange={handleChange}
-                              placeholder="e.g. 1.50"
-                              type="text"
-                              value={values.priceLow}
-                            />
-                          </FormInputGroup>
-                        </Stack>
-                        <Stack direction="column" columnAlign="flex-start">
-                          <FormInputGroup size="md" width="100%">
-                            <FormControl
-                              aria-label="Large"
-                              id="priceHigh"
-                              onBlur={handleBlur}
-                              onChange={handleChange}
-                              placeholder="e.g. 5.50"
-                              type="text"
-                              value={values.priceHigh}
-                            />
-                          </FormInputGroup>
-                        </Stack>
-                      </Stack>
-                      {createFormErrorMessage("priceLow")}
-                      {createFormErrorMessage("priceHigh")}
-                    </Form.Group>
-                  ) : (
-                    <Form.Group>
-                      <Stack direction="row" columnAlign="flex-start">
-                        <FormLabel style={{ paddingRight: 12 }}>
-                          Price
-                        </FormLabel>
-                        <Form.Check
-                          aria-label="Large"
-                          id="isRange"
-                          onBlur={handleBlur}
-                          onChange={handleChange}
-                          style={{ paddingTop: 1 }}
-                          type="checkbox"
-                          defaultChecked={values.isRange}
-                        />
-                        <Form.Label>Range</Form.Label>
-                      </Stack>
+                      <FormLabel>Name</FormLabel>
                       <FormInputGroup size="md" width="100%">
                         <FormControl
                           aria-label="Large"
-                          id="price"
+                          id="name"
                           onBlur={handleBlur}
                           onChange={handleChange}
-                          placeholder="e.g. 18.64"
+                          placeholder="e.g. Wooden Cutlery"
                           type="text"
-                          value={values.price}
+                          value={values.name}
                         />
                       </FormInputGroup>
-                      {createFormErrorMessage("price")}
+                      {createFormErrorMessage("name")}
                     </Form.Group>
-                  )}
-                  <Form.Group>
-                    <FormLabel>Link to Product</FormLabel>
-                    <FormInputGroup size="md" width="100%">
-                      <FormControl
-                        aria-label="Large"
-                        id="link"
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        placeholder="e.g. www.mywebsite.com/wooden-cutlery"
-                        style={{ marginBottom: "0.5rem" }}
-                        type="text"
-                        value={values.link}
-                      />
-                    </FormInputGroup>
-                    {createFormErrorMessage("link")}
-                  </Form.Group>
-                  <div
-                    style={{
-                      color: "red",
-                    }}
-                  >
-                    {error}
-                  </div>
-                  <Stack direction="row" columnAlign="flex-end" spacing={12}>
-                    {!isNewItem && (
-                      <Button
-                        variant="danger"
+                    <Form.Group>
+                      <Form.Label>Primary Keywords (max 3 terms)</Form.Label>
+                      <FormInputGroup size="md" width="100%">
+                        <FormControl
+                          aria-label="Large"
+                          id="primaryKeywords"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          placeholder="e.g. fork, knife, spoon"
+                          type="text"
+                          value={values.primaryKeywords}
+                        />
+                      </FormInputGroup>
+                      {createFormErrorMessage("primaryKeywords")}
+                    </Form.Group>
+                    <Form.Group>
+                      <Form.Label>Description</Form.Label>
+                      <FormInputGroup size="md" width="100%">
+                        <FormControl
+                          as="textarea"
+                          aria-label="Large"
+                          id="description"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          placeholder={`e.g. White and blue pouch\n1 spoon, 1 fork, 1 pair of chopsticks\nBPA free, toxic free\nLength: 23 cm`}
+                          type="text"
+                          value={values.description}
+                        />
+                      </FormInputGroup>
+                      {createFormErrorMessage("description")}
+                    </Form.Group>
+                    {values.isRange ? (
+                      <Form.Group>
+                        <Stack direction="row" columnAlign="flex-start">
+                          <FormLabel style={{ paddingRight: 12 }}>
+                            Price Range
+                          </FormLabel>
+                          <Form.Check
+                            aria-label="Large"
+                            id="isRange"
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                            style={{ paddingTop: 1 }}
+                            type="checkbox"
+                            defaultChecked={values.isRange}
+                          />
+                          <Form.Label>Range</Form.Label>
+                        </Stack>
+                        <Stack
+                          direction="row"
+                          rowAlign="flex-start"
+                          spacing={12}
+                          priority={[1, 1]}
+                        >
+                          <Stack direction="column" columnAlign="flex-start">
+                            <FormInputGroup size="md" width="100%">
+                              <FormControl
+                                aria-label="Large"
+                                id="priceLow"
+                                onBlur={handleBlur}
+                                onChange={handleChange}
+                                placeholder="e.g. 1.50"
+                                type="text"
+                                value={values.priceLow}
+                              />
+                            </FormInputGroup>
+                          </Stack>
+                          <Stack direction="column" columnAlign="flex-start">
+                            <FormInputGroup size="md" width="100%">
+                              <FormControl
+                                aria-label="Large"
+                                id="priceHigh"
+                                onBlur={handleBlur}
+                                onChange={handleChange}
+                                placeholder="e.g. 5.50"
+                                type="text"
+                                value={values.priceHigh}
+                              />
+                            </FormInputGroup>
+                          </Stack>
+                        </Stack>
+                        {createFormErrorMessage("priceLow")}
+                        {createFormErrorMessage("priceHigh")}
+                      </Form.Group>
+                    ) : (
+                      <Form.Group>
+                        <Stack direction="row" columnAlign="flex-start">
+                          <FormLabel style={{ paddingRight: 12 }}>
+                            Price
+                          </FormLabel>
+                          <Form.Check
+                            aria-label="Large"
+                            id="isRange"
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                            style={{ paddingTop: 1 }}
+                            type="checkbox"
+                            defaultChecked={values.isRange}
+                          />
+                          <Form.Label>Range</Form.Label>
+                        </Stack>
+                        <FormInputGroup size="md" width="100%">
+                          <FormControl
+                            aria-label="Large"
+                            id="price"
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                            placeholder="e.g. 18.64"
+                            type="text"
+                            value={values.price}
+                          />
+                        </FormInputGroup>
+                        {createFormErrorMessage("price")}
+                      </Form.Group>
+                    )}
+                    <Form.Group>
+                      <FormLabel>Link to Product</FormLabel>
+                      <FormInputGroup size="md" width="100%">
+                        <FormControl
+                          aria-label="Large"
+                          id="link"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          placeholder="e.g. www.mywebsite.com/wooden-cutlery"
+                          style={{ marginBottom: "0.5rem" }}
+                          type="text"
+                          value={values.link}
+                        />
+                      </FormInputGroup>
+                      {createFormErrorMessage("link")}
+                    </Form.Group>
+                    <div
+                      style={{
+                        color: "red",
+                      }}
+                    >
+                      {error}
+                    </div>
+                    <Stack direction="row" columnAlign="flex-end" spacing={12}>
+                      {!isNewItem && (
+                        <Button
+                          variant="danger"
+                          type="submit"
+                          disabled={isSubmitting}
+                          style={{ padding: "11px 24px 11px 24px" }}
+                          onClick={() => {
+                            setFieldValue("option", "delete", false);
+                            handleSubmit();
+                          }}
+                        >
+                          {isSubmitting && values.option === "delete" ? (
+                            <React.Fragment>
+                              <span
+                                className="spinner-border spinner-border-sm"
+                                role="status"
+                                aria-hidden="true"
+                                style={{ marginBottom: 2, marginRight: 12 }}
+                              ></span>
+                              Deleting...
+                            </React.Fragment>
+                          ) : (
+                            <React.Fragment>Delete</React.Fragment>
+                          )}
+                        </Button>
+                      )}
+                      <FormButton
+                        variant="primary"
                         type="submit"
                         disabled={isSubmitting}
-                        style={{ padding: "11px 24px 11px 24px" }}
-                        onClick={() => {
-                          setFieldValue("option", "delete", false);
-                          handleSubmit();
-                        }}
+                        style={{ paddingLeft: 24, paddingRight: 24 }}
+                        onClick={handleSubmit}
                       >
-                        {isSubmitting && values.option === "delete" ? (
+                        {isSubmitting &&
+                        (values.option === "add" ||
+                          values.option === "edit") ? (
                           <React.Fragment>
                             <span
                               className="spinner-border spinner-border-sm"
@@ -675,52 +700,31 @@ function Inventory(props: InventoryProps) {
                               aria-hidden="true"
                               style={{ marginBottom: 2, marginRight: 12 }}
                             ></span>
-                            Deleting...
+                            Saving...
                           </React.Fragment>
                         ) : (
-                          <React.Fragment>Delete</React.Fragment>
+                          <React.Fragment>Save</React.Fragment>
                         )}
-                      </Button>
-                    )}
-                    <FormButton
-                      variant="primary"
-                      type="submit"
-                      disabled={isSubmitting}
-                      style={{ paddingLeft: 24, paddingRight: 24 }}
-                      onClick={handleSubmit}
-                    >
-                      {isSubmitting &&
-                      (values.option === "add" || values.option === "edit") ? (
-                        <React.Fragment>
-                          <span
-                            className="spinner-border spinner-border-sm"
-                            role="status"
-                            aria-hidden="true"
-                            style={{ marginBottom: 2, marginRight: 12 }}
-                          ></span>
-                          Saving...
-                        </React.Fragment>
-                      ) : (
-                        <React.Fragment>Save</React.Fragment>
-                      )}
-                    </FormButton>
-                  </Stack>
-                </Form>
-                <Image
-                  handleBlur={handleBlur}
-                  handleChange={handleChange}
-                  setFieldValue={setFieldValue}
-                  alt={values.name}
-                  imageId="image"
-                  label="Image"
-                  values={values}
-                />
-              </Stack>
-            )}
-          </Formik>
-        )}
+                      </FormButton>
+                    </Stack>
+                  </Form>
+                  <Image
+                    handleBlur={handleBlur}
+                    handleChange={handleChange}
+                    setFieldValue={setFieldValue}
+                    alt={values.name}
+                    imageId="image"
+                    label="Image"
+                    values={values}
+                  />
+                </Stack>
+              )}
+            </Formik>
+          )}
+        </Stack>
       </Stack>
-    </Stack>
+      {(productIndex >= 0 || isNewItem) && <Help />}
+    </div>
   );
 }
 
