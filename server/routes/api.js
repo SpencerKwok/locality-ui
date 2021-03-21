@@ -120,7 +120,6 @@ router.get(
       if (error) {
         res.send(JSON.stringify({ error }));
       } else {
-        console.log(results);
         res.send(JSON.stringify(results));
       }
     }
@@ -661,7 +660,6 @@ router.post(
       try {
         latitude[i] = parseFloat(latitude[i]);
       } catch (err) {
-        console.log(err);
         res.send(
           JSON.stringify({
             error: { code: 400, message: "Invalid latitude" },
@@ -684,7 +682,6 @@ router.post(
       try {
         longitude[i] = parseFloat(longitude[i]);
       } catch (err) {
-        console.log(err);
         res.send(
           JSON.stringify({
             error: { code: 400, message: "Invalid longitude" },
@@ -928,7 +925,7 @@ router.post(
       }
     };
 
-    const homepage = xss(req.body.homepage || "");
+    let homepage = xss(req.body.homepage || "");
     if (homepage === "") {
       res.send(
         JSON.stringify({
@@ -936,6 +933,10 @@ router.post(
         })
       );
       return;
+    }
+    // Add "https://" to homepage URL if not included
+    if (!homepage.includes("https://") && !homepage.includes("http://")) {
+      homepage = `https://${homepage}`;
     }
 
     const companyId = req.cookies["companyId"];
