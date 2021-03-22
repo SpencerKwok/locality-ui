@@ -65,6 +65,8 @@ app.use(
       "https://www.etsy.com",
       "https://www.amazon.ca",
       "https://www.amazon.com",
+      "https://www.walmart.ca",
+      "https://www.walmart.com",
     ],
   })
 );
