@@ -29,6 +29,10 @@ function CompanyShowcase(props: CompanyShowcaseProps) {
   return (
     <Stack direction="column" rowAlign="flex-start" style={props.style}>
       <h3>Check out these recently added local businesses!</h3>
+      <h6>
+        Want to showcase your business? <a href="/signup">Click here</a> to sign
+        up today!
+      </h6>
       <Stack
         direction="row"
         columnAlign="flex-start"
