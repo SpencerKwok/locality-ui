@@ -81,11 +81,7 @@ router.get(
       }
     }
 
-    let restrictSearchableAttributes = null;
-    if (ext === "1") {
-      restrictSearchableAttributes = ["name", "primary_keywords"];
-    }
-
+    const restrictSearchableAttributes = ["name", "primary_keywords"];
     const attributesToRetrieve = [
       "company",
       "image",
@@ -100,7 +96,7 @@ router.get(
         aroundLatLng: `${lat}, ${lng}`,
         page: page,
         attributesToRetrieve,
-        restrictSearchableAttributes,
+        ...(ext === "1" && { restrictSearchableAttributes }),
       });
       if (error) {
         res.send(JSON.stringify({ error }));
@@ -113,7 +109,7 @@ router.get(
         headers: { "X-Forwarded-For": ip },
         page: page,
         attributesToRetrieve,
-        restrictSearchableAttributes,
+        ...(ext === "1" && { restrictSearchableAttributes }),
       });
       if (error) {
         res.send(JSON.stringify({ error }));
@@ -125,6 +121,7 @@ router.get(
         page: page,
         attributesToRetrieve,
         restrictSearchableAttributes,
+        ...(ext === "1" && { restrictSearchableAttributes }),
       });
       if (error) {
         res.send(JSON.stringify({ error }));
