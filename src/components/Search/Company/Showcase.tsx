@@ -28,11 +28,12 @@ function CompanyShowcase(props: CompanyShowcaseProps) {
 
   return (
     <Stack direction="column" rowAlign="flex-start" style={props.style}>
-      <h3>Check out these recently added local businesses!</h3>
-      <h6>
+      <h5 style={{ marginBottom: 16 }}>
         Want to showcase your business? <a href="/signup">Click here</a> to sign
         up today!
-      </h6>
+      </h5>
+      <h3>Check out these recently added local businesses!</h3>
+
       <Stack
         direction="row"
         columnAlign="flex-start"
