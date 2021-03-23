@@ -519,7 +519,9 @@ function Inventory(props: InventoryProps) {
                       {createFormErrorMessage("name")}
                     </Form.Group>
                     <Form.Group>
-                      <FormLabel>Primary Keywords (max 3 terms)</FormLabel>
+                      <FormLabel description="Sometimes the name of the product does not include the type of product and that's okay! You can add the type of product as primary keywords here">
+                        Primary Keywords (comma list, max 3 terms)
+                      </FormLabel>
                       <FormInputGroup size="md" width="100%">
                         <FormControl
                           aria-label="Large"
@@ -534,7 +536,9 @@ function Inventory(props: InventoryProps) {
                       {createFormErrorMessage("primaryKeywords")}
                     </Form.Group>
                     <Form.Group>
-                      <FormLabel>Description</FormLabel>
+                      <FormLabel description="We use the description to help expose your products to the right people! Usually the description on your website is sufficient.">
+                        Description
+                      </FormLabel>
                       <FormInputGroup size="md" width="100%">
                         <FormControl
                           as="textarea"
@@ -634,7 +638,12 @@ function Inventory(props: InventoryProps) {
                       </Form.Group>
                     )}
                     <Form.Group>
-                      <FormLabel required>Link to Product</FormLabel>
+                      <FormLabel
+                        description="A product link is the URL that goes to your product on your website. This allows us to redirect people directly to your website!"
+                        required
+                      >
+                        Link to Product
+                      </FormLabel>
                       <FormInputGroup size="md" width="100%">
                         <FormControl
                           aria-label="Large"
@@ -716,6 +725,7 @@ function Inventory(props: InventoryProps) {
                     imageId="image"
                     label="Image"
                     values={values}
+                    description={`An image URL is the URL that goes directly to the image you would like to use to display your product. You can get this URL by right clicking a picture on your website and selecting "Copy Image Location"`}
                   />
                 </Stack>
               )}

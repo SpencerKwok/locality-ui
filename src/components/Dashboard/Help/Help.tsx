@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import Popup from "reactjs-popup";
 import { Button } from "react-bootstrap";
@@ -54,8 +54,8 @@ function Help(props: HelpProps) {
             <h3>What do I put in the description?</h3>
             <p>
               Any information that better explains what your product is! We use
-              the description to help users find products that best match their
-              search. Usually the product's description on your website is
+              the product's description to help users find products that best
+              match their search. Usually the description on your website is
               sufficient.
             </p>
           </Stack>
