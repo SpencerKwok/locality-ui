@@ -58,7 +58,7 @@ function Image(props: ImageProps) {
   } = props;
   return (
     <Stack direction="column">
-      {label && <FormLabel>{label}</FormLabel>}
+      {label && <FormLabel required>{label}</FormLabel>}
       <Stack direction="column" spacing={12}>
         <div
           style={{
@@ -98,7 +98,7 @@ function Image(props: ImageProps) {
           })()}
         </div>
         <Form.Group>
-          <FormLabel>Image URL or Image File</FormLabel>
+          <FormLabel required>Image URL or Image File</FormLabel>
           <FormInputGroup size="md" width="100%">
             <FormControl
               aria-label="Large"

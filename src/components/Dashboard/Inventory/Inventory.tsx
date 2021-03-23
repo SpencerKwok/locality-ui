@@ -504,7 +504,7 @@ function Inventory(props: InventoryProps) {
                     style={{ width: props.width * 0.3 }}
                   >
                     <Form.Group>
-                      <FormLabel>Name</FormLabel>
+                      <FormLabel required>Name</FormLabel>
                       <FormInputGroup size="md" width="100%">
                         <FormControl
                           aria-label="Large"
@@ -519,7 +519,7 @@ function Inventory(props: InventoryProps) {
                       {createFormErrorMessage("name")}
                     </Form.Group>
                     <Form.Group>
-                      <Form.Label>Primary Keywords (max 3 terms)</Form.Label>
+                      <FormLabel>Primary Keywords (max 3 terms)</FormLabel>
                       <FormInputGroup size="md" width="100%">
                         <FormControl
                           aria-label="Large"
@@ -534,7 +534,7 @@ function Inventory(props: InventoryProps) {
                       {createFormErrorMessage("primaryKeywords")}
                     </Form.Group>
                     <Form.Group>
-                      <Form.Label>Description</Form.Label>
+                      <FormLabel>Description</FormLabel>
                       <FormInputGroup size="md" width="100%">
                         <FormControl
                           as="textarea"
@@ -562,9 +562,9 @@ function Inventory(props: InventoryProps) {
                             onChange={handleChange}
                             style={{ paddingTop: 1 }}
                             type="checkbox"
-                            defaultChecked={values.isRange}
+                            checked={values.isRange}
                           />
-                          <Form.Label>Range</Form.Label>
+                          <FormLabel required>Range</FormLabel>
                         </Stack>
                         <Stack
                           direction="row"
@@ -605,7 +605,7 @@ function Inventory(props: InventoryProps) {
                     ) : (
                       <Form.Group>
                         <Stack direction="row" columnAlign="flex-start">
-                          <FormLabel style={{ paddingRight: 12 }}>
+                          <FormLabel required style={{ paddingRight: 12 }}>
                             Price
                           </FormLabel>
                           <Form.Check
@@ -617,7 +617,7 @@ function Inventory(props: InventoryProps) {
                             type="checkbox"
                             defaultChecked={values.isRange}
                           />
-                          <Form.Label>Range</Form.Label>
+                          <FormLabel>Range</FormLabel>
                         </Stack>
                         <FormInputGroup size="md" width="100%">
                           <FormControl
@@ -634,7 +634,7 @@ function Inventory(props: InventoryProps) {
                       </Form.Group>
                     )}
                     <Form.Group>
-                      <FormLabel>Link to Product</FormLabel>
+                      <FormLabel required>Link to Product</FormLabel>
                       <FormInputGroup size="md" width="100%">
                         <FormControl
                           aria-label="Large"

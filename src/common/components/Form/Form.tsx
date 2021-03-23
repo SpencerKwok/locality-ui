@@ -10,13 +10,6 @@ export const FormInputGroup = styled(InputGroup)`
   width: ${({ width }) => width}px;
 `;
 
-export const FormLabel = styled(Form.Label)`
-  &:after {
-    content: " *";
-    color: red;
-  }
-`;
-
 export const FormButton = styled(Button)`
   padding: 11px;
   background-color: #449ed7 !important;
@@ -37,4 +30,22 @@ export const createFormErrorMessage = (name: string) => {
       <ErrorMessage name={name} />
     </div>
   );
+};
+
+const RequiredFormLabel = styled(Form.Label)`
+  &:after {
+    content: " *";
+    color: red;
+  }
+`;
+
+export interface FormLabelProps extends React.HTMLAttributes<HTMLLabelElement> {
+  required?: boolean;
+}
+
+export const FormLabel = (props: FormLabelProps) => {
+  if (props.required) {
+    return <RequiredFormLabel {...props}></RequiredFormLabel>;
+  }
+  return <Form.Label {...props}></Form.Label>;
 };
