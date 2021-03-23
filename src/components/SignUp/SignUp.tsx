@@ -107,10 +107,12 @@ function SignUp(props: SignUpProps) {
             </Stack>
           ) : (
             <div>
-              <h4 style={{ textAlign: "center" }}>
-                Just fill out the form below to start showcasing your business
-                today!
-              </h4>
+              <Stack direction="row" columnAlign="center">
+                <h4>
+                  Fill out the form below to start showcasing your business
+                  today!
+                </h4>
+              </Stack>
               <Formik
                 initialValues={
                   {
