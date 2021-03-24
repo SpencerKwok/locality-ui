@@ -39,6 +39,7 @@ export interface ImageProps extends React.HTMLProps<HTMLDivElement> {
   alt: string;
   imageId: string;
   values: { [field: string]: any };
+  description?: string;
 }
 
 const StyledPicture = styled.picture`
@@ -58,7 +59,7 @@ function Image(props: ImageProps) {
   } = props;
   return (
     <Stack direction="column">
-      {label && <FormLabel>{label}</FormLabel>}
+      {label && <FormLabel required>{label}</FormLabel>}
       <Stack direction="column" spacing={12}>
         <div
           style={{
@@ -98,7 +99,9 @@ function Image(props: ImageProps) {
           })()}
         </div>
         <Form.Group>
-          <FormLabel>Image URL or Image File</FormLabel>
+          <FormLabel description={props.description} required>
+            Image URL or Image File
+          </FormLabel>
           <FormInputGroup size="md" width="100%">
             <FormControl
               aria-label="Large"

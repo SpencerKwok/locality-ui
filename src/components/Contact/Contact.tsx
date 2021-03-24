@@ -104,7 +104,7 @@ function Contact(props: ContactProps) {
               }) => (
                 <Form onSubmit={handleSubmit}>
                   <Form.Group>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel required>Name</FormLabel>
                     <FormInputGroup size="lg" width="100%">
                       <FormControl
                         aria-label="Large"
@@ -119,7 +119,7 @@ function Contact(props: ContactProps) {
                     {createFormErrorMessage("name")}
                   </Form.Group>
                   <Form.Group>
-                    <FormLabel>Email address</FormLabel>
+                    <FormLabel required>Email address</FormLabel>
                     <FormInputGroup size="lg" width="100%">
                       <FormControl
                         aria-label="Large"
@@ -134,7 +134,7 @@ function Contact(props: ContactProps) {
                     {createFormErrorMessage("email")}
                   </Form.Group>
                   <Form.Group>
-                    <FormLabel>Message</FormLabel>
+                    <FormLabel required>Message</FormLabel>
                     <FormInputGroup size="lg" width="100%">
                       <FormControl
                         as="textarea"
