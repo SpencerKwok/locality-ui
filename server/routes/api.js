@@ -1,6 +1,7 @@
 const algolia = require("../algolia/client");
 const bcrypt = require("bcryptjs");
 const cloudinary = require("../cloudinary/client");
+const dns = require("dns");
 const emailValidator = require("email-validator");
 const fetch = require("node-fetch");
 const psql = require("../postgresql/client");
@@ -518,114 +519,125 @@ router.post(
   }
 );
 
+const productAdd = async (
+  companyId,
+  companyName,
+  productName,
+  image,
+  latitude,
+  longitude,
+  primaryKeywords,
+  description,
+  price,
+  priceRange,
+  link,
+  res,
+  nextProductId
+) => {
+  if (!nextProductId) {
+    const [nextIdResponse, psqlErrorGetNextId] = await psql.query(
+      sqlString.format("SELECT next_product_id FROM companies WHERE id=?", [
+        companyId,
+      ])
+    );
+    if (psqlErrorGetNextId) {
+      res && res.send(JSON.stringify({ error: psqlErrorGetNextId }));
+      return;
+    }
+
+    const [_, psqlErrorUpdateNextId] = await psql.query(
+      sqlString.format("UPDATE companies SET next_product_id=? WHERE id=?", [
+        nextProductId + 1,
+        companyId,
+      ])
+    );
+    if (psqlErrorUpdateNextId) {
+      res && res.send(JSON.stringify({ error: psqlErrorUpdateNextId }));
+      return;
+    }
+
+    nextProductId = nextIdResponse.rows[0].next_product_id;
+  }
+
+  const [url, cloudinaryError] = await cloudinary.upload(image, {
+    exif: false,
+    format: "webp",
+    public_id: `${companyId}/${nextProductId}`,
+    unique_filename: false,
+    overwrite: true,
+  });
+
+  if (cloudinaryError) {
+    res && res.send(JSON.stringify({ error: cloudinaryError }));
+    return;
+  }
+
+  const geolocation = [];
+  for (let i = 0; i < Math.min(latitude.length, longitude.length); ++i) {
+    geolocation.push({
+      lat: latitude[i],
+      lng: longitude[i],
+    });
+  }
+  const algoliaError = await algolia.saveObject(
+    {
+      objectID: `${companyId}_${nextProductId}`,
+      _geoloc: geolocation,
+      name: productName,
+      company: companyName,
+      primary_keywords: primaryKeywords,
+      description: description,
+      price: price,
+      price_range: priceRange,
+      link: link,
+      image: url,
+    },
+    { autoGenerateObjectIDIfNotExist: false }
+  );
+
+  if (algoliaError) {
+    res && res.send(JSON.stringify({ error: algoliaError }));
+    return;
+  }
+
+  const [_, psqlErrorAddProduct] = await psql.query(
+    sqlString.format(
+      "INSERT INTO products (company_id, id, name, image) VALUES (?, ?, E?, ?)",
+      [companyId, nextProductId, productName, url]
+    )
+  );
+  if (psqlErrorAddProduct) {
+    res && res.send(JSON.stringify({ error: psqlErrorAddProduct }));
+    return;
+  }
+
+  res &&
+    res.end(
+      JSON.stringify({
+        product: {
+          objectID: `${companyId}_${nextProductId}`,
+          name: productName,
+          image: url,
+        },
+      })
+    );
+
+  return {
+    objectID: `${companyId}_${nextProductId}`,
+    name: productName,
+    image: url,
+  };
+};
+
 router.post(
   "/dashboard/product/add",
   rateLimit({
     windowMs: 5 * 60 * 1000, // 5 minutes
     max: 100,
     message:
-      "Too many product update requests from this IP, please try again after 5 minutes",
+      "Too many product add requests from this IP, please try again after 5 minutes",
   }),
-
   async (req, res, next) => {
-    const f = async (
-      companyId,
-      companyName,
-      productName,
-      image,
-      latitude,
-      longitude,
-      primaryKeywords,
-      description,
-      price,
-      priceRange,
-      link
-    ) => {
-      const [nextIdResponse, psqlErrorGetNextId] = await psql.query(
-        sqlString.format("SELECT next_product_id FROM companies WHERE id=?", [
-          companyId,
-        ])
-      );
-      if (psqlErrorGetNextId) {
-        res.send(JSON.stringify({ error: psqlErrorGetNextId }));
-      } else {
-        const next_product_id = nextIdResponse.rows[0].next_product_id;
-        const [url, cloudinaryError] = await cloudinary.upload(image, {
-          exif: false,
-          format: "webp",
-          public_id: `${companyId}/${next_product_id}`,
-          unique_filename: false,
-          overwrite: true,
-        });
-
-        if (cloudinaryError) {
-          res.send(JSON.stringify({ error: cloudinaryError }));
-        } else {
-          const geolocation = [];
-          for (
-            let i = 0;
-            i < Math.min(latitude.length, longitude.length);
-            ++i
-          ) {
-            geolocation.push({
-              lat: latitude[i],
-              lng: longitude[i],
-            });
-          }
-
-          const algoliaError = await algolia.saveObject(
-            {
-              objectID: `${companyId}_${next_product_id}`,
-              _geoloc: geolocation,
-              name: productName,
-              company: companyName,
-              primary_keywords: primaryKeywords,
-              description: description,
-              price: price,
-              price_range: priceRange,
-              link: link,
-              image: url,
-            },
-            { autoGenerateObjectIDIfNotExist: false }
-          );
-
-          if (algoliaError) {
-            res.send(JSON.stringify({ error: algoliaError }));
-          } else {
-            const [_, psqlErrorAddProduct] = await psql.query(
-              sqlString.format(
-                "INSERT INTO products (company_id, id, name, image) VALUES (?, ?, E?, ?)",
-                [companyId, next_product_id, productName, url]
-              )
-            );
-            if (psqlErrorAddProduct) {
-              res.send(JSON.stringify({ error: psqlErrorAddProduct }));
-            } else {
-              const [_, psqlErrorUpdateNextId] = await psql.query(
-                sqlString.format(
-                  "UPDATE companies SET next_product_id=? WHERE id=?",
-                  [next_product_id + 1, companyId]
-                )
-              );
-              if (psqlErrorUpdateNextId) {
-                res.send(JSON.stringify({ error: psqlErrorUpdateNextId }));
-              } else {
-                res.end(
-                  JSON.stringify({
-                    product: {
-                      objectID: `${companyId}_${next_product_id}`,
-                      name: productName,
-                      image: url,
-                    },
-                  })
-                );
-              }
-            }
-          }
-        }
-      }
-    };
-
     const companyName = xss(req.body.companyName || "");
     if (companyName === "") {
       res.send(
@@ -752,7 +764,7 @@ router.post(
     const companyId = req.cookies["companyId"];
     if (companyId === "0") {
       if (Number.isInteger(req.body.companyId)) {
-        await f(
+        await productAdd(
           req.body.companyId,
           companyName,
           productName,
@@ -763,7 +775,8 @@ router.post(
           description,
           price,
           priceRange,
-          link
+          link,
+          res
         );
       } else {
         res.send(
@@ -773,7 +786,7 @@ router.post(
         );
       }
     } else {
-      await f(
+      await productAdd(
         parseInt(companyId),
         companyName,
         productName,
@@ -784,11 +797,40 @@ router.post(
         description,
         price,
         priceRange,
-        link
+        link,
+        res
       );
     }
   }
 );
+
+const productDelete = async (companyId, productId, res) => {
+  const cloudinaryError = await cloudinary.delete([
+    `${companyId}/${productId}`,
+  ]);
+  if (cloudinaryError) {
+    res && res.send(JSON.stringify({ error: cloudinaryError }));
+  } else {
+    const algoliaError = await algolia.deleteObject(
+      `${companyId}_${productId}`
+    );
+    if (algoliaError) {
+      res && res.send(JSON.stringify({ error: algoliaError }));
+    } else {
+      const [_, psqlError] = await psql.query(
+        sqlString.format("DELETE FROM products WHERE company_id=? AND id=?", [
+          companyId,
+          productId,
+        ])
+      );
+      if (psqlError) {
+        res && res.send(JSON.stringify({ error: psqlError }));
+      } else {
+        res && res.send(JSON.stringify({}));
+      }
+    }
+  }
+};
 
 router.post(
   "/dashboard/product/delete",
@@ -799,34 +841,6 @@ router.post(
       "Too many product delete requests from this IP, please try again after 5 minutes",
   }),
   async (req, res, next) => {
-    const f = async (companyId, productId) => {
-      const cloudinaryError = await cloudinary.delete([
-        `${companyId}/${productId}`,
-      ]);
-      if (cloudinaryError) {
-        res.send(JSON.stringify({ error: cloudinaryError }));
-      } else {
-        const algoliaError = await algolia.deleteObject(
-          `${companyId}_${productId}`
-        );
-        if (algoliaError) {
-          res.send(JSON.stringify({ error: algoliaError }));
-        } else {
-          const [_, psqlError] = await psql.query(
-            sqlString.format(
-              "DELETE FROM products WHERE company_id=? AND id=?",
-              [companyId, productId]
-            )
-          );
-          if (psqlError) {
-            res.send(JSON.stringify({ error: psqlError }));
-          } else {
-            res.send(JSON.stringify({}));
-          }
-        }
-      }
-    };
-
     const productId = req.body.id;
     if (!Number.isInteger(productId)) {
       res.send(
@@ -840,7 +854,7 @@ router.post(
     const companyId = req.cookies["companyId"];
     if (companyId === "0") {
       if (Number.isInteger(req.body.companyId)) {
-        await f(req.body.companyId, productId);
+        await productDelete(req.body.companyId, productId, res);
       } else {
         res.send(
           JSON.stringify({
@@ -849,7 +863,211 @@ router.post(
         );
       }
     } else {
-      await f(parseInt(companyId), productId);
+      await productDelete(parseInt(companyId), productId, res);
+    }
+  }
+);
+
+router.post(
+  "/dashboard/shopify/product/update",
+  rateLimit({
+    windowMs: 24 * 60 * 60 * 1000, // 5 minutes
+    max: 5,
+    message:
+      "Too many shopify product update requests from this IP, please try again after 5 minutes",
+  }),
+  async (req, res, next) => {
+    const companyId = req.cookies["companyId"];
+
+    const f = async (companyId) => {
+      const [productsResponse, productsError] = await psql.query(
+        `SELECT id FROM products WHERE company_id=${companyId}`
+      );
+
+      if (productsError) {
+        res.send(
+          JSON.stringify({
+            error: { code: 400, message: "Invalid company id" },
+          })
+        );
+        return;
+      }
+
+      await Promise.all(
+        productsResponse.rows.map(async (product) => {
+          await productDelete(companyId, product.id);
+        })
+      );
+
+      const [companyResponse, companyError] = await psql.query(
+        `SELECT * FROM companies WHERE id=${companyId}`
+      );
+
+      if (companyError) {
+        res.send(
+          JSON.stringify({
+            error: { code: 400, message: "Invalid company id" },
+          })
+        );
+        return;
+      }
+
+      let nextProductId = companyResponse.rows[0].next_product_id;
+      const companyName = companyResponse.rows[0].name;
+      const latitude = companyResponse.rows[0].latitude;
+      const longitude = companyResponse.rows[0].longitude;
+      const homepage = companyResponse.rows[0].homepage;
+      const domain = homepage.match(/(?<=http(s?):\/\/)[^\/]*/g)[0];
+
+      if (!homepage) {
+        res.send(
+          JSON.stringify({
+            error: {
+              code: 400,
+              message:
+                'It looks like you haven\'t set your Shopify homepage yet! Please go to the "Company" tab and add your homepage to your profile',
+            },
+          })
+        );
+        return;
+      }
+
+      dns.resolveCname(domain, async (err, addresses) => {
+        if (err) {
+          res.send(
+            JSON.stringify({
+              error: {
+                code: 500,
+                message: err.message,
+              },
+            })
+          );
+          return;
+        } else if (
+          addresses.length !== 1 ||
+          addresses[0] !== "shops.myshopify.com"
+        ) {
+          res.send(
+            JSON.stringify({
+              error: {
+                code: 400,
+                message:
+                  "Failed to upload products from your Shopify homepage. Please make sure you have set up your Shopify homepage properly!",
+              },
+            })
+          );
+          return;
+        }
+
+        let page = 1;
+        let done = false;
+        let error = null;
+        const products = [];
+        while (!done) {
+          await fetch(`${homepage}/collections/all/products.json?page=${page}`)
+            .then((res) => res.json())
+            .then(async (data) => {
+              if (data.products.length === 0) {
+                done = true;
+                return;
+              }
+
+              await Promise.all(
+                data.products.map(async (product, index) => {
+                  const productName = product.title;
+                  const image = product.images[0].src;
+                  const primaryKeywords = product.product_type;
+                  const description = product.body_html.replace(/<[^>]*>/g, "");
+                  const link = `https://www.thealfajorcompany.ca/products/${product.handle}`;
+                  let price = parseFloat(product.variants[0].price);
+                  let priceRange = [price, price];
+                  product.variants.forEach((variant) => {
+                    priceRange[0] = Math.min(
+                      priceRange[0],
+                      parseFloat(variant.price)
+                    );
+                    priceRange[1] = Math.max(
+                      priceRange[1],
+                      parseFloat(variant.price)
+                    );
+                  });
+                  price = priceRange[0];
+
+                  await productAdd(
+                    companyId,
+                    companyName,
+                    productName,
+                    image,
+                    latitude,
+                    longitude,
+                    primaryKeywords,
+                    description,
+                    price,
+                    priceRange,
+                    link,
+                    null,
+                    nextProductId + index
+                  ).then((obj) => {
+                    products.push(obj);
+                  });
+                })
+              );
+
+              nextProductId += data.products.length;
+              page += 1;
+            })
+            .catch((err) => {
+              console.log(err);
+              error = err;
+              done = true;
+            });
+        }
+
+        if (error) {
+          res.send(
+            JSON.stringify({
+              error: {
+                code: 500,
+                message: error.message,
+              },
+            })
+          );
+          return;
+        }
+
+        const [_, psqlErrorUpdateNextId] = await psql.query(
+          sqlString.format(
+            "UPDATE companies SET next_product_id=? WHERE id=?",
+            [nextProductId, companyId]
+          )
+        );
+        if (psqlErrorUpdateNextId) {
+          res.send(JSON.stringify({ error: psqlErrorUpdateNextId }));
+          return;
+        }
+
+        products.sort((a, b) => a.name.localeCompare(b.name));
+
+        res.send(
+          JSON.stringify({
+            products,
+          })
+        );
+      });
+    };
+
+    if (companyId === "0") {
+      if (Number.isInteger(req.body.id)) {
+        await f(req.body.id);
+      } else {
+        res.send(
+          JSON.stringify({
+            error: { code: 400, message: "Invalid company id" },
+          })
+        );
+      }
+    } else {
+      await f(parseInt(companyId));
     }
   }
 );

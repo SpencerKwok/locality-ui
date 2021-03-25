@@ -51,6 +51,10 @@ export interface PostMethods {
     request: PasswordUpdateRequest;
     response: PasswordUpdateResponse;
   };
+  ShopifyProductUpdate: {
+    request: ShopifyProductUpdateRequest;
+    response: ShopifyProductUpdateResponse;
+  };
 }
 
 export interface BaseResponse {
@@ -229,6 +233,14 @@ export interface PasswordUpdateRequest {
 }
 
 export interface PasswordUpdateResponse extends BaseResponse {}
+
+export interface ShopifyProductUpdateRequest {
+  id: number;
+}
+
+export interface ShopifyProductUpdateResponse extends BaseResponse {
+  products?: Array<BaseProduct>;
+}
 
 export interface GetMethods {
   Search: SearchResponse;
