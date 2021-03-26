@@ -3,15 +3,18 @@ if (process.env.ENV === "PROD") {
   require("sqreen");
 }
 
-const cors = require("cors");
-const cookieParser = require("cookie-parser");
-const cookieSession = require("cookie-session");
-const compression = require("compression");
-const express = require("express");
-const http = require("http");
-const path = require("path");
-const helmet = require("helmet");
-const enforce = require("express-sslify");
+import api from "./routes/api.js";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import cookieSession from "cookie-session";
+import compression from "compression";
+import enforce from "express-sslify";
+import express from "express";
+import { fileURLToPath } from "url";
+import http from "http";
+import path from "path";
+import { passportSetup } from "./middleware/localstrategy.js";
+import helmet from "helmet";
 
 // Get port from Heroku dyno
 const port = process.env.PORT || 3001;
@@ -91,19 +94,20 @@ app.use(
 app.use(cookieParser());
 
 // Setup passport
-const passport = require("./middleware/localstrategy")();
+const passport = passportSetup();
 app.use(passport.initialize());
 app.use(passport.session());
 
 // Move static middleware to top to improve load speed
 // See: https://stackoverflow.com/questions/26106399/node-js-express-js-very-slow-serving-static-files
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 app.use(express.static(path.join(__dirname, "../build")));
 
 // Allow JSON body
 app.use(express.json({ limit: "100mb" }));
 
 // Setup API
-app.use("/api", require("./routes/api"));
+app.use("/api", api);
 
 // Handle everything else
 app.get("/*", (req, res) => {

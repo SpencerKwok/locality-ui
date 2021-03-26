@@ -39,7 +39,7 @@ function Contact(props: ContactProps) {
 
   const onSubmit: FormikConfig<FormRequest>["onSubmit"] = async (values) => {
     await ContactDAO.getInstance()
-      .contactus({
+      .contact({
         email: XSS(values.email),
         name: XSS(values.name),
         message: XSS(values.message),

@@ -120,9 +120,9 @@ function AddProduct(props: AddProductProps) {
           setError(error.message);
         } else if (products) {
           props.onShopifyUpload(products);
+          setTimeout(() => setOpen(false), 2000);
         }
         setSubmitting(false);
-        setTimeout(() => setOpen(false), 2000);
       })
       .catch((err) => {
         setError(err.message);
@@ -135,11 +135,12 @@ function AddProduct(props: AddProductProps) {
     <Stack direction="row" columnAlign="flex-start" spacing={12}>
       <Popup
         modal
-        closeOnDocumentClick={false}
-        closeOnEscape={false}
+        closeOnDocumentClick={error !== ""}
+        closeOnEscape={error !== ""}
         open={open}
         trigger={<StyledButton>Upload from Shopify</StyledButton>}
         onOpen={uploadFromShopify}
+        onClose={() => setOpen(false)}
       >
         {() => (
           <Stack

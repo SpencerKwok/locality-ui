@@ -1,7 +1,7 @@
 export interface PostMethods {
-  ContactUs: {
-    request: ContactUsRequest;
-    response: ContactUsResponse;
+  Contact: {
+    request: ContactRequest;
+    response: ContactResponse;
   };
   SignIn: {
     request: SignInRequest;
@@ -64,13 +64,13 @@ export interface BaseResponse {
   };
 }
 
-export interface ContactUsRequest {
+export interface ContactRequest {
   email: string;
   message: string;
   name: string;
 }
 
-export interface ContactUsResponse extends BaseResponse {}
+export interface ContactResponse extends BaseResponse {}
 
 export interface SignInRequest {
   username: string;
