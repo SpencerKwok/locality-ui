@@ -1,6 +1,8 @@
 // Add WAF
+import { createRequire } from "module";
 if (process.env.ENV === "PROD") {
-  import sqreen from "sqreen";
+  const require = createRequire(import.meta.url);
+  require("sqreen");
 }
 
 import api from "./routes/api.js";

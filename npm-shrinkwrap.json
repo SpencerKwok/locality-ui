@@ -56,6 +56,7 @@
         "yup": "^0.32.9"
       },
       "devDependencies": {
+        "@types/algoliasearch": "^3.34.11",
         "@types/html-entities": "^1.2.16",
         "@types/js-cookie": "^2.2.6",
         "@types/react": "^17.0.2",
@@ -1739,6 +1740,12 @@
       "engines": {
         "node": ">= 6"
       }
+    },
+    "node_modules/@types/algoliasearch": {
+      "version": "3.34.11",
+      "resolved": "https://registry.npmjs.org/@types/algoliasearch/-/algoliasearch-3.34.11.tgz",
+      "integrity": "sha512-FFMbpmXCHcgbypnOUY98SDEoiLc2bXO51gxgX02ypb8srZZnZCPV/8VKknuEtgr1VkgYLrqLi5BoYzZRVni6Fw==",
+      "dev": true
     },
     "node_modules/@types/classnames": {
       "version": "2.2.11",
@@ -25723,6 +25730,12 @@
       "resolved": "https://registry.npmjs.org/@tootallnate/once/-/once-1.1.2.tgz",
       "integrity": "sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==",
       "optional": true
+    },
+    "@types/algoliasearch": {
+      "version": "3.34.11",
+      "resolved": "https://registry.npmjs.org/@types/algoliasearch/-/algoliasearch-3.34.11.tgz",
+      "integrity": "sha512-FFMbpmXCHcgbypnOUY98SDEoiLc2bXO51gxgX02ypb8srZZnZCPV/8VKknuEtgr1VkgYLrqLi5BoYzZRVni6Fw==",
+      "dev": true
     },
     "@types/classnames": {
       "version": "2.2.11",
