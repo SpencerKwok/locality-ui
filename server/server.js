@@ -27,7 +27,12 @@ const app = express();
 // Add gzip compression
 
 app.use(
-  shrinkRay({ useZopfliForGzip: false, cache: () => true, zlib: { level: 1 } })
+  shrinkRay({
+    useZopfliForGzip: false,
+    cache: () => true,
+    zlib: { level: 1 },
+    brotli: { quality: 1 },
+  })
 );
 
 // Add security layer
