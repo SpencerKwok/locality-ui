@@ -5,26 +5,13 @@ import { Button } from "react-bootstrap";
 import "reactjs-popup/dist/index.css";
 
 import Stack from "../../../common/components/Stack/Stack";
+import { CloseButton } from "../../../common/components/Popup/Popup";
 
 const HelpButton = styled(Button)`
   position: fixed;
   bottom: 32px;
   right: 32px;
   padding: 11px;
-`;
-
-const CloseButton = styled.button`
-  cursor: pointer;
-  position: absolute;
-  display: block;
-  padding: 2px 5px;
-  line-height: 20px;
-  right: -10px;
-  top: -10px;
-  font-size: 24px;
-  background: #ffffff;
-  border-radius: 18px;
-  border: 1px solid #cfcece;
 `;
 
 export interface HelpProps extends React.HTMLProps<HTMLDivElement> {}

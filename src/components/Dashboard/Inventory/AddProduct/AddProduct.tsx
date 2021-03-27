@@ -144,30 +144,21 @@ function AddProduct(props: AddProductProps) {
       >
         {() => (
           <Stack
-            direction="row"
+            direction="column"
             columnAlign="center"
             rowAlign="center"
             height={400}
+            style={{ margin: 24 }}
           >
             {error ? (
               <p color="color:red;">{error}</p>
             ) : submitting ? (
-              <Stack
-                direction="column"
-                rowAlign="center"
-                width={400}
-                spacing={64}
-              >
+              <Stack direction="column" rowAlign="center" spacing={64}>
                 <h3>Uploading Shopify data...</h3>
                 <AnimatedCircularBorder />
               </Stack>
             ) : (
-              <Stack
-                direction="column"
-                rowAlign="center"
-                width={400}
-                spacing={64}
-              >
+              <Stack direction="column" rowAlign="center" spacing={64}>
                 <h3>Upload complete!</h3>
                 <CircularBorder>
                   <Checkmark />

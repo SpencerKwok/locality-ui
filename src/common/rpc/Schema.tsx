@@ -77,9 +77,7 @@ export interface SignInRequest {
   password: string;
 }
 
-export interface SignInResponse extends BaseResponse {
-  redirectTo?: string;
-}
+export interface SignInResponse extends BaseResponse {}
 
 export interface SignUpRequest {
   firstName: string;
@@ -262,6 +260,4 @@ export interface SearchResponse {
 
 export interface SignOutRequest {}
 
-export interface SignOutResponse extends BaseResponse {
-  redirectTo?: string;
-}
+export interface SignOutResponse extends BaseResponse {}

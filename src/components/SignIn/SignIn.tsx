@@ -35,11 +35,11 @@ function SignIn(props: SignInProps) {
         username: XSS(values.username),
         password: values.password,
       })
-      .then(({ error, redirectTo }) => {
+      .then(({ error }) => {
         if (error) {
           setError(error.message);
-        } else if (redirectTo) {
-          window.location.href = redirectTo;
+        } else {
+          window.location.href = "/dashboard";
         }
       })
       .catch((err) => setError(err.message));

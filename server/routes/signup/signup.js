@@ -152,6 +152,10 @@ router.post(
           if (psqlErrorAddUser) {
             res.send(JSON.stringify({ error: psqlErrorAddUser }));
           } else {
+            res.cookie("firstName", firstName);
+            res.cookie("lastName", lastName);
+            res.cookie("username", email);
+            res.cookie("companyId", companyId);
             res.end(JSON.stringify({}));
           }
         }

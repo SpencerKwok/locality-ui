@@ -26,7 +26,7 @@ router.post(
         res.cookie("lastName", user.lastName);
         res.cookie("username", user.username);
         res.cookie("companyId", user.companyId);
-        res.end(JSON.stringify({ redirectTo: "/dashboard" }));
+        res.end(JSON.stringify({}));
       }
     })(req, next);
   }

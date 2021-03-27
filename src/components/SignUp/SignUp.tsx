@@ -4,7 +4,7 @@ import * as yup from "yup";
 import { Formik, FormikConfig } from "formik";
 import { Form, FormControl } from "react-bootstrap";
 import Cookie from "js-cookie";
-import { Redirect } from "react-router-dom";
+import { Redirect, useHistory } from "react-router-dom";
 
 import SignUpDAO from "./SignUpDAO";
 import Stack from "../../common/components/Stack/Stack";
@@ -59,7 +59,6 @@ const SignUpSchema = yup.object().shape({
 });
 
 function SignUp(props: SignUpProps) {
-  const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
 
   const companyId = Cookie.get("companyId");
@@ -67,8 +66,9 @@ function SignUp(props: SignUpProps) {
     return <Redirect to="/dashboard" />;
   }
 
+  const history = useHistory();
+
   const onSubmit: FormikConfig<SignUpRequest>["onSubmit"] = async (values) => {
-    console.log(values);
     await SignUpDAO.getInstance()
       .signup({
         ...values,
@@ -78,8 +78,7 @@ function SignUp(props: SignUpProps) {
         if (error) {
           setError(error.message);
         } else {
-          setSent(true);
-          setError("");
+          history.push("/dashboard/company?newUser=true");
         }
       })
       .catch((err) => {
@@ -99,238 +98,229 @@ function SignUp(props: SignUpProps) {
           <h1>Sign Up</h1>
         </header>
         <main style={{ width: props.width * 0.5 }}>
-          {sent ? (
+          <div>
             <Stack direction="row" columnAlign="center">
-              <p>
-                Account created! <a href="/signin">Click here</a> to sign in
-              </p>
+              <h4>
+                Fill out the form below to start showcasing your business today!
+              </h4>
             </Stack>
-          ) : (
-            <div>
-              <Stack direction="row" columnAlign="center">
-                <h4>
-                  Fill out the form below to start showcasing your business
-                  today!
-                </h4>
-              </Stack>
-              <Formik
-                initialValues={
-                  {
-                    firstName: "",
-                    lastName: "",
-                    email: "",
-                    companyName: "",
-                    address: "",
-                    city: "",
-                    province: "",
-                    country: "",
-                  } as SignUpRequest
-                }
-                onSubmit={onSubmit}
-                validationSchema={SignUpSchema}
-              >
-                {({
-                  isSubmitting,
-                  values,
-                  handleBlur,
-                  handleChange,
-                  handleSubmit,
-                }) => (
-                  <Form onSubmit={handleSubmit}>
-                    <Stack direction="row" spacing={12} priority={[1, 1]}>
-                      <Form.Group>
-                        <FormLabel>First Name</FormLabel>
-                        <FormInputGroup size="lg">
-                          <FormControl
-                            aria-label="Large"
-                            id="firstName"
-                            onBlur={handleBlur}
-                            onChange={handleChange}
-                            placeholder="Enter first name"
-                            type="text"
-                            value={values.firstName}
-                          />
-                        </FormInputGroup>
-                        {createFormErrorMessage("firstName")}
-                      </Form.Group>
-                      <Form.Group>
-                        <FormLabel>Last Name</FormLabel>
-                        <FormInputGroup size="lg">
-                          <FormControl
-                            aria-label="Large"
-                            id="lastName"
-                            onBlur={handleBlur}
-                            onChange={handleChange}
-                            placeholder="Enter last name"
-                            type="text"
-                            value={values.lastName}
-                          />
-                        </FormInputGroup>
-                        {createFormErrorMessage("lastName")}
-                      </Form.Group>
-                    </Stack>
-                    <Stack direction="row" spacing={12} priority={[1, 1]}>
-                      <Form.Group>
-                        <FormLabel>Email</FormLabel>
-                        <FormInputGroup size="lg">
-                          <FormControl
-                            aria-label="Large"
-                            id="email"
-                            onBlur={handleBlur}
-                            onChange={handleChange}
-                            placeholder="Enter email"
-                            type="email"
-                            value={values.email}
-                          />
-                        </FormInputGroup>
-                        {createFormErrorMessage("email")}
-                      </Form.Group>
-                      <Form.Group>
-                        <FormLabel>Company Name</FormLabel>
-                        <FormInputGroup size="lg">
-                          <FormControl
-                            aria-label="Large"
-                            id="companyName"
-                            onBlur={handleBlur}
-                            onChange={handleChange}
-                            placeholder="Enter company name"
-                            type="text"
-                            value={values.companyName}
-                          />
-                        </FormInputGroup>
-                        {createFormErrorMessage("companyName")}
-                      </Form.Group>
-                    </Stack>
-                    <Stack direction="row" spacing={12} priority={[1, 1]}>
-                      <Form.Group>
-                        <FormLabel>Company address</FormLabel>
-                        <FormInputGroup size="lg">
-                          <FormControl
-                            aria-label="Large"
-                            id="address"
-                            onBlur={handleBlur}
-                            onChange={handleChange}
-                            placeholder="Enter address"
-                            type="text"
-                            value={values.address}
-                          />
-                        </FormInputGroup>
-                        {createFormErrorMessage("address")}
-                      </Form.Group>
-                      <Form.Group>
-                        <FormLabel>City</FormLabel>
-                        <FormInputGroup size="lg">
-                          <FormControl
-                            aria-label="Large"
-                            id="city"
-                            onBlur={handleBlur}
-                            onChange={handleChange}
-                            placeholder="Enter city"
-                            type="text"
-                            value={values.city}
-                          />
-                        </FormInputGroup>
-                        {createFormErrorMessage("city")}
-                      </Form.Group>
-                    </Stack>
-                    <Stack direction="row" spacing={12} priority={[1, 1]}>
-                      <Form.Group>
-                        <FormLabel>Province</FormLabel>
-                        <FormInputGroup size="lg">
-                          <FormControl
-                            aria-label="Large"
-                            id="province"
-                            onBlur={handleBlur}
-                            onChange={handleChange}
-                            placeholder="Enter province"
-                            type="text"
-                            value={values.province}
-                          />
-                        </FormInputGroup>
-                        {createFormErrorMessage("province")}
-                      </Form.Group>
-                      <Form.Group>
-                        <FormLabel>Country</FormLabel>
-                        <FormInputGroup size="lg">
-                          <FormControl
-                            aria-label="Large"
-                            id="country"
-                            onBlur={handleBlur}
-                            onChange={handleChange}
-                            placeholder="Enter country"
-                            type="text"
-                            value={values.country}
-                          />
-                        </FormInputGroup>
-                        {createFormErrorMessage("country")}
-                      </Form.Group>
-                    </Stack>
-                    <Stack direction="row" spacing={12} priority={[1, 1]}>
-                      <Form.Group>
-                        <FormLabel>Password</FormLabel>
-                        <FormInputGroup size="lg">
-                          <FormControl
-                            aria-label="Large"
-                            id="password1"
-                            onBlur={handleBlur}
-                            onChange={handleChange}
-                            placeholder="Enter password"
-                            type="password"
-                            value={values.password1}
-                          />
-                        </FormInputGroup>
-                        {createFormErrorMessage("password1")}
-                      </Form.Group>
-                      <Form.Group>
-                        <FormLabel>Re-enter password</FormLabel>
-                        <FormInputGroup size="lg">
-                          <FormControl
-                            aria-label="Large"
-                            id="password2"
-                            onBlur={handleBlur}
-                            onChange={handleChange}
-                            placeholder="Re-enter password"
-                            type="password"
-                            value={values.password2}
-                          />
-                        </FormInputGroup>
-                        {createFormErrorMessage("password2")}
-                      </Form.Group>
-                    </Stack>
-                    <div
-                      color="red"
-                      style={{
-                        textAlign: "right",
-                      }}
+            <Formik
+              initialValues={
+                {
+                  firstName: "",
+                  lastName: "",
+                  email: "",
+                  companyName: "",
+                  address: "",
+                  city: "",
+                  province: "",
+                  country: "",
+                } as SignUpRequest
+              }
+              onSubmit={onSubmit}
+              validationSchema={SignUpSchema}
+            >
+              {({
+                isSubmitting,
+                values,
+                handleBlur,
+                handleChange,
+                handleSubmit,
+              }) => (
+                <Form onSubmit={handleSubmit}>
+                  <Stack direction="row" spacing={12} priority={[1, 1]}>
+                    <Form.Group>
+                      <FormLabel>First Name</FormLabel>
+                      <FormInputGroup size="lg">
+                        <FormControl
+                          aria-label="Large"
+                          id="firstName"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          placeholder="Enter first name"
+                          type="text"
+                          value={values.firstName}
+                        />
+                      </FormInputGroup>
+                      {createFormErrorMessage("firstName")}
+                    </Form.Group>
+                    <Form.Group>
+                      <FormLabel>Last Name</FormLabel>
+                      <FormInputGroup size="lg">
+                        <FormControl
+                          aria-label="Large"
+                          id="lastName"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          placeholder="Enter last name"
+                          type="text"
+                          value={values.lastName}
+                        />
+                      </FormInputGroup>
+                      {createFormErrorMessage("lastName")}
+                    </Form.Group>
+                  </Stack>
+                  <Stack direction="row" spacing={12} priority={[1, 1]}>
+                    <Form.Group>
+                      <FormLabel>Email</FormLabel>
+                      <FormInputGroup size="lg">
+                        <FormControl
+                          aria-label="Large"
+                          id="email"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          placeholder="Enter email"
+                          type="email"
+                          value={values.email}
+                        />
+                      </FormInputGroup>
+                      {createFormErrorMessage("email")}
+                    </Form.Group>
+                    <Form.Group>
+                      <FormLabel>Company Name</FormLabel>
+                      <FormInputGroup size="lg">
+                        <FormControl
+                          aria-label="Large"
+                          id="companyName"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          placeholder="Enter company name"
+                          type="text"
+                          value={values.companyName}
+                        />
+                      </FormInputGroup>
+                      {createFormErrorMessage("companyName")}
+                    </Form.Group>
+                  </Stack>
+                  <Stack direction="row" spacing={12} priority={[1, 1]}>
+                    <Form.Group>
+                      <FormLabel>Company address</FormLabel>
+                      <FormInputGroup size="lg">
+                        <FormControl
+                          aria-label="Large"
+                          id="address"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          placeholder="Enter address"
+                          type="text"
+                          value={values.address}
+                        />
+                      </FormInputGroup>
+                      {createFormErrorMessage("address")}
+                    </Form.Group>
+                    <Form.Group>
+                      <FormLabel>City</FormLabel>
+                      <FormInputGroup size="lg">
+                        <FormControl
+                          aria-label="Large"
+                          id="city"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          placeholder="Enter city"
+                          type="text"
+                          value={values.city}
+                        />
+                      </FormInputGroup>
+                      {createFormErrorMessage("city")}
+                    </Form.Group>
+                  </Stack>
+                  <Stack direction="row" spacing={12} priority={[1, 1]}>
+                    <Form.Group>
+                      <FormLabel>Province</FormLabel>
+                      <FormInputGroup size="lg">
+                        <FormControl
+                          aria-label="Large"
+                          id="province"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          placeholder="Enter province"
+                          type="text"
+                          value={values.province}
+                        />
+                      </FormInputGroup>
+                      {createFormErrorMessage("province")}
+                    </Form.Group>
+                    <Form.Group>
+                      <FormLabel>Country</FormLabel>
+                      <FormInputGroup size="lg">
+                        <FormControl
+                          aria-label="Large"
+                          id="country"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          placeholder="Enter country"
+                          type="text"
+                          value={values.country}
+                        />
+                      </FormInputGroup>
+                      {createFormErrorMessage("country")}
+                    </Form.Group>
+                  </Stack>
+                  <Stack direction="row" spacing={12} priority={[1, 1]}>
+                    <Form.Group>
+                      <FormLabel>Password</FormLabel>
+                      <FormInputGroup size="lg">
+                        <FormControl
+                          aria-label="Large"
+                          id="password1"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          placeholder="Enter password"
+                          type="password"
+                          value={values.password1}
+                        />
+                      </FormInputGroup>
+                      {createFormErrorMessage("password1")}
+                    </Form.Group>
+                    <Form.Group>
+                      <FormLabel>Re-enter password</FormLabel>
+                      <FormInputGroup size="lg">
+                        <FormControl
+                          aria-label="Large"
+                          id="password2"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          placeholder="Re-enter password"
+                          type="password"
+                          value={values.password2}
+                        />
+                      </FormInputGroup>
+                      {createFormErrorMessage("password2")}
+                    </Form.Group>
+                  </Stack>
+                  <div
+                    color="red"
+                    style={{
+                      textAlign: "right",
+                    }}
+                  >
+                    {error}
+                  </div>
+                  <Stack direction="row-reverse">
+                    <FormButton
+                      variant="primary"
+                      type="submit"
+                      disabled={isSubmitting}
                     >
-                      {error}
-                    </div>
-                    <Stack direction="row-reverse">
-                      <FormButton
-                        variant="primary"
-                        type="submit"
-                        disabled={isSubmitting}
-                      >
-                        {isSubmitting ? (
-                          <React.Fragment>
-                            <span
-                              className="spinner-border spinner-border-sm"
-                              role="status"
-                              aria-hidden="true"
-                              style={{ marginBottom: 2, marginRight: 12 }}
-                            ></span>
-                            Signing up...
-                          </React.Fragment>
-                        ) : (
-                          <React.Fragment>Sign up</React.Fragment>
-                        )}
-                      </FormButton>
-                    </Stack>
-                  </Form>
-                )}
-              </Formik>
-            </div>
-          )}
+                      {isSubmitting ? (
+                        <React.Fragment>
+                          <span
+                            className="spinner-border spinner-border-sm"
+                            role="status"
+                            aria-hidden="true"
+                            style={{ marginBottom: 2, marginRight: 12 }}
+                          ></span>
+                          Signing up...
+                        </React.Fragment>
+                      ) : (
+                        <React.Fragment>Sign up</React.Fragment>
+                      )}
+                    </FormButton>
+                  </Stack>
+                </Form>
+              )}
+            </Formik>
+          </div>
         </main>
       </Stack>
     </Stack>
