@@ -8,7 +8,7 @@ router.post(
   "/",
   rateLimit({
     windowMs: 5 * 60 * 1000, // 5 minutes
-    max: 10,
+    max: 100,
     message:
       "Too many company requests from this IP, please try again after 5 minutes",
   }),

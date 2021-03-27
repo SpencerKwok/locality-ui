@@ -5,12 +5,14 @@ import * as yup from "yup";
 import { Formik, FormikConfig } from "formik";
 import { Form, FormControl } from "react-bootstrap";
 import { Redirect } from "react-router-dom";
+import Popup from "reactjs-popup";
 
 import CompanyList from "../Company";
 import Image, { toBase64 } from "../Image";
 import CompanyDAO from "./CompanyDAO";
 import Stack from "../../../common/components/Stack/Stack";
 import { BaseCompany } from "../../../common/rpc/Schema";
+import { CloseButton } from "../../../common/components/Popup/Popup";
 import {
   FormInputGroup,
   FormButton,
@@ -56,6 +58,10 @@ function Company(props: CompanyProps) {
   const [homepageError, setHomepageError] = useState("");
   const [updatedLogo, setUpdatedLogo] = useState(false);
   const [updatedHomepage, setUpdatedHomepage] = useState(false);
+
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const newUser = urlParams.get("newUser");
 
   useEffect(() => {
     if (companyId === "0") {
@@ -152,39 +158,130 @@ function Company(props: CompanyProps) {
   };
 
   return (
-    <Stack
-      direction="row"
-      columnAlign="flex-start"
-      style={{ marginTop: 12 }}
-      spacing={32}
-    >
-      {companyId === "0" && (
-        <CompanyList
-          createCompanyOnClick={createCompanyOnClick}
-          companies={companies}
-          height={props.height - 200}
-          index={companyIndex}
-          width={300}
-        />
+    <div>
+      {newUser === "true" && (
+        <Popup modal open={true}>
+          {(close: () => void) => (
+            <Stack
+              direction="column"
+              rowAlign="center"
+              columnAlign="center"
+              height={300}
+              style={{ margin: 24 }}
+            >
+              <CloseButton onClick={close}>&times;</CloseButton>
+              <Stack
+                direction="column"
+                rowAlign="center"
+                columnAlign="center"
+                style={{ margin: 24 }}
+              >
+                <h2>You're almost done!</h2>
+                <p>
+                  Make sure to update your company logo and homepage so we can
+                  link users directly to your storefront!
+                </p>
+              </Stack>
+            </Stack>
+          )}
+        </Popup>
       )}
-      <Stack direction="column" rowAlign="flex-start" spacing={32}>
-        {companyIndex >= 0 && (
-          <Stack direction="row" columnAlign="flex-start" spacing={32}>
-            <Stack direction="column" rowAlign="flex-start" spacing={32}>
-              <div>
-                <FieldLabel>Company</FieldLabel>
-                <FieldValue>{companies[companyIndex].name}</FieldValue>
-              </div>
-              <div>
-                <FieldLabel>Company Homepage</FieldLabel>
+      <Stack direction="row" columnAlign="flex-start" style={{ marginTop: 12 }}>
+        {companyId === "0" && (
+          <CompanyList
+            createCompanyOnClick={createCompanyOnClick}
+            companies={companies}
+            height={props.height - 200}
+            index={companyIndex}
+            width={300}
+            style={{ marginRight: 32 }}
+          />
+        )}
+        <Stack direction="column" rowAlign="flex-start" spacing={32}>
+          {companyIndex >= 0 && (
+            <Stack direction="row" columnAlign="flex-start" spacing={32}>
+              <Stack direction="column" rowAlign="flex-start" spacing={32}>
+                <div>
+                  <FieldLabel>Company</FieldLabel>
+                  <FieldValue>{companies[companyIndex].name}</FieldValue>
+                </div>
+                <div>
+                  <FieldLabel>Company Homepage</FieldLabel>
+                  <Formik
+                    initialValues={
+                      {
+                        homepage: companies[companyIndex].homepage,
+                      } as UpdateHomepageForm
+                    }
+                    onSubmit={onSubmitHomepage}
+                    validationSchema={UpdateHomepageSchema}
+                    enableReinitialize={true}
+                  >
+                    {({
+                      isSubmitting,
+                      values,
+                      handleBlur,
+                      handleChange,
+                      handleSubmit,
+                      setFieldValue,
+                    }) => (
+                      <Form onSubmit={handleSubmit}>
+                        <Form.Group>
+                          <FormInputGroup size="md" width="100%">
+                            <FormControl
+                              aria-label="Large"
+                              id="homepage"
+                              onBlur={handleBlur}
+                              onChange={handleChange}
+                              placeholder="e.g. www.cantiqliving.com"
+                              type="text"
+                              value={values.homepage}
+                            />
+                          </FormInputGroup>
+                          {createFormErrorMessage("homepage")}
+                        </Form.Group>
+                        <div style={{ color: "red" }}>{homepageError}</div>
+                        {updatedHomepage && homepageError === "" && (
+                          <div style={{ color: "green" }}>
+                            Successfully updated homepage!
+                          </div>
+                        )}
+                        <Stack direction="row-reverse">
+                          <FormButton
+                            variant="primary"
+                            type="submit"
+                            disabled={isSubmitting}
+                          >
+                            {isSubmitting ? (
+                              <React.Fragment>
+                                <span
+                                  className="spinner-border spinner-border-sm"
+                                  role="status"
+                                  aria-hidden="true"
+                                  style={{ marginBottom: 2, marginRight: 12 }}
+                                ></span>
+                                Saving...
+                              </React.Fragment>
+                            ) : (
+                              <React.Fragment>Save</React.Fragment>
+                            )}
+                          </FormButton>
+                        </Stack>
+                      </Form>
+                    )}
+                  </Formik>
+                </div>
+              </Stack>
+              <Stack direction="column" rowAlign="flex-start">
+                <FieldLabel>Company Logo</FieldLabel>
                 <Formik
                   initialValues={
                     {
-                      homepage: companies[companyIndex].homepage,
-                    } as UpdateHomepageForm
+                      image: companies[companyIndex].logo,
+                    } as UpdateLogoForm
                   }
-                  onSubmit={onSubmitHomepage}
-                  validationSchema={UpdateHomepageSchema}
+                  onSubmit={onSubmitLogo}
+                  validationSchema={UpdateLogoSchema}
                   enableReinitialize={true}
                 >
                   {({
@@ -196,24 +293,18 @@ function Company(props: CompanyProps) {
                     setFieldValue,
                   }) => (
                     <Form onSubmit={handleSubmit}>
-                      <Form.Group>
-                        <FormInputGroup size="md" width="100%">
-                          <FormControl
-                            aria-label="Large"
-                            id="homepage"
-                            onBlur={handleBlur}
-                            onChange={handleChange}
-                            placeholder="e.g. www.cantiqliving.com"
-                            type="text"
-                            value={values.homepage}
-                          />
-                        </FormInputGroup>
-                        {createFormErrorMessage("homepage")}
-                      </Form.Group>
-                      <div style={{ color: "red" }}>{homepageError}</div>
-                      {updatedHomepage && homepageError === "" && (
+                      <Image
+                        handleBlur={handleBlur}
+                        handleChange={handleChange}
+                        setFieldValue={setFieldValue}
+                        alt={companies[companyIndex].name}
+                        imageId="image"
+                        values={values}
+                      />
+                      <div style={{ color: "red" }}>{logoError}</div>
+                      {updatedLogo && logoError === "" && (
                         <div style={{ color: "green" }}>
-                          Successfully updated homepage!
+                          Successfully updated logo!
                         </div>
                       )}
                       <Stack direction="row-reverse">
@@ -240,72 +331,12 @@ function Company(props: CompanyProps) {
                     </Form>
                   )}
                 </Formik>
-              </div>
+              </Stack>
             </Stack>
-            <Stack direction="column" rowAlign="flex-start">
-              <FieldLabel>Company Logo</FieldLabel>
-              <Formik
-                initialValues={
-                  {
-                    image: companies[companyIndex].logo,
-                  } as UpdateLogoForm
-                }
-                onSubmit={onSubmitLogo}
-                validationSchema={UpdateLogoSchema}
-                enableReinitialize={true}
-              >
-                {({
-                  isSubmitting,
-                  values,
-                  handleBlur,
-                  handleChange,
-                  handleSubmit,
-                  setFieldValue,
-                }) => (
-                  <Form onSubmit={handleSubmit}>
-                    <Image
-                      handleBlur={handleBlur}
-                      handleChange={handleChange}
-                      setFieldValue={setFieldValue}
-                      alt={companies[companyIndex].name}
-                      imageId="image"
-                      values={values}
-                    />
-                    <div style={{ color: "red" }}>{logoError}</div>
-                    {updatedLogo && logoError === "" && (
-                      <div style={{ color: "green" }}>
-                        Successfully updated logo!
-                      </div>
-                    )}
-                    <Stack direction="row-reverse">
-                      <FormButton
-                        variant="primary"
-                        type="submit"
-                        disabled={isSubmitting}
-                      >
-                        {isSubmitting ? (
-                          <React.Fragment>
-                            <span
-                              className="spinner-border spinner-border-sm"
-                              role="status"
-                              aria-hidden="true"
-                              style={{ marginBottom: 2, marginRight: 12 }}
-                            ></span>
-                            Saving...
-                          </React.Fragment>
-                        ) : (
-                          <React.Fragment>Save</React.Fragment>
-                        )}
-                      </FormButton>
-                    </Stack>
-                  </Form>
-                )}
-              </Formik>
-            </Stack>
-          </Stack>
-        )}
+          )}
+        </Stack>
       </Stack>
-    </Stack>
+    </div>
   );
 }
 
