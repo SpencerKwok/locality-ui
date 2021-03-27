@@ -178,8 +178,8 @@ function Company(props: CompanyProps) {
               >
                 <h2>You're almost done!</h2>
                 <p>
-                  Make sure to add your company logo and homepage so we can link
-                  users directly to your website from our homepage!
+                  Make sure to update your company logo and homepage so we can
+                  link users directly to your storefront!
                 </p>
               </Stack>
             </Stack>
