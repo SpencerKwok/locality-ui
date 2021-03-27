@@ -1,11 +1,10 @@
-const passport = require("passport");
-const psql = require("../postgresql/client");
-const bcrypt = require("bcryptjs");
-const sqlString = require("sqlstring");
+import bcrypt from "bcryptjs";
+import passport from "passport";
+import { Strategy as LocalStrategy } from "passport-local";
+import psql from "../postgresql/client.js";
+import sqlString from "sqlstring";
 
-const LocalStrategy = require("passport-local").Strategy;
-
-const setup = function () {
+export function passportSetup() {
   passport.use(
     "local",
     new LocalStrategy(
@@ -51,6 +50,4 @@ const setup = function () {
     )
   );
   return passport;
-};
-
-module.exports = setup;
+}

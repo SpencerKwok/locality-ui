@@ -78,7 +78,7 @@ function SignIn(props: SignInProps) {
             }) => (
               <Form onSubmit={handleSubmit}>
                 <Form.Group>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel required>Email</FormLabel>
                   <FormInputGroup size="lg" width="100%">
                     <FormControl
                       aria-label="Large"
@@ -92,7 +92,7 @@ function SignIn(props: SignInProps) {
                   {createFormErrorMessage("username")}
                 </Form.Group>
                 <Form.Group>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel required>Password</FormLabel>
                   <FormInputGroup size="lg" width="100%">
                     <FormControl
                       aria-label="Large"

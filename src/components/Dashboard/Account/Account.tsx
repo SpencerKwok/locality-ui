@@ -113,7 +113,7 @@ function Account(props: AccountProps) {
             }) => (
               <Form onSubmit={handleSubmit}>
                 <Form.Group>
-                  <FormLabel>Current password</FormLabel>
+                  <FormLabel required>Current password</FormLabel>
                   <FormInputGroup size="lg" width="100%">
                     <FormControl
                       aria-label="Large"
@@ -127,7 +127,7 @@ function Account(props: AccountProps) {
                   {createFormErrorMessage("currentPassword")}
                 </Form.Group>
                 <Form.Group>
-                  <FormLabel>New password</FormLabel>
+                  <FormLabel required>New password</FormLabel>
                   <FormInputGroup size="lg" width="100%">
                     <FormControl
                       aria-label="Large"
@@ -141,7 +141,7 @@ function Account(props: AccountProps) {
                   {createFormErrorMessage("newPassword1")}
                 </Form.Group>
                 <Form.Group>
-                  <FormLabel>Re-enter new password</FormLabel>
+                  <FormLabel required>Re-enter new password</FormLabel>
                   <FormInputGroup size="lg" width="100%">
                     <FormControl
                       aria-label="Large"
