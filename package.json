@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "node server/server.js",
     "start-ui": "react-scripts start",
     "build": "react-scripts build"
@@ -87,6 +88,7 @@
     "@types/react-image-gallery": "^1.0.2",
     "@types/react-router-dom": "^5.1.7",
     "@types/react-virtualized": "^9.21.11",
-    "@types/styled-components": "^5.1.7"
+    "@types/styled-components": "^5.1.7",
+    "source-map-explorer": "^2.5.2"
   }
 }
