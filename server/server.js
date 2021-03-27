@@ -9,7 +9,6 @@ import api from "./routes/api.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import cookieSession from "cookie-session";
-import compression from "compression";
 import enforce from "express-sslify";
 import express from "express";
 import { fileURLToPath } from "url";
@@ -17,6 +16,7 @@ import http from "http";
 import path from "path";
 import { passportSetup } from "./middleware/localstrategy.js";
 import helmet from "helmet";
+import shrinkRay from "shrink-ray-current";
 
 // Get port from Heroku dyno
 const port = process.env.PORT || 3001;
@@ -25,7 +25,10 @@ const port = process.env.PORT || 3001;
 const app = express();
 
 // Add gzip compression
-app.use(compression({ level: 1 }));
+
+app.use(
+  shrinkRay({ useZopfliForGzip: false, cache: () => true, zlib: { level: 1 } })
+);
 
 // Add security layer
 app.use(
