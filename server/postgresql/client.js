@@ -1,5 +1,5 @@
-const { Client } = require("pg");
-const client = new Client({
+import pg from "pg";
+const client = new pg.Client({
   // Must use SSL for Heroku Postgresql.
   // See: https://help.heroku.com/DR0TTWWD/seeing-fatal-no-pg_hba-conf-entry-errors-in-postgres
   // and https://stackoverflow.com/questions/61097695/self-signed-certificate-error-during-query-the-heroku-hosted-postgres-database
@@ -12,7 +12,8 @@ client
   .then(() => console.log("Connected to postgresql admin"))
   .catch((err) => console.error(err));
 
-exports.query = async (query) => {
+const psql = {};
+psql.query = async (query) => {
   let response,
     error = null;
   await client
@@ -27,3 +28,5 @@ exports.query = async (query) => {
     });
   return [response, error];
 };
+
+export default psql;

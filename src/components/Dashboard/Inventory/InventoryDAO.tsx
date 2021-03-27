@@ -14,6 +14,8 @@ import {
   ProductUpdateResponse,
   ProductDeleteRequest,
   ProductDeleteResponse,
+  ShopifyProductUpdateRequest,
+  ShopifyProductUpdateResponse,
 } from "../../../common/rpc/Schema";
 
 let instance: InventoryDAO;
@@ -74,6 +76,16 @@ export default class InventoryDAO {
       "ProductDelete",
       productDeleteRequest,
       "/api/dashboard/product/delete"
+    );
+  }
+
+  async shopifyProductUpdate(
+    shopifyUpdateRequest: ShopifyProductUpdateRequest
+  ): Promise<ShopifyProductUpdateResponse> {
+    return await this.rpc.call(
+      "ShopifyProductUpdate",
+      shopifyUpdateRequest,
+      "/api/dashboard/shopify/product/update"
     );
   }
 }

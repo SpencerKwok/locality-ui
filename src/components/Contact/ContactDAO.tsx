@@ -1,5 +1,5 @@
 import { PostRpcClient } from "../../common/rpc/RpcClient";
-import { ContactUsRequest, ContactUsResponse } from "../../common/rpc/Schema";
+import { ContactRequest, ContactResponse } from "../../common/rpc/Schema";
 
 let instance: ContactDAO;
 export default class ContactDAO {
@@ -14,9 +14,7 @@ export default class ContactDAO {
 
   constructor(private rpc: PostRpcClient) {}
 
-  async contactus(
-    contactUsRequest: ContactUsRequest
-  ): Promise<ContactUsResponse> {
-    return await this.rpc.call("ContactUs", contactUsRequest, "/api/contactus");
+  async contact(contactRequest: ContactRequest): Promise<ContactResponse> {
+    return await this.rpc.call("Contact", contactRequest, "/api/contact");
   }
 }

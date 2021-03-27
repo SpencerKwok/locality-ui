@@ -1,11 +1,12 @@
-const algoliasearch = require("algoliasearch");
+import algoliasearch from "algoliasearch";
 const client = algoliasearch(
   process.env.ALGOLIA_ID || "",
   process.env.ALGOLIA_ADMIN_KEY || ""
 );
 const index = client.initIndex(process.env.ALGOLIA_INDEX || "");
 
-exports.getObject = async (objectID, options) => {
+const algoliaClient = {};
+algoliaClient.getObject = async (objectID, options) => {
   let object,
     error = null;
   await index
@@ -21,7 +22,7 @@ exports.getObject = async (objectID, options) => {
   return [object, error];
 };
 
-exports.partialUpdateObject = async (object, options) => {
+algoliaClient.partialUpdateObject = async (object, options) => {
   let error = null;
   await index.partialUpdateObject(object, options).catch((err) => {
     console.log(err);
@@ -33,7 +34,7 @@ exports.partialUpdateObject = async (object, options) => {
   return error;
 };
 
-exports.saveObject = async (object, options) => {
+algoliaClient.saveObject = async (object, options) => {
   let error = null;
   await index.saveObject(object, options).catch((err) => {
     console.log(err);
@@ -45,9 +46,9 @@ exports.saveObject = async (object, options) => {
   return error;
 };
 
-exports.deleteObject = async (objectID) => {
+algoliaClient.deleteObjects = async (objectIDs) => {
   let error = null;
-  await index.deleteObject(objectID).catch((err) => {
+  await index.deleteObjects(objectIDs).catch((err) => {
     console.log(err);
     error = {
       code: 500,
@@ -57,7 +58,7 @@ exports.deleteObject = async (objectID) => {
   return error;
 };
 
-exports.search = async (query, options) => {
+algoliaClient.search = async (query, options) => {
   let error = null;
   let results = {};
   await index
@@ -77,3 +78,5 @@ exports.search = async (query, options) => {
     });
   return [results, error];
 };
+
+export default algoliaClient;
