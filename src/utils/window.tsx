@@ -29,5 +29,11 @@ export default function useWindowSize() {
     return () => window.removeEventListener("resize", handleResize);
   }, []); // Empty array ensures that effect is only run on mount
 
+  useEffect(() => {
+    if (window.screen.width < window.innerWidth) {
+      setWindowSize({ width: window.screen.width, height: window.innerHeight });
+    }
+  }, []);
+
   return windowSize;
 }
