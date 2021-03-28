@@ -1,13 +1,4 @@
-import algolia from "../algolia/client.js";
-import bcrypt from "bcryptjs";
-import cloudinary from "../cloudinary/client.js";
-import dns from "dns";
-import fetch from "node-fetch";
-import psql from "../postgresql/client.js";
-import rateLimit from "express-rate-limit";
 import { Router } from "express";
-import sqlString from "sqlstring";
-import xss from "xss";
 
 import company from "./company/company.js";
 import companies from "./companies/companies.js";

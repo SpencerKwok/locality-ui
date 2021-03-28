@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import emailValidator from "email-validator";
 import fetch from "node-fetch";
 import psql from "../../postgresql/client.js";
 import rateLimit from "express-rate-limit";
