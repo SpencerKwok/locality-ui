@@ -37,7 +37,11 @@ const directionToMargin = (direction: StackDirection) => {
 
 function Stack(props: StackProps) {
   return (
-    <div className={props.className} style={props.style || {}}>
+    <div
+      className={props.className}
+      onClick={props.onClick}
+      style={props.style || {}}
+    >
       {Children.map(props.children, (child, index) => {
         const flexStyle =
           props.priority && index < props.priority.length
