@@ -13,7 +13,7 @@ router.post(
     message:
       "Too many product add requests from this IP, please try again after 5 minutes",
   }),
-  async (req, res, next) => {
+  async (req, res) => {
     const companyName = xss(req.body.companyName || "");
     if (companyName === "") {
       res.send(

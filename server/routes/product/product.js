@@ -11,7 +11,7 @@ router.post(
     message:
       "Too many product requests from this IP, please try again after 5 minutes",
   }),
-  async (req, res, next) => {
+  async (req, res) => {
     const f = async (companyId, productId) => {
       const objectID = `${companyId}_${productId}`;
       const [object, error] = await algolia.getObject(objectID);

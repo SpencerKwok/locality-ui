@@ -47,7 +47,7 @@ function Company(props: CompanyProps) {
   };
 
   return (
-    <Stack direction="column" rowAlign="flex-start">
+    <Stack direction="column" rowAlign="flex-start" style={props.style}>
       <h3>Company</h3>
       <VirtualList
         width={props.width}

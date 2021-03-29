@@ -1,4 +1,5 @@
 import React from "react";
+import styled, { keyframes } from "styled-components";
 import Cookie from "js-cookie";
 import {
   BrowserRouter as Router,
@@ -20,10 +21,26 @@ interface SignUpProps extends React.HTMLProps<HTMLDivElement> {
   userType?: UserType;
 }
 
+const fadeIn = keyframes`
+  0% {
+      opacity: 0;
+  }
+  100% {
+      opacity: 1;
+  }
+`;
+
+const AnimatedStack = styled(Stack)`
+  animation: ${fadeIn} 0.5s linear;
+`;
+
 function SignUp(props: SignUpProps) {
   const companyId = Cookie.get("companyId");
+  const username = Cookie.get("username");
   if (companyId) {
     return <Redirect to="/dashboard" />;
+  } else if (username) {
+    return <Redirect to="/" />;
   }
 
   const history = useHistory();
@@ -39,7 +56,7 @@ function SignUp(props: SignUpProps) {
         </header>
         <main>
           {!props.userType && (
-            <Stack direction="column" rowAlign="center" spacing={16}>
+            <AnimatedStack direction="column" rowAlign="center" spacing={16}>
               <Stack direction="row" columnAlign="center">
                 <h4>What describes you best?</h4>
               </Stack>
@@ -66,7 +83,7 @@ function SignUp(props: SignUpProps) {
                       textAlign: "center",
                     }}
                   >
-                    I'm a small business owner looking to reach more customers!
+                    I'm a local business owner looking to reach more customers!
                   </h4>
                 </DescriptionImage>
                 <DescriptionImage
@@ -86,17 +103,21 @@ function SignUp(props: SignUpProps) {
                       textAlign: "center",
                     }}
                   >
-                    I'm a local looking to support small businesses!
+                    I'm a local looking to support local businesses!
                   </h4>
                 </DescriptionImage>
               </Stack>
-            </Stack>
+            </AnimatedStack>
           )}
           {props.userType === "company" && (
-            <CompanySignup width={props.width} />
+            <AnimatedStack direction="column" rowAlign="center">
+              <CompanySignup width={props.width} />
+            </AnimatedStack>
           )}
           {props.userType === "customer" && (
-            <CustomerSignup width={props.width} />
+            <AnimatedStack direction="column" rowAlign="center">
+              <CustomerSignup width={props.width} />
+            </AnimatedStack>
           )}
         </main>
       </Stack>

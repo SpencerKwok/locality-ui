@@ -84,7 +84,6 @@ function App() {
           }}
         />
         <Route
-          exact
           path="/signup"
           render={(props) => {
             return (
@@ -107,7 +106,7 @@ function App() {
           }}
         />
         <Route
-          path="/"
+          path="/*"
           render={(props) => (
             <React.Fragment>
               <Navigation width={width} />

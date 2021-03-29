@@ -81,26 +81,32 @@ export interface SignInRequest {
   password: string;
 }
 
-export interface SignInResponse extends BaseResponse {}
+export interface SignInResponse extends BaseResponse {
+  redirectTo?: string;
+}
 
 export interface CustomerSignUpRequest {
-  firstName: string;
-  lastName: string;
   email: string;
   password: string;
 }
 
-export interface CustomerSignUpResponse extends BaseResponse {}
+interface SignUpResponse extends BaseResponse {
+  redirectTo?: string;
+}
+
+export interface CustomerSignUpResponse extends SignUpResponse {}
 
 export interface CompanySignUpRequest extends CustomerSignUpRequest {
-  companyName: string;
+  firstName: string;
+  lastName: string;
   address: string;
+  companyName: string;
   city: string;
   province: string;
   country: string;
 }
 
-export interface CompanySignUpResponse extends BaseResponse {}
+export interface CompanySignUpResponse extends SignUpResponse {}
 
 export interface BaseCompany {
   id: number;

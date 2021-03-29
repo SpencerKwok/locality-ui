@@ -23,7 +23,7 @@ export default class CompanyDAO {
     return await this.rpc.call(
       "CustomerSignUp",
       signUpRequest,
-      "/api/customer/signup"
+      "/api/signup/customer"
     );
   }
 }

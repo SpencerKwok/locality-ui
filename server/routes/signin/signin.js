@@ -14,19 +14,25 @@ router.post(
   (req, res, next) => {
     passport.authenticate("local", (err, user) => {
       if (err) {
-        res.end(JSON.stringify({ error: { code: 400, message: err.message } }));
+        res.send(
+          JSON.stringify({ error: { code: 400, message: err.message } })
+        );
       } else if (!user) {
-        res.end(
+        res.send(
           JSON.stringify({
             error: { code: 400, message: "Invalid credentials" },
           })
         );
       } else {
-        res.cookie("firstName", user.firstName);
-        res.cookie("lastName", user.lastName);
         res.cookie("username", user.username);
-        res.cookie("companyId", user.companyId);
-        res.end(JSON.stringify({}));
+        if (typeof user.companyId === "number") {
+          res.cookie("firstName", user.firstName);
+          res.cookie("lastName", user.lastName);
+          res.cookie("companyId", user.companyId);
+          res.send(JSON.stringify({ redirectTo: "/dashboard" }));
+        } else {
+          res.send(JSON.stringify({ redirectTo: "/" }));
+        }
       }
     })(req, next);
   }

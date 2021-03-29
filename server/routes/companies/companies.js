@@ -11,7 +11,7 @@ router.post(
     message:
       "Too many companies requests from this IP, please try again after 5 minutes",
   }),
-  async (req, res, next) => {
+  async (_, res) => {
     const [companies, error] = await psql.query(
       "SELECT * FROM companies ORDER BY name"
     );

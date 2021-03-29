@@ -1,23 +1,29 @@
-import React from "react";
+import React, { useState } from "react";
+import XSS from "xss";
 import * as yup from "yup";
+import { Formik, FormikConfig } from "formik";
+import { Form, FormControl } from "react-bootstrap";
 
 import CustomerDAO from "./CustomerDAO";
+import Stack from "../../../common/components/Stack/Stack";
+import {
+  FormInputGroup,
+  FormLabel,
+  FormButton,
+  createFormErrorMessage,
+} from "../../../common/components/Form/Form";
 
 export interface CustomerProps extends React.HTMLProps<HTMLFormElement> {
   width: number;
 }
 
 interface SignUpRequest {
-  firstName: string;
-  lastName: string;
   email: string;
   password1: string;
   password2: string;
 }
 
 const SignUpSchema = yup.object().shape({
-  firstName: yup.string().required("Required").max(255, "Too long"),
-  lastName: yup.string().required("Required").max(255, "Too long"),
   email: yup
     .string()
     .email("Invalid email address")
@@ -37,7 +43,115 @@ const SignUpSchema = yup.object().shape({
 });
 
 function Customer(props: CustomerProps) {
-  return <div></div>;
+  const [error, setError] = useState("");
+
+  const onSubmit: FormikConfig<SignUpRequest>["onSubmit"] = async (values) => {
+    await CustomerDAO.getInstance()
+      .signup({
+        email: XSS(values.email),
+        password: values.password1,
+      })
+      .then(({ error, redirectTo }) => {
+        if (error) {
+          setError(error.message);
+        } else if (redirectTo) {
+          window.location.href = redirectTo;
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setError(err.message);
+      });
+  };
+
+  return (
+    <Formik
+      initialValues={
+        {
+          email: "",
+          password1: "",
+          password2: "",
+        } as SignUpRequest
+      }
+      onSubmit={onSubmit}
+      validationSchema={SignUpSchema}
+    >
+      {({ isSubmitting, values, handleBlur, handleChange, handleSubmit }) => (
+        <Form onSubmit={handleSubmit}>
+          <Form.Group>
+            <FormLabel required>Email</FormLabel>
+            <FormInputGroup size="lg">
+              <FormControl
+                aria-label="Large"
+                id="email"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                placeholder="Enter email"
+                type="email"
+                value={values.email}
+              />
+            </FormInputGroup>
+            {createFormErrorMessage("email")}
+          </Form.Group>
+          <Form.Group>
+            <FormLabel required>Password</FormLabel>
+            <FormInputGroup size="lg">
+              <FormControl
+                aria-label="Large"
+                id="password1"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                placeholder="Enter password"
+                type="password"
+                value={values.password1}
+              />
+            </FormInputGroup>
+            {createFormErrorMessage("password1")}
+          </Form.Group>
+          <Form.Group>
+            <FormLabel required>Re-enter password</FormLabel>
+            <FormInputGroup size="lg">
+              <FormControl
+                aria-label="Large"
+                id="password2"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                placeholder="Re-enter password"
+                type="password"
+                value={values.password2}
+              />
+            </FormInputGroup>
+            {createFormErrorMessage("password2")}
+          </Form.Group>
+          <div
+            color="red"
+            style={{
+              textAlign: "right",
+            }}
+          >
+            {error}
+          </div>
+          <Stack direction="row-reverse">
+            <FormButton variant="primary" type="submit" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <React.Fragment>
+                  <span
+                    className="spinner-border spinner-border-sm"
+                    role="status"
+                    aria-hidden="true"
+                    style={{ marginBottom: 2, marginRight: 12 }}
+                  ></span>
+                  Signing up...
+                </React.Fragment>
+              ) : (
+                <React.Fragment>Sign up</React.Fragment>
+              )}
+            </FormButton>
+          </Stack>
+        </Form>
+      )}
+    </Formik>
+  );
 }
 
 export default Customer;

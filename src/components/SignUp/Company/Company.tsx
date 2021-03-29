@@ -3,7 +3,6 @@ import XSS from "xss";
 import * as yup from "yup";
 import { Formik, FormikConfig } from "formik";
 import { Form, FormControl } from "react-bootstrap";
-import { useHistory } from "react-router-dom";
 
 import CompanyDAO from "./CompanyDAO";
 import Stack from "../../../common/components/Stack/Stack";
@@ -59,7 +58,6 @@ const SignUpSchema = yup.object().shape({
 
 function Company(props: CompanyProps) {
   const [error, setError] = useState("");
-  const history = useHistory();
 
   const onSubmit: FormikConfig<SignUpRequest>["onSubmit"] = async (values) => {
     const cleanValues = {
@@ -78,11 +76,11 @@ function Company(props: CompanyProps) {
         ...cleanValues,
         password: values.password1,
       })
-      .then(({ error }) => {
+      .then(({ error, redirectTo }) => {
         if (error) {
           setError(error.message);
-        } else {
-          history.push("/dashboard/company?newUser=true");
+        } else if (redirectTo) {
+          window.location.href = redirectTo;
         }
       })
       .catch((err) => {
@@ -118,7 +116,7 @@ function Company(props: CompanyProps) {
           <Form onSubmit={handleSubmit}>
             <Stack direction="row" spacing={12} priority={[1, 1]}>
               <Form.Group>
-                <FormLabel>First Name</FormLabel>
+                <FormLabel required>First Name</FormLabel>
                 <FormInputGroup size="lg">
                   <FormControl
                     aria-label="Large"
@@ -133,7 +131,7 @@ function Company(props: CompanyProps) {
                 {createFormErrorMessage("firstName")}
               </Form.Group>
               <Form.Group>
-                <FormLabel>Last Name</FormLabel>
+                <FormLabel required>Last Name</FormLabel>
                 <FormInputGroup size="lg">
                   <FormControl
                     aria-label="Large"
@@ -150,7 +148,7 @@ function Company(props: CompanyProps) {
             </Stack>
             <Stack direction="row" spacing={12} priority={[1, 1]}>
               <Form.Group>
-                <FormLabel>Email</FormLabel>
+                <FormLabel required>Email</FormLabel>
                 <FormInputGroup size="lg">
                   <FormControl
                     aria-label="Large"
@@ -165,7 +163,7 @@ function Company(props: CompanyProps) {
                 {createFormErrorMessage("email")}
               </Form.Group>
               <Form.Group>
-                <FormLabel>Company Name</FormLabel>
+                <FormLabel required>Company Name</FormLabel>
                 <FormInputGroup size="lg">
                   <FormControl
                     aria-label="Large"
@@ -182,7 +180,7 @@ function Company(props: CompanyProps) {
             </Stack>
             <Stack direction="row" spacing={12} priority={[1, 1]}>
               <Form.Group>
-                <FormLabel>Company address</FormLabel>
+                <FormLabel required>Company address</FormLabel>
                 <FormInputGroup size="lg">
                   <FormControl
                     aria-label="Large"
@@ -197,7 +195,7 @@ function Company(props: CompanyProps) {
                 {createFormErrorMessage("address")}
               </Form.Group>
               <Form.Group>
-                <FormLabel>City</FormLabel>
+                <FormLabel required>City</FormLabel>
                 <FormInputGroup size="lg">
                   <FormControl
                     aria-label="Large"
@@ -214,7 +212,7 @@ function Company(props: CompanyProps) {
             </Stack>
             <Stack direction="row" spacing={12} priority={[1, 1]}>
               <Form.Group>
-                <FormLabel>Province</FormLabel>
+                <FormLabel required>Province</FormLabel>
                 <FormInputGroup size="lg">
                   <FormControl
                     aria-label="Large"
@@ -229,7 +227,7 @@ function Company(props: CompanyProps) {
                 {createFormErrorMessage("province")}
               </Form.Group>
               <Form.Group>
-                <FormLabel>Country</FormLabel>
+                <FormLabel required>Country</FormLabel>
                 <FormInputGroup size="lg">
                   <FormControl
                     aria-label="Large"
@@ -246,7 +244,7 @@ function Company(props: CompanyProps) {
             </Stack>
             <Stack direction="row" spacing={12} priority={[1, 1]}>
               <Form.Group>
-                <FormLabel>Password</FormLabel>
+                <FormLabel required>Password</FormLabel>
                 <FormInputGroup size="lg">
                   <FormControl
                     aria-label="Large"
@@ -261,7 +259,7 @@ function Company(props: CompanyProps) {
                 {createFormErrorMessage("password1")}
               </Form.Group>
               <Form.Group>
-                <FormLabel>Re-enter password</FormLabel>
+                <FormLabel required>Re-enter password</FormLabel>
                 <FormInputGroup size="lg">
                   <FormControl
                     aria-label="Large"

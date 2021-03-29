@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Cookie from "js-cookie";
 import XSS from "xss";
 import * as yup from "yup";
 import { Formik, FormikConfig } from "formik";
@@ -35,11 +36,11 @@ function SignIn(props: SignInProps) {
         username: XSS(values.username),
         password: values.password,
       })
-      .then(({ error }) => {
+      .then(({ error, redirectTo }) => {
         if (error) {
           setError(error.message);
-        } else {
-          window.location.href = "/dashboard";
+        } else if (redirectTo) {
+          window.location.href = redirectTo;
         }
       })
       .catch((err) => setError(err.message));

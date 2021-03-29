@@ -12,7 +12,7 @@ router.post(
     message:
       "Too many company requests from this IP, please try again after 5 minutes",
   }),
-  async (req, res, next) => {
+  async (req, res) => {
     const f = async (companyId) => {
       const [companies, error] = await psql.query(
         sqlString.format("SELECT * FROM companies WHERE id=? ORDER BY name", [
