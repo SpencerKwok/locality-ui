@@ -58,10 +58,12 @@ function ProductImage(props: ProductImageProps) {
           />
         </StyledPicture>
         <StyledPicture {...(!highResLoaded && { style: { display: "none" } })}>
-          <source srcSet={props.src} type="image/webp" />
+          <source
+            srcSet={props.src.replace("upload/", "upload/w_480/")}
+            type="image/webp"
+          />
           <img
             alt={props.name}
-            loading={lowResLoaded ? "lazy" : "eager"}
             src={props.src.replace(".webp", ".jpg")}
             onLoad={() => setHighResLoaded(true)}
             width={175}
