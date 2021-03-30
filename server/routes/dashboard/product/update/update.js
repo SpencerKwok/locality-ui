@@ -15,7 +15,7 @@ router.post(
     message:
       "Too many product update requests from this IP, please try again after 5 minutes",
   }),
-  async (req, res, next) => {
+  async (req, res) => {
     const f = async (
       companyId,
       productId,

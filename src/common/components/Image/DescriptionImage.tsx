@@ -14,9 +14,10 @@ function DescriptionImage(props: DescriptionImageProps) {
   return (
     <Stack
       direction={props.direction}
-      spacing={props.spacing}
-      rowAlign={props.rowAlign}
       columnAlign={props.columnAlign}
+      rowAlign={props.rowAlign}
+      onClick={props.onClick}
+      spacing={props.spacing}
       style={props.style}
     >
       <picture style={{ margin: 0 }}>

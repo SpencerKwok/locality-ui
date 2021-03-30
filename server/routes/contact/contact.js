@@ -20,7 +20,7 @@ router.post(
     message:
       "Too many contact requests from this IP, please try again after 24hrs",
   }),
-  async (req, res, next) => {
+  async (req, res) => {
     const email = xss(req.body.email || "");
     const name = xss(req.body.name || "");
     const message = xss(req.body.message || "");

@@ -7,9 +7,13 @@ export interface PostMethods {
     request: SignInRequest;
     response: SignInResponse;
   };
-  SignUp: {
-    request: SignUpRequest;
-    response: SignUpResponse;
+  CompanySignUp: {
+    request: CompanySignUpRequest;
+    response: CompanySignUpResponse;
+  };
+  CustomerSignUp: {
+    request: CustomerSignUpRequest;
+    response: CustomerSignUpResponse;
   };
   Company: {
     request: CompanyRequest;
@@ -77,21 +81,32 @@ export interface SignInRequest {
   password: string;
 }
 
-export interface SignInResponse extends BaseResponse {}
+export interface SignInResponse extends BaseResponse {
+  redirectTo?: string;
+}
 
-export interface SignUpRequest {
-  firstName: string;
-  lastName: string;
+export interface CustomerSignUpRequest {
   email: string;
-  companyName: string;
-  address: string;
-  city: string;
-  province: string;
-  country: string;
   password: string;
 }
 
-export interface SignUpResponse extends BaseResponse {}
+interface SignUpResponse extends BaseResponse {
+  redirectTo?: string;
+}
+
+export interface CustomerSignUpResponse extends SignUpResponse {}
+
+export interface CompanySignUpRequest extends CustomerSignUpRequest {
+  firstName: string;
+  lastName: string;
+  address: string;
+  companyName: string;
+  city: string;
+  province: string;
+  country: string;
+}
+
+export interface CompanySignUpResponse extends SignUpResponse {}
 
 export interface BaseCompany {
   id: number;

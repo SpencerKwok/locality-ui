@@ -12,7 +12,7 @@ router.post(
     message:
       "Too many product delete requests from this IP, please try again after 5 minutes",
   }),
-  async (req, res, next) => {
+  async (req, res) => {
     const productId = req.body.id;
     if (!Number.isInteger(productId)) {
       res.send(

@@ -60,6 +60,7 @@ function DashboardRouter(props: DashboardRouterProps) {
         {(["inventory", "company", "account"] as Array<ActiveTab>).map((p) => (
           <Route
             exact
+            key={p}
             path={`${path}/${p}`}
             children={<Dashboard {...props} activeTab={p} />}
           />

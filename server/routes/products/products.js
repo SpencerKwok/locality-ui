@@ -12,7 +12,7 @@ router.post(
     message:
       "Too many products requests from this IP, please try again after 24hrs",
   }),
-  async (req, res, next) => {
+  async (req, res) => {
     const f = async (companyId) => {
       const [products, error] = await psql.query(
         sqlString.format(

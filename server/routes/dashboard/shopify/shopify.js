@@ -16,7 +16,7 @@ router.post(
     message:
       "Too many shopify product update requests from this IP, please try again after 5 minutes",
   }),
-  async (req, res, next) => {
+  async (req, res) => {
     const companyId = req.cookies["companyId"];
 
     const f = async (companyId) => {

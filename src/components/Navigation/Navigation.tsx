@@ -28,9 +28,10 @@ const StyledButton = styled(Button)`
 
 function Navigation(props: NavigationProps) {
   const companyId = Cookie.get("companyId");
+  const username = Cookie.get("username");
   const history = useHistory();
 
-  if (props.width <= 640) {
+  if (props.width <= 680) {
     return (
       <StyledNavbar collapseOnSelect expand="lg" variant="dark">
         <span>
@@ -48,26 +49,26 @@ function Navigation(props: NavigationProps) {
             <StyledNavLink href="/extension">Extension</StyledNavLink>
             <StyledNavLink href="/about">About Us</StyledNavLink>
             <StyledNavLink href="/contact">Contact Us</StyledNavLink>
-            {companyId ? (
-              <React.Fragment>
-                <StyledNavLink href="/dashboard">Dashboard</StyledNavLink>
-                <StyledNavLink
-                  onClick={async () => {
-                    await NavigationDAO.getInstance()
-                      .signout({})
-                      .then(({ error }) => {
-                        if (error) {
-                          console.log(error.message);
-                        } else {
-                          history.push("/signin");
-                        }
-                      })
-                      .catch((err) => console.log(err));
-                  }}
-                >
-                  Sign out
-                </StyledNavLink>
-              </React.Fragment>
+            {companyId && (
+              <StyledNavLink href="/dashboard">Dashboard</StyledNavLink>
+            )}
+            {username ? (
+              <StyledNavLink
+                onClick={async () => {
+                  await NavigationDAO.getInstance()
+                    .signout({})
+                    .then(({ error }) => {
+                      if (error) {
+                        console.log(error.message);
+                      } else {
+                        history.push("/signin");
+                      }
+                    })
+                    .catch((err) => console.log(err));
+                }}
+              >
+                Sign out
+              </StyledNavLink>
             ) : (
               <React.Fragment>
                 <StyledNavLink href="/signin">Sign in</StyledNavLink>
@@ -95,34 +96,34 @@ function Navigation(props: NavigationProps) {
         <StyledNavLink href="/extension">Extension</StyledNavLink>
         <StyledNavLink href="/about">About Us</StyledNavLink>
         <StyledNavLink href="/contact">Contact Us</StyledNavLink>
-        {companyId ? (
-          <React.Fragment>
-            <StyledButton
-              variant="primary"
-              href="/dashboard"
-              style={{ marginLeft: 12 }}
-            >
-              Dashboard
-            </StyledButton>
-            <StyledButton
-              variant="primary"
-              style={{ marginLeft: 12 }}
-              onClick={async () => {
-                await NavigationDAO.getInstance()
-                  .signout({})
-                  .then(({ error }) => {
-                    if (error) {
-                      console.log(error.message);
-                    } else {
-                      history.push("/signin");
-                    }
-                  })
-                  .catch((err) => console.log(err));
-              }}
-            >
-              Sign out
-            </StyledButton>
-          </React.Fragment>
+        {companyId && (
+          <StyledButton
+            variant="primary"
+            href="/dashboard"
+            style={{ marginLeft: 12 }}
+          >
+            Dashboard
+          </StyledButton>
+        )}
+        {username ? (
+          <StyledButton
+            variant="primary"
+            style={{ marginLeft: 12 }}
+            onClick={async () => {
+              await NavigationDAO.getInstance()
+                .signout({})
+                .then(({ error }) => {
+                  if (error) {
+                    console.log(error.message);
+                  } else {
+                    history.push("/signin");
+                  }
+                })
+                .catch((err) => console.log(err));
+            }}
+          >
+            Sign out
+          </StyledButton>
         ) : (
           <React.Fragment>
             <StyledButton
