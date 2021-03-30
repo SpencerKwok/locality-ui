@@ -64,7 +64,13 @@ router.post(
           return;
         }
 
-        if (addresses.length !== 1 || addresses[0] !== "shops.myshopify.com") {
+        let isShopify = false;
+        addresses.forEach((address) => {
+          isShopify =
+            isShopify || address.match(/^.*\.myshopify.com$/) !== null;
+        });
+
+        if (!isShopify) {
           res.send(
             JSON.stringify({
               error: {

@@ -37,8 +37,15 @@ router.post(
       );
       return;
     }
-    // Add "https://" to homepage URL if not included
-    if (!homepage.includes("https://") && !homepage.includes("http://")) {
+
+    // Add "https://www" to homepage URL if not included
+    if (homepage.match(/^https:\/\/(?!www.).*$/)) {
+      homepage = `https://www.${homepage.slice(8)}`;
+    } else if (homepage.match(/^http:\/\/(?!www.).*$/)) {
+      homepage = `https://www.${homepage.slice(7)}`;
+    } else if (homepage.match(/^http:\/\/www\..*$/)) {
+      homepage = `https://www.${homepage.slice(11)}`;
+    } else if (homepage.match(/^www\..*$/)) {
       homepage = `https://${homepage}`;
     }
 
