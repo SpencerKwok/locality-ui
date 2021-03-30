@@ -17,7 +17,7 @@ export const productAdd = async (
   link,
   nextProductId
 ) => {
-  if (!nextProductId) {
+  if (!Number.isInteger(nextProductId)) {
     const [nextIdResponse, psqlErrorGetNextId] = await psql.query(
       sqlString.format("SELECT next_product_id FROM companies WHERE id=?", [
         companyId,
@@ -121,7 +121,7 @@ export const productDelete = async (companyId, productIds) => {
   const psqlObjectIdString = `(${psqlObjectIds.join(" OR ")})`;
   const [_, psqlError] = await psql.query(
     sqlString.format(
-      `DELETE FROM products WHERE company_id=? AND ${psqlObjectIds}`,
+      `DELETE FROM products WHERE company_id=? AND ${psqlObjectIdString}`,
       [companyId]
     )
   );

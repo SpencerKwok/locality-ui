@@ -34,8 +34,8 @@ router.post(
 
       let nextProductId = companyResponse.rows[0].next_product_id;
       const companyName = companyResponse.rows[0].name;
-      const latitude = companyResponse.rows[0].latitude;
-      const longitude = companyResponse.rows[0].longitude;
+      const latitude = companyResponse.rows[0].latitude.split(",");
+      const longitude = companyResponse.rows[0].longitude.split(",");
       const homepage = companyResponse.rows[0].homepage;
       const domain = homepage.match(/(?<=http(s?):\/\/)[^\/]*/g)[0];
       if (!homepage) {

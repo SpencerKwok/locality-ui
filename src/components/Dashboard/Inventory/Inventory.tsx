@@ -358,7 +358,8 @@ function Inventory(props: InventoryProps) {
           >
             <DescriptionImage
               direction="row"
-              src={products[index].image}
+              src={products[index].image.replace("/upload", "/upload/w_128")}
+              loading={"lazy"}
               spacing={12}
               columnAlign="flex-start"
               rowAlign="center"
@@ -387,7 +388,8 @@ function Inventory(props: InventoryProps) {
             >
               <DescriptionImage
                 direction="row"
-                src={products[index].image}
+                src={products[index].image.replace("/upload", "/upload/w_128")}
+                loading={"lazy"}
                 spacing={12}
                 columnAlign="flex-start"
                 rowAlign="center"

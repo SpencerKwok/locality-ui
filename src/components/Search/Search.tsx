@@ -42,8 +42,11 @@ export function Search(props: SearchProps) {
         return;
       }
 
+      if (hits.length > 0) {
+        setHits([]);
+      }
+
       window.scrollTo(0, 0);
-      setHits([]);
       setSearching(true);
       setCompanyFilter("");
 

@@ -61,6 +61,7 @@ function ProductImage(props: ProductImageProps) {
           <source srcSet={props.src} type="image/webp" />
           <img
             alt={props.name}
+            loading={lowResLoaded ? "lazy" : "eager"}
             src={props.src.replace(".webp", ".jpg")}
             onLoad={() => setHighResLoaded(true)}
             width={175}
