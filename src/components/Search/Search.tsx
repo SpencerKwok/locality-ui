@@ -43,6 +43,7 @@ export function Search(props: SearchProps) {
       }
 
       window.scrollTo(0, 0);
+      setHits([]);
       setSearching(true);
       setCompanyFilter("");
 
