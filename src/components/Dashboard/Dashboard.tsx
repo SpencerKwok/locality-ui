@@ -24,8 +24,13 @@ interface DashboardProps extends React.HTMLProps<HTMLDivElement> {
 
 function Dashboard(props: DashboardProps) {
   const companyId = Cookie.get("companyId");
-  if (!companyId) {
+  const username = Cookie.get("username");
+  if (!companyId && !username) {
+    window.location.href = "/signin";
     return <Redirect to="/signin" />;
+  } else if (!companyId) {
+    window.location.href = "/";
+    return <Redirect to="/" />;
   }
 
   const history = useHistory();
