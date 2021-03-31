@@ -58,6 +58,7 @@ export const productAdd = async (
       lng: longitude[i],
     });
   }
+
   const algoliaError = await algolia.saveObject(
     {
       objectID: `${companyId}_${nextProductId}`,
@@ -106,12 +107,16 @@ export const productDelete = async (companyId, productIds) => {
     return algoliaError;
   }
 
-  const cloudinaryObjectIds = productIds.map(
-    (productId) => `${companyId}/${productId}`
-  );
-  const cloudinaryError = await cloudinary.deleteResources(cloudinaryObjectIds);
-  if (cloudinaryError) {
-    return cloudinaryError;
+  for (let i = 0; i < productIds.length; i += 100) {
+    const cloudinaryObjectIds = productIds
+      .slice(i, Math.min(i + 100, productIds.length))
+      .map((productId) => `${companyId}/${productId}`);
+    const cloudinaryError = await cloudinary.deleteResources(
+      cloudinaryObjectIds
+    );
+    if (cloudinaryError) {
+      return cloudinaryError;
+    }
   }
 
   const psqlObjectIds = [];
