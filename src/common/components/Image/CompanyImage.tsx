@@ -47,7 +47,10 @@ function CompanyImage(props: CompanyImageProps) {
           />
         </StyledPicture>
         <StyledPicture {...(!highResLoaded && { style: { display: "none" } })}>
-          <source srcSet={props.src} type="image/webp" />
+          <source
+            srcSet={props.src.replace("upload/", "upload/w_400/")}
+            type="image/webp"
+          />
           <img
             alt={props.name}
             src={props.src.replace(".webp", ".jpg")}
