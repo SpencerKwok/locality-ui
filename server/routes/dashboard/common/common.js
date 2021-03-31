@@ -99,6 +99,10 @@ export const productAdd = async (
 };
 
 export const productDelete = async (companyId, productIds) => {
+  if (productIds.length === 0) {
+    return null;
+  }
+
   const algoliaObjectIds = productIds.map(
     (productId) => `${companyId}_${productId}`
   );
