@@ -34,8 +34,12 @@ router.post(
 
       let nextProductId = companyResponse.rows[0].next_product_id;
       const companyName = companyResponse.rows[0].name;
-      const latitude = companyResponse.rows[0].latitude;
-      const longitude = companyResponse.rows[0].longitude;
+      const latitude = companyResponse.rows[0].latitude
+        .split(",")
+        .map((x) => parseFloat(x));
+      const longitude = companyResponse.rows[0].longitude
+        .split(",")
+        .map((x) => parseFloat(x));
       const homepage = companyResponse.rows[0].homepage;
       const domain = homepage.match(/(?<=http(s?):\/\/)[^\/]*/g)[0];
       if (!homepage) {
@@ -64,7 +68,13 @@ router.post(
           return;
         }
 
-        if (addresses.length !== 1 || addresses[0] !== "shops.myshopify.com") {
+        let isShopify = false;
+        addresses.forEach((address) => {
+          isShopify =
+            isShopify || address.match(/^.*\.myshopify.com$/) !== null;
+        });
+
+        if (!isShopify) {
           res.send(
             JSON.stringify({
               error: {
@@ -89,11 +99,6 @@ router.post(
           return;
         }
 
-        await productDelete(
-          companyId,
-          productsResponse.rows.map((product) => product.id)
-        );
-
         let page = 1;
         let done = false;
         let error = null;
@@ -107,50 +112,37 @@ router.post(
                 return;
               }
 
-              await Promise.all(
-                data.products.map(async (product, index) => {
-                  const productName = product.title;
-                  const image = product.images[0].src;
-                  const primaryKeywords = product.product_type;
-                  const description = product.body_html.replace(/<[^>]*>/g, "");
-                  const link = `${homepage}/products/${product.handle}`;
-                  let price = parseFloat(product.variants[0].price);
-                  let priceRange = [price, price];
-                  product.variants.forEach((variant) => {
-                    priceRange[0] = Math.min(
-                      priceRange[0],
-                      parseFloat(variant.price)
-                    );
-                    priceRange[1] = Math.max(
-                      priceRange[1],
-                      parseFloat(variant.price)
-                    );
-                  });
-                  price = priceRange[0];
-
-                  const [baseProduct, err] = await productAdd(
-                    companyId,
-                    companyName,
-                    productName,
-                    image,
-                    latitude,
-                    longitude,
-                    primaryKeywords,
-                    description,
-                    price,
-                    priceRange,
-                    link,
-                    nextProductId + index
+              data.products.map((product, index) => {
+                const productName = product.title;
+                const image = product.images[0].src;
+                const primaryKeywords = product.product_type;
+                const description = product.body_html.replace(/<[^>]*>/g, "");
+                const link = `${homepage}/products/${product.handle}`;
+                let price = parseFloat(product.variants[0].price);
+                let priceRange = [price, price];
+                product.variants.forEach((variant) => {
+                  priceRange[0] = Math.min(
+                    priceRange[0],
+                    parseFloat(variant.price)
                   );
-                  if (err) {
-                    error = err;
-                    done = true;
-                    return;
-                  }
+                  priceRange[1] = Math.max(
+                    priceRange[1],
+                    parseFloat(variant.price)
+                  );
+                });
+                price = priceRange[0];
 
-                  products.push(baseProduct);
-                })
-              );
+                products.push({
+                  productName,
+                  image,
+                  primaryKeywords,
+                  description,
+                  link,
+                  price,
+                  priceRange,
+                  nextProductId: nextProductId + index,
+                });
+              });
 
               nextProductId += data.products.length;
               page += 1;
@@ -177,12 +169,59 @@ router.post(
           return;
         }
 
-        products.sort((a, b) => a.name.localeCompare(b.name));
-        res.send(
-          JSON.stringify({
-            products,
-          })
+        const deleteError = await productDelete(
+          companyId,
+          productsResponse.rows.map((product) => product.id)
         );
+        if (deleteError) {
+          res.send(JSON.stringify({ error: deleteError }));
+          return;
+        }
+
+        await Promise.all(
+          products.map(
+            async ({
+              productName,
+              image,
+              primaryKeywords,
+              description,
+              link,
+              price,
+              priceRange,
+              nextProductId,
+            }) => {
+              const [baseProduct, _] = await productAdd(
+                companyId,
+                companyName,
+                productName,
+                image,
+                latitude,
+                longitude,
+                primaryKeywords,
+                description,
+                price,
+                priceRange,
+                link,
+                nextProductId
+              );
+              return baseProduct;
+            }
+          )
+        )
+          .then((products) => {
+            products.sort((a, b) => a.name.localeCompare(b.name));
+            res.send(
+              JSON.stringify({
+                products,
+              })
+            );
+          })
+          .catch((err) => {
+            console.log(err);
+            res.send(
+              JSON.stringify({ error: { code: 500, message: err.message } })
+            );
+          });
       });
     };
 

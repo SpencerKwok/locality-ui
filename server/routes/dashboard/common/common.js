@@ -17,7 +17,7 @@ export const productAdd = async (
   link,
   nextProductId
 ) => {
-  if (!nextProductId) {
+  if (!Number.isInteger(nextProductId)) {
     const [nextIdResponse, psqlErrorGetNextId] = await psql.query(
       sqlString.format("SELECT next_product_id FROM companies WHERE id=?", [
         companyId,
@@ -58,6 +58,7 @@ export const productAdd = async (
       lng: longitude[i],
     });
   }
+
   const algoliaError = await algolia.saveObject(
     {
       objectID: `${companyId}_${nextProductId}`,
@@ -98,6 +99,10 @@ export const productAdd = async (
 };
 
 export const productDelete = async (companyId, productIds) => {
+  if (productIds.length === 0) {
+    return null;
+  }
+
   const algoliaObjectIds = productIds.map(
     (productId) => `${companyId}_${productId}`
   );
@@ -106,12 +111,16 @@ export const productDelete = async (companyId, productIds) => {
     return algoliaError;
   }
 
-  const cloudinaryObjectIds = productIds.map(
-    (productId) => `${companyId}/${productId}`
-  );
-  const cloudinaryError = await cloudinary.deleteResources(cloudinaryObjectIds);
-  if (cloudinaryError) {
-    return cloudinaryError;
+  for (let i = 0; i < productIds.length; i += 100) {
+    const cloudinaryObjectIds = productIds
+      .slice(i, Math.min(i + 100, productIds.length))
+      .map((productId) => `${companyId}/${productId}`);
+    const cloudinaryError = await cloudinary.deleteResources(
+      cloudinaryObjectIds
+    );
+    if (cloudinaryError) {
+      return cloudinaryError;
+    }
   }
 
   const psqlObjectIds = [];
@@ -121,7 +130,7 @@ export const productDelete = async (companyId, productIds) => {
   const psqlObjectIdString = `(${psqlObjectIds.join(" OR ")})`;
   const [_, psqlError] = await psql.query(
     sqlString.format(
-      `DELETE FROM products WHERE company_id=? AND ${psqlObjectIds}`,
+      `DELETE FROM products WHERE company_id=? AND ${psqlObjectIdString}`,
       [companyId]
     )
   );

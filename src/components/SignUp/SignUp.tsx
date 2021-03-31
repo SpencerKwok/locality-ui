@@ -38,8 +38,10 @@ function SignUp(props: SignUpProps) {
   const companyId = Cookie.get("companyId");
   const username = Cookie.get("username");
   if (companyId) {
+    window.location.href = "/dashboard";
     return <Redirect to="/dashboard" />;
   } else if (username) {
+    window.location.href = "/";
     return <Redirect to="/" />;
   }
 

@@ -5,6 +5,7 @@ import Stack, { StackDirection, StackAlignment } from "../Stack/Stack";
 export interface DescriptionImageProps extends React.HTMLProps<HTMLElement> {
   direction: StackDirection;
   src: string;
+  loading?: "eager" | "lazy";
   spacing?: number;
   rowAlign?: StackAlignment;
   columnAlign?: StackAlignment;
@@ -25,6 +26,7 @@ function DescriptionImage(props: DescriptionImageProps) {
         <img
           src={props.src.replace(".webp", ".jpg")}
           alt={props.alt}
+          loading={props.loading}
           width={props.width}
         />
       </picture>

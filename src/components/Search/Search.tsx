@@ -43,7 +43,6 @@ export function Search(props: SearchProps) {
       }
 
       window.scrollTo(0, 0);
-      setHits([]);
       setSearching(true);
       setCompanyFilter("");
 
@@ -59,6 +58,9 @@ export function Search(props: SearchProps) {
       await SearchDAO.getInstance()
         .search({ query: XSS(props.query), ...location, page })
         .then(({ hits, nbHits }) => {
+          if (hits.length > 0) {
+            setHits([]);
+          }
           setHits(hits);
           setNbHits(nbHits);
         })
@@ -182,7 +184,7 @@ export function Search(props: SearchProps) {
                 <Pagination size="lg">
                   {[...Array(Math.ceil(nbHits / 24)).keys()].map((index) => (
                     <Pagination.Item
-                      active={page === index || (page < 0 && index === 0)}
+                      active={page === index || (page === 0 && index === 0)}
                       onClick={() => setPage(index)}
                     >
                       {index + 1}

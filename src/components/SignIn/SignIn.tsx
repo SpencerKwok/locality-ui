@@ -14,6 +14,7 @@ import {
   FormButton,
   createFormErrorMessage,
 } from "../../common/components/Form/Form";
+import { Redirect } from "react-router";
 
 export interface SignInProps extends React.HTMLProps<HTMLElement> {}
 
@@ -29,6 +30,15 @@ const SignInSchema = yup.object().shape({
 
 function SignIn(props: SignInProps) {
   const [error, setError] = useState("");
+  const companyId = Cookie.get("companyId");
+  const username = Cookie.get("username");
+  if (companyId) {
+    window.location.href = "/dashboard";
+    return <Redirect to="/dashboard" />;
+  } else if (username) {
+    window.location.href = "/";
+    return <Redirect to="/" />;
+  }
 
   const onSubmit: FormikConfig<SignInRequest>["onSubmit"] = async (values) => {
     await SignInDAO.getInstance()
