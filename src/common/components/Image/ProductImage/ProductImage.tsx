@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Cookie from "js-cookie";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import Popup from "reactjs-popup";
 
 import ProductImageDAO from "./ProductImageDAO";
@@ -44,8 +44,22 @@ const StyledHeart = styled(Heart)`
   position: absolute;
 `;
 
+const PopInAnimation = keyframes`
+  0% {
+    transform: scale3d(0,0,0);
+  }
+  75% {
+    transform: scale3d(1.05,1.05,1.05);
+  }
+  100% {
+    transform: scale3d(1,1,1);
+  }
+`;
+
 const StyledHeartFilled = styled(HeartFilled)`
   position: absolute;
+  transform-origin: center;
+  animation: ${PopInAnimation} 0.2s ease;
 `;
 
 function ProductImage(props: ProductImageProps) {
@@ -61,6 +75,7 @@ function ProductImage(props: ProductImageProps) {
         <Stack direction="row-reverse" style={{ marginRight: 44 }}>
           <StyledHeartFilled
             onClick={async () => {
+              setWishlist(false);
               await ProductImageDAO.getInstance()
                 .deleteFromWishlist({
                   id: props.objectId,
@@ -68,8 +83,6 @@ function ProductImage(props: ProductImageProps) {
                 .then(({ error }) => {
                   if (error) {
                     console.log(error);
-                  } else {
-                    setWishlist(false);
                   }
                 })
                 .catch((err) => {
@@ -87,6 +100,7 @@ function ProductImage(props: ProductImageProps) {
           {username ? (
             <StyledHeart
               onClick={async () => {
+                setWishlist(true);
                 await ProductImageDAO.getInstance()
                   .addToWishlist({
                     id: props.objectId,
@@ -94,8 +108,6 @@ function ProductImage(props: ProductImageProps) {
                   .then(({ error }) => {
                     if (error) {
                       console.log(error);
-                    } else {
-                      setWishlist(true);
                     }
                   })
                   .catch((err) => {

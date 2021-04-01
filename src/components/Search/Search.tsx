@@ -58,11 +58,8 @@ export function Search(props: SearchProps) {
       await SearchDAO.getInstance()
         .search({ query: XSS(props.query), ...location, page })
         .then(({ hits, nbHits }) => {
-          if (hits.length > 0) {
-            setHits([]);
-          }
-          setHits(hits);
           setNbHits(nbHits);
+          setHits(hits);
         })
         .catch((err) => console.log(err));
     })();
