@@ -10,6 +10,7 @@ import search from "./search/search.js";
 import signin from "./signin/signin.js";
 import signout from "./signout/signout.js";
 import signup from "./signup/signup.js";
+import wishlist from "./wishlist/wishlist.js";
 
 const router = Router();
 
@@ -35,5 +36,6 @@ router.use("/products", products);
 router.use("/signin", signin);
 router.use("/signout", signout);
 router.use("/signup", signup);
+router.use("/wishlist", wishlist);
 
 export default router;

@@ -22,6 +22,22 @@ algoliaClient.getObject = async (objectID, options) => {
   return [object, error];
 };
 
+algoliaClient.getObjects = async (objectIDs, options) => {
+  let objects,
+    error = null;
+  await index
+    .getObjects(objectIDs, options)
+    .then(({ results }) => (objects = results))
+    .catch((err) => {
+      console.log(err);
+      error = {
+        code: 500,
+        message: err.message,
+      };
+    });
+  return [objects, error];
+};
+
 algoliaClient.partialUpdateObject = async (object, options) => {
   let error = null;
   await index.partialUpdateObject(object, options).catch((err) => {

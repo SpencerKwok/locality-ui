@@ -40,6 +40,8 @@ function Stack(props: StackProps) {
     <div
       className={props.className}
       onClick={props.onClick}
+      onMouseEnter={props.onMouseEnter}
+      onMouseLeave={props.onMouseLeave}
       style={props.style || {}}
     >
       {Children.map(props.children, (child, index) => {

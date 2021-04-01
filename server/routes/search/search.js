@@ -1,6 +1,8 @@
 import algolia from "../../algolia/client.js";
+import psql from "../../postgresql/client.js";
 import rateLimit from "express-rate-limit";
 import { Router } from "express";
+import sqlString from "sqlstring";
 import xss from "xss";
 
 const router = Router();
@@ -37,6 +39,7 @@ router.get(
 
     const restrictSearchableAttributes = ["name", "primary_keywords"];
     const attributesToRetrieve = [
+      "objectID",
       "company",
       "image",
       "link",
@@ -44,6 +47,24 @@ router.get(
       "price",
       "price_range",
     ];
+
+    const username = req.cookies["username"];
+    let wishlist = [];
+    if (username) {
+      const [productIDs, wishlistError] = await psql.query(
+        sqlString.format("SELECT wishlist FROM users WHERE username=E?", [
+          username,
+        ])
+      );
+
+      // Don't error out because we failed
+      // to retrieve the wishlist
+      if (!wishlistError) {
+        wishlist = productIDs.rows[0].wishlist.split(",");
+      } else {
+        console.log(wishlistError);
+      }
+    }
 
     if (lat !== "" && lng !== "") {
       const [results, error] = await algolia.search(q, {
@@ -55,6 +76,14 @@ router.get(
       if (error) {
         res.send(JSON.stringify({ error }));
       } else {
+        if (wishlist.length > 0) {
+          results.hits = results.hits.map((hit) => {
+            return {
+              ...hit,
+              wishlist: wishlist.includes(hit.objectID),
+            };
+          });
+        }
         res.send(JSON.stringify(results));
       }
     } else if (ip !== "") {
@@ -68,6 +97,14 @@ router.get(
       if (error) {
         res.send(JSON.stringify({ error }));
       } else {
+        if (wishlist.length > 0) {
+          results.hits = results.hits.map((hit) => {
+            return {
+              ...hit,
+              wishlist: wishlist.includes(hit.objectID),
+            };
+          });
+        }
         res.send(JSON.stringify(results));
       }
     } else {
@@ -80,6 +117,14 @@ router.get(
       if (error) {
         res.send(JSON.stringify({ error }));
       } else {
+        if (wishlist.length > 0) {
+          results.hits = results.hits.map((hit) => {
+            return {
+              ...hit,
+              wishlist: wishlist.includes(hit.objectID),
+            };
+          });
+        }
         res.send(JSON.stringify(results));
       }
     }

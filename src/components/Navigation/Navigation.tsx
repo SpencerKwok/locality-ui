@@ -31,7 +31,7 @@ function Navigation(props: NavigationProps) {
   const username = Cookie.get("username");
   const history = useHistory();
 
-  if (props.width <= 680) {
+  if (props.width <= 800) {
     return (
       <StyledNavbar collapseOnSelect expand="lg" variant="dark">
         <span>
@@ -53,22 +53,25 @@ function Navigation(props: NavigationProps) {
               <StyledNavLink href="/dashboard">Dashboard</StyledNavLink>
             )}
             {username ? (
-              <StyledNavLink
-                onClick={async () => {
-                  await NavigationDAO.getInstance()
-                    .signout({})
-                    .then(({ error }) => {
-                      if (error) {
-                        console.log(error.message);
-                      } else {
-                        history.push("/signin");
-                      }
-                    })
-                    .catch((err) => console.log(err));
-                }}
-              >
-                Sign out
-              </StyledNavLink>
+              <React.Fragment>
+                <StyledNavLink href="/wishlist">Wish List</StyledNavLink>
+                <StyledNavLink
+                  onClick={async () => {
+                    await NavigationDAO.getInstance()
+                      .signout({})
+                      .then(({ error }) => {
+                        if (error) {
+                          console.log(error.message);
+                        } else {
+                          history.push("/signin");
+                        }
+                      })
+                      .catch((err) => console.log(err));
+                  }}
+                >
+                  Sign out
+                </StyledNavLink>
+              </React.Fragment>
             ) : (
               <React.Fragment>
                 <StyledNavLink href="/signin">Sign in</StyledNavLink>
@@ -106,24 +109,33 @@ function Navigation(props: NavigationProps) {
           </StyledButton>
         )}
         {username ? (
-          <StyledButton
-            variant="primary"
-            style={{ marginLeft: 12 }}
-            onClick={async () => {
-              await NavigationDAO.getInstance()
-                .signout({})
-                .then(({ error }) => {
-                  if (error) {
-                    console.log(error.message);
-                  } else {
-                    history.push("/signin");
-                  }
-                })
-                .catch((err) => console.log(err));
-            }}
-          >
-            Sign out
-          </StyledButton>
+          <React.Fragment>
+            <StyledButton
+              variant="primary"
+              href="/wishlist"
+              style={{ marginLeft: 12 }}
+            >
+              Wish List
+            </StyledButton>
+            <StyledButton
+              variant="primary"
+              style={{ marginLeft: 12 }}
+              onClick={async () => {
+                await NavigationDAO.getInstance()
+                  .signout({})
+                  .then(({ error }) => {
+                    if (error) {
+                      console.log(error.message);
+                    } else {
+                      history.push("/signin");
+                    }
+                  })
+                  .catch((err) => console.log(err));
+              }}
+            >
+              Sign out
+            </StyledButton>
+          </React.Fragment>
         ) : (
           <React.Fragment>
             <StyledButton

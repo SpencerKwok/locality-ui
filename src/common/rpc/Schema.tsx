@@ -1,11 +1,11 @@
 export interface PostMethods {
+  AddToWishList: {
+    request: AddToWishListRequest;
+    response: AddToWishListResponse;
+  };
   Contact: {
     request: ContactRequest;
     response: ContactResponse;
-  };
-  SignIn: {
-    request: SignInRequest;
-    response: SignInResponse;
   };
   CompanySignUp: {
     request: CompanySignUpRequest;
@@ -22,6 +22,10 @@ export interface PostMethods {
   Companies: {
     request: CompaniesRequest;
     response: CompaniesResponse;
+  };
+  DeleteFromWishList: {
+    request: DeleteFromWishListRequest;
+    response: DeleteFromWishListResponse;
   };
   HomepageUpdate: {
     request: HomepageUpdateRequest;
@@ -59,6 +63,14 @@ export interface PostMethods {
     request: ShopifyProductUpdateRequest;
     response: ShopifyProductUpdateResponse;
   };
+  SignIn: {
+    request: SignInRequest;
+    response: SignInResponse;
+  };
+  WishList: {
+    request: WishListRequest;
+    response: WishListResponse;
+  };
 }
 
 export interface BaseResponse {
@@ -68,6 +80,12 @@ export interface BaseResponse {
   };
 }
 
+export interface AddToWishListRequest {
+  id: string;
+}
+
+export interface AddToWishListResponse extends BaseResponse {}
+
 export interface ContactRequest {
   email: string;
   message: string;
@@ -75,15 +93,6 @@ export interface ContactRequest {
 }
 
 export interface ContactResponse extends BaseResponse {}
-
-export interface SignInRequest {
-  username: string;
-  password: string;
-}
-
-export interface SignInResponse extends BaseResponse {
-  redirectTo?: string;
-}
 
 export interface CustomerSignUpRequest {
   email: string;
@@ -135,6 +144,12 @@ export interface CompaniesResponse extends BaseResponse {
   companies?: Array<BaseCompany>;
 }
 
+export interface DeleteFromWishListRequest {
+  id: string;
+}
+
+export interface DeleteFromWishListResponse extends BaseResponse {}
+
 export interface HomepageUpdateRequest {
   id: number;
   homepage: string;
@@ -164,6 +179,7 @@ export interface Product extends BaseProduct {
   link: string;
   price: number;
   priceRange: Array<number>;
+  wishlist?: boolean;
 }
 
 export const EmptyProduct: Product = {
@@ -253,6 +269,21 @@ export interface ShopifyProductUpdateRequest {
 
 export interface ShopifyProductUpdateResponse extends BaseResponse {
   products?: Array<BaseProduct>;
+}
+
+export interface SignInRequest {
+  username: string;
+  password: string;
+}
+
+export interface SignInResponse extends BaseResponse {
+  redirectTo?: string;
+}
+
+export interface WishListRequest {}
+
+export interface WishListResponse extends BaseResponse {
+  products?: Array<Product>;
 }
 
 export interface GetMethods {

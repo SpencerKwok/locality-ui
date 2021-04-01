@@ -13,6 +13,7 @@ import {
   Navigation,
   SignIn,
   SignUp,
+  WishList,
 } from "./components";
 import Window from "./utils/window";
 
@@ -101,6 +102,17 @@ function App() {
               <React.Fragment>
                 <Navigation width={width} />
                 <Dashboard width={width} height={height} />
+              </React.Fragment>
+            );
+          }}
+        />
+        <Route
+          path="/wishlist"
+          render={(props) => {
+            return (
+              <React.Fragment>
+                <Navigation width={width} />
+                <WishList />
               </React.Fragment>
             );
           }}

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { Dropdown } from "react-bootstrap";
 
-import ProductImage from "../../common/components/Image/ProductImage";
+import ProductImage from "../../common/components/Image/ProductImage/ProductImage";
 import Stack from "../../common/components/Stack/Stack";
 import { Product } from "../../common/rpc/Schema";
 
@@ -86,22 +86,16 @@ function SearchResults(props: SearchResultsProps) {
       <Stack direction="row" columnAlign="flex-start" wrap="wrap" spacing={12}>
         {hits.map((hit) => {
           return (
-            <a
-              href={hit.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ textDecoration: "none", color: "black" }}
-            >
-              <ProductImage
-                company={hit.company}
-                name={hit.name}
-                {...(hit.price === hit.priceRange[1]
-                  ? { price: hit.price }
-                  : { priceRange: hit.priceRange })}
-                src={hit.image}
-                style={{ maxWidth: 175, marginBottom: 12 }}
-              />
-            </a>
+            <ProductImage
+              company={hit.company}
+              link={hit.link}
+              name={hit.name}
+              objectId={hit.objectID}
+              priceRange={hit.priceRange}
+              src={hit.image}
+              style={{ maxWidth: 175, marginBottom: 12 }}
+              wishlist={hit.wishlist}
+            />
           );
         })}
       </Stack>
