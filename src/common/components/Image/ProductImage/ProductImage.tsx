@@ -5,8 +5,8 @@ import Popup from "reactjs-popup";
 
 import ProductImageDAO from "./ProductImageDAO";
 import Stack from "../../Stack/Stack";
-import { ReactComponent as Star } from "./star.svg";
-import { ReactComponent as StarFilled } from "./star-fill.svg";
+import { ReactComponent as Heart } from "./heart.svg";
+import { ReactComponent as HeartFilled } from "./heart-fill.svg";
 
 export interface ProductImageProps extends React.HTMLProps<HTMLDivElement> {
   company: string;
@@ -40,14 +40,12 @@ const StyledPicture = styled.picture`
   overflow: hidden;
 `;
 
-const StyledStar = styled(Star)`
+const StyledHeart = styled(Heart)`
   position: absolute;
-  margin-top: 2px;
 `;
 
-const StyledStarFilled = styled(StarFilled)`
+const StyledHeartFilled = styled(HeartFilled)`
   position: absolute;
-  margin-top: 2px;
 `;
 
 function ProductImage(props: ProductImageProps) {
@@ -60,8 +58,8 @@ function ProductImage(props: ProductImageProps) {
   return (
     <React.Fragment>
       {wishlist && (
-        <Stack direction="row-reverse" style={{ marginRight: 38 }}>
-          <StyledStarFilled
+        <Stack direction="row-reverse" style={{ marginRight: 44 }}>
+          <StyledHeartFilled
             onClick={async () => {
               await ProductImageDAO.getInstance()
                 .deleteFromWishlist({
@@ -85,9 +83,9 @@ function ProductImage(props: ProductImageProps) {
         </Stack>
       )}
       {hover && !wishlist && (
-        <Stack direction="row-reverse" style={{ marginRight: 38 }}>
+        <Stack direction="row-reverse" style={{ marginRight: 44 }}>
           {username ? (
-            <StyledStar
+            <StyledHeart
               onClick={async () => {
                 await ProductImageDAO.getInstance()
                   .addToWishlist({
@@ -119,7 +117,7 @@ function ProductImage(props: ProductImageProps) {
             <Popup
               position="right center"
               trigger={
-                <StyledStar
+                <StyledHeart
                   onMouseEnter={() => {
                     setHover(true);
                   }}

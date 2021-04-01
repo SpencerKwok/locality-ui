@@ -31,7 +31,7 @@ function Navigation(props: NavigationProps) {
   const username = Cookie.get("username");
   const history = useHistory();
 
-  if (props.width <= 800) {
+  if (props.width <= (companyId ? 800 : 680)) {
     return (
       <StyledNavbar collapseOnSelect expand="lg" variant="dark">
         <span>
