@@ -75,7 +75,7 @@ function Navigation(props: NavigationProps) {
             ) : (
               <React.Fragment>
                 <StyledNavLink href="/signin">Sign in</StyledNavLink>
-                <StyledNavLink href="/signout">Sign up</StyledNavLink>
+                <StyledNavLink href="/signup">Sign up</StyledNavLink>
               </React.Fragment>
             )}
           </Nav>
