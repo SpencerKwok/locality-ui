@@ -15,6 +15,10 @@ export interface PostMethods {
     request: CustomerSignUpRequest;
     response: CustomerSignUpResponse;
   };
+  CustomerSignUpGoogle: {
+    request: CustomerSignUpGoogleRequest;
+    response: CustomerSignUpGoogleResponse;
+  };
   Company: {
     request: CompanyRequest;
     response: CompanyResponse;
@@ -67,6 +71,10 @@ export interface PostMethods {
     request: SignInRequest;
     response: SignInResponse;
   };
+  SignInGoogle: {
+    request: SignInGoogleRequest;
+    response: SignInGoogleResponse;
+  };
   WishList: {
     request: WishListRequest;
     response: WishListResponse;
@@ -94,16 +102,25 @@ export interface ContactRequest {
 
 export interface ContactResponse extends BaseResponse {}
 
+interface SignUpResponse extends BaseResponse {
+  redirectTo?: string;
+}
+
 export interface CustomerSignUpRequest {
   email: string;
   password: string;
 }
 
-interface SignUpResponse extends BaseResponse {
-  redirectTo?: string;
+export interface CustomerSignUpResponse extends SignUpResponse {}
+
+export interface CustomerSignUpGoogleRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  authtoken: string;
 }
 
-export interface CustomerSignUpResponse extends SignUpResponse {}
+export interface CustomerSignUpGoogleResponse extends SignUpResponse {}
 
 export interface CompanySignUpRequest extends CustomerSignUpRequest {
   firstName: string;
@@ -277,6 +294,15 @@ export interface SignInRequest {
 }
 
 export interface SignInResponse extends BaseResponse {
+  redirectTo?: string;
+}
+
+export interface SignInGoogleRequest {
+  username: string;
+  authtoken: string;
+}
+
+export interface SignInGoogleResponse extends BaseResponse {
   redirectTo?: string;
 }
 
