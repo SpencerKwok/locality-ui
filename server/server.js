@@ -13,8 +13,9 @@ import enforce from "express-sslify";
 import express from "express";
 import { fileURLToPath } from "url";
 import http from "http";
+import passport from "passport";
 import path from "path";
-import { passportSetup } from "./middleware/localstrategy.js";
+import { localPassportSetup } from "./middleware/localstrategy.js";
 import helmet from "helmet";
 import shrinkRay from "shrink-ray-current";
 
@@ -41,7 +42,7 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'"],
+        scriptSrc: ["'self'", "https://apis.google.com"],
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", "https://res.cloudinary.com", "blob:", "data:"],
         connectSrc: [
@@ -53,7 +54,7 @@ app.use(
         fontSrc: ["'self'"],
         objectSrc: ["'self'"],
         mediaSrc: ["'self'", "https://res.cloudinary.com"],
-        childSrc: ["'self'"],
+        frameSrc: ["'self'", "https://accounts.google.com"],
       },
     },
   })
@@ -104,9 +105,9 @@ app.use(
 app.use(cookieParser());
 
 // Setup passport
-const passport = passportSetup();
-app.use(passport.initialize());
-app.use(passport.session());
+const initializedPassport = localPassportSetup(passport);
+app.use(initializedPassport.initialize());
+app.use(initializedPassport.session());
 
 // Move static middleware to top to improve load speed
 // See: https://stackoverflow.com/questions/26106399/node-js-express-js-very-slow-serving-static-files

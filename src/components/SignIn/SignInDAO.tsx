@@ -1,5 +1,10 @@
 import { PostRpcClient } from "../../common/rpc/RpcClient";
-import { SignInRequest, SignInResponse } from "../../common/rpc/Schema";
+import {
+  SignInRequest,
+  SignInResponse,
+  SignInGoogleRequest,
+  SignInGoogleResponse,
+} from "../../common/rpc/Schema";
 
 let instance: SignInDAO;
 export default class SignInDAO {
@@ -16,5 +21,15 @@ export default class SignInDAO {
 
   async signin(signInRequest: SignInRequest): Promise<SignInResponse> {
     return await this.rpc.call("SignIn", signInRequest, "/api/signin");
+  }
+
+  async signinGoogle(
+    signInGoogleRequest: SignInGoogleRequest
+  ): Promise<SignInGoogleResponse> {
+    return await this.rpc.call(
+      "SignInGoogle",
+      signInGoogleRequest,
+      "/api/signin/google"
+    );
   }
 }

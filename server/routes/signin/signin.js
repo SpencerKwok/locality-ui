@@ -2,7 +2,12 @@ import passport from "passport";
 import rateLimit from "express-rate-limit";
 import { Router } from "express";
 
+import google from "./google/google.js";
+
 const router = Router();
+
+router.use("/google", google);
+
 router.post(
   "/",
   rateLimit({

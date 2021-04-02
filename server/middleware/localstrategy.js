@@ -1,10 +1,9 @@
 import bcrypt from "bcryptjs";
-import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import psql from "../postgresql/client.js";
 import sqlString from "sqlstring";
 
-export function passportSetup() {
+export function localPassportSetup(passport) {
   passport.use(
     "local",
     new LocalStrategy(
@@ -15,7 +14,7 @@ export function passportSetup() {
       async (usernameField, passwordField, done) => {
         const [users, error] = await psql.query(
           sqlString.format(
-            "SELECT first_name, last_name, password, id FROM users WHERE username=E?",
+            "SELECT first_name, last_name, password, id, type FROM users WHERE username=E?",
             [usernameField]
           )
         );
@@ -27,6 +26,11 @@ export function passportSetup() {
 
         if (users.rows.length === 0) {
           done(new Error("Incorrect username"), null);
+          return;
+        }
+
+        if (users.rows[0].type === "google") {
+          done(new Error("Sign in with Google"), null);
           return;
         }
 

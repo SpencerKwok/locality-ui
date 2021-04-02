@@ -1,5 +1,9 @@
 import React, { useState } from "react";
 import Cookie from "js-cookie";
+import GoogleLogin, {
+  GoogleLoginResponse,
+  GoogleLoginResponseOffline,
+} from "react-google-login";
 import XSS from "xss";
 import * as yup from "yup";
 import { Formik, FormikConfig } from "formik";
@@ -15,6 +19,8 @@ import {
   createFormErrorMessage,
 } from "../../common/components/Form/Form";
 import { Redirect } from "react-router";
+const { REACT_APP_GOOGLE_CLIENT_ID } = process.env;
+import "./SignIn.css";
 
 export interface SignInProps extends React.HTMLProps<HTMLElement> {}
 
@@ -70,6 +76,36 @@ function SignIn(props: SignInProps) {
           <LocalityLogo />
         </header>
         <main style={{ width: 300 }}>
+          <GoogleLogin
+            buttonText="Sign in with Google"
+            className="google-sign-in"
+            clientId={REACT_APP_GOOGLE_CLIENT_ID || ""}
+            cookiePolicy={"single_host_origin"}
+            onSuccess={async (
+              response: GoogleLoginResponse | GoogleLoginResponseOffline
+            ) => {
+              if ("accessToken" in response) {
+                await SignInDAO.getInstance()
+                  .signinGoogle({
+                    username: response.profileObj.email,
+                    authtoken: response.accessToken,
+                  })
+                  .then(({ error, redirectTo }) => {
+                    if (error) {
+                      setError(error.message);
+                    } else if (redirectTo) {
+                      window.location.href = redirectTo;
+                    }
+                  })
+                  .catch((err) => setError(err.message));
+              } else {
+                setError("Failed to login with Google");
+              }
+            }}
+            onFailure={() => {
+              setError("Failed to login with Google");
+            }}
+          />
           <Formik
             initialValues={
               {
