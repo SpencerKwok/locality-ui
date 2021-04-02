@@ -62,53 +62,57 @@ function SignUp(props: SignUpProps) {
               <Stack direction="row" columnAlign="center">
                 <h4>What describes you best?</h4>
               </Stack>
-              <Stack
-                direction="row"
-                columnAlign="center"
-                rowAlign="flex-end"
-                spacing={64}
-              >
-                <DescriptionImage
-                  direction="column"
-                  rowAlign="center"
-                  onClick={() => {
-                    history.replace("/signup/company");
-                  }}
-                  src="https://res.cloudinary.com/hcory49pf/image/upload/v1616922337/signup/storefront.webp"
-                  width={300}
-                  spacing={12}
-                  style={{ width: 400 }}
+              <div style={{ maxWidth: props.width }}>
+                <Stack
+                  direction={props.width >= 880 ? "row" : "column"}
+                  columnAlign="center"
+                  rowAlign="flex-end"
+                  spacing={64}
+                  wrap="wrap"
                 >
-                  <h4
-                    style={{
-                      padding: "0px 16px 0px 16px",
-                      textAlign: "center",
+                  <DescriptionImage
+                    direction="column"
+                    rowAlign="center"
+                    onClick={() => {
+                      history.replace("/signup/company");
                     }}
+                    src="https://res.cloudinary.com/hcory49pf/image/upload/v1616922337/signup/storefront.webp"
+                    width={Math.min(400, props.width)}
+                    spacing={12}
+                    style={{ width: Math.min(400, props.width) }}
                   >
-                    I'm a local business owner looking to reach more customers!
-                  </h4>
-                </DescriptionImage>
-                <DescriptionImage
-                  direction="column"
-                  rowAlign="center"
-                  onClick={() => {
-                    history.replace("/signup/customer");
-                  }}
-                  src="https://res.cloudinary.com/hcory49pf/image/upload/v1616922148/signup/customer.webp"
-                  width={400}
-                  spacing={12}
-                  style={{ width: 400 }}
-                >
-                  <h4
-                    style={{
-                      padding: "0px 16px 0px 16px",
-                      textAlign: "center",
+                    <h4
+                      style={{
+                        padding: "0px 16px 0px 16px",
+                        textAlign: "center",
+                      }}
+                    >
+                      I'm a local business owner looking to reach more
+                      customers!
+                    </h4>
+                  </DescriptionImage>
+                  <DescriptionImage
+                    direction="column"
+                    rowAlign="center"
+                    onClick={() => {
+                      history.replace("/signup/customer");
                     }}
+                    src="https://res.cloudinary.com/hcory49pf/image/upload/v1616922148/signup/customer.webp"
+                    width={Math.min(400, props.width)}
+                    spacing={12}
+                    style={{ width: Math.min(400, props.width) }}
                   >
-                    I'm a local looking to support local businesses!
-                  </h4>
-                </DescriptionImage>
-              </Stack>
+                    <h4
+                      style={{
+                        padding: "0px 16px 0px 16px",
+                        textAlign: "center",
+                      }}
+                    >
+                      I'm a local looking to support local businesses!
+                    </h4>
+                  </DescriptionImage>
+                </Stack>
+              </div>
             </AnimatedStack>
           )}
           {props.userType === "company" && (
