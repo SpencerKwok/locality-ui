@@ -89,7 +89,7 @@ router.post(
         }
 
         res.cookie("username", email);
-        res.send(JSON.stringify({ redirectTo: "/" }));
+        res.send(JSON.stringify({ redirectTo: "/?newUser=true" }));
       })
       .catch((error) => {
         console.log(error);
