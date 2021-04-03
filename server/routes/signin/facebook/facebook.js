@@ -128,7 +128,8 @@ router.get(
     )
       .then((res) => res.json())
       .then(async ({ access_token }) => {
-        await signin(req, res, access_token, true);
+        const accesstoken = xss(access_token || "");
+        await signin(req, res, accesstoken, true);
       })
       .catch((error) => {
         console.log(error);
