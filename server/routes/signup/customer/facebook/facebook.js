@@ -45,7 +45,7 @@ router.post(
         }
 
         await fetch(
-          `https://graph.facebook.com/me?fields=id,first_name,last_name&access_token=${accesstoken}`
+          `https://graph.facebook.com/${id}?fields=id,first_name,last_name&access_token=${accesstoken}`
         )
           .then((res) => res.json())
           .then(async (results) => {
