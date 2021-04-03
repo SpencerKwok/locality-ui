@@ -122,16 +122,12 @@ export interface CustomerSignUpRequest {
 export interface CustomerSignUpResponse extends SignUpResponse {}
 
 export interface CustomerSignUpGoogleRequest {
-  firstName: string;
-  lastName: string;
-  email: string;
   accesstoken: string;
 }
 
 export interface CustomerSignUpGoogleResponse extends SignUpResponse {}
 
 export interface CustomerSignUpFacebookRequest {
-  id: string;
   accesstoken: string;
 }
 
@@ -313,7 +309,6 @@ export interface SignInResponse extends BaseResponse {
 }
 
 export interface SignInGoogleRequest {
-  username: string;
   accesstoken: string;
 }
 
@@ -322,7 +317,6 @@ export interface SignInGoogleResponse extends BaseResponse {
 }
 
 export interface SignInFacebookRequest {
-  username: string;
   accesstoken: string;
 }
 

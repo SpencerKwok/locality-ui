@@ -55,8 +55,8 @@ router.post(
     const hash = await bcrypt.hash(password, 12);
     const [_, psqlErrorAddUser] = await psql.query(
       sqlString.format(
-        "INSERT INTO users (username, password, first_name, last_name, id, wishlist, type) VALUES (?, ?, E?, E?, ?, E?, E?)",
-        [email, hash, "X", "X", userId, "", ""]
+        "INSERT INTO users (username, email, password, first_name, last_name, id, wishlist, type) VALUES (E?, E?, E?, E?, E?, ?, E?, E?)",
+        [email, email, hash, "X", "X", userId, "", ""]
       )
     );
     if (psqlErrorAddUser) {

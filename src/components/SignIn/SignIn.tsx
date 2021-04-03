@@ -78,13 +78,11 @@ function SignIn(props: SignInProps) {
           <div style={{ marginBottom: 24 }} id={"facebook-sign-in-container"}>
             <FacebookLogin
               appId={REACT_APP_FACEBOOK_APP_ID || ""}
-              fields="id"
               scope="public_profile"
               callback={async (response) => {
                 if ("accessToken" in response) {
                   await SignInDAO.getInstance()
                     .signinFacebook({
-                      username: XSS(response.id || ""),
                       accesstoken: XSS(response.accessToken),
                     })
                     .then(({ error, redirectTo }) => {
@@ -113,7 +111,6 @@ function SignIn(props: SignInProps) {
               if ("accessToken" in response) {
                 await SignInDAO.getInstance()
                   .signinGoogle({
-                    username: XSS(response.profileObj.email),
                     accesstoken: XSS(response.accessToken),
                   })
                   .then(({ error, redirectTo }) => {

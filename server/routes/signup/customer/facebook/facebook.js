@@ -16,16 +16,6 @@ router.post(
       "Too many google customer sign up requests from this IP, please try again after 5 minutes",
   }),
   async (req, res) => {
-    const id = xss(req.body.id || "");
-    if (id === "") {
-      res.send(
-        JSON.stringify({
-          error: { code: 400, message: "Invalid id" },
-        })
-      );
-      return;
-    }
-
     const accesstoken = xss(req.body.accesstoken || "");
     await fetch(
       `https://graph.facebook.com/debug_token?input_token=${accesstoken}&access_token=${accesstoken}`
@@ -35,7 +25,7 @@ router.post(
         if (
           results.error ||
           results.data.app_id !== process.env.FACEBOOK_APP_ID ||
-          results.data.user_id !== id
+          !results.data.user_id
         ) {
           res.send(
             JSON.stringify({
@@ -45,8 +35,9 @@ router.post(
           return;
         }
 
+        const id = xss(results.data.user_id);
         await fetch(
-          `https://graph.facebook.com/${id}?fields=first_name,last_name&access_token=${accesstoken}`
+          `https://graph.facebook.com/${id}?fields=first_name,last_name,email&access_token=${accesstoken}`
         )
           .then((res) => res.json())
           .then(async (results) => {
@@ -67,13 +58,23 @@ router.post(
               return;
             }
 
-            const firstName = results.first_name || "X";
-            const lastName = results.last_name || "X";
+            const email = xss(results.email || "X");
+            const firstName = xss(results.first_name || "X");
+            const lastName = xss(results.last_name || "X");
             const userId = user.rows[0].id + 1;
             const [_, psqlErrorAddUser] = await psql.query(
               sqlString.format(
-                "INSERT INTO users (username, password, first_name, last_name, id, wishlist, type) VALUES (?, ?, E?, E?, ?, E?, E?)",
-                [id, "", firstName, lastName, userId, "", "facebook"]
+                "INSERT INTO users (username, email, password, first_name, last_name, id, wishlist, type) VALUES (E?, E?, E?, E?, E?, ?, E?, E?)",
+                [
+                  `${id}_facebook`,
+                  email,
+                  "",
+                  firstName,
+                  lastName,
+                  userId,
+                  "",
+                  "facebook",
+                ]
               )
             );
             if (psqlErrorAddUser) {

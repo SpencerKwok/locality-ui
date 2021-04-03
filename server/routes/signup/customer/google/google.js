@@ -1,4 +1,3 @@
-import emailValidator from "email-validator";
 import fetch from "node-fetch";
 import psql from "../../../../postgresql/client.js";
 import rateLimit from "express-rate-limit";
@@ -17,36 +16,6 @@ router.post(
       "Too many google customer sign up requests from this IP, please try again after 5 minutes",
   }),
   async (req, res) => {
-    const firstName = xss(req.body.firstName || "");
-    if (firstName === "") {
-      res.send(
-        JSON.stringify({
-          error: { code: 400, message: "Invalid first name" },
-        })
-      );
-      return;
-    }
-
-    const lastName = xss(req.body.lastName || "");
-    if (lastName === "") {
-      res.send(
-        JSON.stringify({
-          error: { code: 400, message: "Invalid last name" },
-        })
-      );
-      return;
-    }
-
-    const email = xss(req.body.email || "");
-    if (!emailValidator.validate(email)) {
-      res.send(
-        JSON.stringify({
-          error: { code: 400, message: "Invalid email" },
-        })
-      );
-      return;
-    }
-
     const accesstoken = xss(req.body.accesstoken || "");
     await fetch(
       `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${accesstoken}`
@@ -56,8 +25,7 @@ router.post(
         if (
           results.error ||
           results.issued_to !== process.env.GOOGLE_CLIENT_ID ||
-          results.audience !== process.env.GOOGLE_CLIENT_ID ||
-          results.email !== email
+          results.audience !== process.env.GOOGLE_CLIENT_ID
         ) {
           res.send(
             JSON.stringify({
@@ -67,28 +35,56 @@ router.post(
           return;
         }
 
-        const [user, psqlErrorUserId] = await psql.query(
-          "SELECT id FROM users ORDER BY id DESC LIMIT 1"
-        );
-        if (psqlErrorUserId) {
-          res.send(JSON.stringify({ error: psqlErrorUserId }));
-          return;
-        }
+        await fetch(
+          `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${accesstoken}`
+        )
+          .then((res) => res.json())
+          .then(async (results) => {
+            if (results.error || !results.id) {
+              res.send(
+                JSON.stringify({
+                  error: { code: 400, message: "Invalid accesstoken" },
+                })
+              );
+              return;
+            }
 
-        const userId = user.rows[0].id + 1;
-        const [_, psqlErrorAddUser] = await psql.query(
-          sqlString.format(
-            "INSERT INTO users (username, password, first_name, last_name, id, wishlist, type) VALUES (?, ?, E?, E?, ?, E?, E?)",
-            [email, "", firstName, lastName, userId, "", "google"]
-          )
-        );
-        if (psqlErrorAddUser) {
-          res.send(JSON.stringify({ error: psqlErrorAddUser }));
-          return;
-        }
+            const [user, psqlErrorUserId] = await psql.query(
+              "SELECT id FROM users ORDER BY id DESC LIMIT 1"
+            );
+            if (psqlErrorUserId) {
+              res.send(JSON.stringify({ error: psqlErrorUserId }));
+              return;
+            }
 
-        res.cookie("username", email);
-        res.send(JSON.stringify({ redirectTo: "/?newUser=true" }));
+            const id = xss(results.id);
+            const email = xss(results.email || "X");
+            const firstName = xss(results.given_name || "X");
+            const lastName = xss(results.family_name || "X");
+            const userId = user.rows[0].id + 1;
+            const [_, psqlErrorAddUser] = await psql.query(
+              sqlString.format(
+                "INSERT INTO users (username, email, password, first_name, last_name, id, wishlist, type) VALUES (E?, E?, E?, E?, E?, ?, E?, E?)",
+                [
+                  `${id}_google`,
+                  email,
+                  "",
+                  firstName,
+                  lastName,
+                  userId,
+                  "",
+                  "google",
+                ]
+              )
+            );
+            if (psqlErrorAddUser) {
+              res.send(JSON.stringify({ error: psqlErrorAddUser }));
+              return;
+            }
+
+            res.cookie("username", email);
+            res.send(JSON.stringify({ redirectTo: "/?newUser=true" }));
+          });
       })
       .catch((error) => {
         console.log(error);

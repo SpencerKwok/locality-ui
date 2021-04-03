@@ -16,16 +16,6 @@ router.post(
       "Too many google customer sign in requests from this IP, please try again after 5 minutes",
   }),
   async (req, res) => {
-    const id = xss(req.body.username || "");
-    if (id === "") {
-      res.send(
-        JSON.stringify({
-          error: { code: 400, message: "Invalid username" },
-        })
-      );
-      return;
-    }
-
     const accesstoken = xss(req.body.accesstoken || "");
     await fetch(
       `https://graph.facebook.com/debug_token?input_token=${accesstoken}&access_token=${accesstoken}`
@@ -35,7 +25,7 @@ router.post(
         if (
           results.error ||
           results.data.app_id !== process.env.FACEBOOK_APP_ID ||
-          results.data.user_id !== id
+          !results.data.user_id
         ) {
           res.send(
             JSON.stringify({
@@ -45,6 +35,7 @@ router.post(
           return;
         }
 
+        const id = `${xss(results.data.user_id)}_facebook`;
         const [user, getUserError] = await psql.query(
           sqlString.format(
             "SELECT first_name, last_name, id, type FROM users WHERE username=E?",
@@ -98,9 +89,9 @@ router.post(
           res.send(JSON.stringify({ redirectTo: "/" }));
         } else {
           res.cookie("username", id);
-          res.cookie("firstName", firstName);
-          res.cookie("lastName", lastName);
-          res.cookie("companyId", userId);
+          res.cookie("firstName", user.rows[0].firstName);
+          res.cookie("lastName", user.rows[0].lastName);
+          res.cookie("companyId", user.rows[0].id);
           res.send(JSON.stringify({ redirectTo: "/dashboard/company" }));
         }
       })
