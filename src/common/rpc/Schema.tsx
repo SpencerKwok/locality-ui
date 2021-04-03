@@ -131,7 +131,6 @@ export interface CustomerSignUpGoogleRequest {
 export interface CustomerSignUpGoogleResponse extends SignUpResponse {}
 
 export interface CustomerSignUpFacebookRequest {
-  name: string;
   id: string;
   accesstoken: string;
 }

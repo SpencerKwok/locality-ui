@@ -80,7 +80,6 @@ function Customer(props: CustomerProps) {
             if ("accessToken" in response) {
               await CustomerDAO.getInstance()
                 .signupFacebook({
-                  name: XSS(response.name || ""),
                   id: XSS(response.id || ""),
                   accesstoken: XSS(response.accessToken),
                 })

@@ -16,16 +16,6 @@ router.post(
       "Too many google customer sign up requests from this IP, please try again after 5 minutes",
   }),
   async (req, res) => {
-    const name = xss(req.body.name || "");
-    if (name === "") {
-      res.send(
-        JSON.stringify({
-          error: { code: 400, message: "Invalid first name" },
-        })
-      );
-      return;
-    }
-
     const id = xss(req.body.id || "");
     if (id === "") {
       res.send(
@@ -55,7 +45,7 @@ router.post(
         }
 
         await fetch(
-          `https://graph.facebook.com/me?fields=id&access_token=${accesstoken}`
+          `https://graph.facebook.com/me?fields=id,first_name,last_name&access_token=${accesstoken}`
         )
           .then((res) => res.json())
           .then(async (results) => {
@@ -76,16 +66,8 @@ router.post(
               return;
             }
 
-            const nameSegments = name.split(/\s+/);
-            let firstName = "X";
-            let lastName = "X";
-            if (nameSegments.length === 1) {
-              firstName = name;
-            } else {
-              firstName = nameSegments[0];
-              lastName = nameSegments[nameSegments.length - 1];
-            }
-
+            const firstName = user.rows[0].first_name || "X";
+            const lastName = user.rows[0].last_name || "X";
             const userId = user.rows[0].id + 1;
             const [_, psqlErrorAddUser] = await psql.query(
               sqlString.format(
