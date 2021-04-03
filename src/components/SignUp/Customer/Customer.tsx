@@ -73,6 +73,7 @@ function Customer(props: CustomerProps) {
     <div style={{ marginTop: 12 }}>
       <div style={{ marginBottom: 24 }} id={"facebook-sign-up-container"}>
         <FacebookLogin
+          disableMobileRedirect
           appId={REACT_APP_FACEBOOK_APP_ID || ""}
           scope="public_profile"
           callback={async (response) => {
@@ -94,7 +95,6 @@ function Customer(props: CustomerProps) {
             }
           }}
           cssClass={"facebook-sign-up"}
-          redirectUri={window.location.href}
           textButton={"Sign up with Facebook"}
           icon={<IoLogoFacebook />}
         />
