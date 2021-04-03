@@ -124,7 +124,7 @@ router.get(
   async (req, res) => {
     const code = xss(req.query["code"] || "");
     await fetch(
-      `https://graph.facebook.com/v10.0/oauth/access_token?client_id=${process.env.FACEBOOK_APP_ID}&redirect_uri=https://www.mylocality.shop/signin&client_secret=${process.env.FACEBOOK_APP_SECRET}&code=${code}`
+      `https://graph.facebook.com/v10.0/oauth/access_token?client_id=${process.env.FACEBOOK_APP_ID}&redirect_uri=https://www.mylocality.shop/api/signin/facebook&client_secret=${process.env.FACEBOOK_APP_SECRET}&code=${code}`
     )
       .then((res) => res.json())
       .then(async ({ access_token }) => {
