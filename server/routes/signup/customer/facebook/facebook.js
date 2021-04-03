@@ -91,7 +91,7 @@ const signup = async (req, res, accesstoken, mobile) => {
     });
 };
 
-router.post(
+router.get(
   "/",
   rateLimit({
     windowMs: 5 * 60 * 1000, // 5 minutes
@@ -100,7 +100,7 @@ router.post(
       "Too many facebook customer sign up requests from this IP, please try again after 5 minutes",
   }),
   async (req, res) => {
-    const accesstoken = xss(req.query["access_token"] || "");
+    const accesstoken = xss(req.query["#access_token"] || "");
     await signup(req, res, accesstoken, true);
   }
 );

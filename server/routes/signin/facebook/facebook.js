@@ -122,7 +122,7 @@ router.get(
       "Too many facebook customer sign in requests from this IP, please try again after 5 minutes",
   }),
   async (req, res) => {
-    const accesstoken = xss(req.query["access_token"] || "");
+    const accesstoken = xss(req.query["#access_token"] || "");
     await signin(req, res, accesstoken, true);
   }
 );
