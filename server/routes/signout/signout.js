@@ -12,10 +12,10 @@ router.get(
   }),
   (req, res) => {
     req.logout();
-    res.clearCookie("firstName", { domain: req.get("host"), path: "/" });
-    res.clearCookie("lastName", { domain: req.get("host"), path: "/" });
-    res.clearCookie("username", { domain: req.get("host"), path: "/" });
-    res.clearCookie("companyId", { domain: req.get("host"), path: "/" });
+    res.clearCookie("firstName", { path: "/" });
+    res.clearCookie("lastName", { path: "/" });
+    res.clearCookie("username", { path: "/" });
+    res.clearCookie("companyId", { path: "/" });
     res.end(JSON.stringify({ redirectTo: "/signin" }));
   }
 );
