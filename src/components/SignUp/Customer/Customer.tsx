@@ -94,6 +94,7 @@ function Customer(props: CustomerProps) {
             }
           }}
           cssClass={"facebook-sign-up"}
+          responseType="token"
           textButton={"Sign up with Facebook"}
           icon={<IoLogoFacebook />}
         />
