@@ -62,7 +62,11 @@ router.post(
             } else if (user.rows.length === 0) {
               res.send(
                 JSON.stringify({
-                  error: { code: 400, message: "Invalid username" },
+                  error: {
+                    code: 400,
+                    message:
+                      "Did not sign up with Google. Please sign in with the same method used to sign up",
+                  },
                 })
               );
               return;
