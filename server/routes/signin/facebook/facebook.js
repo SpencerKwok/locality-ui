@@ -18,7 +18,7 @@ router.post(
   async (req, res) => {
     const accesstoken = xss(req.body.accesstoken || "");
     await fetch(
-      `https://graph.facebook.com/debug_token?input_token=${accesstoken}&access_token=${accesstoken}`
+      `https://graph.facebook.com/debug_token?input_token=${accesstoken}&access_token=${process.env.FACEBOOK_APP_ID}|${process.env.FACEBOOK_APP_ACCESS_TOKEN}`
     )
       .then((res) => res.json())
       .then(async (results) => {
