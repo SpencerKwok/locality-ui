@@ -99,7 +99,6 @@ function SignIn(props: SignInProps) {
               }}
               cssClass={"facebook-sign-in"}
               textButton={"Sign in with Facebook"}
-              responseType="token"
               redirectUri={`https://${window.location.hostname}/api/signin/facebook`}
               icon={<IoLogoFacebook />}
             />

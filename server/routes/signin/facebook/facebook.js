@@ -122,8 +122,22 @@ router.get(
       "Too many facebook customer sign in requests from this IP, please try again after 5 minutes",
   }),
   async (req, res) => {
-    const accesstoken = xss(req.query["#access_token"] || "");
-    await signin(req, res, accesstoken, true);
+    const code = xss(req.query["code"] || "");
+    await fetch(
+      `https://graph.facebook.com/v10.0/oauth/access_token?client_id=${process.env.FACEBOOK_APP_ID}&redirect_uri=https://www.mylocality.shop/signin&client_secret=${process.env.FACEBOOK_APP_SECRET}&code=${code}`
+    )
+      .then((res) => res.json())
+      .then(async ({ access_token }) => {
+        await signin(req, res, access_token, true);
+      })
+      .catch((error) => {
+        console.log(error);
+        res.send(
+          JSON.stringify({
+            error: { code: 500, message: error.message },
+          })
+        );
+      });
   }
 );
 
