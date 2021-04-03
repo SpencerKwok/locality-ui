@@ -132,6 +132,13 @@ function Navigation(props: NavigationProps) {
                     if (error) {
                       console.log(error.message);
                     } else {
+                      // Clearing cookie on front end too
+                      // since they aren't cleared in
+                      // safari for whatever reason
+                      Cookie.remove("firstName");
+                      Cookie.remove("lastName");
+                      Cookie.remove("username");
+                      Cookie.remove("companyId");
                       window.location.href = "/signin";
                     }
                   })
