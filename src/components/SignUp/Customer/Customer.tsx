@@ -94,6 +94,7 @@ function Customer(props: CustomerProps) {
             }
           }}
           cssClass={"facebook-sign-up"}
+          redirectUri={window.location.href}
           textButton={"Sign up with Facebook"}
           icon={<IoLogoFacebook />}
         />

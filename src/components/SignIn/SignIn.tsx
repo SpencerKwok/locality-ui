@@ -98,6 +98,7 @@ function SignIn(props: SignInProps) {
                 }
               }}
               cssClass={"facebook-sign-in"}
+              redirectUri={window.location.href}
               textButton={"Sign in with Facebook"}
               icon={<IoLogoFacebook />}
             />
