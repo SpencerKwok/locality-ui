@@ -84,7 +84,7 @@ function SignIn(props: SignInProps) {
                 if ("accessToken" in response) {
                   await SignInDAO.getInstance()
                     .signinFacebook({
-                      username: XSS(response.email || ""),
+                      username: XSS(response.id || ""),
                       accesstoken: XSS(response.accessToken),
                     })
                     .then(({ error, redirectTo }) => {

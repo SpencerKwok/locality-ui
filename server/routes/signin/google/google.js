@@ -21,7 +21,7 @@ router.post(
     if (!emailValidator.validate(email)) {
       res.send(
         JSON.stringify({
-          error: { code: 400, message: "Invalid email" },
+          error: { code: 400, message: "Invalid username" },
         })
       );
       return;

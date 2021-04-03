@@ -1,4 +1,3 @@
-import emailValidator from "email-validator";
 import fetch from "node-fetch";
 import psql from "../../../postgresql/client.js";
 import rateLimit from "express-rate-limit";
@@ -17,11 +16,11 @@ router.post(
       "Too many google customer sign in requests from this IP, please try again after 5 minutes",
   }),
   async (req, res) => {
-    const email = xss(req.body.username || "");
-    if (!emailValidator.validate(email)) {
+    const id = xss(req.body.username || "");
+    if (id === "") {
       res.send(
         JSON.stringify({
-          error: { code: 400, message: "Invalid email" },
+          error: { code: 400, message: "Invalid username" },
         })
       );
       return;
@@ -46,11 +45,11 @@ router.post(
         }
 
         await fetch(
-          `https://graph.facebook.com/me?fields=email&access_token=${accesstoken}`
+          `https://graph.facebook.com/me?fields=id&access_token=${accesstoken}`
         )
           .then((res) => res.json())
           .then(async (results) => {
-            if (results.error || results.email !== email) {
+            if (results.error || results.id !== id) {
               res.send(
                 JSON.stringify({
                   error: { code: 400, message: "Invalid accesstoken" },
@@ -62,7 +61,7 @@ router.post(
             const [user, getUserError] = await psql.query(
               sqlString.format(
                 "SELECT first_name, last_name, id, type FROM users WHERE username=E?",
-                [email]
+                [id]
               )
             );
             if (getUserError) {
@@ -105,13 +104,13 @@ router.post(
               ])
             );
             if (getCompanyError) {
-              res.cookie("username", email);
+              res.cookie("username", id);
               res.send(JSON.stringify({ redirectTo: "/" }));
             } else if (company.rows.length === 0) {
-              res.cookie("username", email);
+              res.cookie("username", id);
               res.send(JSON.stringify({ redirectTo: "/" }));
             } else {
-              res.cookie("username", email);
+              res.cookie("username", id);
               res.cookie("firstName", firstName);
               res.cookie("lastName", lastName);
               res.cookie("companyId", userId);

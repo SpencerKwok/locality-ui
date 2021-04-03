@@ -1,4 +1,3 @@
-import emailValidator from "email-validator";
 import fetch from "node-fetch";
 import psql from "../../../../postgresql/client.js";
 import rateLimit from "express-rate-limit";
@@ -27,11 +26,11 @@ router.post(
       return;
     }
 
-    const email = xss(req.body.email || "");
-    if (!emailValidator.validate(email)) {
+    const id = xss(req.body.id || "");
+    if (id === "") {
       res.send(
         JSON.stringify({
-          error: { code: 400, message: "Invalid email" },
+          error: { code: 400, message: "Invalid id" },
         })
       );
       return;
@@ -56,11 +55,11 @@ router.post(
         }
 
         await fetch(
-          `https://graph.facebook.com/me?fields=email&access_token=${accesstoken}`
+          `https://graph.facebook.com/me?fields=id&access_token=${accesstoken}`
         )
           .then((res) => res.json())
           .then(async (results) => {
-            if (results.error || results.email !== email) {
+            if (results.error || results.id !== id) {
               res.send(
                 JSON.stringify({
                   error: { code: 400, message: "Invalid accesstoken" },
@@ -91,7 +90,7 @@ router.post(
             const [_, psqlErrorAddUser] = await psql.query(
               sqlString.format(
                 "INSERT INTO users (username, password, first_name, last_name, id, wishlist, type) VALUES (?, ?, E?, E?, ?, E?, E?)",
-                [email, "", firstName, lastName, userId, "", "facebook"]
+                [id, "", firstName, lastName, userId, "", "facebook"]
               )
             );
             if (psqlErrorAddUser) {
@@ -99,7 +98,7 @@ router.post(
               return;
             }
 
-            res.cookie("username", email);
+            res.cookie("username", id);
             res.send(JSON.stringify({ redirectTo: "/?newUser=true" }));
           });
       })

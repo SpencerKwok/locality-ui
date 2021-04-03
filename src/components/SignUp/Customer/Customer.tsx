@@ -81,7 +81,7 @@ function Customer(props: CustomerProps) {
               await CustomerDAO.getInstance()
                 .signupFacebook({
                   name: XSS(response.name || ""),
-                  email: XSS(response.email || ""),
+                  id: XSS(response.id || ""),
                   accesstoken: XSS(response.accessToken),
                 })
                 .then(({ error, redirectTo }) => {

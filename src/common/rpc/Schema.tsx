@@ -132,7 +132,7 @@ export interface CustomerSignUpGoogleResponse extends SignUpResponse {}
 
 export interface CustomerSignUpFacebookRequest {
   name: string;
-  email: string;
+  id: string;
   accesstoken: string;
 }
 
