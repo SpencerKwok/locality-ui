@@ -80,14 +80,14 @@ const signin = async (req, res, accesstoken, mobile) => {
         console.log(getCompanyError);
         res.cookie("username", id);
         if (mobile) {
-          res.redirectTo("/");
+          res.redirect("/");
         } else {
           res.send(JSON.stringify({ redirectTo: "/" }));
         }
       } else if (company.rows.length === 0) {
         res.cookie("username", id);
         if (mobile) {
-          res.redirectTo("/");
+          res.redirect("/");
         } else {
           res.send(JSON.stringify({ redirectTo: "/" }));
         }
@@ -97,7 +97,7 @@ const signin = async (req, res, accesstoken, mobile) => {
         res.cookie("lastName", user.rows[0].lastName);
         res.cookie("companyId", user.rows[0].id);
         if (mobile) {
-          res.redirectTo("/dashboard/company");
+          res.redirect("/dashboard/company");
         } else {
           res.send(JSON.stringify({ redirectTo: "/dashboard/company" }));
         }

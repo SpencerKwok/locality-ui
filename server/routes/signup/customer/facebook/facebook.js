@@ -75,7 +75,7 @@ const signup = async (req, res, accesstoken, mobile) => {
 
           res.cookie("username", id);
           if (mobile) {
-            res.redirectTo("/?newUser=true");
+            res.redirect("/?newUser=true");
           } else {
             res.send(JSON.stringify({ redirectTo: "/?newUser=true" }));
           }
