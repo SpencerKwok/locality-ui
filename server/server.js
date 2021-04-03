@@ -128,6 +128,16 @@ app.use(express.static(path.join(__dirname, "../build")));
 // Allow JSON body
 app.use(express.json({ limit: "100mb" }));
 
+// Privacy policy
+app.use("/privacy", (req, res) => {
+  res.sendFile(path.join(__dirname, "../build/privacy.html"));
+});
+
+// User data deletion policy
+app.use("/deletion", (req, res) => {
+  res.sendFile(path.join(__dirname, "../build/deletion.html"));
+});
+
 // Setup API
 app.use("/api", api);
 
