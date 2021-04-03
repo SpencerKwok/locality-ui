@@ -3,10 +3,9 @@ import XSS from "xss";
 import * as yup from "yup";
 import { Formik, FormikConfig } from "formik";
 import { Form, FormControl } from "react-bootstrap";
-import GoogleLogin, {
-  GoogleLoginResponse,
-  GoogleLoginResponseOffline,
-} from "react-google-login";
+import GoogleLogin from "react-google-login";
+import FacebookLogin from "react-facebook-login";
+import { IoLogoFacebook } from "react-icons/io";
 
 import CustomerDAO from "./CustomerDAO";
 import Stack from "../../../common/components/Stack/Stack";
@@ -16,7 +15,7 @@ import {
   FormButton,
   createFormErrorMessage,
 } from "../../../common/components/Form/Form";
-const { REACT_APP_GOOGLE_CLIENT_ID } = process.env;
+const { REACT_APP_GOOGLE_CLIENT_ID, REACT_APP_FACEBOOK_APP_ID } = process.env;
 import "./Customer.css";
 
 export interface CustomerProps extends React.HTMLProps<HTMLFormElement> {
@@ -72,21 +71,49 @@ function Customer(props: CustomerProps) {
 
   return (
     <div style={{ marginTop: 12 }}>
+      <div style={{ marginBottom: 24 }} id={"facebook-sign-up-container"}>
+        <FacebookLogin
+          appId={REACT_APP_FACEBOOK_APP_ID || ""}
+          fields="name,email,picture"
+          scope="public_profile"
+          callback={async (response) => {
+            if ("accessToken" in response) {
+              await CustomerDAO.getInstance()
+                .signupFacebook({
+                  name: XSS(response.name || ""),
+                  email: XSS(response.email || ""),
+                  accesstoken: XSS(response.accessToken),
+                })
+                .then(({ error, redirectTo }) => {
+                  if (error) {
+                    setError(error.message);
+                  } else if (redirectTo) {
+                    window.location.href = redirectTo;
+                  }
+                })
+                .catch((err) => setError(err.message));
+            } else {
+              setError("Failed to sign in with Facebook");
+            }
+          }}
+          cssClass={"facebook-sign-up"}
+          textButton={"Sign up with Facebook"}
+          icon={<IoLogoFacebook />}
+        />
+      </div>
       <GoogleLogin
         buttonText="Sign up with Google"
-        className="google-sign-in"
+        className="google-sign-up"
         clientId={REACT_APP_GOOGLE_CLIENT_ID || ""}
         cookiePolicy={"single_host_origin"}
-        onSuccess={async (
-          response: GoogleLoginResponse | GoogleLoginResponseOffline
-        ) => {
+        onSuccess={async (response) => {
           if ("accessToken" in response) {
             await CustomerDAO.getInstance()
               .signupGoogle({
                 firstName: response.profileObj.givenName,
                 lastName: response.profileObj.familyName,
                 email: response.profileObj.email,
-                authtoken: response.accessToken,
+                accesstoken: response.accessToken,
               })
               .then(({ error, redirectTo }) => {
                 if (error) {
@@ -100,7 +127,8 @@ function Customer(props: CustomerProps) {
             setError("Failed to login with Google");
           }
         }}
-        onFailure={() => {
+        onFailure={(err) => {
+          console.log(err);
           setError("Failed to login with Google");
         }}
       />
@@ -162,14 +190,7 @@ function Customer(props: CustomerProps) {
               </FormInputGroup>
               {createFormErrorMessage("password2")}
             </Form.Group>
-            <div
-              color="red"
-              style={{
-                textAlign: "right",
-              }}
-            >
-              {error}
-            </div>
+            <div style={{ color: "red", marginTop: 12 }}>{error}</div>
             <Stack direction="row-reverse">
               <FormButton
                 variant="primary"

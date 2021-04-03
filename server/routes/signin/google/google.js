@@ -27,9 +27,9 @@ router.post(
       return;
     }
 
-    const authtoken = xss(req.body.authtoken || "");
+    const accesstoken = xss(req.body.accesstoken || "");
     await fetch(
-      `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${authtoken}`
+      `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${accesstoken}`
     )
       .then((res) => res.json())
       .then(async (results) => {
@@ -41,7 +41,7 @@ router.post(
         ) {
           res.send(
             JSON.stringify({
-              error: { code: 400, message: "Invalid authtoken" },
+              error: { code: 400, message: "Invalid accesstoken" },
             })
           );
           return;
@@ -49,7 +49,7 @@ router.post(
 
         const [user, getUserError] = await psql.query(
           sqlString.format(
-            "SELECT first_name, last_name, id FROM users WHERE username=E?",
+            "SELECT first_name, last_name, id, type FROM users WHERE username=E?",
             [email]
           )
         );
@@ -60,6 +60,28 @@ router.post(
           res.send(
             JSON.stringify({
               error: { code: 400, message: "Invalid username" },
+            })
+          );
+          return;
+        } else if (user.rows[0].type === "") {
+          res.send(
+            JSON.stringify({
+              error: {
+                code: 400,
+                message:
+                  "Signed up using our Locality form, not Google. Please sign in using the Locality form",
+              },
+            })
+          );
+          return;
+        } else if (user.rows[0].type === "facebook") {
+          res.send(
+            JSON.stringify({
+              error: {
+                code: 400,
+                message:
+                  "Signed up using Facebook, not Google. Please sign in using Facebook",
+              },
             })
           );
           return;

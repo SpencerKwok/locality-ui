@@ -19,6 +19,10 @@ export interface PostMethods {
     request: CustomerSignUpGoogleRequest;
     response: CustomerSignUpGoogleResponse;
   };
+  CustomerSignUpFacebook: {
+    request: CustomerSignUpFacebookRequest;
+    response: CustomerSignUpFacebookResponse;
+  };
   Company: {
     request: CompanyRequest;
     response: CompanyResponse;
@@ -71,6 +75,10 @@ export interface PostMethods {
     request: SignInRequest;
     response: SignInResponse;
   };
+  SignInFacebook: {
+    request: SignInFacebookRequest;
+    response: SignInFacebookResponse;
+  };
   SignInGoogle: {
     request: SignInGoogleRequest;
     response: SignInGoogleResponse;
@@ -117,10 +125,18 @@ export interface CustomerSignUpGoogleRequest {
   firstName: string;
   lastName: string;
   email: string;
-  authtoken: string;
+  accesstoken: string;
 }
 
 export interface CustomerSignUpGoogleResponse extends SignUpResponse {}
+
+export interface CustomerSignUpFacebookRequest {
+  name: string;
+  email: string;
+  accesstoken: string;
+}
+
+export interface CustomerSignUpFacebookResponse extends SignUpResponse {}
 
 export interface CompanySignUpRequest extends CustomerSignUpRequest {
   firstName: string;
@@ -299,10 +315,19 @@ export interface SignInResponse extends BaseResponse {
 
 export interface SignInGoogleRequest {
   username: string;
-  authtoken: string;
+  accesstoken: string;
 }
 
 export interface SignInGoogleResponse extends BaseResponse {
+  redirectTo?: string;
+}
+
+export interface SignInFacebookRequest {
+  username: string;
+  accesstoken: string;
+}
+
+export interface SignInFacebookResponse extends BaseResponse {
   redirectTo?: string;
 }
 

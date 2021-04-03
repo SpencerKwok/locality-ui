@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import Cookie from "js-cookie";
-import GoogleLogin, {
-  GoogleLoginResponse,
-  GoogleLoginResponseOffline,
-} from "react-google-login";
+import FacebookLogin from "react-facebook-login";
+import GoogleLogin from "react-google-login";
 import XSS from "xss";
 import * as yup from "yup";
 import { Formik, FormikConfig } from "formik";
 import { Form, FormControl } from "react-bootstrap";
+import { IoLogoFacebook } from "react-icons/io";
 
 import SignInDAO from "./SignInDAO";
 import { ReactComponent as LocalityLogo } from "./locality-logo.svg";
@@ -19,7 +18,7 @@ import {
   createFormErrorMessage,
 } from "../../common/components/Form/Form";
 import { Redirect } from "react-router";
-const { REACT_APP_GOOGLE_CLIENT_ID } = process.env;
+const { REACT_APP_GOOGLE_CLIENT_ID, REACT_APP_FACEBOOK_APP_ID } = process.env;
 import "./SignIn.css";
 
 export interface SignInProps extends React.HTMLProps<HTMLElement> {}
@@ -76,19 +75,46 @@ function SignIn(props: SignInProps) {
           <LocalityLogo />
         </header>
         <main style={{ width: 300 }}>
+          <div style={{ marginBottom: 24 }} id={"facebook-sign-in-container"}>
+            <FacebookLogin
+              appId={REACT_APP_FACEBOOK_APP_ID || ""}
+              fields="name,email,picture"
+              scope="public_profile"
+              callback={async (response) => {
+                if ("accessToken" in response) {
+                  await SignInDAO.getInstance()
+                    .signinFacebook({
+                      username: XSS(response.email || ""),
+                      accesstoken: XSS(response.accessToken),
+                    })
+                    .then(({ error, redirectTo }) => {
+                      if (error) {
+                        setError(error.message);
+                      } else if (redirectTo) {
+                        window.location.href = redirectTo;
+                      }
+                    })
+                    .catch((err) => setError(err.message));
+                } else {
+                  setError("Failed to sign in with Facebook");
+                }
+              }}
+              cssClass={"facebook-sign-in"}
+              textButton={"Sign in with Facebook"}
+              icon={<IoLogoFacebook />}
+            />
+          </div>
           <GoogleLogin
             buttonText="Sign in with Google"
             className="google-sign-in"
             clientId={REACT_APP_GOOGLE_CLIENT_ID || ""}
             cookiePolicy={"single_host_origin"}
-            onSuccess={async (
-              response: GoogleLoginResponse | GoogleLoginResponseOffline
-            ) => {
+            onSuccess={async (response) => {
               if ("accessToken" in response) {
                 await SignInDAO.getInstance()
                   .signinGoogle({
-                    username: response.profileObj.email,
-                    authtoken: response.accessToken,
+                    username: XSS(response.profileObj.email),
+                    accesstoken: XSS(response.accessToken),
                   })
                   .then(({ error, redirectTo }) => {
                     if (error) {
@@ -99,11 +125,11 @@ function SignIn(props: SignInProps) {
                   })
                   .catch((err) => setError(err.message));
               } else {
-                setError("Failed to login with Google");
+                setError("Failed to sign in with Google");
               }
             }}
             onFailure={() => {
-              setError("Failed to login with Google");
+              setError("Failed to sign in with Google");
             }}
           />
           <Formik

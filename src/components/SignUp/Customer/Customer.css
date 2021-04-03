@@ -1,4 +1,40 @@
-.google-sign-in {
+.google-sign-up {
   width: 100%;
   margin-bottom: 24px;
+}
+
+.facebook-sign-up {
+  background-color: rgb(255, 255, 255);
+  display: inline-flex;
+  align-items: center;
+  color: rgba(0, 0, 0, 0.54);
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 2px 2px 0px,
+    rgba(0, 0, 0, 0.24) 0px 0px 1px 0px;
+  padding: 0px;
+  border-radius: 2px;
+  border: 1px solid transparent;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: Roboto, sans-serif;
+  width: 100%;
+}
+
+.facebook-sign-up:hover {
+  cursor: pointer;
+  opacity: 0.9;
+}
+
+.facebook-sign-up:active {
+  cursor: pointer;
+  background-color: #eeeeee;
+  opacity: 1;
+}
+
+.facebook-sign-up > svg {
+  color: #3b5998;
+  margin: 10px;
+  margin-left: 6px;
+  margin-right: 18px;
+  width: 24px;
+  height: 24px;
 }
