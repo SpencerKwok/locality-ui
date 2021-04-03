@@ -77,7 +77,6 @@ function SignIn(props: SignInProps) {
         <main style={{ width: 300 }}>
           <div style={{ marginBottom: 24 }} id={"facebook-sign-in-container"}>
             <FacebookLogin
-              disableMobileRedirect
               appId={REACT_APP_FACEBOOK_APP_ID || ""}
               scope="public_profile"
               callback={async (response) => {
