@@ -78,7 +78,7 @@ function SignIn(props: SignInProps) {
           <div style={{ marginBottom: 24 }} id={"facebook-sign-in-container"}>
             <FacebookLogin
               appId={REACT_APP_FACEBOOK_APP_ID || ""}
-              fields="name,email"
+              fields="id"
               scope="public_profile"
               callback={async (response) => {
                 if ("accessToken" in response) {

@@ -34,7 +34,8 @@ router.post(
       .then(async (results) => {
         if (
           results.error ||
-          results.data.app_id !== process.env.FACEBOOK_APP_ID
+          results.data.app_id !== process.env.FACEBOOK_APP_ID ||
+          results.data.user_id !== id
         ) {
           res.send(
             JSON.stringify({
@@ -45,11 +46,11 @@ router.post(
         }
 
         await fetch(
-          `https://graph.facebook.com/${id}?fields=id,first_name,last_name&access_token=${accesstoken}`
+          `https://graph.facebook.com/${id}?fields=first_name,last_name&access_token=${accesstoken}`
         )
           .then((res) => res.json())
           .then(async (results) => {
-            if (results.error || results.id !== id) {
+            if (results.error) {
               res.send(
                 JSON.stringify({
                   error: { code: 400, message: "Invalid accesstoken" },
@@ -66,8 +67,8 @@ router.post(
               return;
             }
 
-            const firstName = user.rows[0].first_name || "X";
-            const lastName = user.rows[0].last_name || "X";
+            const firstName = results.first_name || "X";
+            const lastName = results.last_name || "X";
             const userId = user.rows[0].id + 1;
             const [_, psqlErrorAddUser] = await psql.query(
               sqlString.format(

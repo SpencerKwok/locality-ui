@@ -34,7 +34,8 @@ router.post(
       .then(async (results) => {
         if (
           results.error ||
-          results.data.app_id !== process.env.FACEBOOK_APP_ID
+          results.data.app_id !== process.env.FACEBOOK_APP_ID ||
+          results.data.user_id !== id
         ) {
           res.send(
             JSON.stringify({
@@ -44,79 +45,64 @@ router.post(
           return;
         }
 
-        await fetch(
-          `https://graph.facebook.com/${id}?fields=id&access_token=${accesstoken}`
-        )
-          .then((res) => res.json())
-          .then(async (results) => {
-            if (results.error || results.id !== id) {
-              res.send(
-                JSON.stringify({
-                  error: { code: 400, message: "Invalid accesstoken" },
-                })
-              );
-              return;
-            }
+        const [user, getUserError] = await psql.query(
+          sqlString.format(
+            "SELECT first_name, last_name, id, type FROM users WHERE username=E?",
+            [id]
+          )
+        );
+        if (getUserError) {
+          res.send(JSON.stringify({ error: getUserError }));
+          return;
+        } else if (user.rows.length === 0) {
+          res.send(
+            JSON.stringify({
+              error: { code: 400, message: "Invalid username" },
+            })
+          );
+          return;
+        } else if (user.rows[0].type === "") {
+          res.send(
+            JSON.stringify({
+              error: {
+                code: 400,
+                message:
+                  "Signed up using our Locality form, not Facebook. Please sign in using the Locality form",
+              },
+            })
+          );
+          return;
+        } else if (user.rows[0].type === "google") {
+          res.send(
+            JSON.stringify({
+              error: {
+                code: 400,
+                message:
+                  "Signed up using Google, not Facebook. Please sign in using Google",
+              },
+            })
+          );
+          return;
+        }
 
-            const [user, getUserError] = await psql.query(
-              sqlString.format(
-                "SELECT first_name, last_name, id, type FROM users WHERE username=E?",
-                [id]
-              )
-            );
-            if (getUserError) {
-              res.send(JSON.stringify({ error: getUserError }));
-              return;
-            } else if (user.rows.length === 0) {
-              res.send(
-                JSON.stringify({
-                  error: { code: 400, message: "Invalid username" },
-                })
-              );
-              return;
-            } else if (user.rows[0].type === "") {
-              res.send(
-                JSON.stringify({
-                  error: {
-                    code: 400,
-                    message:
-                      "Signed up using our Locality form, not Facebook. Please sign in using the Locality form",
-                  },
-                })
-              );
-              return;
-            } else if (user.rows[0].type === "google") {
-              res.send(
-                JSON.stringify({
-                  error: {
-                    code: 400,
-                    message:
-                      "Signed up using Google, not Facebook. Please sign in using Google",
-                  },
-                })
-              );
-              return;
-            }
-
-            const [company, getCompanyError] = await psql.query(
-              sqlString.format("SELECT id FROM companies WHERE id=?", [
-                user.rows[0].id,
-              ])
-            );
-            if (getCompanyError) {
-              res.cookie("username", id);
-              res.send(JSON.stringify({ redirectTo: "/" }));
-            } else if (company.rows.length === 0) {
-              res.cookie("username", id);
-              res.send(JSON.stringify({ redirectTo: "/" }));
-            } else {
-              res.cookie("username", id);
-              res.cookie("firstName", firstName);
-              res.cookie("lastName", lastName);
-              res.cookie("companyId", userId);
-              res.send(JSON.stringify({ redirectTo: "/dashboard/company" }));
-            }
-          });
+        const [company, getCompanyError] = await psql.query(
+          sqlString.format("SELECT id FROM companies WHERE id=?", [
+            user.rows[0].id,
+          ])
+        );
+        if (getCompanyError) {
+          res.cookie("username", id);
+          res.send(JSON.stringify({ redirectTo: "/" }));
+        } else if (company.rows.length === 0) {
+          res.cookie("username", id);
+          res.send(JSON.stringify({ redirectTo: "/" }));
+        } else {
+          res.cookie("username", id);
+          res.cookie("firstName", firstName);
+          res.cookie("lastName", lastName);
+          res.cookie("companyId", userId);
+          res.send(JSON.stringify({ redirectTo: "/dashboard/company" }));
+        }
       })
       .catch((error) => {
         console.log(error);
