@@ -100,6 +100,7 @@ router.post(
               ])
             );
             if (getCompanyError) {
+              console.log(getCompanyError);
               res.cookie("username", id);
               res.send(JSON.stringify({ redirectTo: "/" }));
             } else if (company.rows.length === 0) {

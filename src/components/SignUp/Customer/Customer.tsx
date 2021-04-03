@@ -95,6 +95,7 @@ function Customer(props: CustomerProps) {
           }}
           cssClass={"facebook-sign-up"}
           responseType="token"
+          redirectUri={`${window.location.protocol}${window.location.hostname}/api/signup/customer/facebook`}
           textButton={"Sign up with Facebook"}
           icon={<IoLogoFacebook />}
         />
