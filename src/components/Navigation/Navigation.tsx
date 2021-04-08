@@ -4,7 +4,6 @@ import Cookie from "js-cookie";
 import { Button, Nav, Navbar } from "react-bootstrap";
 import { ReactComponent as InstagramLogo } from "./instagram-logo.svg";
 import { ReactComponent as FacebookLogo } from "./facebook-logo.svg";
-import { useHistory } from "react-router-dom";
 
 import NavigationDAO from "./NavigationDAO";
 
@@ -29,7 +28,26 @@ const StyledButton = styled(Button)`
 function Navigation(props: NavigationProps) {
   const companyId = Cookie.get("companyId");
   const username = Cookie.get("username");
-  const history = useHistory();
+
+  const signout = async () => {
+    await NavigationDAO.getInstance()
+      .signout({})
+      .then(({ error }) => {
+        if (error) {
+          console.log(error.message);
+        } else {
+          // Clearing cookie on front end too
+          // since they aren't cleared in
+          // safari for whatever reason
+          Cookie.remove("firstName");
+          Cookie.remove("lastName");
+          Cookie.remove("username");
+          Cookie.remove("companyId");
+          window.location.href = "/signin";
+        }
+      })
+      .catch((err) => console.log(err));
+  };
 
   if (props.width <= (companyId ? 800 : 680)) {
     return (
@@ -55,22 +73,7 @@ function Navigation(props: NavigationProps) {
             {username ? (
               <React.Fragment>
                 <StyledNavLink href="/wishlist">Wish List</StyledNavLink>
-                <StyledNavLink
-                  onClick={async () => {
-                    await NavigationDAO.getInstance()
-                      .signout({})
-                      .then(({ error }) => {
-                        if (error) {
-                          console.log(error.message);
-                        } else {
-                          history.push("/signin");
-                        }
-                      })
-                      .catch((err) => console.log(err));
-                  }}
-                >
-                  Sign out
-                </StyledNavLink>
+                <StyledNavLink onClick={signout}>Sign out</StyledNavLink>
               </React.Fragment>
             ) : (
               <React.Fragment>
@@ -120,18 +123,7 @@ function Navigation(props: NavigationProps) {
             <StyledButton
               variant="primary"
               style={{ marginLeft: 12 }}
-              onClick={async () => {
-                await NavigationDAO.getInstance()
-                  .signout({})
-                  .then(({ error }) => {
-                    if (error) {
-                      console.log(error.message);
-                    } else {
-                      history.push("/signin");
-                    }
-                  })
-                  .catch((err) => console.log(err));
-              }}
+              onClick={signout}
             >
               Sign out
             </StyledButton>

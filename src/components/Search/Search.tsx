@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
 import { geolocated, GeolocatedProps } from "react-geolocated";
 import { Pagination } from "react-bootstrap";
 import PublicIp from "public-ip";
@@ -126,7 +125,9 @@ export function Search(props: SearchProps) {
       return (
         <Stack direction="column" rowAlign="flex-start">
           <header
-            onClick={() => history.push("/")}
+            onClick={() => {
+              window.location.href = "/";
+            }}
             style={{
               width: props.width,
               maxWidth: 300,
@@ -181,7 +182,9 @@ export function Search(props: SearchProps) {
             spacing={-96}
           >
             <header
-              onClick={() => history.push("/")}
+              onClick={() => {
+                window.location.href = "/";
+              }}
               style={{
                 width: props.width,
                 maxWidth: 300,

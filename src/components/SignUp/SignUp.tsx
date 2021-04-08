@@ -79,7 +79,10 @@ function SignUp(props: SignUpProps) {
                     src="https://res.cloudinary.com/hcory49pf/image/upload/v1616922337/signup/storefront.webp"
                     width={Math.min(400, props.width)}
                     spacing={12}
-                    style={{ width: Math.min(400, props.width) }}
+                    style={{
+                      width: Math.min(400, props.width),
+                      cursor: "pointer",
+                    }}
                   >
                     <h4
                       style={{
@@ -100,7 +103,10 @@ function SignUp(props: SignUpProps) {
                     src="https://res.cloudinary.com/hcory49pf/image/upload/v1616922148/signup/customer.webp"
                     width={Math.min(400, props.width)}
                     spacing={12}
-                    style={{ width: Math.min(400, props.width) }}
+                    style={{
+                      width: Math.min(400, props.width),
+                      cursor: "pointer",
+                    }}
                   >
                     <h4
                       style={{

@@ -30,7 +30,22 @@ export function localPassportSetup(passport) {
         }
 
         if (users.rows[0].type === "google") {
-          done(new Error("Sign in with Google"), null);
+          done(
+            new Error(
+              "Signed up using Google, not our Locality form. Please sign in using Google"
+            ),
+            null
+          );
+          return;
+        }
+
+        if (users.rows[0].type === "facebook") {
+          done(
+            new Error(
+              "Signed up using Facebook, not our Locality form. Please sign in using Facebook"
+            ),
+            null
+          );
           return;
         }
 

@@ -4,6 +4,8 @@ import {
   SignInResponse,
   SignInGoogleRequest,
   SignInGoogleResponse,
+  SignInFacebookRequest,
+  SignInFacebookResponse,
 } from "../../common/rpc/Schema";
 
 let instance: SignInDAO;
@@ -30,6 +32,16 @@ export default class SignInDAO {
       "SignInGoogle",
       signInGoogleRequest,
       "/api/signin/google"
+    );
+  }
+
+  async signinFacebook(
+    signInFacebookRequest: SignInFacebookRequest
+  ): Promise<SignInFacebookResponse> {
+    return await this.rpc.call(
+      "SignInFacebook",
+      signInFacebookRequest,
+      "/api/signin/facebook"
     );
   }
 }

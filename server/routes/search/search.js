@@ -62,7 +62,7 @@ router.get(
       // Don't error out because we failed
       // to retrieve the wishlist
       if (!wishlistError) {
-        wishlist = productIDs.rows[0].wishlist.split(",");
+        wishlist = productIDs.rows[0].wishlist.split(",").filter(Boolean);
       } else {
         console.log(wishlistError);
       }
@@ -79,17 +79,19 @@ router.get(
       });
       if (error) {
         res.send(JSON.stringify({ error }));
-      } else {
-        if (wishlist.length > 0) {
-          results.hits = results.hits.map((hit) => {
-            return {
-              ...hit,
-              wishlist: wishlist.includes(hit.objectID),
-            };
-          });
-        }
-        res.send(JSON.stringify(results));
+        return;
       }
+
+      if (wishlist.length > 0) {
+        results.hits = results.hits.map((hit) => {
+          return {
+            ...hit,
+            wishlist: wishlist.includes(hit.objectID),
+          };
+        });
+      }
+
+      res.send(JSON.stringify(results));
     } else if (ip !== "") {
       const [results, error] = await algolia.search(q, {
         aroundLatLngViaIP: true,
@@ -102,17 +104,19 @@ router.get(
       });
       if (error) {
         res.send(JSON.stringify({ error }));
-      } else {
-        if (wishlist.length > 0) {
-          results.hits = results.hits.map((hit) => {
-            return {
-              ...hit,
-              wishlist: wishlist.includes(hit.objectID),
-            };
-          });
-        }
-        res.send(JSON.stringify(results));
+        return;
       }
+
+      if (wishlist.length > 0) {
+        results.hits = results.hits.map((hit) => {
+          return {
+            ...hit,
+            wishlist: wishlist.includes(hit.objectID),
+          };
+        });
+      }
+
+      res.send(JSON.stringify(results));
     } else {
       const [results, error] = await algolia.search(q, {
         attributesToRetrieve,
@@ -124,17 +128,19 @@ router.get(
       });
       if (error) {
         res.send(JSON.stringify({ error }));
-      } else {
-        if (wishlist.length > 0) {
-          results.hits = results.hits.map((hit) => {
-            return {
-              ...hit,
-              wishlist: wishlist.includes(hit.objectID),
-            };
-          });
-        }
-        res.send(JSON.stringify(results));
+        return;
       }
+
+      if (wishlist.length > 0) {
+        results.hits = results.hits.map((hit) => {
+          return {
+            ...hit,
+            wishlist: wishlist.includes(hit.objectID),
+          };
+        });
+      }
+
+      res.send(JSON.stringify(results));
     }
   }
 );
