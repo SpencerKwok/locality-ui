@@ -2,6 +2,8 @@ import { PostRpcClient } from "../../../common/rpc/RpcClient";
 import {
   CustomerSignUpRequest,
   CustomerSignUpResponse,
+  CustomerSignUpFacebookRequest,
+  CustomerSignUpFacebookResponse,
   CustomerSignUpGoogleRequest,
   CustomerSignUpGoogleResponse,
 } from "../../../common/rpc/Schema";
@@ -36,6 +38,16 @@ export default class CompanyDAO {
       "CustomerSignUpGoogle",
       signUpGoogleRequest,
       "/api/signup/customer/google"
+    );
+  }
+
+  async signupFacebook(
+    signUpFacebookRequest: CustomerSignUpFacebookRequest
+  ): Promise<CustomerSignUpFacebookResponse> {
+    return await this.rpc.call(
+      "CustomerSignUpFacebook",
+      signUpFacebookRequest,
+      "/api/signup/customer/facebook"
     );
   }
 }

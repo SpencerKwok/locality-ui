@@ -6,10 +6,12 @@ import { Router } from "express";
 import sqlString from "sqlstring";
 import xss from "xss";
 
+import facebook from "./facebook/facebook.js";
 import google from "./google/google.js";
 
 const router = Router();
 
+router.use("/facebook", facebook);
 router.use("/google", google);
 
 router.post(
@@ -53,8 +55,8 @@ router.post(
     const hash = await bcrypt.hash(password, 12);
     const [_, psqlErrorAddUser] = await psql.query(
       sqlString.format(
-        "INSERT INTO users (username, password, first_name, last_name, id, wishlist, type) VALUES (?, ?, E?, E?, ?, E?, E?)",
-        [email, hash, "X", "X", userId, "", ""]
+        "INSERT INTO users (username, email, password, first_name, last_name, id, wishlist, type) VALUES (E?, E?, E?, E?, E?, ?, E?, E?)",
+        [email, email, hash, "X", "X", userId, "", ""]
       )
     );
     if (psqlErrorAddUser) {

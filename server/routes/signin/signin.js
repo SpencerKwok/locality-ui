@@ -2,10 +2,12 @@ import passport from "passport";
 import rateLimit from "express-rate-limit";
 import { Router } from "express";
 
+import facebook from "./facebook/facebook.js";
 import google from "./google/google.js";
 
 const router = Router();
 
+router.use("/facebook", facebook);
 router.use("/google", google);
 
 router.post(

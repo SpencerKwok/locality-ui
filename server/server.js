@@ -1,9 +1,7 @@
 // Add WAF
 import { createRequire } from "module";
-if (process.env.ENV === "PROD") {
-  const require = createRequire(import.meta.url);
-  require("sqreen");
-}
+const require = createRequire(import.meta.url);
+require("sqreen");
 
 import api from "./routes/api.js";
 import cors from "cors";
@@ -12,7 +10,9 @@ import cookieSession from "cookie-session";
 import enforce from "express-sslify";
 import express from "express";
 import { fileURLToPath } from "url";
+import fs from "fs";
 import http from "http";
+import https from "https";
 import passport from "passport";
 import path from "path";
 import { localPassportSetup } from "./middleware/localstrategy.js";
@@ -25,8 +25,7 @@ const port = process.env.PORT || 3001;
 // App setup
 const app = express();
 
-// Add gzip compression
-
+// Add brotli/gzip compression
 app.use(
   shrinkRay({
     useZopfliForGzip: false,
@@ -42,14 +41,26 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "https://apis.google.com"],
+        scriptSrc: [
+          "'self'",
+          "https://apis.google.com",
+          "https://connect.facebook.net",
+        ],
         styleSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", "https://res.cloudinary.com", "blob:", "data:"],
+        imgSrc: [
+          "'self'",
+          "blob:",
+          "data:",
+          "https://www.facebook.com",
+          "https://res.cloudinary.com",
+        ],
         connectSrc: [
           "'self'",
           "https://ipv4.icanhazip.com",
           "https://api.ipify.org",
           "https://api.cloudinary.com",
+          "https://www.facebook.com",
+          "https://graph.facebook.com",
         ],
         fontSrc: ["'self'"],
         objectSrc: ["'self'"],
@@ -82,13 +93,13 @@ app.use(
       "https://www.walmart.ca",
       "https://www.walmart.com",
     ],
+    allowedHeaders: ["X-Requested-With", "Content-Type"],
+    credentials: true,
   })
 );
 
 // Force ssl
-if (process.env.ENV === "PROD") {
-  app.use(enforce.HTTPS({ trustProtoHeader: true }));
-}
+app.use(enforce.HTTPS({ trustProtoHeader: true }));
 
 // Setup cookie session
 app.use(
@@ -117,6 +128,16 @@ app.use(express.static(path.join(__dirname, "../build")));
 // Allow JSON body
 app.use(express.json({ limit: "100mb" }));
 
+// Privacy policy
+app.use("/privacy", (req, res) => {
+  res.sendFile(path.join(__dirname, "../build/privacy.html"));
+});
+
+// User data deletion policy
+app.use("/deletion", (req, res) => {
+  res.sendFile(path.join(__dirname, "../build/deletion.html"));
+});
+
 // Setup API
 app.use("/api", api);
 
@@ -125,7 +146,28 @@ app.get("/*", (req, res) => {
   res.sendFile(path.join(__dirname, "../build/index.html"));
 });
 
-const server = http.createServer(app);
-server.listen(port, () => {
-  console.log("Server listening on port::" + port);
-});
+// We use the heroku certificates on PROD
+if (process.env.ENV === "PROD") {
+  const server = http.createServer(app);
+  server.listen(port, () => {
+    console.log("Server listening on port::" + port);
+  });
+} else {
+  // redirect HTTP server
+  const reverseProxy = express();
+  reverseProxy.all("*", (req, res) => {
+    res.redirect(301, `https://localhost:${port}`);
+  });
+  const reverseProxyServer = http.createServer(reverseProxy);
+  reverseProxyServer.listen(3000);
+
+  // HTTPS server using self-signed certificates
+  const certOptions = {
+    key: fs.readFileSync(path.resolve("cert/server.key")),
+    cert: fs.readFileSync(path.resolve("cert/server.crt")),
+  };
+  const server = https.createServer(certOptions, app);
+  server.listen(port, () => {
+    console.log("Server listening on port::" + port);
+  });
+}

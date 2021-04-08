@@ -8,6 +8,7 @@ export class PostRpcClient {
   ): Promise<PostMethods[methodName]["response"]> {
     const fetchRequest = new Request(endpoint, {
       method: "POST",
+      credentials: "include",
       headers: {
         "content-type": "application/json",
         charset: "utf-8",
@@ -42,6 +43,7 @@ export class GetRpcClient {
     endpoint: string
   ): Promise<GetMethods[methodName]> {
     const fetchRequest = new Request(endpoint, {
+      credentials: "include",
       method: "GET",
       headers: {
         "content-type": "application/json",
