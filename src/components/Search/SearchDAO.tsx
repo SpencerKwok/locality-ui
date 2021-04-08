@@ -25,6 +25,9 @@ export default class SearchDAO {
     if (searchRequest.page) {
       endpoint += `&pg=${searchRequest.page}`;
     }
+    if (searchRequest.filters) {
+      endpoint += `&filters=${encodeURIComponent(searchRequest.filters)}`;
+    }
     return await this.rpc.call("Search", endpoint);
   }
 }

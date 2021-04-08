@@ -47,6 +47,8 @@ router.post(
       homepage = `https://www.${homepage.slice(11)}`;
     } else if (homepage.match(/^www\..*$/)) {
       homepage = `https://${homepage}`;
+    } else if (!homepage.match(/^http:\/\/www\..*$/)) {
+      homepage = `https://www.${homepage}`;
     }
 
     const companyId = req.cookies["companyId"];

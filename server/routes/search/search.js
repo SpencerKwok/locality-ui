@@ -20,6 +20,7 @@ router.get(
     const lat = xss(req.query["lat"] || "");
     const lng = xss(req.query["lng"] || "");
     const ext = xss(req.query["ext"] || "");
+    const filters = xss(decodeURIComponent(req.query["filters"] || ""));
 
     let page = 0;
     if (req.query["pg"]) {
@@ -37,6 +38,7 @@ router.get(
       }
     }
 
+    const facets = ["company"];
     const restrictSearchableAttributes = ["name", "primary_keywords"];
     const attributesToRetrieve = [
       "objectID",
@@ -69,6 +71,8 @@ router.get(
     if (lat !== "" && lng !== "") {
       const [results, error] = await algolia.search(q, {
         aroundLatLng: `${lat}, ${lng}`,
+        facets,
+        filters,
         page: page,
         attributesToRetrieve,
         ...(ext === "1" && { restrictSearchableAttributes }),
@@ -89,6 +93,8 @@ router.get(
     } else if (ip !== "") {
       const [results, error] = await algolia.search(q, {
         aroundLatLngViaIP: true,
+        facets,
+        filters,
         headers: { "X-Forwarded-For": ip },
         page: page,
         attributesToRetrieve,
@@ -109,8 +115,10 @@ router.get(
       }
     } else {
       const [results, error] = await algolia.search(q, {
-        page: page,
         attributesToRetrieve,
+        facets,
+        filters,
+        page: page,
         restrictSearchableAttributes,
         ...(ext === "1" && { restrictSearchableAttributes }),
       });

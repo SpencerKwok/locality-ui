@@ -68,7 +68,7 @@ function SearchResults(props: SearchResultsProps) {
           <SortFilter
             variant="primary"
             id="dropdown-basic"
-            style={{ padding: "6px 12px 6px 12px" }}
+            style={{ padding: "1px 6px 1px 6px" }}
           >
             {`Sort by: ${sortFilter}`}
           </SortFilter>
