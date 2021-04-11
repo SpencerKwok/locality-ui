@@ -81,6 +81,7 @@ algoliaClient.search = async (query, options) => {
     .search(query, options)
     .then((res) => {
       results = {
+        facets: res.facets,
         hits: res.hits,
         nbHits: res.nbHits,
       };

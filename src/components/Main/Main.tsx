@@ -7,6 +7,7 @@ import Stack from "../../common/components/Stack/Stack";
 
 export interface MainProps extends React.HTMLProps<HTMLDivElement> {
   query?: string;
+  height: number;
   width: number;
 }
 
@@ -50,9 +51,13 @@ function Main(props: MainProps) {
         </Popup>
       )}
       {props.query ? (
-        <GeolocationSearch query={props.query} width={props.width} />
+        <GeolocationSearch
+          query={props.query}
+          height={props.height}
+          width={props.width}
+        />
       ) : (
-        <Search query={props.query} width={props.width} />
+        <Search query={props.query} height={props.height} width={props.width} />
       )}
     </main>
   );

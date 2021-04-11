@@ -341,9 +341,13 @@ export interface SearchRequest {
   latitude?: number;
   longitude?: number;
   page?: number;
+  filters?: string;
 }
 
 export interface SearchResponse {
+  facets: {
+    company: { [key: string]: number };
+  };
   hits: Array<Product>;
   nbHits: number;
 }

@@ -67,7 +67,7 @@ function App() {
             return (
               <React.Fragment>
                 <Navigation width={width} />
-                <Main width={width} query={params.q} />
+                <Main query={params.q} height={height} width={width} />
               </React.Fragment>
             );
           }}
@@ -122,7 +122,7 @@ function App() {
           render={(props) => (
             <React.Fragment>
               <Navigation width={width} />
-              <Main width={width} />
+              <Main height={height} width={width} />
             </React.Fragment>
           )}
         />

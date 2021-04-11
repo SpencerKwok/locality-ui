@@ -19,20 +19,39 @@ interface Location {
   longitude?: number;
 }
 
+interface SearchResults {
+  facets: {
+    company: Map<string, number>;
+  };
+  hits: Array<Product>;
+  nbHits: number;
+}
+
+interface UserInput {
+  page: number;
+  company: Set<string>;
+}
+
 const location: Location = {};
 
 export interface SearchProps extends GeolocatedProps {
   query?: string;
+  height: number;
   width: number;
 }
 
 export function Search(props: SearchProps) {
-  const [page, setPage] = useState(0);
-  const [nbHits, setNbHits] = useState(0);
-  const [hits, setHits] = useState<Array<Product>>([]);
-  const [query, setQuery] = useState(props.query || "");
+  const [query, setQuery] = useState(decodeURIComponent(props.query || ""));
   const [searching, setSearching] = useState(false);
-  const [companyFilter, setCompanyFilter] = useState("");
+  const [searchResults, setSearchResults] = useState<SearchResults>({
+    facets: { company: new Map<string, number>() },
+    hits: [],
+    nbHits: 0,
+  });
+  const [userInput, setUserInput] = useState<UserInput>({
+    page: 0,
+    company: new Set(),
+  });
 
   useEffect(() => {
     (async () => {
@@ -42,7 +61,6 @@ export function Search(props: SearchProps) {
 
       window.scrollTo(0, 0);
       setSearching(true);
-      setCompanyFilter("");
 
       if (!location.ip) {
         location.ip = await PublicIp.v4();
@@ -53,15 +71,41 @@ export function Search(props: SearchProps) {
         location.longitude = props.coords.longitude;
       }
 
+      const filters = [...userInput.company]
+        .map((name) => `company:"${name}"`)
+        .join(" OR ");
+
       await SearchDAO.getInstance()
-        .search({ query: XSS(props.query), ...location, page })
-        .then(({ hits, nbHits }) => {
-          setNbHits(nbHits);
-          setHits(hits);
+        .search({
+          query: XSS(props.query),
+          ...location,
+          page: userInput.page,
+          filters,
+        })
+        .then((results) => {
+          if (userInput.company.size > 0) {
+            setSearchResults({
+              hits: results.hits,
+              nbHits: results.nbHits,
+              facets: searchResults.facets,
+            });
+          } else {
+            const company = new Map<string, number>();
+            for (const name in results.facets.company) {
+              company.set(name, results.facets.company[name]);
+            }
+            setSearchResults({
+              hits: results.hits,
+              nbHits: results.nbHits,
+              facets: {
+                company,
+              },
+            });
+          }
         })
         .catch((err) => console.log(err));
     })();
-  }, [props.query, props.coords, page]);
+  }, [props.query, props.coords, userInput]);
 
   const searchBarOnChange = (e: React.FormEvent<HTMLInputElement>) => {
     setQuery((e.target as HTMLInputElement).value);
@@ -71,8 +115,9 @@ export function Search(props: SearchProps) {
     if (query === "" || props.query === query) {
       return;
     }
-    setPage(0);
-    window.location.href = `/search?q=${query}`;
+
+    setUserInput({ page: 0, company: new Set() });
+    window.location.href = `/search?q=${encodeURIComponent(query)}`;
   };
 
   if (searching) {
@@ -101,23 +146,28 @@ export function Search(props: SearchProps) {
             style={{ marginLeft: 24, marginTop: -16, marginBottom: 16 }}
             autoFocus
           />
-          {hits.length > 0 && (
+          {searchResults.hits.length > 0 && (
             <SearchResults
-              hits={hits}
+              hits={searchResults.hits}
               query={props.query || ""}
               style={{ marginLeft: 24, marginTop: -8 }}
             />
           )}
           <Stack direction="row" columnAlign="center" width={props.width}>
             <Pagination size="lg">
-              {[...Array(Math.ceil(nbHits / 24)).keys()].map((index) => (
-                <Pagination.Item
-                  active={page === index || (page < 0 && index === 0)}
-                  onClick={() => setPage(index)}
-                >
-                  {index + 1}
-                </Pagination.Item>
-              ))}
+              {[...Array(Math.ceil(searchResults.nbHits / 24)).keys()].map(
+                (index) => (
+                  <Pagination.Item
+                    active={
+                      userInput.page === index ||
+                      (userInput.page < 0 && index === 0)
+                    }
+                    onClick={() => setUserInput({ ...userInput, page: index })}
+                  >
+                    {index + 1}
+                  </Pagination.Item>
+                )
+              )}
             </Pagination>
           </Stack>
         </Stack>
@@ -154,41 +204,50 @@ export function Search(props: SearchProps) {
               autoFocus
             />
           </Stack>
-          {hits.length > 0 && (
+          {searchResults.hits.length > 0 && (
             <Stack direction="column" rowAlign="flex-start">
               <Stack
                 direction="row"
                 columnAlign="flex-start"
-                style={{ marginTop: -8 }}
+                style={{ marginTop: -8, marginLeft: 24 }}
               >
                 <CompanyList
-                  onCompanyClick={(name) => {
-                    setCompanyFilter(name);
+                  height={props.height}
+                  hits={searchResults.hits}
+                  companies={searchResults.facets.company}
+                  selectedCompanies={userInput.company}
+                  onCompanyClick={async (name) => {
+                    if (userInput.company.has(name)) {
+                      userInput.company.delete(name);
+                    } else {
+                      userInput.company.add(name);
+                    }
+                    setUserInput({ ...userInput });
                   }}
-                  currentCompany={companyFilter}
-                  hits={hits}
-                  style={{ marginLeft: 24 }}
                 />
                 <SearchResults
-                  hits={
-                    companyFilter === ""
-                      ? hits
-                      : hits.filter((value) => value.company === companyFilter)
-                  }
+                  hits={searchResults.hits}
                   query={props.query || ""}
                   style={{ marginLeft: 12, paddingRight: 12 }}
                 />
               </Stack>
               <Stack direction="row" columnAlign="center" width={props.width}>
                 <Pagination size="lg">
-                  {[...Array(Math.ceil(nbHits / 24)).keys()].map((index) => (
-                    <Pagination.Item
-                      active={page === index || (page === 0 && index === 0)}
-                      onClick={() => setPage(index)}
-                    >
-                      {index + 1}
-                    </Pagination.Item>
-                  ))}
+                  {[...Array(Math.ceil(searchResults.nbHits / 24)).keys()].map(
+                    (index) => (
+                      <Pagination.Item
+                        active={
+                          userInput.page === index ||
+                          (userInput.page < 0 && index === 0)
+                        }
+                        onClick={() =>
+                          setUserInput({ ...userInput, page: index })
+                        }
+                      >
+                        {index + 1}
+                      </Pagination.Item>
+                    )
+                  )}
                 </Pagination>
               </Stack>
             </Stack>
