@@ -13,21 +13,21 @@ const StyledListItem = styled(ListGroup.Item)`
   outline: none;
 `;
 
-export interface CompanyListProps extends React.HTMLProps<HTMLDivElement> {
+export interface DepartmentListProps extends React.HTMLProps<HTMLDivElement> {
   hits: Array<Product>;
-  companies: Map<string, number>;
-  selectedCompanies: Set<string>;
-  onCompanyClick: (name: string) => void;
+  departments: Map<string, number>;
+  selectedDepartments: Set<string>;
+  onDepartmentClick: (name: string) => void;
 }
 
-function CompanyList(props: CompanyListProps) {
-  const companies = Array.from(props.companies, ([name, value]) => ({
+function DepartmentList(props: DepartmentListProps) {
+  const departments = Array.from(props.departments, ([name, value]) => ({
     name,
     value,
   }));
-  companies.sort((a, b) => b.value - a.value);
+  departments.sort((a, b) => b.value - a.value);
 
-  const companyRowRenderer = ({
+  const departmentRowRenderer = ({
     name,
     value,
   }: {
@@ -39,8 +39,8 @@ function CompanyList(props: CompanyListProps) {
         <Stack direction="row" spacing={12}>
           <input
             type="checkbox"
-            checked={props.selectedCompanies.has(name)}
-            onClick={() => props.onCompanyClick(name)}
+            checked={props.selectedDepartments.has(name)}
+            onClick={() => props.onDepartmentClick(name)}
           />
           <span>{`${decode(name)} (${value})`}</span>
         </Stack>
@@ -55,12 +55,12 @@ function CompanyList(props: CompanyListProps) {
       style={props.style}
       width={260}
     >
-      <h4>Companies</h4>
+      <h4>Departments</h4>
       <ListGroup>
-        {companies.map((company) => companyRowRenderer(company))}
+        {departments.map((department) => departmentRowRenderer(department))}
       </ListGroup>
     </Stack>
   );
 }
 
-export default CompanyList;
+export default DepartmentList;

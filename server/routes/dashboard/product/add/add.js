@@ -108,6 +108,28 @@ router.post(
       return;
     }
 
+    let departments = req.body.product.departments;
+    if (!Array.isArray(departments)) {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid departments" },
+        })
+      );
+      return;
+    }
+    try {
+      departments = departments
+        .map((department) => xss(department.trim()))
+        .filter(Boolean);
+    } catch (err) {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid departments" },
+        })
+      );
+      return;
+    }
+
     const description = xss(req.body.product.description || "");
 
     let price = req.body.product.price;
@@ -167,6 +189,7 @@ router.post(
           latitude,
           longitude,
           primaryKeywords,
+          departments,
           description,
           price,
           priceRange,
@@ -193,6 +216,7 @@ router.post(
         latitude,
         longitude,
         primaryKeywords,
+        departments,
         description,
         price,
         priceRange,

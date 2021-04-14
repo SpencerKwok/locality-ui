@@ -34,6 +34,7 @@ router.post(
 
       let nextProductId = companyResponse.rows[0].next_product_id;
       const companyName = companyResponse.rows[0].name;
+      const departments = companyResponse.rows[0].departments.split(":");
       const latitude = companyResponse.rows[0].latitude
         .split(",")
         .map((x) => parseFloat(x));
@@ -136,6 +137,7 @@ router.post(
                   productName,
                   image,
                   primaryKeywords,
+                  departments,
                   description,
                   link,
                   price,
@@ -184,6 +186,7 @@ router.post(
               productName,
               image,
               primaryKeywords,
+              departments,
               description,
               link,
               price,
@@ -198,6 +201,7 @@ router.post(
                 latitude,
                 longitude,
                 primaryKeywords,
+                departments,
                 description,
                 price,
                 priceRange,
