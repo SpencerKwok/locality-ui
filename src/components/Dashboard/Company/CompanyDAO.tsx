@@ -4,6 +4,8 @@ import {
   CompanyResponse,
   CompaniesRequest,
   CompaniesResponse,
+  DepartmentsUpdateRequest,
+  DepartmentsUpdateResponse,
   HomepageUpdateRequest,
   HomepageUpdateResponse,
   LogoUpdateRequest,
@@ -50,6 +52,16 @@ export default class CompanyDAO {
       "HomepageUpdate",
       homepageUpdateRequest,
       "/api/dashboard/homepage/update"
+    );
+  }
+
+  async departmentsUpdate(
+    departmentsUpdateRequest: DepartmentsUpdateRequest
+  ): Promise<DepartmentsUpdateResponse> {
+    return await this.rpc.call(
+      "DepartmentsUpdate",
+      departmentsUpdateRequest,
+      "/api/dashboard/departments/update"
     );
   }
 }

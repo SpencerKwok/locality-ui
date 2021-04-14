@@ -106,7 +106,26 @@ router.post(
       return;
     }
 
-    const primaryKeywords = xss(req.body.product.primaryKeywords || "");
+    let primaryKeywords = req.body.product.primaryKeywords;
+    if (!Array.isArray(primaryKeywords)) {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid primary keywords" },
+        })
+      );
+      return;
+    }
+    try {
+      primaryKeywords = primaryKeywords.map((keyword) => xss(keyword));
+    } catch {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid primary keywords" },
+        })
+      );
+      return;
+    }
+
     const description = xss(req.body.product.description || "");
 
     let price = req.body.product.price;

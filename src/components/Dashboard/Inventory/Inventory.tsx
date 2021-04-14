@@ -178,8 +178,7 @@ function Inventory(props: InventoryProps) {
         primaryKeywords: values.primaryKeywords
           .split(",")
           .filter(Boolean)
-          .map((x) => x.trim())
-          .join(","),
+          .map((x) => x.trim()),
         description: values.description,
         price: price,
         priceRange: priceRange,
@@ -267,8 +266,7 @@ function Inventory(props: InventoryProps) {
             primaryKeywords: values.primaryKeywords
               .split(",")
               .filter(Boolean)
-              .map((x) => x.trim())
-              .join(","),
+              .map((x) => x.trim()),
             description: values.description,
             price: price,
             priceRange: priceRange,
@@ -417,7 +415,7 @@ function Inventory(props: InventoryProps) {
           companies={companies}
           height={props.height - 200}
           index={companyIndex}
-          width={248}
+          width={260}
           style={{ marginRight: 12 }}
         />
       )}
@@ -455,9 +453,7 @@ function Inventory(props: InventoryProps) {
               initialValues={
                 {
                   name: product.name,
-                  primaryKeywords: product.primaryKeywords
-                    .split(",")
-                    .join(", "),
+                  primaryKeywords: product.primaryKeywords.join(", "),
                   description: product.description,
                   isRange: product.price !== product.priceRange[1],
                   price: isNewItem ? "" : product.price.toFixed(2),

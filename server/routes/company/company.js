@@ -15,9 +15,7 @@ router.post(
   async (req, res) => {
     const f = async (companyId) => {
       const [companies, error] = await psql.query(
-        sqlString.format("SELECT * FROM companies WHERE id=? ORDER BY name", [
-          companyId,
-        ])
+        sqlString.format("SELECT * FROM companies WHERE id=?", [companyId])
       );
       if (error) {
         res.send(JSON.stringify(error));

@@ -1,6 +1,7 @@
 import rateLimit from "express-rate-limit";
 import { Router } from "express";
 
+import departments from "./departments/departments.js";
 import homepage from "./homepage/homepage.js";
 import logo from "./logo/logo.js";
 import password from "./password/password.js";
@@ -27,6 +28,7 @@ router.post(
   }
 );
 
+router.use("/departments", departments);
 router.use("/homepage", homepage);
 router.use("/logo", logo);
 router.use("/password", password);

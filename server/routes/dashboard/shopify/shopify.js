@@ -115,7 +115,7 @@ router.post(
               data.products.map((product, index) => {
                 const productName = product.title;
                 const image = product.images[0].src;
-                const primaryKeywords = product.product_type;
+                const primaryKeywords = product.product_type.split(",");
                 const description = product.body_html.replace(/<[^>]*>/g, "");
                 const link = `${homepage}/products/${product.handle}`;
                 let price = parseFloat(product.variants[0].price);

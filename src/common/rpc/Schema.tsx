@@ -35,6 +35,10 @@ export interface PostMethods {
     request: DeleteFromWishListRequest;
     response: DeleteFromWishListResponse;
   };
+  DepartmentsUpdate: {
+    request: DepartmentsUpdateRequest;
+    response: DepartmentsUpdateResponse;
+  };
   HomepageUpdate: {
     request: HomepageUpdateRequest;
     response: HomepageUpdateResponse;
@@ -156,6 +160,7 @@ export interface BaseCompany {
   longitude: string;
   logo: string;
   homepage: string;
+  departments: string;
 }
 
 export interface CompanyRequest {
@@ -172,6 +177,15 @@ export interface CompaniesResponse extends BaseResponse {
   companies?: Array<BaseCompany>;
 }
 
+export interface DepartmentsUpdateRequest {
+  id: number;
+  departments: Array<string>;
+}
+
+export interface DepartmentsUpdateResponse extends BaseResponse {
+  departments?: Array<string>;
+}
+
 export interface DeleteFromWishListRequest {
   id: string;
 }
@@ -183,7 +197,9 @@ export interface HomepageUpdateRequest {
   homepage: string;
 }
 
-export interface HomepageUpdateResponse extends BaseResponse {}
+export interface HomepageUpdateResponse extends BaseResponse {
+  homepage?: string;
+}
 
 export interface LogoUpdateRequest {
   id: number;
@@ -202,7 +218,7 @@ export interface BaseProduct {
 
 export interface Product extends BaseProduct {
   company: string;
-  primaryKeywords: string;
+  primaryKeywords: Array<string>;
   description: string;
   link: string;
   price: number;
@@ -215,7 +231,7 @@ export const EmptyProduct: Product = {
   name: "",
   image: "",
   company: "",
-  primaryKeywords: "",
+  primaryKeywords: [],
   description: "",
   link: "",
   price: -1,
@@ -244,7 +260,7 @@ export interface ProductUpdateRequest {
   product: {
     name: string;
     id: number;
-    primaryKeywords: string;
+    primaryKeywords: Array<string>;
     description: string;
     price: number;
     priceRange: Array<number>;
@@ -264,7 +280,7 @@ export interface ProductAddRequest {
   longitude: string;
   product: {
     name: string;
-    primaryKeywords: string;
+    primaryKeywords: Array<string>;
     description: string;
     price: number;
     priceRange: Array<number>;
