@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { geolocated, GeolocatedProps } from "react-geolocated";
 import { Pagination } from "react-bootstrap";
+import { useHistory } from "react-router-dom";
 import PublicIp from "public-ip";
 import XSS from "xss";
 
@@ -60,6 +61,7 @@ export function Search(props: SearchProps) {
     departments: new Set(),
   });
 
+  const history = useHistory();
   useEffect(() => {
     (async () => {
       if (!props.query) {
@@ -133,7 +135,7 @@ export function Search(props: SearchProps) {
     }
 
     setUserInput({ page: 0, company: new Set(), departments: new Set() });
-    window.location.href = `/search?q=${encodeURIComponent(query)}`;
+    history.push(`/search?q=${encodeURIComponent(query)}`);
   };
 
   if (searching) {
