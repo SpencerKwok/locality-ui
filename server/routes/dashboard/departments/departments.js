@@ -41,8 +41,7 @@ router.post(
       }
 
       /*
-      Update all items with new departments
-
+      // Update all items with new departments
       const [products, psqlProductsError] = await psql.query(
         sqlString.format("SELECT id FROM products SET WHERE company_id=?", [
           companyId,
@@ -67,7 +66,6 @@ router.post(
         return {
           ...product,
           departments: departments,
-          primary_keywords: product.primary_keywords.split(","),
         };
       });
       algolia.saveObjects(newProducts, {

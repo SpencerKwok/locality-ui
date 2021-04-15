@@ -60,21 +60,22 @@ const UpdateDepartmentsSchema = yup.object().shape({
 });
 
 const DepartmentToId = new Map<string, number>([
-  ["Bags", 1],
-  ["Baby", 2],
-  ["Beauty & Personal Care", 3],
-  ["Clothing, Shoes, & Jewellery", 4],
-  ["Entertainment", 5],
-  ["Electronics", 6],
-  ["Everything Else/Other", 7],
-  ["Fitness", 8],
-  ["Food & Drinks", 9],
-  ["Groceries", 10],
-  ["Health & Personal Care", 11],
-  ["Home & Kitchen", 12],
-  ["Pet", 13],
-  ["Sports & Outdoors", 14],
-  ["Toys & Games", 15],
+  ["Accessories/Jewelry", 1],
+  ["Bags", 2],
+  ["Baby", 3],
+  ["Beauty & Personal Care", 4],
+  ["Clothing/Shoes", 5],
+  ["Entertainment", 6],
+  ["Electronics", 7],
+  ["Everything Else/Other", 8],
+  ["Fitness", 9],
+  ["Food & Drinks", 10],
+  ["Groceries", 11],
+  ["Health & Personal Care", 12],
+  ["Home & Kitchen", 13],
+  ["Pet", 14],
+  ["Sports & Outdoors", 15],
+  ["Toys & Games", 16],
 ]);
 
 const Departments = [...DepartmentToId.entries()].map((value) => {
