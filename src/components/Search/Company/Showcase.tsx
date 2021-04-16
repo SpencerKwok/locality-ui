@@ -11,8 +11,8 @@ function CompanyShowcase(props: CompanyShowcaseProps) {
   const [companies, setCompanies] = useState<Array<BaseCompany>>([]);
 
   useEffect(() => {
-    (async () => {
-      await ShowcaseDAO.getInstance()
+    (() => {
+      ShowcaseDAO.getInstance()
         .companies({})
         .then(({ error, companies }) => {
           if (error) {
