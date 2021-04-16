@@ -3,23 +3,20 @@ import FormControl from "react-bootstrap/FormControl";
 import InputGroup from "react-bootstrap/InputGroup";
 
 import Stack from "../../common/components/Stack/Stack";
-import {
-  SearchInputGroup,
-  SearchClearButton,
-  SearchSubmitButton,
-} from "../../common/components/Search/Search";
+import LocalitySearch from "../../common/components/Search";
 
 export interface SearchBarProps extends React.HTMLProps<HTMLInputElement> {
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onEnter?: () => void;
   onReset?: () => void;
   value: string;
+  width: number | string;
 }
 
 function SearchBar(props: SearchBarProps) {
   return (
     <Stack direction="row" spacing={1} style={{ ...props.style }}>
-      <SearchInputGroup
+      <LocalitySearch.InputGroup
         size="lg"
         width={props.width}
         style={{ border: "1px solid #ced4da" }}
@@ -41,15 +38,18 @@ function SearchBar(props: SearchBarProps) {
         />
         {props.value.length > 0 && (
           <InputGroup.Append>
-            <SearchClearButton className="close" onClick={props.onReset}>
+            <LocalitySearch.ClearButton
+              className="close"
+              onClick={props.onReset}
+            >
               ×
-            </SearchClearButton>
+            </LocalitySearch.ClearButton>
           </InputGroup.Append>
         )}
-      </SearchInputGroup>
-      <SearchSubmitButton variant="primary" onClick={props.onEnter}>
+      </LocalitySearch.InputGroup>
+      <LocalitySearch.SubmitButton variant="primary" onClick={props.onEnter}>
         Search
-      </SearchSubmitButton>
+      </LocalitySearch.SubmitButton>
     </Stack>
   );
 }
