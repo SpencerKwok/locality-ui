@@ -3,34 +3,8 @@ import queryString from "query-string";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 import "./App.css";
+import { Main, Navigation } from "./components";
 
-// Lazy load all modules except Main
-const About = lazy(() =>
-  import("./components").then((module) => ({ default: module.About }))
-);
-const Contact = lazy(() =>
-  import("./components").then((module) => ({ default: module.Contact }))
-);
-const Dashboard = lazy(() =>
-  import("./components").then((module) => ({ default: module.Dashboard }))
-);
-const Extension = lazy(() =>
-  import("./components").then((module) => ({ default: module.Extension }))
-);
-const Navigation = lazy(() =>
-  import("./components").then((module) => ({ default: module.Navigation }))
-);
-const SignIn = lazy(() =>
-  import("./components").then((module) => ({ default: module.SignIn }))
-);
-const SignUp = lazy(() =>
-  import("./components").then((module) => ({ default: module.SignUp }))
-);
-const WishList = lazy(() =>
-  import("./components").then((module) => ({ default: module.WishList }))
-);
-
-import { Main } from "./components";
 import Window from "./utils/window";
 
 function App() {
@@ -44,6 +18,11 @@ function App() {
             exact
             path="/about"
             render={(props) => {
+              const About = lazy(() =>
+                import("./components").then((module) => ({
+                  default: module.About,
+                }))
+              );
               return (
                 <React.Fragment>
                   <Navigation width={width} />
@@ -56,6 +35,11 @@ function App() {
             exact
             path="/contact"
             render={(props) => {
+              const Contact = lazy(() =>
+                import("./components").then((module) => ({
+                  default: module.Contact,
+                }))
+              );
               return (
                 <React.Fragment>
                   <Navigation width={width} />
@@ -68,6 +52,11 @@ function App() {
             exact
             path="/extension"
             render={(props) => {
+              const Extension = lazy(() =>
+                import("./components").then((module) => ({
+                  default: module.Extension,
+                }))
+              );
               return (
                 <React.Fragment>
                   <Navigation width={width} />
@@ -93,6 +82,11 @@ function App() {
             exact
             path="/signin"
             render={(props) => {
+              const SignIn = lazy(() =>
+                import("./components").then((module) => ({
+                  default: module.SignIn,
+                }))
+              );
               return (
                 <React.Fragment>
                   <Navigation width={width} />
@@ -104,6 +98,11 @@ function App() {
           <Route
             path="/signup"
             render={(props) => {
+              const SignUp = lazy(() =>
+                import("./components").then((module) => ({
+                  default: module.SignUp,
+                }))
+              );
               return (
                 <React.Fragment>
                   <Navigation width={width} />
@@ -115,6 +114,11 @@ function App() {
           <Route
             path="/dashboard"
             render={(props) => {
+              const Dashboard = lazy(() =>
+                import("./components").then((module) => ({
+                  default: module.Dashboard,
+                }))
+              );
               return (
                 <React.Fragment>
                   <Navigation width={width} />
@@ -126,6 +130,11 @@ function App() {
           <Route
             path="/wishlist"
             render={(props) => {
+              const WishList = lazy(() =>
+                import("./components").then((module) => ({
+                  default: module.WishList,
+                }))
+              );
               return (
                 <React.Fragment>
                   <Navigation width={width} />
