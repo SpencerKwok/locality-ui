@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 import "./App.css";
 
-// Lazy load all modules
+// Lazy load all modules except Main
 const About = React.lazy(() =>
   import("./components").then((module) => ({ default: module.About }))
 );
@@ -16,9 +16,6 @@ const Dashboard = React.lazy(() =>
 );
 const Extension = React.lazy(() =>
   import("./components").then((module) => ({ default: module.Extension }))
-);
-const Main = React.lazy(() =>
-  import("./components").then((module) => ({ default: module.Main }))
 );
 const Navigation = React.lazy(() =>
   import("./components").then((module) => ({ default: module.Navigation }))
@@ -33,6 +30,7 @@ const WishList = React.lazy(() =>
   import("./components").then((module) => ({ default: module.WishList }))
 );
 
+import { Main } from "./components";
 import Window from "./utils/window";
 
 function App() {
