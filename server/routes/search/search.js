@@ -38,7 +38,7 @@ router.get(
       }
     }
 
-    const facets = ["company"];
+    const facets = ["company", "departments"];
     const restrictSearchableAttributes = ["name", "primary_keywords"];
     const attributesToRetrieve = [
       "objectID",

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { geolocated, GeolocatedProps } from "react-geolocated";
 import { Pagination } from "react-bootstrap";
+import { useHistory } from "react-router-dom";
 import PublicIp from "public-ip";
 import XSS from "xss";
 
 import CompanyList from "./Company/List";
 import CompanyShowcase from "./Company/Showcase";
+import DepartmentsList from "./Departments/List";
 import SearchBar from "./SearchBar";
 import SearchDAO from "./SearchDAO";
 import SearchResults from "./SearchResults";
@@ -22,6 +24,7 @@ interface Location {
 interface SearchResults {
   facets: {
     company: Map<string, number>;
+    departments: Map<string, number>;
   };
   hits: Array<Product>;
   nbHits: number;
@@ -30,6 +33,7 @@ interface SearchResults {
 interface UserInput {
   page: number;
   company: Set<string>;
+  departments: Set<string>;
 }
 
 const location: Location = {};
@@ -44,15 +48,20 @@ export function Search(props: SearchProps) {
   const [query, setQuery] = useState(decodeURIComponent(props.query || ""));
   const [searching, setSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<SearchResults>({
-    facets: { company: new Map<string, number>() },
+    facets: {
+      company: new Map<string, number>(),
+      departments: new Map<string, number>(),
+    },
     hits: [],
     nbHits: 0,
   });
   const [userInput, setUserInput] = useState<UserInput>({
     page: 0,
     company: new Set(),
+    departments: new Set(),
   });
 
+  const history = useHistory();
   useEffect(() => {
     (async () => {
       if (!props.query) {
@@ -71,9 +80,13 @@ export function Search(props: SearchProps) {
         location.longitude = props.coords.longitude;
       }
 
-      const filters = [...userInput.company]
-        .map((name) => `company:"${name}"`)
-        .join(" OR ");
+      const companyFilters = [...userInput.company].map(
+        (name) => `company:"${name}"`
+      );
+      const departmentsFilters = [...userInput.departments].map(
+        (name) => `departments:"${name}"`
+      );
+      const filters = [...companyFilters, ...departmentsFilters].join(" OR ");
 
       await SearchDAO.getInstance()
         .search({
@@ -83,7 +96,7 @@ export function Search(props: SearchProps) {
           filters,
         })
         .then((results) => {
-          if (userInput.company.size > 0) {
+          if (userInput.company.size > 0 || userInput.departments.size > 0) {
             setSearchResults({
               hits: results.hits,
               nbHits: results.nbHits,
@@ -94,11 +107,16 @@ export function Search(props: SearchProps) {
             for (const name in results.facets.company) {
               company.set(name, results.facets.company[name]);
             }
+            const departments = new Map<string, number>();
+            for (const name in results.facets.departments) {
+              departments.set(name, results.facets.departments[name]);
+            }
             setSearchResults({
               hits: results.hits,
               nbHits: results.nbHits,
               facets: {
                 company,
+                departments,
               },
             });
           }
@@ -116,8 +134,8 @@ export function Search(props: SearchProps) {
       return;
     }
 
-    setUserInput({ page: 0, company: new Set() });
-    window.location.href = `/search?q=${encodeURIComponent(query)}`;
+    setUserInput({ page: 0, company: new Set(), departments: new Set() });
+    history.push(`/search?q=${encodeURIComponent(query)}`);
   };
 
   if (searching) {
@@ -211,20 +229,34 @@ export function Search(props: SearchProps) {
                 columnAlign="flex-start"
                 style={{ marginTop: -8, marginLeft: 24 }}
               >
-                <CompanyList
-                  height={props.height}
-                  hits={searchResults.hits}
-                  companies={searchResults.facets.company}
-                  selectedCompanies={userInput.company}
-                  onCompanyClick={async (name) => {
-                    if (userInput.company.has(name)) {
-                      userInput.company.delete(name);
-                    } else {
-                      userInput.company.add(name);
-                    }
-                    setUserInput({ ...userInput });
-                  }}
-                />
+                <Stack direction="column" spacing={12}>
+                  <DepartmentsList
+                    hits={searchResults.hits}
+                    departments={searchResults.facets.departments}
+                    selectedDepartments={userInput.departments}
+                    onDepartmentClick={async (name) => {
+                      if (userInput.departments.has(name)) {
+                        userInput.departments.delete(name);
+                      } else {
+                        userInput.departments.add(name);
+                      }
+                      setUserInput({ ...userInput });
+                    }}
+                  />
+                  <CompanyList
+                    hits={searchResults.hits}
+                    companies={searchResults.facets.company}
+                    selectedCompanies={userInput.company}
+                    onCompanyClick={async (name) => {
+                      if (userInput.company.has(name)) {
+                        userInput.company.delete(name);
+                      } else {
+                        userInput.company.add(name);
+                      }
+                      setUserInput({ ...userInput });
+                    }}
+                  />
+                </Stack>
                 <SearchResults
                   hits={searchResults.hits}
                   query={props.query || ""}

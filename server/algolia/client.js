@@ -6,7 +6,7 @@ const client = algoliasearch(
 const index = client.initIndex(process.env.ALGOLIA_INDEX || "");
 
 const algoliaClient = {};
-algoliaClient.getObject = async (objectID, options) => {
+algoliaClient.getObject = async (objectID, options = {}) => {
   let object,
     error = null;
   await index
@@ -22,7 +22,7 @@ algoliaClient.getObject = async (objectID, options) => {
   return [object, error];
 };
 
-algoliaClient.getObjects = async (objectIDs, options) => {
+algoliaClient.getObjects = async (objectIDs, options = {}) => {
   let objects,
     error = null;
   await index
@@ -38,7 +38,7 @@ algoliaClient.getObjects = async (objectIDs, options) => {
   return [objects, error];
 };
 
-algoliaClient.partialUpdateObject = async (object, options) => {
+algoliaClient.partialUpdateObject = async (object, options = {}) => {
   let error = null;
   await index.partialUpdateObject(object, options).catch((err) => {
     console.log(err);
@@ -50,9 +50,21 @@ algoliaClient.partialUpdateObject = async (object, options) => {
   return error;
 };
 
-algoliaClient.saveObject = async (object, options) => {
+algoliaClient.saveObject = async (object, options = {}) => {
   let error = null;
   await index.saveObject(object, options).catch((err) => {
+    console.log(err);
+    error = {
+      code: 500,
+      message: err.message,
+    };
+  });
+  return error;
+};
+
+algoliaClient.saveObjects = async (objects, options = {}) => {
+  let error = null;
+  await index.saveObjects(objects, options).catch((err) => {
     console.log(err);
     error = {
       code: 500,
@@ -74,7 +86,7 @@ algoliaClient.deleteObjects = async (objectIDs) => {
   return error;
 };
 
-algoliaClient.search = async (query, options) => {
+algoliaClient.search = async (query, options = {}) => {
   let error = null;
   let results = {};
   await index

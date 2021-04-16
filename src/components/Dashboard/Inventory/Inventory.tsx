@@ -5,6 +5,7 @@ import { decode } from "html-entities";
 import { Formik, FormikConfig } from "formik";
 import { Button, Form, FormControl } from "react-bootstrap";
 import { Redirect } from "react-router-dom";
+import Select from "react-dropdown-select";
 
 import AddProduct from "./AddProduct/AddProduct";
 import CompanyList from "../Company";
@@ -36,9 +37,36 @@ export interface InventoryProps extends React.HTMLProps<HTMLDivElement> {
   height: number;
 }
 
+const DepartmentToId = new Map<string, number>([
+  ["Accessories/Jewelry", 1],
+  ["Bags", 2],
+  ["Baby", 3],
+  ["Beauty & Personal Care", 4],
+  ["Clothing/Shoes", 5],
+  ["Entertainment", 6],
+  ["Electronics", 7],
+  ["Everything Else/Other", 8],
+  ["Fitness", 9],
+  ["Food & Drinks", 10],
+  ["Groceries", 11],
+  ["Health & Personal Care", 12],
+  ["Home & Kitchen", 13],
+  ["Pet", 14],
+  ["Sports & Outdoors", 15],
+  ["Toys & Games", 16],
+]);
+
+const Departments = [...DepartmentToId.entries()].map((value) => {
+  return {
+    id: value[1],
+    name: value[0],
+  };
+});
+
 interface ProductRequest {
   name: string;
   primaryKeywords: string;
+  departments: Array<string>;
   description: string;
   isRange: boolean;
   price: string;
@@ -59,6 +87,7 @@ const ProductSchema = yup.object().shape({
       /^\s*[^,]+\s*(,(\s*[^,\s]\s*)+){0,2}\s*$/g,
       "Must be a comma seperated list with at most 3 terms"
     ),
+  departments: yup.array().of(yup.string()).required("Required"),
   description: yup.string().optional().max(2048, "Too long"),
   price: yup.mixed().when("isRange", {
     is: false,
@@ -175,11 +204,11 @@ function Inventory(props: InventoryProps) {
       const productToAdd: Product = {
         company: companies[companyIndex].name,
         name: values.name,
+        departments: values.departments,
         primaryKeywords: values.primaryKeywords
           .split(",")
           .filter(Boolean)
-          .map((x) => x.trim())
-          .join(","),
+          .map((x) => x.trim()),
         description: values.description,
         price: price,
         priceRange: priceRange,
@@ -267,8 +296,8 @@ function Inventory(props: InventoryProps) {
             primaryKeywords: values.primaryKeywords
               .split(",")
               .filter(Boolean)
-              .map((x) => x.trim())
-              .join(","),
+              .map((x) => x.trim()),
+            departments: values.departments,
             description: values.description,
             price: price,
             priceRange: priceRange,
@@ -417,7 +446,7 @@ function Inventory(props: InventoryProps) {
           companies={companies}
           height={props.height - 200}
           index={companyIndex}
-          width={248}
+          width={260}
           style={{ marginRight: 12 }}
         />
       )}
@@ -455,9 +484,8 @@ function Inventory(props: InventoryProps) {
               initialValues={
                 {
                   name: product.name,
-                  primaryKeywords: product.primaryKeywords
-                    .split(",")
-                    .join(", "),
+                  primaryKeywords: product.primaryKeywords.join(", "),
+                  departments: product.departments,
                   description: product.description,
                   isRange: product.price !== product.priceRange[1],
                   price: isNewItem ? "" : product.price.toFixed(2),
@@ -516,6 +544,37 @@ function Inventory(props: InventoryProps) {
                         />
                       </FormInputGroup>
                       {createFormErrorMessage("primaryKeywords")}
+                    </Form.Group>
+                    <Form.Group>
+                      <FormLabel
+                        required
+                        description="We use departments to help users find your products by category"
+                      >
+                        Departments
+                      </FormLabel>
+                      <FormInputGroup size="md" width="100%">
+                        <Select
+                          clearable
+                          multi
+                          color="#449ed7"
+                          onChange={(departments) => {
+                            setFieldValue(
+                              "departments",
+                              departments.map(({ name }) => name),
+                              true
+                            );
+                          }}
+                          options={Departments}
+                          style={{ width: 300 }}
+                          labelField="name"
+                          valueField="name"
+                          values={values.departments.map((name) => ({
+                            id: DepartmentToId.get(name),
+                            name,
+                          }))}
+                        />
+                      </FormInputGroup>
+                      {createFormErrorMessage("departments")}
                     </Form.Group>
                     <Form.Group>
                       <FormLabel description="We use the description to help expose your products to the right people! Usually the description on your website is sufficient.">

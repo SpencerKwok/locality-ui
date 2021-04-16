@@ -34,6 +34,7 @@ router.post(
 
       let nextProductId = companyResponse.rows[0].next_product_id;
       const companyName = companyResponse.rows[0].name;
+      const departments = companyResponse.rows[0].departments.split(":");
       const latitude = companyResponse.rows[0].latitude
         .split(",")
         .map((x) => parseFloat(x));
@@ -115,7 +116,7 @@ router.post(
               data.products.map((product, index) => {
                 const productName = product.title;
                 const image = product.images[0].src;
-                const primaryKeywords = product.product_type;
+                const primaryKeywords = product.product_type.split(",");
                 const description = product.body_html.replace(/<[^>]*>/g, "");
                 const link = `${homepage}/products/${product.handle}`;
                 let price = parseFloat(product.variants[0].price);
@@ -136,6 +137,7 @@ router.post(
                   productName,
                   image,
                   primaryKeywords,
+                  departments,
                   description,
                   link,
                   price,
@@ -184,6 +186,7 @@ router.post(
               productName,
               image,
               primaryKeywords,
+              departments,
               description,
               link,
               price,
@@ -198,6 +201,7 @@ router.post(
                 latitude,
                 longitude,
                 primaryKeywords,
+                departments,
                 description,
                 price,
                 priceRange,

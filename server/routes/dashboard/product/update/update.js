@@ -22,6 +22,7 @@ router.post(
       name,
       image,
       primaryKeywords,
+      departments,
       description,
       price,
       priceRange,
@@ -42,6 +43,7 @@ router.post(
             objectID: `${companyId}_${productId}`,
             name: name,
             primary_keywords: primaryKeywords,
+            departments: departments,
             description: description,
             price: price,
             price_range: priceRange,
@@ -106,7 +108,48 @@ router.post(
       return;
     }
 
-    const primaryKeywords = xss(req.body.product.primaryKeywords || "");
+    let primaryKeywords = req.body.product.primaryKeywords;
+    if (!Array.isArray(primaryKeywords)) {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid primary keywords" },
+        })
+      );
+      return;
+    }
+    try {
+      primaryKeywords = primaryKeywords.map((keyword) => xss(keyword));
+    } catch {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid primary keywords" },
+        })
+      );
+      return;
+    }
+
+    let departments = req.body.product.departments;
+    if (!Array.isArray(departments)) {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid departments" },
+        })
+      );
+      return;
+    }
+    try {
+      departments = departments
+        .map((department) => xss(department.trim()))
+        .filter(Boolean);
+    } catch (err) {
+      res.send(
+        JSON.stringify({
+          error: { code: 400, message: "Invalid departments" },
+        })
+      );
+      return;
+    }
+
     const description = xss(req.body.product.description || "");
 
     let price = req.body.product.price;
@@ -164,6 +207,7 @@ router.post(
           name,
           image,
           primaryKeywords,
+          departments,
           description,
           price,
           priceRange,
@@ -183,6 +227,7 @@ router.post(
         name,
         image,
         primaryKeywords,
+        departments,
         description,
         price,
         priceRange,

@@ -24,7 +24,7 @@ router.post(
       if (psqlError) {
         res.send(JSON.stringify({ error: psqlError }));
       } else {
-        res.send(JSON.stringify({}));
+        res.send(JSON.stringify({ homepage: homepage }));
       }
     };
 

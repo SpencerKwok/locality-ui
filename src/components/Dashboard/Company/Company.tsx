@@ -6,6 +6,7 @@ import { Formik, FormikConfig } from "formik";
 import { Form, FormControl } from "react-bootstrap";
 import { Redirect } from "react-router-dom";
 import Popup from "reactjs-popup";
+import Select from "react-dropdown-select";
 
 import CompanyList from "../Company";
 import Image, { toBase64 } from "../Image";
@@ -40,6 +41,10 @@ interface UpdateHomepageForm {
   homepage: string;
 }
 
+interface UpdateDepartmentsForm {
+  departments: Array<string>;
+}
+
 const UpdateLogoSchema = yup.object().shape({
   image: yup.mixed().test("Defined", "Required", (value) => {
     return value !== undefined && value !== "";
@@ -50,12 +55,44 @@ const UpdateHomepageSchema = yup.object().shape({
   homepage: yup.string().required("Required").max(255, "Too long"),
 });
 
+const UpdateDepartmentsSchema = yup.object().shape({
+  departments: yup.array().of(yup.string()).optional(),
+});
+
+const DepartmentToId = new Map<string, number>([
+  ["Accessories/Jewelry", 1],
+  ["Bags", 2],
+  ["Baby", 3],
+  ["Beauty & Personal Care", 4],
+  ["Clothing/Shoes", 5],
+  ["Entertainment", 6],
+  ["Electronics", 7],
+  ["Everything Else/Other", 8],
+  ["Fitness", 9],
+  ["Food & Drinks", 10],
+  ["Groceries", 11],
+  ["Health & Personal Care", 12],
+  ["Home & Kitchen", 13],
+  ["Pet", 14],
+  ["Sports & Outdoors", 15],
+  ["Toys & Games", 16],
+]);
+
+const Departments = [...DepartmentToId.entries()].map((value) => {
+  return {
+    id: value[1],
+    name: value[0],
+  };
+});
+
 function Company(props: CompanyProps) {
   const companyId = Cookie.get("companyId");
   const [companyIndex, setCompanyIndex] = useState(-1);
   const [companies, setCompanies] = useState<Array<BaseCompany>>([]);
+  const [departmentsError, setDepartmentsError] = useState("");
   const [logoError, setLogoError] = useState("");
   const [homepageError, setHomepageError] = useState("");
+  const [updatedDepartments, setUpdatedDepartments] = useState(false);
   const [updatedLogo, setUpdatedLogo] = useState(false);
   const [updatedHomepage, setUpdatedHomepage] = useState(false);
 
@@ -97,10 +134,12 @@ function Company(props: CompanyProps) {
   const createCompanyOnClick = (index: number) => {
     return () => {
       setCompanyIndex(index);
+      setDepartmentsError("");
       setLogoError("");
       setHomepageError("");
       setUpdatedLogo(false);
       setUpdatedHomepage(false);
+      setUpdatedDepartments(false);
     };
   };
 
@@ -141,11 +180,11 @@ function Company(props: CompanyProps) {
         id: companies[companyIndex].id,
         homepage: values.homepage,
       })
-      .then(({ error }) => {
+      .then(({ error, homepage }) => {
         if (error) {
           console.log(error);
           setHomepageError(error.message);
-        } else {
+        } else if (homepage) {
           companies[companyIndex].homepage = values.homepage;
           setUpdatedHomepage(true);
           setHomepageError("");
@@ -154,6 +193,30 @@ function Company(props: CompanyProps) {
       .catch((err) => {
         console.log(err);
         setHomepageError(err.message);
+      });
+  };
+
+  const onSubmitDepartments: FormikConfig<UpdateDepartmentsForm>["onSubmit"] = async (
+    values
+  ) => {
+    await CompanyDAO.getInstance()
+      .departmentsUpdate({
+        id: companies[companyIndex].id,
+        departments: values.departments.map((department) => department.trim()),
+      })
+      .then(({ error, departments }) => {
+        if (error) {
+          console.log(error);
+          setDepartmentsError(error.message);
+        } else if (departments) {
+          companies[companyIndex].departments = departments.join(":");
+          setUpdatedDepartments(true);
+          setDepartmentsError("");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setDepartmentsError(err.message);
       });
   };
 
@@ -193,7 +256,7 @@ function Company(props: CompanyProps) {
             companies={companies}
             height={props.height - 200}
             index={companyIndex}
-            width={300}
+            width={260}
             style={{ marginRight: 32 }}
           />
         )}
@@ -208,6 +271,7 @@ function Company(props: CompanyProps) {
                 <div>
                   <FieldLabel>Company Homepage</FieldLabel>
                   <Formik
+                    enableReinitialize
                     initialValues={
                       {
                         homepage: companies[companyIndex].homepage,
@@ -215,7 +279,6 @@ function Company(props: CompanyProps) {
                     }
                     onSubmit={onSubmitHomepage}
                     validationSchema={UpdateHomepageSchema}
-                    enableReinitialize={true}
                   >
                     {({
                       isSubmitting,
@@ -223,7 +286,6 @@ function Company(props: CompanyProps) {
                       handleBlur,
                       handleChange,
                       handleSubmit,
-                      setFieldValue,
                     }) => (
                       <Form onSubmit={handleSubmit}>
                         <Form.Group>
@@ -271,10 +333,88 @@ function Company(props: CompanyProps) {
                     )}
                   </Formik>
                 </div>
+                <div>
+                  <FieldLabel>Departments</FieldLabel>
+                  <Formik
+                    enableReinitialize
+                    initialValues={
+                      {
+                        departments: companies[companyIndex].departments
+                          .split(":")
+                          .filter(Boolean),
+                      } as UpdateDepartmentsForm
+                    }
+                    onSubmit={onSubmitDepartments}
+                    validationSchema={UpdateDepartmentsSchema}
+                  >
+                    {({
+                      isSubmitting,
+                      values,
+                      handleSubmit,
+                      setFieldValue,
+                    }) => (
+                      <Form onSubmit={handleSubmit}>
+                        <Form.Group>
+                          <FormInputGroup size="md" width="100%">
+                            <Select
+                              clearable
+                              multi
+                              color="#449ed7"
+                              onChange={(departments) => {
+                                setFieldValue(
+                                  "departments",
+                                  departments.map(({ name }) => name),
+                                  true
+                                );
+                              }}
+                              options={Departments}
+                              style={{ width: 300 }}
+                              labelField="name"
+                              valueField="name"
+                              values={values.departments.map((name) => ({
+                                id: DepartmentToId.get(name),
+                                name,
+                              }))}
+                            />
+                          </FormInputGroup>
+                          {createFormErrorMessage("departments")}
+                        </Form.Group>
+                        <div style={{ color: "red" }}>{departmentsError}</div>
+                        {updatedDepartments && departmentsError === "" && (
+                          <div style={{ color: "green" }}>
+                            Successfully updated departments!
+                          </div>
+                        )}
+                        <Stack direction="row-reverse">
+                          <FormButton
+                            variant="primary"
+                            type="submit"
+                            disabled={isSubmitting}
+                          >
+                            {isSubmitting ? (
+                              <React.Fragment>
+                                <span
+                                  className="spinner-border spinner-border-sm"
+                                  role="status"
+                                  aria-hidden="true"
+                                  style={{ marginBottom: 2, marginRight: 12 }}
+                                ></span>
+                                Saving...
+                              </React.Fragment>
+                            ) : (
+                              <React.Fragment>Save</React.Fragment>
+                            )}
+                          </FormButton>
+                        </Stack>
+                      </Form>
+                    )}
+                  </Formik>
+                </div>
               </Stack>
               <Stack direction="column" rowAlign="flex-start">
                 <FieldLabel>Company Logo</FieldLabel>
                 <Formik
+                  enableReinitialize
                   initialValues={
                     {
                       image: companies[companyIndex].logo,
@@ -282,7 +422,6 @@ function Company(props: CompanyProps) {
                   }
                   onSubmit={onSubmitLogo}
                   validationSchema={UpdateLogoSchema}
-                  enableReinitialize={true}
                 >
                   {({
                     isSubmitting,
