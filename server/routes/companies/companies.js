@@ -8,8 +8,15 @@ const companyImageCache = new Map();
   const [companies, _] = await psql.query(
     "SELECT * FROM companies ORDER BY name"
   );
-  [companies.rows[0]].map(async ({ logo }) => {
-    base64Image.requestBase64(logo, (err, res, body) => {
+  companies.rows.map(async ({ logo }) => {
+    // TODO: We get the .jpg image to ensure
+    // backwards compatibility on older safari
+    // versions. We should switch to server side
+    // rendering so we can use .webp for everyone
+    const smallerLogo = logo
+      .replace("/upload", "/upload/w_400")
+      .replace(".webp", ".jpg");
+    base64Image.requestBase64(smallerLogo, (err, res, body) => {
       companyImageCache[logo] = body;
     });
   });
@@ -40,11 +47,18 @@ router.post(
                 logo: companyImageCache[company.logo],
               };
             }
+
             // Cache for future requests
-            base64Image.requestBase64(company.logo, (err, res, body) => {
+            const smallerLogo = company.logo
+              .replace("/upload", "/upload/w_400")
+              .replace(".webp", ".jpg");
+            base64Image.requestBase64(smallerLogo, (err, res, body) => {
               companyImageCache[company.logo] = body;
             });
-            return company;
+            return {
+              ...company,
+              logo: smallerLogo,
+            };
           }),
         })
       );
