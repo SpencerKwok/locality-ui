@@ -26,7 +26,12 @@ function CompanyImage(props: CompanyImageProps) {
     <Stack direction="column" rowAlign="flex-start" style={props.style}>
       <span>
         <StyledPicture>
-          <img alt={props.name} src={props.src} width={props.width} />
+          <img
+            alt={props.name}
+            src={props.src}
+            width={props.width}
+            loading="lazy"
+          />
         </StyledPicture>
       </span>
       <StyledH4>{props.name}</StyledH4>
