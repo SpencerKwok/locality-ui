@@ -1,17 +1,12 @@
 import React, { useState } from "react";
-import XSS from "xss";
 import * as yup from "yup";
 import { Formik, FormikConfig } from "formik";
-import { Form, FormControl } from "react-bootstrap";
+import Form from "react-bootstrap/Form";
+import FormControl from "react-bootstrap/FormControl";
 
 import CompanyDAO from "./CompanyDAO";
 import Stack from "../../../common/components/Stack/Stack";
-import {
-  FormInputGroup,
-  FormLabel,
-  FormButton,
-  createFormErrorMessage,
-} from "../../../common/components/Form/Form";
+import LocalityForm from "../../../common/components/Form";
 
 export interface CompanyProps extends React.HTMLProps<HTMLFormElement> {
   width: number;
@@ -61,14 +56,14 @@ function Company(props: CompanyProps) {
 
   const onSubmit: FormikConfig<SignUpRequest>["onSubmit"] = async (values) => {
     const cleanValues = {
-      firstName: XSS(values.firstName),
-      lastName: XSS(values.lastName),
-      email: XSS(values.email),
-      companyName: XSS(values.companyName),
-      address: XSS(values.address),
-      city: XSS(values.city),
-      province: XSS(values.province),
-      country: XSS(values.country),
+      firstName: values.firstName,
+      lastName: values.lastName,
+      email: values.email,
+      companyName: values.companyName,
+      address: values.address,
+      city: values.city,
+      province: values.province,
+      country: values.country,
     };
 
     await CompanyDAO.getInstance()
@@ -79,9 +74,9 @@ function Company(props: CompanyProps) {
       .then(({ error, redirectTo }) => {
         if (error) {
           setError(error.message);
-        } else if (redirectTo) {
-          window.location.href = redirectTo;
+          return;
         }
+        window.location.href = redirectTo;
       })
       .catch((err) => {
         console.log(err);
@@ -116,10 +111,11 @@ function Company(props: CompanyProps) {
           <Form onSubmit={handleSubmit}>
             <Stack direction="row" spacing={12} priority={[1, 1]}>
               <Form.Group>
-                <FormLabel required>First Name</FormLabel>
-                <FormInputGroup size="lg">
+                <LocalityForm.Label required>First Name</LocalityForm.Label>
+                <LocalityForm.InputGroup size="lg">
                   <FormControl
-                    aria-label="Large"
+                    aria-label="First Name"
+                    aria-details="Enter first name here"
                     id="firstName"
                     onBlur={handleBlur}
                     onChange={handleChange}
@@ -127,14 +123,15 @@ function Company(props: CompanyProps) {
                     type="text"
                     value={values.firstName}
                   />
-                </FormInputGroup>
-                {createFormErrorMessage("firstName")}
+                </LocalityForm.InputGroup>
+                <LocalityForm.ErrorMessage name="firstName" />
               </Form.Group>
               <Form.Group>
-                <FormLabel required>Last Name</FormLabel>
-                <FormInputGroup size="lg">
+                <LocalityForm.Label required>Last Name</LocalityForm.Label>
+                <LocalityForm.InputGroup size="lg">
                   <FormControl
-                    aria-label="Large"
+                    aria-label="Last Name"
+                    aria-details="Enter last name here"
                     id="lastName"
                     onBlur={handleBlur}
                     onChange={handleChange}
@@ -142,16 +139,17 @@ function Company(props: CompanyProps) {
                     type="text"
                     value={values.lastName}
                   />
-                </FormInputGroup>
-                {createFormErrorMessage("lastName")}
+                </LocalityForm.InputGroup>
+                <LocalityForm.ErrorMessage name="lastName" />
               </Form.Group>
             </Stack>
             <Stack direction="row" spacing={12} priority={[1, 1]}>
               <Form.Group>
-                <FormLabel required>Email</FormLabel>
-                <FormInputGroup size="lg">
+                <LocalityForm.Label required>Email</LocalityForm.Label>
+                <LocalityForm.InputGroup size="lg">
                   <FormControl
-                    aria-label="Large"
+                    aria-label="Email"
+                    aria-details="Enter email here"
                     id="email"
                     onBlur={handleBlur}
                     onChange={handleChange}
@@ -159,14 +157,15 @@ function Company(props: CompanyProps) {
                     type="email"
                     value={values.email}
                   />
-                </FormInputGroup>
-                {createFormErrorMessage("email")}
+                </LocalityForm.InputGroup>
+                <LocalityForm.ErrorMessage name="email" />
               </Form.Group>
               <Form.Group>
-                <FormLabel required>Company Name</FormLabel>
-                <FormInputGroup size="lg">
+                <LocalityForm.Label required>Company Name</LocalityForm.Label>
+                <LocalityForm.InputGroup size="lg">
                   <FormControl
-                    aria-label="Large"
+                    aria-label="Company Name"
+                    aria-details="Enter company name here"
                     id="companyName"
                     onBlur={handleBlur}
                     onChange={handleChange}
@@ -174,16 +173,19 @@ function Company(props: CompanyProps) {
                     type="text"
                     value={values.companyName}
                   />
-                </FormInputGroup>
-                {createFormErrorMessage("companyName")}
+                </LocalityForm.InputGroup>
+                <LocalityForm.ErrorMessage name="companyName" />
               </Form.Group>
             </Stack>
             <Stack direction="row" spacing={12} priority={[1, 1]}>
               <Form.Group>
-                <FormLabel required>Company address</FormLabel>
-                <FormInputGroup size="lg">
+                <LocalityForm.Label required>
+                  Company address
+                </LocalityForm.Label>
+                <LocalityForm.InputGroup size="lg">
                   <FormControl
-                    aria-label="Large"
+                    aria-label="Company address"
+                    aria-details="Enter company address here"
                     id="address"
                     onBlur={handleBlur}
                     onChange={handleChange}
@@ -191,14 +193,15 @@ function Company(props: CompanyProps) {
                     type="text"
                     value={values.address}
                   />
-                </FormInputGroup>
-                {createFormErrorMessage("address")}
+                </LocalityForm.InputGroup>
+                <LocalityForm.ErrorMessage name="address" />
               </Form.Group>
               <Form.Group>
-                <FormLabel required>City</FormLabel>
-                <FormInputGroup size="lg">
+                <LocalityForm.Label required>City</LocalityForm.Label>
+                <LocalityForm.InputGroup size="lg">
                   <FormControl
-                    aria-label="Large"
+                    aria-label="City"
+                    aria-details="Enter city here"
                     id="city"
                     onBlur={handleBlur}
                     onChange={handleChange}
@@ -206,16 +209,17 @@ function Company(props: CompanyProps) {
                     type="text"
                     value={values.city}
                   />
-                </FormInputGroup>
-                {createFormErrorMessage("city")}
+                </LocalityForm.InputGroup>
+                <LocalityForm.ErrorMessage name="city" />
               </Form.Group>
             </Stack>
             <Stack direction="row" spacing={12} priority={[1, 1]}>
               <Form.Group>
-                <FormLabel required>Province</FormLabel>
-                <FormInputGroup size="lg">
+                <LocalityForm.Label required>Province</LocalityForm.Label>
+                <LocalityForm.InputGroup size="lg">
                   <FormControl
-                    aria-label="Large"
+                    aria-label="Province"
+                    aria-details="Enter province here"
                     id="province"
                     onBlur={handleBlur}
                     onChange={handleChange}
@@ -223,14 +227,15 @@ function Company(props: CompanyProps) {
                     type="text"
                     value={values.province}
                   />
-                </FormInputGroup>
-                {createFormErrorMessage("province")}
+                </LocalityForm.InputGroup>
+                <LocalityForm.ErrorMessage name="province" />
               </Form.Group>
               <Form.Group>
-                <FormLabel required>Country</FormLabel>
-                <FormInputGroup size="lg">
+                <LocalityForm.Label required>Country</LocalityForm.Label>
+                <LocalityForm.InputGroup size="lg">
                   <FormControl
-                    aria-label="Large"
+                    aria-label="Country"
+                    aria-details="Enter country here"
                     id="country"
                     onBlur={handleBlur}
                     onChange={handleChange}
@@ -238,16 +243,17 @@ function Company(props: CompanyProps) {
                     type="text"
                     value={values.country}
                   />
-                </FormInputGroup>
-                {createFormErrorMessage("country")}
+                </LocalityForm.InputGroup>
+                <LocalityForm.ErrorMessage name="country" />
               </Form.Group>
             </Stack>
             <Stack direction="row" spacing={12} priority={[1, 1]}>
               <Form.Group>
-                <FormLabel required>Password</FormLabel>
-                <FormInputGroup size="lg">
+                <LocalityForm.Label required>Password</LocalityForm.Label>
+                <LocalityForm.InputGroup size="lg">
                   <FormControl
-                    aria-label="Large"
+                    aria-label="Password"
+                    aria-details="Enter password here"
                     id="password1"
                     onBlur={handleBlur}
                     onChange={handleChange}
@@ -255,14 +261,17 @@ function Company(props: CompanyProps) {
                     type="password"
                     value={values.password1}
                   />
-                </FormInputGroup>
-                {createFormErrorMessage("password1")}
+                </LocalityForm.InputGroup>
+                <LocalityForm.ErrorMessage name="password1" />
               </Form.Group>
               <Form.Group>
-                <FormLabel required>Re-enter password</FormLabel>
-                <FormInputGroup size="lg">
+                <LocalityForm.Label required>
+                  Re-enter password
+                </LocalityForm.Label>
+                <LocalityForm.InputGroup size="lg">
                   <FormControl
-                    aria-label="Large"
+                    aria-label="Re-enter Password"
+                    aria-details="Re-enter password here"
                     id="password2"
                     onBlur={handleBlur}
                     onChange={handleChange}
@@ -270,8 +279,8 @@ function Company(props: CompanyProps) {
                     type="password"
                     value={values.password2}
                   />
-                </FormInputGroup>
-                {createFormErrorMessage("password2")}
+                </LocalityForm.InputGroup>
+                <LocalityForm.ErrorMessage name="password2" />
               </Form.Group>
             </Stack>
             <div
@@ -283,25 +292,11 @@ function Company(props: CompanyProps) {
               {error}
             </div>
             <Stack direction="row-reverse">
-              <FormButton
-                variant="primary"
-                type="submit"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <React.Fragment>
-                    <span
-                      className="spinner-border spinner-border-sm"
-                      role="status"
-                      aria-hidden="true"
-                      style={{ marginBottom: 2, marginRight: 12 }}
-                    ></span>
-                    Signing up...
-                  </React.Fragment>
-                ) : (
-                  <React.Fragment>Sign up</React.Fragment>
-                )}
-              </FormButton>
+              <LocalityForm.Button
+                isSubmitting={isSubmitting}
+                text="Sign up"
+                submittingText="Signing up..."
+              />
             </Stack>
           </Form>
         )}

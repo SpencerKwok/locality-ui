@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { geolocated, GeolocatedProps } from "react-geolocated";
-import { Pagination } from "react-bootstrap";
+import Pagination from "react-bootstrap/Pagination";
 import { useHistory } from "react-router-dom";
 import PublicIp from "public-ip";
-import XSS from "xss";
 
 import CompanyList from "./Company/List";
 import CompanyShowcase from "./Company/Showcase";
@@ -90,7 +89,7 @@ export function Search(props: SearchProps) {
 
       await SearchDAO.getInstance()
         .search({
-          query: XSS(props.query),
+          query: props.query,
           ...location,
           page: userInput.page,
           filters,
@@ -171,7 +170,11 @@ export function Search(props: SearchProps) {
               style={{ marginLeft: 24, marginTop: -8 }}
             />
           )}
-          <Stack direction="row" columnAlign="center" width={props.width}>
+          <Stack
+            direction="row"
+            columnAlign="center"
+            style={{ width: props.width }}
+          >
             <Pagination size="lg">
               {[...Array(Math.ceil(searchResults.nbHits / 24)).keys()].map(
                 (index) => (
@@ -263,7 +266,11 @@ export function Search(props: SearchProps) {
                   style={{ marginLeft: 12, paddingRight: 12 }}
                 />
               </Stack>
-              <Stack direction="row" columnAlign="center" width={props.width}>
+              <Stack
+                direction="row"
+                columnAlign="center"
+                style={{ width: props.width }}
+              >
                 <Pagination size="lg">
                   {[...Array(Math.ceil(searchResults.nbHits / 24)).keys()].map(
                     (index) => (

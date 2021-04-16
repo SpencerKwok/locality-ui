@@ -3,7 +3,9 @@ import Cookie from "js-cookie";
 import * as yup from "yup";
 import { decode } from "html-entities";
 import { Formik, FormikConfig } from "formik";
-import { Button, Form, FormControl } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import FormControl from "react-bootstrap/FormControl";
 import { Redirect } from "react-router-dom";
 import Select from "react-dropdown-select";
 
@@ -15,18 +17,13 @@ import Image, { toBase64 } from "../Image";
 import InventoryDAO from "./InventoryDAO";
 import Stack from "../../../common/components/Stack/Stack";
 
+import LocalityForm from "../../../common/components/Form";
 import {
   BaseCompany,
   BaseProduct,
   EmptyProduct,
   Product,
 } from "../../../common/rpc/Schema";
-import {
-  FormInputGroup,
-  FormLabel,
-  FormButton,
-  createFormErrorMessage,
-} from "../../../common/components/Form/Form";
 import {
   VirtualList,
   ListGroupItem,
@@ -37,31 +34,24 @@ export interface InventoryProps extends React.HTMLProps<HTMLDivElement> {
   height: number;
 }
 
-const DepartmentToId = new Map<string, number>([
-  ["Accessories/Jewelry", 1],
-  ["Bags", 2],
-  ["Baby", 3],
-  ["Beauty & Personal Care", 4],
-  ["Clothing/Shoes", 5],
-  ["Entertainment", 6],
-  ["Electronics", 7],
-  ["Everything Else/Other", 8],
-  ["Fitness", 9],
-  ["Food & Drinks", 10],
-  ["Groceries", 11],
-  ["Health & Personal Care", 12],
-  ["Home & Kitchen", 13],
-  ["Pet", 14],
-  ["Sports & Outdoors", 15],
-  ["Toys & Games", 16],
-]);
-
-const Departments = [...DepartmentToId.entries()].map((value) => {
-  return {
-    id: value[1],
-    name: value[0],
-  };
-});
+const Departments = [
+  "Accessories/Jewelry",
+  "Bags",
+  "Baby",
+  "Beauty & Personal Care",
+  "Clothing/Shoes",
+  "Entertainment",
+  "Electronics",
+  "Everything Else/Other",
+  "Fitness",
+  "Food & Drinks",
+  "Groceries",
+  "Health & Personal Care",
+  "Home & Kitchen",
+  "Pet",
+  "Sports & Outdoors",
+  "Toys & Games",
+];
 
 interface ProductRequest {
   name: string;
@@ -148,40 +138,28 @@ function Inventory(props: InventoryProps) {
     if (companyId === "0") {
       InventoryDAO.getInstance()
         .companies({})
-        .then(({ error, companies }) => {
-          if (error) {
-            console.log(error);
-          } else if (companies) {
-            setCompanies(companies);
-          }
+        .then(({ companies }) => {
+          setCompanies(companies);
         })
         .catch((err) => console.log(err));
     } else if (companyId) {
       InventoryDAO.getInstance()
         .company({ id: parseInt(companyId) })
-        .then(({ error, company }) => {
-          if (error) {
-            console.log(error);
-          } else if (company) {
-            setCompanies([company]);
-            setCompanyIndex(0);
-            (async () => {
-              await InventoryDAO.getInstance()
-                .products({ id: company.id })
-                .then(({ error, products }) => {
-                  if (error) {
-                    console.log(error);
-                  } else if (products) {
-                    setProducts(products);
-                  }
-                })
-                .catch((err) => console.log(err));
-            })();
-          }
+        .then(({ company }) => {
+          setCompanies([company]);
+          setCompanyIndex(0);
+          (async () => {
+            await InventoryDAO.getInstance()
+              .products({ id: company.id })
+              .then(({ products }) => {
+                setProducts(products);
+              })
+              .catch((err) => console.log(err));
+          })();
         })
         .catch((err) => console.log(err));
     }
-  }, []);
+  }, [companyId]);
 
   if (!companyId) {
     return <Redirect to="/signin" />;
@@ -514,10 +492,11 @@ function Inventory(props: InventoryProps) {
                     style={{ width: props.width * 0.3 }}
                   >
                     <Form.Group>
-                      <FormLabel required>Name</FormLabel>
-                      <FormInputGroup size="md" width="100%">
+                      <LocalityForm.Label required>Name</LocalityForm.Label>
+                      <LocalityForm.InputGroup>
                         <FormControl
-                          aria-label="Large"
+                          aria-label="Name"
+                          aria-details="Enter product name here"
                           id="name"
                           onBlur={handleBlur}
                           onChange={handleChange}
@@ -525,16 +504,17 @@ function Inventory(props: InventoryProps) {
                           type="text"
                           value={values.name}
                         />
-                      </FormInputGroup>
-                      {createFormErrorMessage("name")}
+                      </LocalityForm.InputGroup>
+                      <LocalityForm.ErrorMessage name="name" />
                     </Form.Group>
                     <Form.Group>
-                      <FormLabel description="Sometimes the name of the product does not include the type of product and that's okay! You can add the type of product as primary keywords here">
+                      <LocalityForm.Label description="Sometimes the name of the product does not include the type of product and that's okay! You can add the type of product as primary keywords here">
                         Primary Keywords (comma list, max 3 terms)
-                      </FormLabel>
-                      <FormInputGroup size="md" width="100%">
+                      </LocalityForm.Label>
+                      <LocalityForm.InputGroup>
                         <FormControl
-                          aria-label="Large"
+                          aria-label="Primary Keywords (comma list, max 3 terms)"
+                          aria-details="Enter product primary keywords here"
                           id="primaryKeywords"
                           onBlur={handleBlur}
                           onChange={handleChange}
@@ -542,48 +522,42 @@ function Inventory(props: InventoryProps) {
                           type="text"
                           value={values.primaryKeywords}
                         />
-                      </FormInputGroup>
-                      {createFormErrorMessage("primaryKeywords")}
+                      </LocalityForm.InputGroup>
+                      <LocalityForm.ErrorMessage name="primaryKeywords" />
                     </Form.Group>
                     <Form.Group>
-                      <FormLabel
+                      <LocalityForm.Label
                         required
                         description="We use departments to help users find your products by category"
                       >
                         Departments
-                      </FormLabel>
-                      <FormInputGroup size="md" width="100%">
+                      </LocalityForm.Label>
+                      <LocalityForm.InputGroup>
                         <Select
                           clearable
                           multi
                           color="#449ed7"
                           onChange={(departments) => {
-                            setFieldValue(
-                              "departments",
-                              departments.map(({ name }) => name),
-                              true
-                            );
+                            setFieldValue("departments", departments, true);
                           }}
                           options={Departments}
                           style={{ width: 300 }}
                           labelField="name"
                           valueField="name"
-                          values={values.departments.map((name) => ({
-                            id: DepartmentToId.get(name),
-                            name,
-                          }))}
+                          values={values.departments}
                         />
-                      </FormInputGroup>
-                      {createFormErrorMessage("departments")}
+                      </LocalityForm.InputGroup>
+                      <LocalityForm.ErrorMessage name="departments" />
                     </Form.Group>
                     <Form.Group>
-                      <FormLabel description="We use the description to help expose your products to the right people! Usually the description on your website is sufficient.">
+                      <LocalityForm.Label description="We use the description to help expose your products to the right people! Usually the description on your website is sufficient.">
                         Description
-                      </FormLabel>
-                      <FormInputGroup size="md" width="100%">
+                      </LocalityForm.Label>
+                      <LocalityForm.InputGroup>
                         <FormControl
                           as="textarea"
-                          aria-label="Large"
+                          aria-label="Description"
+                          aria-details="Enter product description here"
                           id="description"
                           onBlur={handleBlur}
                           onChange={handleChange}
@@ -591,17 +565,18 @@ function Inventory(props: InventoryProps) {
                           type="text"
                           value={values.description}
                         />
-                      </FormInputGroup>
-                      {createFormErrorMessage("description")}
+                      </LocalityForm.InputGroup>
+                      <LocalityForm.ErrorMessage name="description" />
                     </Form.Group>
                     {values.isRange ? (
                       <Form.Group>
                         <Stack direction="row" columnAlign="flex-start">
-                          <FormLabel style={{ paddingRight: 12 }}>
+                          <LocalityForm.Label style={{ paddingRight: 12 }}>
                             Price Range
-                          </FormLabel>
+                          </LocalityForm.Label>
                           <Form.Check
-                            aria-label="Large"
+                            aria-label="Price Range"
+                            aria-description="Check if product price is a price range"
                             id="isRange"
                             onBlur={handleBlur}
                             onChange={handleChange}
@@ -609,7 +584,9 @@ function Inventory(props: InventoryProps) {
                             type="checkbox"
                             checked={values.isRange}
                           />
-                          <FormLabel required>Range</FormLabel>
+                          <LocalityForm.Label required>
+                            Range
+                          </LocalityForm.Label>
                         </Stack>
                         <Stack
                           direction="row"
@@ -618,9 +595,10 @@ function Inventory(props: InventoryProps) {
                           priority={[1, 1]}
                         >
                           <Stack direction="column" columnAlign="flex-start">
-                            <FormInputGroup size="md" width="100%">
+                            <LocalityForm.InputGroup>
                               <FormControl
-                                aria-label="Large"
+                                aria-label="Lower Price Range"
+                                aria-details="Enter bottom of price range here"
                                 id="priceLow"
                                 onBlur={handleBlur}
                                 onChange={handleChange}
@@ -628,12 +606,13 @@ function Inventory(props: InventoryProps) {
                                 type="text"
                                 value={values.priceLow}
                               />
-                            </FormInputGroup>
+                            </LocalityForm.InputGroup>
                           </Stack>
                           <Stack direction="column" columnAlign="flex-start">
-                            <FormInputGroup size="md" width="100%">
+                            <LocalityForm.InputGroup>
                               <FormControl
-                                aria-label="Large"
+                                aria-label="Upper Price Range"
+                                aria-details="Enter top of price range here"
                                 id="priceHigh"
                                 onBlur={handleBlur}
                                 onChange={handleChange}
@@ -641,32 +620,37 @@ function Inventory(props: InventoryProps) {
                                 type="text"
                                 value={values.priceHigh}
                               />
-                            </FormInputGroup>
+                            </LocalityForm.InputGroup>
                           </Stack>
                         </Stack>
-                        {createFormErrorMessage("priceLow")}
-                        {createFormErrorMessage("priceHigh")}
+                        <LocalityForm.ErrorMessage name="priceLow" />
+                        <LocalityForm.ErrorMessage name="priceHigh" />
                       </Form.Group>
                     ) : (
                       <Form.Group>
                         <Stack direction="row" columnAlign="flex-start">
-                          <FormLabel required style={{ paddingRight: 12 }}>
+                          <LocalityForm.Label
+                            required
+                            style={{ paddingRight: 12 }}
+                          >
                             Price
-                          </FormLabel>
+                          </LocalityForm.Label>
                           <Form.Check
-                            aria-label="Large"
+                            aria-label="Price Range"
+                            aria-description="Check if product price is a price range"
                             id="isRange"
                             onBlur={handleBlur}
                             onChange={handleChange}
                             style={{ paddingTop: 1 }}
                             type="checkbox"
-                            defaultChecked={values.isRange}
+                            checked={values.isRange}
                           />
-                          <FormLabel>Range</FormLabel>
+                          <LocalityForm.Label>Range</LocalityForm.Label>
                         </Stack>
-                        <FormInputGroup size="md" width="100%">
+                        <LocalityForm.InputGroup>
                           <FormControl
-                            aria-label="Large"
+                            aria-label="Price"
+                            aria-details="Enter product price here"
                             id="price"
                             onBlur={handleBlur}
                             onChange={handleChange}
@@ -674,20 +658,21 @@ function Inventory(props: InventoryProps) {
                             type="text"
                             value={values.price}
                           />
-                        </FormInputGroup>
-                        {createFormErrorMessage("price")}
+                        </LocalityForm.InputGroup>
+                        <LocalityForm.ErrorMessage name="price" />
                       </Form.Group>
                     )}
                     <Form.Group>
-                      <FormLabel
+                      <LocalityForm.Label
                         description="A product link is the URL that goes to your product on your website. This allows us to redirect people directly to your website!"
                         required
                       >
                         Link to Product
-                      </FormLabel>
-                      <FormInputGroup size="md" width="100%">
+                      </LocalityForm.Label>
+                      <LocalityForm.InputGroup>
                         <FormControl
-                          aria-label="Large"
+                          aria-label="Link to product"
+                          aria-details="Enter link to product here"
                           id="link"
                           onBlur={handleBlur}
                           onChange={handleChange}
@@ -696,8 +681,8 @@ function Inventory(props: InventoryProps) {
                           type="text"
                           value={values.link}
                         />
-                      </FormInputGroup>
-                      {createFormErrorMessage("link")}
+                      </LocalityForm.InputGroup>
+                      <LocalityForm.ErrorMessage name="link" />
                     </Form.Group>
                     <div
                       style={{
@@ -733,29 +718,20 @@ function Inventory(props: InventoryProps) {
                           )}
                         </Button>
                       )}
-                      <FormButton
-                        variant="primary"
-                        type="submit"
-                        disabled={isSubmitting}
-                        style={{ paddingLeft: 24, paddingRight: 24 }}
-                        onClick={handleSubmit}
-                      >
-                        {isSubmitting &&
-                        (values.option === "add" ||
-                          values.option === "edit") ? (
-                          <React.Fragment>
-                            <span
-                              className="spinner-border spinner-border-sm"
-                              role="status"
-                              aria-hidden="true"
-                              style={{ marginBottom: 2, marginRight: 12 }}
-                            ></span>
-                            Saving...
-                          </React.Fragment>
-                        ) : (
-                          <React.Fragment>Save</React.Fragment>
-                        )}
-                      </FormButton>
+                      {values.option === "add" && (
+                        <LocalityForm.Button
+                          isSubmitting={isSubmitting}
+                          text="Add"
+                          submittingText="Adding..."
+                        />
+                      )}
+                      {values.option === "edit" && (
+                        <LocalityForm.Button
+                          isSubmitting={isSubmitting}
+                          text="Update"
+                          submittingText="Updating..."
+                        />
+                      )}
                     </Stack>
                   </Form>
                   <Image

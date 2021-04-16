@@ -1,7 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 import Cookie from "js-cookie";
-import { Button, Nav, Navbar } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
 import { ReactComponent as InstagramLogo } from "./instagram-logo.svg";
 import { ReactComponent as FacebookLogo } from "./facebook-logo.svg";
 
@@ -32,19 +34,15 @@ function Navigation(props: NavigationProps) {
   const signout = async () => {
     await NavigationDAO.getInstance()
       .signout({})
-      .then(({ error }) => {
-        if (error) {
-          console.log(error.message);
-        } else {
-          // Clearing cookie on front end too
-          // since they aren't cleared in
-          // safari for whatever reason
-          Cookie.remove("firstName");
-          Cookie.remove("lastName");
-          Cookie.remove("username");
-          Cookie.remove("companyId");
-          window.location.href = "/signin";
-        }
+      .then(() => {
+        // Clearing cookie on front end too
+        // since they aren't cleared in
+        // safari for whatever reason
+        Cookie.remove("firstName");
+        Cookie.remove("lastName");
+        Cookie.remove("username");
+        Cookie.remove("companyId");
+        window.location.href = "/signin";
       })
       .catch((err) => console.log(err));
   };

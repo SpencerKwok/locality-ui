@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import Popup from "reactjs-popup";
-import { Button } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
 import "reactjs-popup/dist/index.css";
 
 import Stack from "../../../common/components/Stack/Stack";

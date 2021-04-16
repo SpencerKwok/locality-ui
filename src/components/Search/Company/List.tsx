@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { ListGroup } from "react-bootstrap";
+import ListGroup from "react-bootstrap/ListGroup";
 import { Product } from "../../../common/rpc/Schema";
 import { decode } from "html-entities";
 
@@ -52,8 +52,7 @@ function CompanyList(props: CompanyListProps) {
     <Stack
       direction="column"
       rowAlign="flex-start"
-      style={props.style}
-      width={260}
+      style={{ ...props.style, width: 260 }}
     >
       <h4>Companies</h4>
       <ListGroup>

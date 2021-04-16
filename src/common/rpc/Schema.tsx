@@ -115,7 +115,7 @@ export interface ContactRequest {
 export interface ContactResponse extends BaseResponse {}
 
 interface SignUpResponse extends BaseResponse {
-  redirectTo?: string;
+  redirectTo: string;
 }
 
 export interface CustomerSignUpRequest {
@@ -168,13 +168,13 @@ export interface CompanyRequest {
 }
 
 export interface CompanyResponse extends BaseResponse {
-  company?: BaseCompany;
+  company: BaseCompany;
 }
 
 export interface CompaniesRequest {}
 
 export interface CompaniesResponse extends BaseResponse {
-  companies?: Array<BaseCompany>;
+  companies: Array<BaseCompany>;
 }
 
 export interface DepartmentsUpdateRequest {
@@ -183,7 +183,7 @@ export interface DepartmentsUpdateRequest {
 }
 
 export interface DepartmentsUpdateResponse extends BaseResponse {
-  departments?: Array<string>;
+  departments: Array<string>;
 }
 
 export interface DeleteFromWishListRequest {
@@ -198,7 +198,7 @@ export interface HomepageUpdateRequest {
 }
 
 export interface HomepageUpdateResponse extends BaseResponse {
-  homepage?: string;
+  homepage: string;
 }
 
 export interface LogoUpdateRequest {
@@ -207,7 +207,7 @@ export interface LogoUpdateRequest {
 }
 
 export interface LogoUpdateResponse extends BaseResponse {
-  url?: string;
+  url: string;
 }
 
 export interface BaseProduct {
@@ -245,7 +245,7 @@ export interface ProductsRequest {
 }
 
 export interface ProductsResponse extends BaseResponse {
-  products?: Array<BaseProduct>;
+  products: Array<BaseProduct>;
 }
 
 export interface ProductRequest {
@@ -254,7 +254,7 @@ export interface ProductRequest {
 }
 
 export interface ProductResponse extends BaseResponse {
-  product?: Product;
+  product: Product;
 }
 
 export interface ProductUpdateRequest {
@@ -273,7 +273,7 @@ export interface ProductUpdateRequest {
 }
 
 export interface ProductUpdateResponse extends BaseResponse {
-  product?: BaseProduct;
+  product: BaseProduct;
 }
 
 export interface ProductAddRequest {
@@ -294,7 +294,7 @@ export interface ProductAddRequest {
 }
 
 export interface ProductAddResponse extends BaseResponse {
-  product?: BaseProduct;
+  product: BaseProduct;
 }
 
 export interface ProductDeleteRequest {
@@ -316,7 +316,7 @@ export interface ShopifyProductUpdateRequest {
 }
 
 export interface ShopifyProductUpdateResponse extends BaseResponse {
-  products?: Array<BaseProduct>;
+  products: Array<BaseProduct>;
 }
 
 export interface SignInRequest {
@@ -325,7 +325,7 @@ export interface SignInRequest {
 }
 
 export interface SignInResponse extends BaseResponse {
-  redirectTo?: string;
+  redirectTo: string;
 }
 
 export interface SignInGoogleRequest {
@@ -333,7 +333,7 @@ export interface SignInGoogleRequest {
 }
 
 export interface SignInGoogleResponse extends BaseResponse {
-  redirectTo?: string;
+  redirectTo: string;
 }
 
 export interface SignInFacebookRequest {
@@ -341,13 +341,13 @@ export interface SignInFacebookRequest {
 }
 
 export interface SignInFacebookResponse extends BaseResponse {
-  redirectTo?: string;
+  redirectTo: string;
 }
 
 export interface WishListRequest {}
 
 export interface WishListResponse extends BaseResponse {
-  products?: Array<Product>;
+  products: Array<Product>;
 }
 
 export interface GetMethods {

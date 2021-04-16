@@ -1,22 +1,18 @@
 import React, { useState } from "react";
-import XSS from "xss";
 import * as yup from "yup";
 import { Formik, FormikConfig } from "formik";
-import { Form, FormControl } from "react-bootstrap";
+import Form from "react-bootstrap/Form";
+import FormControl from "react-bootstrap/FormControl";
 import GoogleLogin from "react-google-login";
 import FacebookLogin from "react-facebook-login";
 import { IoLogoFacebook } from "react-icons/io";
 
 import CustomerDAO from "./CustomerDAO";
 import Stack from "../../../common/components/Stack/Stack";
-import {
-  FormInputGroup,
-  FormLabel,
-  FormButton,
-  createFormErrorMessage,
-} from "../../../common/components/Form/Form";
-const { REACT_APP_GOOGLE_CLIENT_ID, REACT_APP_FACEBOOK_APP_ID } = process.env;
+import LocalityForm from "../../../common/components/Form";
 import "./Customer.css";
+
+const { REACT_APP_GOOGLE_CLIENT_ID, REACT_APP_FACEBOOK_APP_ID } = process.env;
 
 export interface CustomerProps extends React.HTMLProps<HTMLFormElement> {
   width: number;
@@ -53,15 +49,15 @@ function Customer(props: CustomerProps) {
   const onSubmit: FormikConfig<SignUpRequest>["onSubmit"] = async (values) => {
     await CustomerDAO.getInstance()
       .signup({
-        email: XSS(values.email),
+        email: values.email,
         password: values.password1,
       })
       .then(({ error, redirectTo }) => {
         if (error) {
           setError(error.message);
-        } else if (redirectTo) {
-          window.location.href = redirectTo;
+          return;
         }
+        window.location.href = redirectTo;
       })
       .catch((err) => {
         console.log(err);
@@ -79,14 +75,14 @@ function Customer(props: CustomerProps) {
             if ("accessToken" in response) {
               await CustomerDAO.getInstance()
                 .signupFacebook({
-                  accesstoken: XSS(response.accessToken),
+                  accesstoken: response.accessToken,
                 })
                 .then(({ error, redirectTo }) => {
                   if (error) {
                     setError(error.message);
-                  } else if (redirectTo) {
-                    window.location.href = redirectTo;
+                    return;
                   }
+                  window.location.href = redirectTo;
                 })
                 .catch((err) => setError(err.message));
             } else {
@@ -113,9 +109,9 @@ function Customer(props: CustomerProps) {
               .then(({ error, redirectTo }) => {
                 if (error) {
                   setError(error.message);
-                } else if (redirectTo) {
-                  window.location.href = redirectTo;
+                  return;
                 }
+                window.location.href = redirectTo;
               })
               .catch((err) => setError(err.message));
           } else {
@@ -141,10 +137,11 @@ function Customer(props: CustomerProps) {
         {({ isSubmitting, values, handleBlur, handleChange, handleSubmit }) => (
           <Form onSubmit={handleSubmit}>
             <Form.Group>
-              <FormLabel required>Email</FormLabel>
-              <FormInputGroup size="lg">
+              <LocalityForm.Label required>Email</LocalityForm.Label>
+              <LocalityForm.InputGroup size="lg">
                 <FormControl
-                  aria-label="Large"
+                  aria-label="Email"
+                  aria-details="Enter email here"
                   id="email"
                   onBlur={handleBlur}
                   onChange={handleChange}
@@ -152,14 +149,15 @@ function Customer(props: CustomerProps) {
                   type="email"
                   value={values.email}
                 />
-              </FormInputGroup>
-              {createFormErrorMessage("email")}
+              </LocalityForm.InputGroup>
+              <LocalityForm.ErrorMessage name="email" />
             </Form.Group>
             <Form.Group>
-              <FormLabel required>Password</FormLabel>
-              <FormInputGroup size="lg">
+              <LocalityForm.Label required>Password</LocalityForm.Label>
+              <LocalityForm.InputGroup size="lg">
                 <FormControl
-                  aria-label="Large"
+                  aria-label="Password"
+                  aria-details="Enter password here"
                   id="password1"
                   onBlur={handleBlur}
                   onChange={handleChange}
@@ -167,14 +165,17 @@ function Customer(props: CustomerProps) {
                   type="password"
                   value={values.password1}
                 />
-              </FormInputGroup>
-              {createFormErrorMessage("password1")}
+              </LocalityForm.InputGroup>
+              <LocalityForm.ErrorMessage name="password1" />
             </Form.Group>
             <Form.Group>
-              <FormLabel required>Re-enter password</FormLabel>
-              <FormInputGroup size="lg">
+              <LocalityForm.Label required>
+                Re-enter password
+              </LocalityForm.Label>
+              <LocalityForm.InputGroup size="lg">
                 <FormControl
-                  aria-label="Large"
+                  aria-label="Re-enter Password"
+                  aria-details="Re-enter password here"
                   id="password2"
                   onBlur={handleBlur}
                   onChange={handleChange}
@@ -182,30 +183,18 @@ function Customer(props: CustomerProps) {
                   type="password"
                   value={values.password2}
                 />
-              </FormInputGroup>
-              {createFormErrorMessage("password2")}
+              </LocalityForm.InputGroup>
+              <LocalityForm.ErrorMessage name="password2" />
             </Form.Group>
-            <div style={{ color: "red", marginTop: 12 }}>{error}</div>
+            {error && (
+              <div style={{ color: "red", marginTop: 12 }}>{error}</div>
+            )}
             <Stack direction="row-reverse">
-              <FormButton
-                variant="primary"
-                type="submit"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <React.Fragment>
-                    <span
-                      className="spinner-border spinner-border-sm"
-                      role="status"
-                      aria-hidden="true"
-                      style={{ marginBottom: 2, marginRight: 12 }}
-                    ></span>
-                    Signing up...
-                  </React.Fragment>
-                ) : (
-                  <React.Fragment>Sign up</React.Fragment>
-                )}
-              </FormButton>
+              <LocalityForm.Button
+                isSubmitting={isSubmitting}
+                text="Sign up"
+                submittingText="Signing up..."
+              />
             </Stack>
           </Form>
         )}

@@ -1,5 +1,6 @@
 import styled from "styled-components";
-import { Button, InputGroup } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import InputGroup from "react-bootstrap/InputGroup";
 
 export const SearchInputGroup = styled(InputGroup)`
   input:focus {

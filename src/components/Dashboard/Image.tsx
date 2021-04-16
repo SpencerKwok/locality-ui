@@ -1,13 +1,10 @@
 import React from "react";
 import styled from "styled-components";
-import { Form, FormControl } from "react-bootstrap";
+import Form from "react-bootstrap/Form";
+import FormControl from "react-bootstrap/FormControl";
 
 import Stack from "../../common/components/Stack/Stack";
-import {
-  FormInputGroup,
-  FormLabel,
-  createFormErrorMessage,
-} from "../../common/components/Form/Form";
+import LocalityForm from "../../common/components/Form";
 
 export function toBase64(file: File) {
   return new Promise((resolve, reject) => {
@@ -59,7 +56,7 @@ function Image(props: ImageProps) {
   } = props;
   return (
     <Stack direction="column">
-      {label && <FormLabel required>{label}</FormLabel>}
+      {label && <LocalityForm.Label required>{label}</LocalityForm.Label>}
       <Stack direction="column" spacing={12}>
         <div
           style={{
@@ -99,19 +96,20 @@ function Image(props: ImageProps) {
           })()}
         </div>
         <Form.Group>
-          <FormLabel description={props.description} required>
+          <LocalityForm.Label required description={props.description}>
             Image URL or Image File
-          </FormLabel>
-          <FormInputGroup size="md" width="100%">
+          </LocalityForm.Label>
+          <LocalityForm.InputGroup>
             <FormControl
-              aria-label="Large"
+              aria-label="Image URL"
+              aria-details="Enter image URL here"
               id={imageId}
               onBlur={handleBlur}
               onChange={handleChange}
               placeholder="e.g. www.mywebsite.com/images/wooden-cutlery"
               value={typeof values[imageId] === "string" ? values[imageId] : ""}
             />
-          </FormInputGroup>
+          </LocalityForm.InputGroup>
           <Form.File
             onBlur={handleBlur}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
@@ -122,7 +120,7 @@ function Image(props: ImageProps) {
               }
             }}
           />
-          {createFormErrorMessage(imageId)}
+          <LocalityForm.ErrorMessage name={imageId} />
         </Form.Group>
       </Stack>
     </Stack>

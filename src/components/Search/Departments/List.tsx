@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { ListGroup } from "react-bootstrap";
+import ListGroup from "react-bootstrap/ListGroup";
 import { Product } from "../../../common/rpc/Schema";
 import { decode } from "html-entities";
 

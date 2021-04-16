@@ -2,11 +2,11 @@ import React from "react";
 
 import Stack from "../../common/components/Stack/Stack";
 import ImageGallery, { ReactImageGalleryItem } from "react-image-gallery";
-import { Button } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
 
 import "react-image-gallery/styles/css/image-gallery.css";
 
-const renderVideo = (item: ReactImageGalleryItem) => {
+const renderVideo = () => {
   return (
     <video width={"100%"} controls>
       <source
@@ -76,10 +76,9 @@ function Extension(props: ExtensionProps) {
           <Stack
             direction="column"
             rowAlign="center"
-            minWidth={375}
-            maxWidth={800}
             width={props.width * 0.5}
             spacing={12}
+            style={{ minWidth: 375, maxWidth: 800 }}
           >
             <p style={{ marginBottom: 0 }}>
               Instantly find products from locally owned small businesses with

@@ -3,17 +3,13 @@ import styled from "styled-components";
 import Cookie from "js-cookie";
 import * as yup from "yup";
 import { Formik, FormikConfig } from "formik";
-import { Form, FormControl } from "react-bootstrap";
+import Form from "react-bootstrap/Form";
+import FormControl from "react-bootstrap/FormControl";
 import { Redirect } from "react-router-dom";
 
 import AccountDAO from "./AccountDAO";
 import Stack from "../../../common/components/Stack/Stack";
-import {
-  FormInputGroup,
-  FormLabel,
-  FormButton,
-  createFormErrorMessage,
-} from "../../../common/components/Form/Form";
+import LocalityForm from "../../../common/components/Form";
 
 export interface AccountProps extends React.HTMLProps<HTMLDivElement> {}
 
@@ -49,8 +45,10 @@ const UpdatePasswordSchema = yup.object().shape({
 function Account(props: AccountProps) {
   const firstName = Cookie.get("firstName");
   const lastName = Cookie.get("lastName");
-  const [error, setError] = useState("");
-  const [updatedPassword, setUpdatedPassword] = useState(false);
+  const [updatePasswordStatus, setUpdatePasswordStatus] = useState({
+    error: "",
+    success: false,
+  });
 
   if (!firstName || !lastName) {
     return <Redirect to="/signin" />;
@@ -66,15 +64,13 @@ function Account(props: AccountProps) {
       })
       .then(({ error }) => {
         if (error) {
-          console.log(error);
-          setError(error.message);
-        } else {
-          setUpdatedPassword(true);
+          setUpdatePasswordStatus({ error: error.message, success: false });
+          return;
         }
+        setUpdatePasswordStatus({ error: "", success: true });
       })
-      .catch((err) => {
-        console.log(err);
-        setError(err.message);
+      .catch((error) => {
+        setUpdatePasswordStatus({ error: error.message, success: false });
       });
   };
 
@@ -113,73 +109,70 @@ function Account(props: AccountProps) {
             }) => (
               <Form onSubmit={handleSubmit}>
                 <Form.Group>
-                  <FormLabel required>Current password</FormLabel>
-                  <FormInputGroup size="lg" width="100%">
+                  <LocalityForm.Label required>
+                    Current password
+                  </LocalityForm.Label>
+                  <LocalityForm.InputGroup size="lg">
                     <FormControl
-                      aria-label="Large"
+                      aria-label="Current password"
+                      aria-details="Enter current password here"
                       id="currentPassword"
                       onBlur={handleBlur}
                       onChange={handleChange}
                       type="password"
                       value={values.currentPassword}
                     />
-                  </FormInputGroup>
-                  {createFormErrorMessage("currentPassword")}
+                  </LocalityForm.InputGroup>
+                  <LocalityForm.ErrorMessage name="currentPassword" />
                 </Form.Group>
                 <Form.Group>
-                  <FormLabel required>New password</FormLabel>
-                  <FormInputGroup size="lg" width="100%">
+                  <LocalityForm.Label required>New password</LocalityForm.Label>
+                  <LocalityForm.InputGroup size="lg">
                     <FormControl
-                      aria-label="Large"
+                      aria-label="New password"
+                      aria-details="Enter new password here"
                       id="newPassword1"
                       onBlur={handleBlur}
                       onChange={handleChange}
                       type="password"
                       value={values.newPassword1}
                     />
-                  </FormInputGroup>
-                  {createFormErrorMessage("newPassword1")}
+                  </LocalityForm.InputGroup>
+                  <LocalityForm.ErrorMessage name="newPassword1" />
                 </Form.Group>
                 <Form.Group>
-                  <FormLabel required>Re-enter new password</FormLabel>
-                  <FormInputGroup size="lg" width="100%">
+                  <LocalityForm.Label required>
+                    Re-enter new password
+                  </LocalityForm.Label>
+                  <LocalityForm.InputGroup size="lg">
                     <FormControl
-                      aria-label="Large"
+                      aria-label="Re-enter new password"
+                      aria-details="Re-enter new password here"
                       id="newPassword2"
                       onBlur={handleBlur}
                       onChange={handleChange}
                       type="password"
                       value={values.newPassword2}
                     />
-                  </FormInputGroup>
-                  {createFormErrorMessage("newPassword2")}
+                  </LocalityForm.InputGroup>
+                  <LocalityForm.ErrorMessage name="newPassword2" />
                 </Form.Group>
-                <div style={{ color: "red" }}>{error}</div>
-                {updatedPassword && error === "" && (
+                {updatePasswordStatus.error !== "" && (
+                  <div style={{ color: "red" }}>
+                    {updatePasswordStatus.error}
+                  </div>
+                )}
+                {updatePasswordStatus.success && (
                   <div style={{ color: "green" }}>
                     Successfully updated password!
                   </div>
                 )}
                 <Stack direction="row-reverse">
-                  <FormButton
-                    variant="primary"
-                    type="submit"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <React.Fragment>
-                        <span
-                          className="spinner-border spinner-border-sm"
-                          role="status"
-                          aria-hidden="true"
-                          style={{ marginBottom: 2, marginRight: 12 }}
-                        ></span>
-                        Saving...
-                      </React.Fragment>
-                    ) : (
-                      <React.Fragment>Save</React.Fragment>
-                    )}
-                  </FormButton>
+                  <LocalityForm.Button
+                    isSubmitting={isSubmitting}
+                    text="Update"
+                    submittingText="Updating..."
+                  />
                 </Stack>
               </Form>
             )}

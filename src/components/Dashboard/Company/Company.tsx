@@ -3,7 +3,8 @@ import styled from "styled-components";
 import Cookie from "js-cookie";
 import * as yup from "yup";
 import { Formik, FormikConfig } from "formik";
-import { Form, FormControl } from "react-bootstrap";
+import Form from "react-bootstrap/Form";
+import FormControl from "react-bootstrap/FormControl";
 import { Redirect } from "react-router-dom";
 import Popup from "reactjs-popup";
 import Select from "react-dropdown-select";
@@ -14,11 +15,7 @@ import CompanyDAO from "./CompanyDAO";
 import Stack from "../../../common/components/Stack/Stack";
 import { BaseCompany } from "../../../common/rpc/Schema";
 import { CloseButton } from "../../../common/components/Popup/Popup";
-import {
-  FormInputGroup,
-  FormButton,
-  createFormErrorMessage,
-} from "../../../common/components/Form/Form";
+import LocalityForm from "../../../common/components/Form";
 
 export interface CompanyProps extends React.HTMLProps<HTMLDivElement> {
   height: number;
@@ -59,43 +56,72 @@ const UpdateDepartmentsSchema = yup.object().shape({
   departments: yup.array().of(yup.string()).optional(),
 });
 
-const DepartmentToId = new Map<string, number>([
-  ["Accessories/Jewelry", 1],
-  ["Bags", 2],
-  ["Baby", 3],
-  ["Beauty & Personal Care", 4],
-  ["Clothing/Shoes", 5],
-  ["Entertainment", 6],
-  ["Electronics", 7],
-  ["Everything Else/Other", 8],
-  ["Fitness", 9],
-  ["Food & Drinks", 10],
-  ["Groceries", 11],
-  ["Health & Personal Care", 12],
-  ["Home & Kitchen", 13],
-  ["Pet", 14],
-  ["Sports & Outdoors", 15],
-  ["Toys & Games", 16],
-]);
+const Departments = [
+  "Accessories/Jewelry",
+  "Bags",
+  "Baby",
+  "Beauty & Personal Care",
+  "Clothing/Shoes",
+  "Entertainment",
+  "Electronics",
+  "Everything Else/Other",
+  "Fitness",
+  "Food & Drinks",
+  "Groceries",
+  "Health & Personal Care",
+  "Home & Kitchen",
+  "Pet",
+  "Sports & Outdoors",
+  "Toys & Games",
+];
 
-const Departments = [...DepartmentToId.entries()].map((value) => {
-  return {
-    id: value[1],
-    name: value[0],
-  };
-});
+const NewUserPopup = () => {
+  return (
+    <Popup modal open={true}>
+      {(close: () => void) => (
+        <Stack
+          direction="column"
+          rowAlign="center"
+          columnAlign="center"
+          height={300}
+          style={{ margin: 24 }}
+        >
+          <CloseButton onClick={close}>&times;</CloseButton>
+          <Stack
+            direction="column"
+            rowAlign="center"
+            columnAlign="center"
+            style={{ margin: 24 }}
+          >
+            <h2>You're almost done!</h2>
+            <p>
+              Make sure to update your company logo and homepage so we can link
+              users directly to your storefront!
+            </p>
+          </Stack>
+        </Stack>
+      )}
+    </Popup>
+  );
+};
 
 function Company(props: CompanyProps) {
-  const companyId = Cookie.get("companyId");
   const [companyIndex, setCompanyIndex] = useState(-1);
   const [companies, setCompanies] = useState<Array<BaseCompany>>([]);
-  const [departmentsError, setDepartmentsError] = useState("");
-  const [logoError, setLogoError] = useState("");
-  const [homepageError, setHomepageError] = useState("");
-  const [updatedDepartments, setUpdatedDepartments] = useState(false);
-  const [updatedLogo, setUpdatedLogo] = useState(false);
-  const [updatedHomepage, setUpdatedHomepage] = useState(false);
+  const [updateDepartmentsStatus, setUpdateDepartmentsStatus] = useState({
+    error: null as string | null,
+    success: false,
+  });
+  const [updateLogoStatus, setUpdateLogoStatus] = useState({
+    error: null as string | null,
+    success: false,
+  });
+  const [updateHomepageStatus, setUpdateHomepageStatus] = useState({
+    error: null as string | null,
+    success: false,
+  });
 
+  const companyId = Cookie.get("companyId");
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const newUser = urlParams.get("newUser");
@@ -104,28 +130,20 @@ function Company(props: CompanyProps) {
     if (companyId === "0") {
       CompanyDAO.getInstance()
         .companies({})
-        .then(({ error, companies }) => {
-          if (error) {
-            console.log(error);
-          } else if (companies) {
-            setCompanies(companies);
-          }
+        .then(({ companies }) => {
+          setCompanies(companies);
         })
         .catch((err) => console.log(err));
     } else if (companyId) {
       CompanyDAO.getInstance()
         .company({ id: parseInt(companyId) })
-        .then(({ error, company }) => {
-          if (error) {
-            console.log(error);
-          } else if (company) {
-            setCompanies([company]);
-            setCompanyIndex(0);
-          }
+        .then(({ company }) => {
+          setCompanies([company]);
+          setCompanyIndex(0);
         })
         .catch((err) => console.log(err));
     }
-  }, []);
+  }, [companyId]);
 
   if (!companyId) {
     return <Redirect to="/signin" />;
@@ -134,12 +152,9 @@ function Company(props: CompanyProps) {
   const createCompanyOnClick = (index: number) => {
     return () => {
       setCompanyIndex(index);
-      setDepartmentsError("");
-      setLogoError("");
-      setHomepageError("");
-      setUpdatedLogo(false);
-      setUpdatedHomepage(false);
-      setUpdatedDepartments(false);
+      setUpdateLogoStatus({ error: null, success: false });
+      setUpdateHomepageStatus({ error: null, success: false });
+      setUpdateDepartmentsStatus({ error: null, success: false });
     };
   };
 
@@ -158,17 +173,15 @@ function Company(props: CompanyProps) {
       })
       .then(({ error, url }) => {
         if (error) {
-          console.log(error);
-          setLogoError(error.message);
-        } else if (url) {
-          companies[companyIndex].logo = url;
-          setUpdatedLogo(true);
-          setLogoError("");
+          setUpdateLogoStatus({ error: error.message, success: false });
+          return;
         }
+
+        companies[companyIndex].logo = url;
+        setUpdateLogoStatus({ error: null, success: true });
       })
-      .catch((err) => {
-        console.log(err);
-        setLogoError(err.message);
+      .catch((error) => {
+        setUpdateLogoStatus({ error: error.message, success: false });
       });
   };
 
@@ -182,17 +195,15 @@ function Company(props: CompanyProps) {
       })
       .then(({ error, homepage }) => {
         if (error) {
-          console.log(error);
-          setHomepageError(error.message);
-        } else if (homepage) {
-          companies[companyIndex].homepage = values.homepage;
-          setUpdatedHomepage(true);
-          setHomepageError("");
+          setUpdateHomepageStatus({ error: error.message, success: false });
+          return;
         }
+
+        companies[companyIndex].homepage = homepage;
+        setUpdateHomepageStatus({ error: null, success: true });
       })
-      .catch((err) => {
-        console.log(err);
-        setHomepageError(err.message);
+      .catch((error) => {
+        setUpdateHomepageStatus({ error: error.message, success: false });
       });
   };
 
@@ -206,49 +217,21 @@ function Company(props: CompanyProps) {
       })
       .then(({ error, departments }) => {
         if (error) {
-          console.log(error);
-          setDepartmentsError(error.message);
-        } else if (departments) {
-          companies[companyIndex].departments = departments.join(":");
-          setUpdatedDepartments(true);
-          setDepartmentsError("");
+          setUpdateDepartmentsStatus({ error: error.message, success: false });
+          return;
         }
+
+        companies[companyIndex].departments = departments.join(":");
+        setUpdateDepartmentsStatus({ error: null, success: true });
       })
-      .catch((err) => {
-        console.log(err);
-        setDepartmentsError(err.message);
+      .catch((error) => {
+        setUpdateDepartmentsStatus({ error: error.message, success: false });
       });
   };
 
   return (
     <div>
-      {newUser === "true" && (
-        <Popup modal open={true}>
-          {(close: () => void) => (
-            <Stack
-              direction="column"
-              rowAlign="center"
-              columnAlign="center"
-              height={300}
-              style={{ margin: 24 }}
-            >
-              <CloseButton onClick={close}>&times;</CloseButton>
-              <Stack
-                direction="column"
-                rowAlign="center"
-                columnAlign="center"
-                style={{ margin: 24 }}
-              >
-                <h2>You're almost done!</h2>
-                <p>
-                  Make sure to update your company logo and homepage so we can
-                  link users directly to your storefront!
-                </p>
-              </Stack>
-            </Stack>
-          )}
-        </Popup>
-      )}
+      {newUser === "true" && <NewUserPopup />}
       <Stack direction="row" columnAlign="flex-start" style={{ marginTop: 12 }}>
         {companyId === "0" && (
           <CompanyList
@@ -289,9 +272,10 @@ function Company(props: CompanyProps) {
                     }) => (
                       <Form onSubmit={handleSubmit}>
                         <Form.Group>
-                          <FormInputGroup size="md" width="100%">
+                          <LocalityForm.InputGroup>
                             <FormControl
-                              aria-label="Large"
+                              aria-label="Homepage"
+                              aria-details="Replace homepage and click the save button to update"
                               id="homepage"
                               onBlur={handleBlur}
                               onChange={handleChange}
@@ -299,35 +283,25 @@ function Company(props: CompanyProps) {
                               type="text"
                               value={values.homepage}
                             />
-                          </FormInputGroup>
-                          {createFormErrorMessage("homepage")}
+                          </LocalityForm.InputGroup>
+                          <LocalityForm.ErrorMessage name="homepage" />
                         </Form.Group>
-                        <div style={{ color: "red" }}>{homepageError}</div>
-                        {updatedHomepage && homepageError === "" && (
+                        {updateHomepageStatus.error && (
+                          <div style={{ color: "red" }}>
+                            {updateHomepageStatus.error}
+                          </div>
+                        )}
+                        {updateHomepageStatus.success && (
                           <div style={{ color: "green" }}>
                             Successfully updated homepage!
                           </div>
                         )}
                         <Stack direction="row-reverse">
-                          <FormButton
-                            variant="primary"
-                            type="submit"
-                            disabled={isSubmitting}
-                          >
-                            {isSubmitting ? (
-                              <React.Fragment>
-                                <span
-                                  className="spinner-border spinner-border-sm"
-                                  role="status"
-                                  aria-hidden="true"
-                                  style={{ marginBottom: 2, marginRight: 12 }}
-                                ></span>
-                                Saving...
-                              </React.Fragment>
-                            ) : (
-                              <React.Fragment>Save</React.Fragment>
-                            )}
-                          </FormButton>
+                          <LocalityForm.Button
+                            isSubmitting={isSubmitting}
+                            text="Update"
+                            submittingText="Updating..."
+                          />
                         </Stack>
                       </Form>
                     )}
@@ -355,56 +329,39 @@ function Company(props: CompanyProps) {
                     }) => (
                       <Form onSubmit={handleSubmit}>
                         <Form.Group>
-                          <FormInputGroup size="md" width="100%">
+                          <LocalityForm.InputGroup>
                             <Select
                               clearable
                               multi
                               color="#449ed7"
                               onChange={(departments) => {
-                                setFieldValue(
-                                  "departments",
-                                  departments.map(({ name }) => name),
-                                  true
-                                );
+                                setFieldValue("departments", departments, true);
                               }}
                               options={Departments}
                               style={{ width: 300 }}
                               labelField="name"
                               valueField="name"
-                              values={values.departments.map((name) => ({
-                                id: DepartmentToId.get(name),
-                                name,
-                              }))}
+                              values={values.departments}
                             />
-                          </FormInputGroup>
-                          {createFormErrorMessage("departments")}
+                          </LocalityForm.InputGroup>
+                          <LocalityForm.ErrorMessage name="departments" />
                         </Form.Group>
-                        <div style={{ color: "red" }}>{departmentsError}</div>
-                        {updatedDepartments && departmentsError === "" && (
+                        {updateDepartmentsStatus.error && (
+                          <div style={{ color: "red" }}>
+                            {updateDepartmentsStatus.error}
+                          </div>
+                        )}
+                        {updateDepartmentsStatus.success && (
                           <div style={{ color: "green" }}>
                             Successfully updated departments!
                           </div>
                         )}
                         <Stack direction="row-reverse">
-                          <FormButton
-                            variant="primary"
-                            type="submit"
-                            disabled={isSubmitting}
-                          >
-                            {isSubmitting ? (
-                              <React.Fragment>
-                                <span
-                                  className="spinner-border spinner-border-sm"
-                                  role="status"
-                                  aria-hidden="true"
-                                  style={{ marginBottom: 2, marginRight: 12 }}
-                                ></span>
-                                Saving...
-                              </React.Fragment>
-                            ) : (
-                              <React.Fragment>Save</React.Fragment>
-                            )}
-                          </FormButton>
+                          <LocalityForm.Button
+                            isSubmitting={isSubmitting}
+                            text="Update"
+                            submittingText="Updating..."
+                          />
                         </Stack>
                       </Form>
                     )}
@@ -440,32 +397,22 @@ function Company(props: CompanyProps) {
                         imageId="image"
                         values={values}
                       />
-                      <div style={{ color: "red" }}>{logoError}</div>
-                      {updatedLogo && logoError === "" && (
+                      {updateLogoStatus.error && (
+                        <div style={{ color: "red" }}>
+                          {updateLogoStatus.error}
+                        </div>
+                      )}
+                      {updateLogoStatus.success && (
                         <div style={{ color: "green" }}>
                           Successfully updated logo!
                         </div>
                       )}
                       <Stack direction="row-reverse">
-                        <FormButton
-                          variant="primary"
-                          type="submit"
-                          disabled={isSubmitting}
-                        >
-                          {isSubmitting ? (
-                            <React.Fragment>
-                              <span
-                                className="spinner-border spinner-border-sm"
-                                role="status"
-                                aria-hidden="true"
-                                style={{ marginBottom: 2, marginRight: 12 }}
-                              ></span>
-                              Saving...
-                            </React.Fragment>
-                          ) : (
-                            <React.Fragment>Save</React.Fragment>
-                          )}
-                        </FormButton>
+                        <LocalityForm.Button
+                          isSubmitting={isSubmitting}
+                          text="Update"
+                          submittingText="Updating..."
+                        />
                       </Stack>
                     </Form>
                   )}

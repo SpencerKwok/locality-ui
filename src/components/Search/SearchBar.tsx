@@ -1,5 +1,6 @@
 import React from "react";
-import { InputGroup, FormControl } from "react-bootstrap";
+import FormControl from "react-bootstrap/FormControl";
+import InputGroup from "react-bootstrap/InputGroup";
 
 import Stack from "../../common/components/Stack/Stack";
 import {

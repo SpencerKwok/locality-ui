@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import Popup from "reactjs-popup";
-import { Button } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
 
 import AddProductDAO from "./AddProductDAO";
 import { BaseProduct } from "../../../../common/rpc/Schema";
@@ -118,14 +118,15 @@ function AddProduct(props: AddProductProps) {
       .then(({ error, products }) => {
         if (error) {
           setError(error.message);
-        } else if (products) {
-          props.onShopifyUpload(products);
-          setTimeout(() => setOpen(false), 2000);
+          return;
         }
+
+        props.onShopifyUpload(products);
+        setTimeout(() => setOpen(false), 2000);
         setSubmitting(false);
       })
-      .catch((err) => {
-        setError(err.message);
+      .catch((error) => {
+        setError(error.message);
         setSubmitting(false);
         setTimeout(() => setOpen(false), 2000);
       });

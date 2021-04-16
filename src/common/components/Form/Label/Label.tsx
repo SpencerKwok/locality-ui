@@ -1,41 +1,11 @@
 import React from "react";
 import styled from "styled-components";
-import { ErrorMessage } from "formik";
-import { Button, InputGroup, Form } from "react-bootstrap";
+import Form from "react-bootstrap/Form";
 import Popup from "reactjs-popup";
 import { ReactComponent as QuestionMark } from "./question_mark.svg";
 import "reactjs-popup/dist/index.css";
 
-import Stack from "../Stack/Stack";
-
-export const FormInputGroup = styled(InputGroup)`
-  input:focus {
-    box-shadow: none;
-  }
-  width: ${({ width }) => width}px;
-`;
-
-export const FormButton = styled(Button)`
-  padding: 11px;
-  background-color: #449ed7 !important;
-  border-color: #449ed7 !important;
-  &:hover {
-    background-color: #3880ae !important;
-    border-color: #3880ae !important;
-  }
-  &:active {
-    background-color: #3880ae !important;
-    border-color: #3880ae !important;
-  }
-`;
-
-export const createFormErrorMessage = (name: string) => {
-  return (
-    <div style={{ color: "red" }}>
-      <ErrorMessage name={name} />
-    </div>
-  );
-};
+import Stack from "../../Stack/Stack";
 
 const RequiredFormLabel = styled(Form.Label)`
   &:after {
@@ -49,7 +19,7 @@ export interface FormLabelProps extends React.HTMLAttributes<HTMLLabelElement> {
   description?: string;
 }
 
-export const FormLabel = (props: FormLabelProps) => {
+function FormLabel(props: FormLabelProps) {
   const createTooltip = (description: string) => (
     <Popup
       trigger={<QuestionMark width={16} />}
@@ -74,4 +44,6 @@ export const FormLabel = (props: FormLabelProps) => {
       {props.description && createTooltip(props.description)}
     </Stack>
   );
-};
+}
+
+export default FormLabel;

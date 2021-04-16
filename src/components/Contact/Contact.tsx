@@ -1,17 +1,12 @@
 import React, { useState } from "react";
-import XSS from "xss";
 import * as yup from "yup";
 import { Formik, FormikConfig } from "formik";
-import { Form, FormControl } from "react-bootstrap";
+import Form from "react-bootstrap/Form";
+import FormControl from "react-bootstrap/FormControl";
 
 import ContactDAO from "./ContactDAO";
+import LocalityForm from "../../common/components/Form";
 import Stack from "../../common/components/Stack/Stack";
-import {
-  FormInputGroup,
-  FormLabel,
-  FormButton,
-  createFormErrorMessage,
-} from "../../common/components/Form/Form";
 
 export interface ContactProps extends React.HTMLProps<HTMLDivElement> {
   width: number;
@@ -34,27 +29,27 @@ const FormSchema = yup.object().shape({
 });
 
 function Contact(props: ContactProps) {
-  const [sent, setSent] = useState(false);
-  const [error, setError] = useState("");
+  const [contactStatus, setContactStatus] = useState({
+    error: null as string | null,
+    success: false,
+  });
 
   const onSubmit: FormikConfig<FormRequest>["onSubmit"] = async (values) => {
     await ContactDAO.getInstance()
       .contact({
-        email: XSS(values.email),
-        name: XSS(values.name),
-        message: XSS(values.message),
+        email: values.email,
+        name: values.name,
+        message: values.message,
       })
-      .then((res) => {
-        if (res.error) {
-          console.log(res.error.message);
-          setError(res.error.message);
-        } else {
-          setSent(true);
+      .then(({ error }) => {
+        if (error) {
+          setContactStatus({ error: error.message, success: false });
+          return;
         }
+        setContactStatus({ error: null, success: true });
       })
-      .catch((err) => {
-        console.log(err);
-        setError(error);
+      .catch((error) => {
+        setContactStatus({ error: error.message, success: false });
       });
   };
 
@@ -81,7 +76,7 @@ function Contact(props: ContactProps) {
             get in touch as soon as we can.
           </p>
 
-          {sent ? (
+          {contactStatus.success ? (
             <p>Thanks! You should receive a confirmation email</p>
           ) : (
             <Formik
@@ -104,10 +99,11 @@ function Contact(props: ContactProps) {
               }) => (
                 <Form onSubmit={handleSubmit}>
                   <Form.Group>
-                    <FormLabel required>Name</FormLabel>
-                    <FormInputGroup size="lg" width="100%">
+                    <LocalityForm.Label required>Name</LocalityForm.Label>
+                    <LocalityForm.InputGroup size="lg">
                       <FormControl
-                        aria-label="Large"
+                        aria-label="Name"
+                        aria-details="Enter name here"
                         id="name"
                         onBlur={handleBlur}
                         onChange={handleChange}
@@ -115,14 +111,17 @@ function Contact(props: ContactProps) {
                         type="text"
                         value={values.name}
                       />
-                    </FormInputGroup>
-                    {createFormErrorMessage("name")}
+                    </LocalityForm.InputGroup>
+                    <LocalityForm.ErrorMessage name="name" />
                   </Form.Group>
                   <Form.Group>
-                    <FormLabel required>Email address</FormLabel>
-                    <FormInputGroup size="lg" width="100%">
+                    <LocalityForm.Label required>
+                      Email Address
+                    </LocalityForm.Label>
+                    <LocalityForm.InputGroup size="lg">
                       <FormControl
-                        aria-label="Large"
+                        aria-label="Email Address"
+                        aria-details="Enter email here"
                         id="email"
                         onBlur={handleBlur}
                         onChange={handleChange}
@@ -130,15 +129,16 @@ function Contact(props: ContactProps) {
                         type="email"
                         value={values.email}
                       />
-                    </FormInputGroup>
-                    {createFormErrorMessage("email")}
+                    </LocalityForm.InputGroup>
+                    <LocalityForm.ErrorMessage name="email" />
                   </Form.Group>
                   <Form.Group>
-                    <FormLabel required>Message</FormLabel>
-                    <FormInputGroup size="lg" width="100%">
+                    <LocalityForm.Label required>Message</LocalityForm.Label>
+                    <LocalityForm.InputGroup size="lg">
                       <FormControl
                         as="textarea"
-                        aria-label="Large"
+                        aria-label="Message"
+                        aria-details="Enter message here"
                         id="message"
                         onBlur={handleBlur}
                         onChange={handleChange}
@@ -146,44 +146,30 @@ function Contact(props: ContactProps) {
                         type="text"
                         value={values.message}
                       />
-                    </FormInputGroup>
-                    <div
-                      style={{
-                        textAlign: "right",
-                        color: values.message.length > 500 ? "red" : "black",
-                      }}
-                    >{`${values.message.length}/500`}</div>
-                    {createFormErrorMessage("message")}
+                    </LocalityForm.InputGroup>
+                    <LocalityForm.CharacterLimit
+                      message={values.message}
+                      maxCharacters={500}
+                    />
+                    <LocalityForm.ErrorMessage name="message" />
                   </Form.Group>
                   <Stack direction="row-reverse">
-                    <FormButton
-                      variant="primary"
-                      type="submit"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? (
-                        <React.Fragment>
-                          <span
-                            className="spinner-border spinner-border-sm"
-                            role="status"
-                            aria-hidden="true"
-                            style={{ marginBottom: 2, marginRight: 12 }}
-                          ></span>
-                          Submitting...
-                        </React.Fragment>
-                      ) : (
-                        <React.Fragment>Submit</React.Fragment>
-                      )}
-                    </FormButton>
+                    <LocalityForm.Button
+                      isSubmitting={isSubmitting}
+                      text="Send"
+                      submittingText="Sending..."
+                    />
                   </Stack>
-                  <div
-                    color="red"
-                    style={{
-                      textAlign: "right",
-                    }}
-                  >
-                    {error}
-                  </div>
+                  {contactStatus.error && (
+                    <div
+                      color="red"
+                      style={{
+                        textAlign: "right",
+                      }}
+                    >
+                      {contactStatus.error}
+                    </div>
+                  )}
                 </Form>
               )}
             </Formik>

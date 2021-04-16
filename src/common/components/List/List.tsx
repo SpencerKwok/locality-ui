@@ -1,5 +1,5 @@
-import { ListGroup } from "react-bootstrap";
-import { List } from "react-virtualized";
+import ListGroup from "react-bootstrap/ListGroup";
+import List from "react-virtualized/dist/es/List";
 import styled from "styled-components";
 
 export const VirtualList = styled(List)`

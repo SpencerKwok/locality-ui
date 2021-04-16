@@ -21,12 +21,8 @@ function WishList(props: WishListProps) {
     (async () => {
       await WishListDAO.getInstance()
         .wishlist({})
-        .then(({ error, products }) => {
-          if (error) {
-            console.log(error);
-          } else if (products) {
-            setHits(products);
-          }
+        .then(({ products }) => {
+          setHits(products);
         });
     })();
   }, []);

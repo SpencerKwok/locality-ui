@@ -2,24 +2,20 @@ import React, { useState } from "react";
 import Cookie from "js-cookie";
 import FacebookLogin from "react-facebook-login";
 import GoogleLogin from "react-google-login";
-import XSS from "xss";
 import * as yup from "yup";
 import { Formik, FormikConfig } from "formik";
-import { Form, FormControl } from "react-bootstrap";
+import Form from "react-bootstrap/Form";
+import FormControl from "react-bootstrap/FormControl";
 import { IoLogoFacebook } from "react-icons/io";
 
 import SignInDAO from "./SignInDAO";
 import { ReactComponent as LocalityLogo } from "./locality-logo.svg";
 import Stack from "../../common/components/Stack/Stack";
-import {
-  FormInputGroup,
-  FormLabel,
-  FormButton,
-  createFormErrorMessage,
-} from "../../common/components/Form/Form";
+import LocalityForm from "../../common/components/Form";
 import { Redirect } from "react-router";
-const { REACT_APP_GOOGLE_CLIENT_ID, REACT_APP_FACEBOOK_APP_ID } = process.env;
 import "./SignIn.css";
+
+const { REACT_APP_GOOGLE_CLIENT_ID, REACT_APP_FACEBOOK_APP_ID } = process.env;
 
 export interface SignInProps extends React.HTMLProps<HTMLElement> {}
 
@@ -48,15 +44,15 @@ function SignIn(props: SignInProps) {
   const onSubmit: FormikConfig<SignInRequest>["onSubmit"] = async (values) => {
     await SignInDAO.getInstance()
       .signin({
-        username: XSS(values.username),
+        username: values.username,
         password: values.password,
       })
       .then(({ error, redirectTo }) => {
         if (error) {
           setError(error.message);
-        } else if (redirectTo) {
-          window.location.href = redirectTo;
+          return;
         }
+        window.location.href = redirectTo;
       })
       .catch((err) => setError(err.message));
   };
@@ -83,14 +79,14 @@ function SignIn(props: SignInProps) {
                 if ("accessToken" in response) {
                   await SignInDAO.getInstance()
                     .signinFacebook({
-                      accesstoken: XSS(response.accessToken),
+                      accesstoken: response.accessToken,
                     })
                     .then(({ error, redirectTo }) => {
                       if (error) {
                         setError(error.message);
-                      } else if (redirectTo) {
-                        window.location.href = redirectTo;
+                        return;
                       }
+                      window.location.href = redirectTo;
                     })
                     .catch((err) => setError(err.message));
                 } else {
@@ -112,14 +108,14 @@ function SignIn(props: SignInProps) {
               if ("accessToken" in response) {
                 await SignInDAO.getInstance()
                   .signinGoogle({
-                    accesstoken: XSS(response.accessToken),
+                    accesstoken: response.accessToken,
                   })
                   .then(({ error, redirectTo }) => {
                     if (error) {
                       setError(error.message);
-                    } else if (redirectTo) {
-                      window.location.href = redirectTo;
+                      return;
                     }
+                    window.location.href = redirectTo;
                   })
                   .catch((err) => setError(err.message));
               } else {
@@ -149,54 +145,44 @@ function SignIn(props: SignInProps) {
             }) => (
               <Form onSubmit={handleSubmit}>
                 <Form.Group>
-                  <FormLabel required>Email</FormLabel>
-                  <FormInputGroup size="lg" width="100%">
+                  <LocalityForm.Label required>Email</LocalityForm.Label>
+                  <LocalityForm.InputGroup size="lg">
                     <FormControl
-                      aria-label="Large"
+                      aria-label="Email"
+                      aria-details="Enter email here"
                       id="username"
                       onBlur={handleBlur}
                       onChange={handleChange}
                       type="email"
                       value={values.username}
                     />
-                  </FormInputGroup>
-                  {createFormErrorMessage("username")}
+                  </LocalityForm.InputGroup>
+                  <LocalityForm.ErrorMessage name="username" />
                 </Form.Group>
                 <Form.Group>
-                  <FormLabel required>Password</FormLabel>
-                  <FormInputGroup size="lg" width="100%">
+                  <LocalityForm.Label required>Password</LocalityForm.Label>
+                  <LocalityForm.InputGroup size="lg">
                     <FormControl
-                      aria-label="Large"
+                      aria-label="Password"
+                      aria-details="Enter password here"
                       id="password"
                       onBlur={handleBlur}
                       onChange={handleChange}
                       type="password"
                       value={values.password}
                     />
-                  </FormInputGroup>
-                  {createFormErrorMessage("password")}
+                  </LocalityForm.InputGroup>
+                  <LocalityForm.ErrorMessage name="password" />
                 </Form.Group>
-                <div style={{ color: "red", marginTop: 12 }}>{error}</div>
+                {error && (
+                  <div style={{ color: "red", marginTop: 12 }}>{error}</div>
+                )}
                 <Stack direction="row-reverse">
-                  <FormButton
-                    variant="primary"
-                    type="submit"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <React.Fragment>
-                        <span
-                          className="spinner-border spinner-border-sm"
-                          role="status"
-                          aria-hidden="true"
-                          style={{ marginBottom: 2, marginRight: 12 }}
-                        ></span>
-                        Signing in...
-                      </React.Fragment>
-                    ) : (
-                      <React.Fragment>Sign in</React.Fragment>
-                    )}
-                  </FormButton>
+                  <LocalityForm.Button
+                    isSubmitting={isSubmitting}
+                    text="Sign in"
+                    submittingText="Signing in..."
+                  />
                 </Stack>
               </Form>
             )}

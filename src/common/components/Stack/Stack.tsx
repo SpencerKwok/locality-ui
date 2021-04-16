@@ -12,10 +12,6 @@ export type StackWrap = "nowrap" | "wrap" | "wrap-reverse";
 export interface StackProps extends React.HTMLProps<HTMLElement> {
   direction: StackDirection;
   columnAlign?: StackAlignment;
-  minWidth?: number;
-  maxWidth?: number;
-  width?: number;
-  height?: number;
   priority?: Array<number>;
   rowAlign?: StackAlignment;
   spacing?: number;
@@ -64,10 +60,6 @@ export default styled(Stack)`
     display: flex;
     flex-wrap: ${({ wrap }) => wrap};
     flex-direction: ${({ direction }) => direction};
-    height: ${({ height }) => height}px;
-    width: ${({ width }) => width}px;
-    min-width: ${({ minWidth }) => minWidth}px;
-    max-width: ${({ maxWidth }) => maxWidth}px;
     justify-content: ${({ columnAlign }) => columnAlign};
     > .stackitem {
         margin-${({ direction }) => directionToMargin(direction)}: ${({
