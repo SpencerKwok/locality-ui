@@ -5,28 +5,28 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "./App.css";
 
 // Lazy load all modules except Main
-const About = React.lazy(() =>
+const About = lazy(() =>
   import("./components").then((module) => ({ default: module.About }))
 );
-const Contact = React.lazy(() =>
+const Contact = lazy(() =>
   import("./components").then((module) => ({ default: module.Contact }))
 );
-const Dashboard = React.lazy(() =>
+const Dashboard = lazy(() =>
   import("./components").then((module) => ({ default: module.Dashboard }))
 );
-const Extension = React.lazy(() =>
+const Extension = lazy(() =>
   import("./components").then((module) => ({ default: module.Extension }))
 );
-const Navigation = React.lazy(() =>
+const Navigation = lazy(() =>
   import("./components").then((module) => ({ default: module.Navigation }))
 );
-const SignIn = React.lazy(() =>
+const SignIn = lazy(() =>
   import("./components").then((module) => ({ default: module.SignIn }))
 );
-const SignUp = React.lazy(() =>
+const SignUp = lazy(() =>
   import("./components").then((module) => ({ default: module.SignUp }))
 );
-const WishList = React.lazy(() =>
+const WishList = lazy(() =>
   import("./components").then((module) => ({ default: module.WishList }))
 );
 
