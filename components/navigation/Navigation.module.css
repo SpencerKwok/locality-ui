@@ -1,0 +1,16 @@
+.navlink {
+  cursor: pointer;
+  color: white !important;
+}
+
+.navbar {
+  background-color: #449ed7;
+}
+
+.nav-button {
+  cursor: pointer;
+  align-items: center;
+  display: flex;
+  flex-flow: row wrap;
+  margin-left: 12px;
+}

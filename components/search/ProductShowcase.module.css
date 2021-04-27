@@ -1,0 +1,10 @@
+.sort-filter {
+  padding: 1px 6px 1px 6px;
+  background-color: #449ed7 !important;
+  border-color: #449ed7 !important;
+}
+.sort-filter:hover,
+.sort-filter:active {
+  background-color: #3880ae !important;
+  border-color: #3880ae !important;
+}
