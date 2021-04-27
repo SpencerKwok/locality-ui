@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
+import PublicIp from "public-ip";
 
 import { GetRpcClient } from "../../components/common/RpcClient";
 import { SearchResponse } from "../../components/common/Schema";
@@ -10,7 +11,7 @@ import RootLayout from "../../components/root-layout/RootLayout";
 import { useMediaQuery } from "../../lib/common";
 
 interface SearchProps {
-  defaultQuery: string;
+  query: string;
   searchResponse: SearchResponse;
 }
 
@@ -19,12 +20,14 @@ function fetcher(url: string) {
 }
 
 class UserInput {
+  public ip: string;
   public query: string;
   public page: number;
   public company: Set<string>;
   public departments: Set<string>;
 
   constructor(query: string) {
+    this.ip = "";
     this.query = query;
     this.page = 0;
     this.company = new Set<string>();
@@ -35,6 +38,9 @@ class UserInput {
     let params = `q=${this.query}`;
     if (this.page > 0) {
       params += `&pg=${this.page}`;
+    }
+    if (this.ip !== "") {
+      params += `&ip=${this.ip}`;
     }
     const companyFilters = Array.from(this.company).map(
       (name) => `company:"${name}"`
@@ -51,28 +57,37 @@ class UserInput {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const defaultQuery = context.query["q"] || "";
-  const searchResponse = await fetcher(`/api/search?q=${defaultQuery}`);
+  const query = context.query["q"] || "";
+  const searchResponse = await fetcher(`/api/search?q=${query}`);
   return {
     props: {
-      defaultQuery,
+      query,
       searchResponse,
     },
   };
 };
 
-function Home({ defaultQuery, searchResponse }: SearchProps) {
+export default function Home({ query, searchResponse }: SearchProps) {
   const router = useRouter();
-  const [data, setData] = useState(searchResponse);
-  const [userInput, setUserInput] = useState(new UserInput(defaultQuery));
+  const [data, setData] = useState({ ...searchResponse });
+  const [userInput, setUserInput] = useState(new UserInput(query));
+
+  useEffect(() => {
+    PublicIp.v4({ onlyHttps: true })
+      .then((ip) => {
+        userInput.ip = ip;
+        onUserInputChange();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
   const onUserInputChange = () => {
     setUserInput(userInput);
     fetcher(`/api/search?${userInput.toString()}`)
       .then(({ hits, nbHits }) => {
-        data.hits = hits;
-        data.nbHits = nbHits;
-        setData({ ...data });
+        setData({ facets: data.facets, hits, nbHits });
       })
       .catch((err) => {
         console.log(err);
@@ -124,7 +139,7 @@ function Home({ defaultQuery, searchResponse }: SearchProps) {
   };
 
   const onReset = () => {
-    userInput.query = defaultQuery;
+    userInput.query = query;
     userInput.page = 0;
     userInput.company = new Set<string>();
     userInput.departments = new Set<string>();
@@ -133,11 +148,11 @@ function Home({ defaultQuery, searchResponse }: SearchProps) {
     data.hits = searchResponse.hits;
     data.nbHits = searchResponse.nbHits;
 
-    setData(searchResponse);
-    setUserInput(new UserInput(defaultQuery));
+    setData({ ...searchResponse });
+    setUserInput(new UserInput(query));
   };
 
-  if (userInput.query !== defaultQuery) {
+  if (userInput.query !== query) {
     onReset();
   }
 
@@ -150,7 +165,7 @@ function Home({ defaultQuery, searchResponse }: SearchProps) {
     departments.set(name, data.facets.departments[name]);
   }
 
-  const isNarrow = useMediaQuery(42, "width");
+  const isNarrow = useMediaQuery(42, "width", onReset);
   return (
     <RootLayout>
       {isNarrow ? (
@@ -190,5 +205,3 @@ function Home({ defaultQuery, searchResponse }: SearchProps) {
     </RootLayout>
   );
 }
-
-export default React.memo(Home, () => false);
