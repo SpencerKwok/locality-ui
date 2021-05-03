@@ -1,5 +1,6 @@
 import SqlString from "sqlstring";
 import Xss from "xss";
+import { getSession } from "next-auth/client";
 
 import Algolia from "../../lib/api/algolia";
 import Psql from "../../lib/api/postgresql";
@@ -32,7 +33,7 @@ export default async function handler(req, res) {
   const facets = ["company", "departments"];
   const restrictSearchableAttributes = ["name", "primary_keywords"];
   const attributesToRetrieve = [
-    "objectID",
+    "objectId",
     "company",
     "image",
     "link",
@@ -40,14 +41,14 @@ export default async function handler(req, res) {
     "price",
     "price_range",
   ];
+  const attributesToHighlight = [];
 
-  const username = req.cookies["username"];
   let wishlist = [];
-  if (username) {
+  const session = await getSession({ req });
+  if (session && session.user) {
+    const user = session.user;
     const [productIDs, wishlistError] = await Psql.query(
-      SqlString.format("SELECT wishlist FROM users WHERE username=E?", [
-        username,
-      ])
+      SqlString.format("SELECT wishlist FROM users WHERE id=?", [user.id])
     );
 
     // Don't error out because we failed
@@ -66,6 +67,7 @@ export default async function handler(req, res) {
       filters,
       page,
       attributesToRetrieve,
+      attributesToHighlight,
       ...(ext === "1" && { restrictSearchableAttributes }),
     });
     if (error) {
@@ -77,7 +79,7 @@ export default async function handler(req, res) {
       results.hits = results.hits.map((hit) => {
         return {
           ...hit,
-          wishlist: wishlist.includes(hit.objectID),
+          wishlist: wishlist.includes(hit.objectId),
         };
       });
     }
@@ -91,6 +93,7 @@ export default async function handler(req, res) {
       headers: { "X-Forwarded-For": ip },
       page,
       attributesToRetrieve,
+      attributesToHighlight,
       ...(ext === "1" && { restrictSearchableAttributes }),
     });
     if (error) {
@@ -102,7 +105,7 @@ export default async function handler(req, res) {
       results.hits = results.hits.map((hit) => {
         return {
           ...hit,
-          wishlist: wishlist.includes(hit.objectID),
+          wishlist: wishlist.includes(hit.objectId),
         };
       });
     }
@@ -115,6 +118,7 @@ export default async function handler(req, res) {
       filters,
       page,
       restrictSearchableAttributes,
+      attributesToHighlight,
       ...(ext === "1" && { restrictSearchableAttributes }),
     });
     if (error) {
@@ -126,7 +130,7 @@ export default async function handler(req, res) {
       results.hits = results.hits.map((hit) => {
         return {
           ...hit,
-          wishlist: wishlist.includes(hit.objectID),
+          wishlist: wishlist.includes(hit.objectId),
         };
       });
     }

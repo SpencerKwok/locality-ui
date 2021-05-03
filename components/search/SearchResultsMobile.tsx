@@ -19,17 +19,21 @@ export interface SearchResults {
 }
 
 export interface SearchProps {
-  defaultQuery: string;
+  loggedIn: boolean;
+  query: string;
   searchResults: SearchResults;
   onEnter: (query: string) => void;
   onBottom: () => void;
+  onToggleWishList: (objectId: string, value: boolean) => void;
 }
 
 export default function Search({
-  defaultQuery,
+  loggedIn,
+  query,
   searchResults,
   onEnter,
   onBottom,
+  onToggleWishList,
 }: SearchProps) {
   let atBottom = false;
 
@@ -68,15 +72,12 @@ export default function Search({
           />
         </div>
       </Link>
-      <SearchBar
-        autoFocus
-        defaultQuery={defaultQuery}
-        width={280}
-        onEnter={onEnter}
-      />
+      <SearchBar autoFocus defaultQuery={query} width={280} onEnter={onEnter} />
       <ProductShowcase
+        loggedIn={loggedIn}
         align="center"
         hits={searchResults.hits}
+        onToggleWishList={onToggleWishList}
         style={{ marginRight: -12 }}
       />
     </Stack>

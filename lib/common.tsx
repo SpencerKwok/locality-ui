@@ -9,7 +9,7 @@ export function useMediaQuery(
 
   const updateTarget = useCallback((e) => {
     if (e.matches) {
-      if (!targetReached) onChange(true);
+      onChange(true);
       setTargetReached(true);
     } else {
       onChange(false);

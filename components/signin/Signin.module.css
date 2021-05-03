@@ -1,0 +1,33 @@
+.error {
+  color: red;
+  margin: 12px 0px 12px 0px;
+  width: 300px;
+}
+
+.signin {
+  background-color: #ffffff;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 2px 2px 0px,
+    rgba(0, 0, 0, 0.24) 0px 0px 1px 0px;
+  border-radius: 2px;
+  border: 1px solid transparent;
+  padding: 8px;
+  width: 300px;
+}
+.signin:hover {
+  cursor: pointer;
+  opacity: 0.9;
+}
+.signin:active {
+  cursor: pointer;
+  background-color: #eeeeee;
+  opacity: 1;
+}
+.signin > span {
+  margin: 0px;
+}
+.signin > svg {
+  margin-bottom: 2px;
+  margin-right: 12px;
+  width: 18px;
+  height: 18px;
+}

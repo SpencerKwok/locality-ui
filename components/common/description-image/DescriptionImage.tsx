@@ -1,12 +1,12 @@
-import React from "react";
-
+import { forwardRef } from "react";
 import Stack, { StackProps } from "../Stack";
+import styles from "./DescriptionImage.module.css";
 
 export interface DescriptionImageProps extends StackProps {
   src: string;
 }
 
-function DescriptionImage(props: DescriptionImageProps) {
+export default function DescriptionImage(props: DescriptionImageProps) {
   return (
     <Stack
       direction={props.direction}
@@ -31,4 +31,11 @@ function DescriptionImage(props: DescriptionImageProps) {
   );
 }
 
-export default DescriptionImage;
+export const LinkedDescriptionImage = forwardRef<
+  HTMLAnchorElement,
+  DescriptionImageProps
+>(({ href, ...rest }, ref) => (
+  <a className={styles.link} href={href} ref={ref}>
+    <DescriptionImage {...rest} />
+  </a>
+));

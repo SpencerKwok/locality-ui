@@ -1,4 +1,5 @@
 export { default as FacebookLogo } from './FacebookLogo'
+export { default as GoogleLogo } from './GoogleLogo'
 export { default as HeartFilled } from './HeartFilled'
 export { default as Heart } from './Heart'
 export { default as InstagramLogo } from './InstagramLogo'

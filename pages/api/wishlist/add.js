@@ -12,20 +12,15 @@ export default async function handler(req, res) {
     return;
   }
 
-  /* TODO: Add sign-in
-  const username = req.cookies["username"];
-  if (!username) {
-    res.status(403).end();
-  }
-
   const objectId = Xss(req.body.id || "");
   if (objectId === "") {
     res.status(400).json({ error: "Invalid object id" });
     return;
   }
 
+  const { id } = req.locals.user;
   const [productIDs, productIDsError] = await Psql.query(
-    SqlString.format("SELECT wishlist FROM users WHERE username=E?", [username])
+    SqlString.format("SELECT wishlist FROM users WHERE id=?", [id])
   );
   if (productIDsError) {
     res.status(500).json({ error: productIDsError });
@@ -37,9 +32,9 @@ export default async function handler(req, res) {
 
   const updatedWishlist = wishlist.join(",");
   const [_, addProductIdError] = await Psql.query(
-    SqlString.format("UPDATE users SET wishlist=E? WHERE username=E?", [
+    SqlString.format("UPDATE users SET wishlist=E? WHERE id=?", [
       updatedWishlist,
-      username,
+      id,
     ])
   );
   if (addProductIdError) {
@@ -48,5 +43,4 @@ export default async function handler(req, res) {
   }
 
   res.status(200).json({});
-  */
 }

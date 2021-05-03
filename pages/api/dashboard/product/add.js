@@ -1,10 +1,10 @@
 import Xss from "xss";
 
 import { productAdd } from "../../../../lib/api/dashboard";
-import { runMiddlewareCompany } from "../../../../lib/api/middleware";
+import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
 
 export default async function handler(req, res) {
-  await runMiddlewareCompany(req, res);
+  await runMiddlewareBusiness(req, res);
 
   if (req.method !== "POST") {
     res.status(400).json({ error: "Must be POST method" });

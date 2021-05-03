@@ -2,34 +2,47 @@ import React from "react";
 import { GetStaticProps } from "next";
 import { useRouter } from "next/router";
 
-import { CompaniesResponse } from "../components/common/Schema";
+import { BaseBusiness } from "../components/common/Schema";
 import { GetRpcClient } from "../components/common/RpcClient";
 import HomePage from "../components/home/Home";
-import RootLayout from "../components/root-layout/RootLayout";
+import RootLayout from "../components/common/RootLayout";
+import { useWindowSize } from "../lib/common";
 
 interface HomeProps {
-  companies: CompaniesResponse;
+  businesses: Array<BaseBusiness>;
 }
 
 function fetcher(url: string) {
-  return GetRpcClient.getInstance().call("Companies", url);
+  return GetRpcClient.getInstance().call("Businesses", url);
 }
 
 export const getStaticProps: GetStaticProps = async () => {
-  return fetcher("/api/companies")
-    .then((companies) => ({ props: { companies }, revalidate: 60 * 60 }))
+  return fetcher("/api/businesses")
+    .then((res) => ({
+      props: { businesses: res.businesses },
+      revalidate: 60 * 60,
+    }))
     .catch(() => ({
-      props: { companies: { companies: [] } },
+      props: { businesses: [] },
       revalidate: 1,
     }));
 };
 
-export default function Home({ companies }: HomeProps) {
+export default function Home({ businesses }: HomeProps) {
   const { query } = useRouter();
+  const size = useWindowSize();
+  if (!size.width) {
+    return <RootLayout />;
+  }
+
   const isNewUser = query.newUser === "true";
   return (
     <RootLayout>
-      <HomePage companies={companies.companies} isNewUser={isNewUser} />
+      <HomePage
+        businesses={businesses}
+        isNewUser={isNewUser}
+        width={size.width * 0.9}
+      />
     </RootLayout>
   );
 }

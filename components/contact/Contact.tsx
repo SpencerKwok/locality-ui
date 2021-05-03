@@ -1,21 +1,18 @@
-import React, { useState } from "react";
 import * as yup from "yup";
 import { Formik, FormikConfig } from "formik";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 
-import { Button, ErrorMessage, InputGroup, Label } from "../common/form";
-import { PostRpcClient } from "../common/RpcClient";
+import { SubmitButton, ErrorMessage, InputGroup, Label } from "../common/form";
 import Stack from "../common/Stack";
-import { useWindowSize } from "../../lib/common";
 
-interface FormRequest {
+export interface ContactRequest {
   email: string;
   name: string;
   message: string;
 }
 
-const FormSchema = yup.object().shape({
+const ContactSchema = yup.object().shape({
   email: yup
     .string()
     .email("Invalid email address")
@@ -25,37 +22,19 @@ const FormSchema = yup.object().shape({
   message: yup.string().required("Required").max(500, "Too long"),
 });
 
-export default function Contact() {
-  const [contactStatus, setContactStatus] = useState({
-    error: null as string | null,
-    success: false,
-  });
+export interface ContactProps {
+  error: string;
+  success: boolean;
+  width: number;
+  onSubmit: FormikConfig<ContactRequest>["onSubmit"];
+}
 
-  const size = useWindowSize();
-  if (!size.width) {
-    return <div></div>;
-  }
-
-  const onSubmit: FormikConfig<FormRequest>["onSubmit"] = async (values) => {
-    await PostRpcClient.getInstance()
-      .call("Contact", {
-        email: values.email,
-        name: values.name,
-        message: values.message,
-      })
-      .then(({ error }) => {
-        if (error) {
-          setContactStatus({ error, success: false });
-          return;
-        }
-        setContactStatus({ error: null, success: true });
-      })
-      .catch((error) => {
-        setContactStatus({ error: error.message, success: false });
-      });
-  };
-
-  const width = size.width * 0.9;
+export default function Contact({
+  error,
+  success,
+  width,
+  onSubmit,
+}: ContactProps) {
   return (
     <Stack direction="row" columnAlign="center">
       <Stack
@@ -70,21 +49,22 @@ export default function Contact() {
           in touch as soon as we can.
         </p>
 
-        {contactStatus.success ? (
+        {success && (
           <p>
             Thanks for reaching out! You should receive a confirmation email.
           </p>
-        ) : (
+        )}
+        {!success && (
           <Formik
             initialValues={
               {
                 email: "",
                 name: "",
                 message: "",
-              } as FormRequest
+              } as ContactRequest
             }
             onSubmit={onSubmit}
-            validationSchema={FormSchema}
+            validationSchema={ContactSchema}
           >
             {({
               isSubmitting,
@@ -101,7 +81,9 @@ export default function Contact() {
                   <Label required>Name</Label>
                   <InputGroup>
                     <FormControl
-                      aria-label="Large"
+                      aria-required
+                      aria-label="Name"
+                      aria-details="Enter name here"
                       id="name"
                       onBlur={handleBlur}
                       onChange={handleChange}
@@ -113,10 +95,12 @@ export default function Contact() {
                   <ErrorMessage name="name" />
                 </Form.Group>
                 <Form.Group>
-                  <Label required>Email address</Label>
+                  <Label required>Email</Label>
                   <InputGroup>
                     <FormControl
-                      aria-label="Large"
+                      aria-required
+                      aria-label="Email"
+                      aria-details="Enter email here"
                       id="email"
                       onBlur={handleBlur}
                       onChange={handleChange}
@@ -132,7 +116,9 @@ export default function Contact() {
                   <InputGroup>
                     <FormControl
                       as="textarea"
-                      aria-label="Large"
+                      aria-required
+                      aria-label="Message"
+                      aria-details="Enter message here"
                       id="message"
                       onBlur={handleBlur}
                       onChange={handleChange}
@@ -150,7 +136,7 @@ export default function Contact() {
                   <ErrorMessage name="message" />
                 </Form.Group>
                 <Stack direction="row-reverse">
-                  <Button
+                  <SubmitButton
                     isSubmitting={isSubmitting}
                     text="Send"
                     submittingText="Sending..."
@@ -162,7 +148,7 @@ export default function Contact() {
                     textAlign: "right",
                   }}
                 >
-                  {contactStatus.error}
+                  {error}
                 </div>
               </Form>
             )}

@@ -3,29 +3,13 @@ export interface PostMethods {
     request: AddToWishListRequest;
     response: AddToWishListResponse;
   };
+  BusinessSignUp: {
+    request: BusinessSignUpRequest;
+    response: BusinessSignUpResponse;
+  };
   Contact: {
     request: ContactRequest;
     response: ContactResponse;
-  };
-  CompanySignUp: {
-    request: CompanySignUpRequest;
-    response: CompanySignUpResponse;
-  };
-  CustomerSignUp: {
-    request: CustomerSignUpRequest;
-    response: CustomerSignUpResponse;
-  };
-  CustomerSignUpGoogle: {
-    request: CustomerSignUpGoogleRequest;
-    response: CustomerSignUpGoogleResponse;
-  };
-  CustomerSignUpFacebook: {
-    request: CustomerSignUpFacebookRequest;
-    response: CustomerSignUpFacebookResponse;
-  };
-  Company: {
-    request: CompanyRequest;
-    response: CompanyResponse;
   };
   DeleteFromWishList: {
     request: DeleteFromWishListRequest;
@@ -71,21 +55,9 @@ export interface PostMethods {
     request: ShopifyProductUpdateRequest;
     response: ShopifyProductUpdateResponse;
   };
-  SignIn: {
-    request: SignInRequest;
-    response: SignInResponse;
-  };
-  SignInFacebook: {
-    request: SignInFacebookRequest;
-    response: SignInFacebookResponse;
-  };
-  SignInGoogle: {
-    request: SignInGoogleRequest;
-    response: SignInGoogleResponse;
-  };
-  WishList: {
-    request: WishListRequest;
-    response: WishListResponse;
+  UserSignUp: {
+    request: UserSignUpRequest;
+    response: UserSignUpResponse;
   };
 }
 
@@ -99,50 +71,23 @@ export interface AddToWishListRequest {
 
 export interface AddToWishListResponse extends BaseResponse {}
 
-export interface ContactRequest {
-  email: string;
-  message: string;
-  name: string;
-}
-
-export interface ContactResponse extends BaseResponse {}
-
 interface SignUpResponse extends BaseResponse {
   redirectTo: string;
 }
 
-export interface CustomerSignUpRequest {
-  email: string;
-  password: string;
-}
-
-export interface CustomerSignUpResponse extends SignUpResponse {}
-
-export interface CustomerSignUpGoogleRequest {
-  accesstoken: string;
-}
-
-export interface CustomerSignUpGoogleResponse extends SignUpResponse {}
-
-export interface CustomerSignUpFacebookRequest {
-  accesstoken: string;
-}
-
-export interface CustomerSignUpFacebookResponse extends SignUpResponse {}
-
-export interface CompanySignUpRequest extends CustomerSignUpRequest {
+export interface BusinessSignUpRequest extends UserSignUpRequest {
   firstName: string;
   lastName: string;
   address: string;
-  companyName: string;
+  businessName: string;
   city: string;
   province: string;
   country: string;
 }
 
-export interface CompanySignUpResponse extends SignUpResponse {}
+export interface BusinessSignUpResponse extends SignUpResponse {}
 
-export interface BaseCompany {
+export interface BaseBusiness {
   id: number;
   name: string;
   address: string;
@@ -156,13 +101,17 @@ export interface BaseCompany {
   departments: string;
 }
 
-export interface CompanyRequest {
-  id: number;
+export interface BusinessResponse extends BaseResponse {
+  business: BaseBusiness;
 }
 
-export interface CompanyResponse extends BaseResponse {
-  company: BaseCompany;
+export interface ContactRequest {
+  email: string;
+  message: string;
+  name: string;
 }
+
+export interface ContactResponse extends BaseResponse {}
 
 export interface DepartmentsUpdateRequest {
   id: number;
@@ -185,16 +134,16 @@ export interface HomepageUpdateRequest {
 }
 
 export interface HomepageUpdateResponse extends BaseResponse {
-  homepage?: string;
+  homepage: string;
 }
 
 export interface LogoUpdateRequest {
   id: number;
-  image: string;
+  logo: string;
 }
 
 export interface LogoUpdateResponse extends BaseResponse {
-  url: string;
+  logo: string;
 }
 
 export interface BaseProduct {
@@ -236,7 +185,7 @@ export interface ProductsResponse extends BaseResponse {
 }
 
 export interface ProductRequest {
-  companyId: number;
+  businessId: number;
   id: number;
 }
 
@@ -245,7 +194,7 @@ export interface ProductResponse extends BaseResponse {
 }
 
 export interface ProductUpdateRequest {
-  companyId: number;
+  businessId: number;
   product: {
     name: string;
     id: number;
@@ -264,10 +213,7 @@ export interface ProductUpdateResponse extends BaseResponse {
 }
 
 export interface ProductAddRequest {
-  companyId: number;
-  companyName: string;
-  latitude: string;
-  longitude: string;
+  businessId: number;
   product: {
     name: string;
     primaryKeywords: Array<string>;
@@ -285,7 +231,7 @@ export interface ProductAddResponse extends BaseResponse {
 }
 
 export interface ProductDeleteRequest {
-  companyId: number;
+  businessId: number;
   id: number;
 }
 
@@ -306,47 +252,29 @@ export interface ShopifyProductUpdateResponse extends BaseResponse {
   products: Array<BaseProduct>;
 }
 
-export interface SignInRequest {
-  username: string;
+export interface UserSignUpRequest {
+  email: string;
   password: string;
 }
 
-export interface SignInResponse extends BaseResponse {
-  redirectTo: string;
-}
-
-export interface SignInGoogleRequest {
-  accesstoken: string;
-}
-
-export interface SignInGoogleResponse extends BaseResponse {
-  redirectTo: string;
-}
-
-export interface SignInFacebookRequest {
-  accesstoken: string;
-}
-
-export interface SignInFacebookResponse extends BaseResponse {
-  redirectTo: string;
-}
-
-export interface WishListRequest {}
+export interface UserSignUpResponse extends SignUpResponse {}
 
 export interface WishListResponse extends BaseResponse {
   products: Array<Product>;
 }
 
 export interface GetMethods {
-  Companies: CompaniesResponse;
+  Business: BusinessResponse;
+  Businesses: BusinessesResponse;
+  WishList: WishListResponse;
   Search: SearchResponse;
   SignOut: SignOutResponse;
 }
 
-export interface CompaniesRequest {}
+export interface BusinessesRequest {}
 
-export interface CompaniesResponse extends BaseResponse {
-  companies: Array<BaseCompany>;
+export interface BusinessesResponse extends BaseResponse {
+  businesses: Array<BaseBusiness>;
 }
 
 export interface SearchRequest {
@@ -366,6 +294,15 @@ export interface SearchResponse {
   hits: Array<Product>;
   nbHits: number;
 }
+
+export const EmptySearchResponse: SearchResponse = {
+  facets: {
+    company: {},
+    departments: {},
+  },
+  hits: [],
+  nbHits: 0,
+};
 
 export interface SignOutRequest {}
 

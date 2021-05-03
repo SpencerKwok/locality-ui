@@ -1,0 +1,15 @@
+.virtual-list {
+  border: none;
+  outline: none;
+}
+.virtual-list:first-child {
+  border-top: none;
+}
+
+.virtual-list-item {
+  height: 49px;
+}
+.virtual-list-item:hover {
+  background-color: #449ed7 !important;
+  color: #ffffff;
+}

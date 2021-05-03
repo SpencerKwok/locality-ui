@@ -1,15 +1,11 @@
-import React from "react";
-
 import DescriptionImage from "../common/description-image/DescriptionImage";
 import Stack from "../common/Stack";
-import { useWindowSize } from "../../lib/common";
 
-export default function About() {
-  const size = useWindowSize();
-  if (!size.width) {
-    return <div></div>;
-  }
+export interface AboutProps {
+  width: number;
+}
 
+export default function About({ width }: AboutProps) {
   return (
     <Stack direction="row" columnAlign="center">
       <Stack direction="column" rowAlign="center" spacing={32}>
@@ -21,7 +17,7 @@ export default function About() {
             direction="row"
             spacing={24}
             src="https://res.cloudinary.com/hcory49pf/image/upload/v1613521665/about/keeping-the-local-connection.jpg"
-            style={{ width: size.width * 0.8 }}
+            style={{ width }}
             rowAlign="center"
             width={300}
           >
@@ -46,7 +42,7 @@ export default function About() {
             direction="row-reverse"
             spacing={24}
             src="https://res.cloudinary.com/hcory49pf/image/upload/v1613503266/about/how-it-works.jpg"
-            style={{ width: size.width * 0.8 }}
+            style={{ width }}
             rowAlign="center"
             width={300}
           >
@@ -66,7 +62,7 @@ export default function About() {
             direction="row"
             spacing={24}
             src="https://res.cloudinary.com/hcory49pf/image/upload/v1613503277/about/rise-up-and-sell.png"
-            style={{ width: size.width * 0.8 }}
+            style={{ width }}
             rowAlign="center"
             width={300}
           >
@@ -84,7 +80,7 @@ export default function About() {
             direction="row-reverse"
             spacing={24}
             src="https://res.cloudinary.com/hcory49pf/image/upload/v1613521506/about/buy-with-purpose.png"
-            style={{ width: size.width * 0.8 }}
+            style={{ width }}
             rowAlign="center"
             width={300}
           >

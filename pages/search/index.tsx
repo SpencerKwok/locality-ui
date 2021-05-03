@@ -1,22 +1,38 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { GetServerSideProps } from "next";
+import { useSession } from "next-auth/client";
 import { useRouter } from "next/router";
-import PublicIp from "public-ip";
 
-import { GetRpcClient } from "../../components/common/RpcClient";
-import { SearchResponse } from "../../components/common/Schema";
+import { GetRpcClient, PostRpcClient } from "../../components/common/RpcClient";
+import { EmptySearchResponse } from "../../components/common/Schema";
 import SearchResultsDesktop from "../../components/search/SearchResultsDesktop";
 import SearchResultsMobile from "../../components/search/SearchResultsMobile";
-import RootLayout from "../../components/root-layout/RootLayout";
+import RootLayout from "../../components/common/RootLayout";
 import { useMediaQuery } from "../../lib/common";
 
 interface SearchProps {
+  ip: string;
   query: string;
-  searchResponse: SearchResponse;
+  cookie?: string;
 }
 
-function fetcher(url: string) {
-  return GetRpcClient.getInstance().call("Search", url);
+function onToggleWishList(objectId: string, value: boolean, cookie?: string) {
+  if (value) {
+    return PostRpcClient.getInstance().call(
+      "AddToWishList",
+      { id: objectId },
+      cookie
+    );
+  }
+  return PostRpcClient.getInstance().call(
+    "DeleteFromWishList",
+    { id: objectId },
+    cookie
+  );
+}
+
+function fetcher(url: string, cookie?: string) {
+  return GetRpcClient.getInstance().call("Search", url, cookie);
 }
 
 class UserInput {
@@ -26,12 +42,28 @@ class UserInput {
   public company: Set<string>;
   public departments: Set<string>;
 
-  constructor(query: string) {
-    this.ip = "";
+  constructor(
+    ip: string,
+    query: string,
+    page: number = 0,
+    company: Set<string> = new Set<string>(),
+    departments: Set<string> = new Set<string>()
+  ) {
+    this.ip = ip;
     this.query = query;
-    this.page = 0;
-    this.company = new Set<string>();
-    this.departments = new Set<string>();
+    this.page = page;
+    this.company = company;
+    this.departments = departments;
+  }
+
+  clone() {
+    return new UserInput(
+      this.ip,
+      this.query,
+      this.page,
+      this.company,
+      this.departments
+    );
   }
 
   toString() {
@@ -57,35 +89,29 @@ class UserInput {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  const cookie = context.req.headers.cookie;
   const query = context.query["q"] || "";
-  const searchResponse = await fetcher(`/api/search?q=${query}`);
+  const forwarded = (context.req.headers["x-forwarded-for"] || "") as string;
+  const ip = forwarded.split(/,\s*/)[0];
+
   return {
     props: {
+      cookie,
+      ip,
       query,
-      searchResponse,
     },
   };
 };
 
-export default function Home({ query, searchResponse }: SearchProps) {
+export default function Home({ cookie, ip, query }: SearchProps) {
+  const [data, setData] = useState(EmptySearchResponse);
+  const [userInput, setUserInput] = useState(new UserInput(ip, ""));
+  const [session] = useSession();
   const router = useRouter();
-  const [data, setData] = useState({ ...searchResponse });
-  const [userInput, setUserInput] = useState(new UserInput(query));
-
-  useEffect(() => {
-    PublicIp.v4({ onlyHttps: true })
-      .then((ip) => {
-        userInput.ip = ip;
-        onUserInputChange();
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
 
   const onUserInputChange = () => {
-    setUserInput(userInput);
-    fetcher(`/api/search?${userInput.toString()}`)
+    setUserInput(userInput.clone());
+    fetcher(`/api/search?${userInput.toString()}`, cookie)
       .then(({ hits, nbHits }) => {
         setData({ facets: data.facets, hits, nbHits });
       })
@@ -117,10 +143,10 @@ export default function Home({ query, searchResponse }: SearchProps) {
 
   const onBottom = () => {
     userInput.page += 1;
-    fetcher(`/api/search?${userInput.toString()}`)
+    fetcher(`/api/search?${userInput.toString()}`, cookie)
       .then(async (nextPageData) => {
         if (userInput.page === 1) {
-          await fetcher(`/api/search?q=${userInput.query}`)
+          await fetcher(`/api/search?q=${userInput.query}`, cookie)
             .then((firstPageData) => {
               data.hits = [...firstPageData.hits, ...nextPageData.hits];
             })
@@ -130,26 +156,34 @@ export default function Home({ query, searchResponse }: SearchProps) {
         } else {
           data.hits = [...data.hits, ...nextPageData.hits];
         }
+
         setData({ ...data });
-        setUserInput(userInput);
+        setUserInput(userInput.clone());
       })
       .catch((err) => {
         console.log(err);
       });
   };
 
-  const onReset = () => {
+  const onReset = async () => {
+    userInput.ip = ip;
     userInput.query = query;
     userInput.page = 0;
     userInput.company = new Set<string>();
     userInput.departments = new Set<string>();
 
-    data.facets = searchResponse.facets;
-    data.hits = searchResponse.hits;
-    data.nbHits = searchResponse.nbHits;
+    await fetcher(`/api/search?${userInput.toString()}`, cookie)
+      .then(({ facets, hits, nbHits }) => {
+        data.facets = facets;
+        data.hits = hits;
+        data.nbHits = nbHits;
 
-    setData({ ...searchResponse });
-    setUserInput(new UserInput(query));
+        setData({ ...data });
+        setUserInput(new UserInput(ip, query));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   if (userInput.query !== query) {
@@ -166,11 +200,13 @@ export default function Home({ query, searchResponse }: SearchProps) {
   }
 
   const isNarrow = useMediaQuery(42, "width", onReset);
+  const loggedIn = !(!session || !session.user);
   return (
     <RootLayout>
       {isNarrow ? (
         <SearchResultsMobile
-          defaultQuery={userInput.query}
+          loggedIn={loggedIn}
+          query={userInput.query}
           searchResults={{
             hits: data.hits,
             nbHits: data.nbHits,
@@ -179,12 +215,14 @@ export default function Home({ query, searchResponse }: SearchProps) {
               departments,
             },
           }}
-          onEnter={onEnter}
           onBottom={onBottom}
+          onEnter={onEnter}
+          onToggleWishList={onToggleWishList}
         />
       ) : (
         <SearchResultsDesktop
-          defaultQuery={userInput.query}
+          loggedIn={loggedIn}
+          query={userInput.query}
           searchResults={{
             hits: data.hits,
             nbHits: data.nbHits,
@@ -200,6 +238,7 @@ export default function Home({ query, searchResponse }: SearchProps) {
             page: onPageClick,
           }}
           onEnter={onEnter}
+          onToggleWishList={onToggleWishList}
         />
       )}
     </RootLayout>

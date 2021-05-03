@@ -11,11 +11,11 @@ export default async function handler(req, res) {
     return;
   }
 
-  const f = async (companyId) => {
+  const f = async (businessId) => {
     const [products, error] = await Psql.query(
       SqlString.format(
-        "SELECT CONCAT(company_id, '_', id) AS object_id, name, image FROM products WHERE company_id=? ORDER BY name",
-        [companyId]
+        "SELECT CONCAT(company_id, '_', id) AS object_id, name, image FROM products WHERE business_id=? ORDER BY name",
+        [businessId]
       )
     );
     if (error) {
@@ -35,6 +35,6 @@ export default async function handler(req, res) {
   if (Number.isInteger(req.body.id)) {
     await f(req.body.id);
   } else {
-    res.status(400).json({ error: "Invalid company id" });
+    res.status(400).json({ error: "Invalid business id" });
   }
 }

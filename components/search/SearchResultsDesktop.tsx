@@ -35,19 +35,23 @@ export interface SearchResults {
 }
 
 export interface SearchProps {
-  defaultQuery: string;
+  loggedIn: boolean;
+  query: string;
   searchResults: SearchResults;
   userInput: UserInput;
   onUserInputChange: UserInputChange;
   onEnter: (query: string) => void;
+  onToggleWishList: (objectId: string, value: boolean) => void;
 }
 
 export default function Search({
-  defaultQuery,
+  loggedIn,
+  query,
   searchResults,
   userInput,
   onUserInputChange,
   onEnter,
+  onToggleWishList,
 }: SearchProps) {
   const size = useWindowSize();
   if (!size.width) {
@@ -71,7 +75,7 @@ export default function Search({
         </Link>
         <SearchBar
           autoFocus
-          defaultQuery={defaultQuery}
+          defaultQuery={query}
           width={400}
           onEnter={onEnter}
         />
@@ -102,7 +106,12 @@ export default function Search({
             />
           </Stack>
           <Stack direction="column" rowAlign="center">
-            <ProductShowcase hits={searchResults.hits} query={defaultQuery} />
+            <ProductShowcase
+              loggedIn={loggedIn}
+              hits={searchResults.hits}
+              query={query}
+              onToggleWishList={onToggleWishList}
+            />
           </Stack>
         </Stack>
       </Stack>
@@ -111,10 +120,8 @@ export default function Search({
           {Array.from(Array(Math.ceil(searchResults.nbHits / 24)).keys()).map(
             (index) => (
               <PaginationItem
-                active={
-                  userInput.page === index ||
-                  (userInput.page < 0 && index === 0)
-                }
+                active={userInput.page === index}
+                key={index}
                 onClick={() => {
                   onUserInputChange.page(index);
                 }}

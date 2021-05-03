@@ -11,8 +11,8 @@ export default async function handler(req, res) {
     return;
   }
 
-  const f = async (companyId, productId) => {
-    const objectID = `${companyId}_${productId}`;
+  const f = async (businessId, productId) => {
+    const objectID = `${businessId}_${productId}`;
     const [object, error] = await Algolia.getObject(objectID);
     if (error) {
       res.status(500).json({ error });
@@ -31,9 +31,9 @@ export default async function handler(req, res) {
     return;
   }
 
-  if (Number.isInteger(req.body.companyId)) {
-    await f(req.body.companyId, productId);
+  if (Number.isInteger(req.body.businessId)) {
+    await f(req.body.businessId, productId);
   } else {
-    res.status(400).json({ error: "Invalid company id" });
+    res.status(400).json({ error: "Invalid business id" });
   }
 }

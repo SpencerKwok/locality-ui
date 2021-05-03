@@ -1,7 +1,17 @@
 import { PostMethods, GetMethods } from "./Schema";
 
-const baseUrl = typeof window === "undefined" ? process.env.BASE_URL : "";
-const endpoints = new Map<string, string>([["Contact", "/api/contact"]]);
+const baseUrl = typeof window === "undefined" ? process.env.NEXTAUTH_URL : "";
+const endpoints = new Map<keyof PostMethods, string>([
+  ["AddToWishList", "/api/wishlist/add"],
+  ["BusinessSignUp", "/api/signup/business"],
+  ["Contact", "/api/contact"],
+  ["DeleteFromWishList", "/api/wishlist/delete"],
+  ["DepartmentsUpdate", "/api/dashboard/departments/update"],
+  ["HomepageUpdate", "/api/dashboard/homepage/update"],
+  ["LogoUpdate", "/api/dashboard/logo/update"],
+  ["PasswordUpdate", "/api/dashboard/password/update"],
+  ["UserSignUp", "/api/signup/user"],
+]);
 
 let postRpcClient: PostRpcClient;
 export class PostRpcClient {
@@ -18,15 +28,17 @@ export class PostRpcClient {
 
   async call<methodName extends keyof PostMethods>(
     method: methodName,
-    request: PostMethods[methodName]["request"]
+    request: PostMethods[methodName]["request"],
+    cookie?: string
   ): Promise<PostMethods[methodName]["response"]> {
     const endpoint = endpoints.get(method);
     const fetchRequest = new Request(`${baseUrl}${endpoint}`, {
       method: "POST",
-      credentials: "include",
+      credentials: "same-origin",
       headers: {
         "content-type": "application/json",
         charset: "utf-8",
+        cookie: cookie || "",
       },
       body: JSON.stringify(request),
     });
@@ -63,14 +75,16 @@ export class GetRpcClient {
 
   async call<methodName extends keyof GetMethods>(
     method: methodName,
-    endpoint: string
+    endpoint: string,
+    cookie?: string
   ): Promise<GetMethods[methodName]> {
     const fetchRequest = new Request(`${baseUrl}${endpoint}`, {
-      credentials: "include",
+      credentials: "same-origin",
       method: "GET",
       headers: {
         "content-type": "application/json",
         charset: "utf-8",
+        cookie: cookie || "",
       },
     });
 

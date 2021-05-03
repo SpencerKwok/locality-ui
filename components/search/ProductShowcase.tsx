@@ -15,7 +15,9 @@ type SortFilter =
 
 export interface ProductShowcaseProps extends React.HTMLProps<HTMLDivElement> {
   hits: Array<Product>;
+  onToggleWishList: (objectId: string, value: boolean) => void;
   align?: StackAlignment;
+  loggedIn?: boolean;
   query?: string;
 }
 
@@ -27,27 +29,30 @@ const allSortFilters: Array<SortFilter> = [
   "Alphabetical: Z-A",
 ];
 
-export default function ProductShowcase(props: ProductShowcaseProps) {
+export default function ProductShowcase({
+  hits,
+  onToggleWishList,
+  align,
+  loggedIn,
+  query,
+  style,
+}: ProductShowcaseProps) {
   const [sortFilter, setSortFilter] = useState<SortFilter>("Relevancy");
 
-  const hits = props.hits.map((a) => ({ ...a }));
+  const sortedHits = hits.map((a) => ({ ...a }));
   if (sortFilter === "Price: Low to High") {
-    hits.sort((a, b) => a.price - b.price);
+    sortedHits.sort((a, b) => a.price - b.price);
   } else if (sortFilter === "Price: High to Low") {
-    hits.sort((a, b) => b.price - a.price);
+    sortedHits.sort((a, b) => b.price - a.price);
   } else if (sortFilter === "Alphabetical: A-Z") {
-    hits.sort((a, b) => a.name.localeCompare(b.name));
+    sortedHits.sort((a, b) => a.name.localeCompare(b.name));
   } else if (sortFilter === "Alphabetical: Z-A") {
-    hits.sort((a, b) => b.name.localeCompare(a.name));
+    sortedHits.sort((a, b) => b.name.localeCompare(a.name));
   }
 
   return (
-    <Stack
-      direction="column"
-      rowAlign={props.align || "flex-start"}
-      style={props.style}
-    >
-      {props.query && (
+    <Stack direction="column" rowAlign={align || "flex-start"} style={style}>
+      {query && (
         <Stack
           direction="row"
           columnAlign="flex-start"
@@ -55,7 +60,7 @@ export default function ProductShowcase(props: ProductShowcaseProps) {
           priority={[0, 0]}
           wrap="wrap"
         >
-          <h4 style={{ paddingRight: 24 }}>Results for "{props.query}"</h4>
+          <h4 style={{ paddingRight: 24 }}>Results for "{query}"</h4>
           <Dropdown style={{ marginBottom: ".5rem", lineHeight: 1.2 }}>
             <Dropdown.Toggle
               className={styles["sort-filter"]}
@@ -80,17 +85,20 @@ export default function ProductShowcase(props: ProductShowcaseProps) {
       )}
       <Stack
         direction="row"
-        columnAlign={props.align || "flex-start"}
+        columnAlign={align || "flex-start"}
         wrap="wrap"
         spacing={12}
       >
         {hits.map((hit, index) => (
           <ProductImage
+            loggedIn={loggedIn}
+            initialWishList={hit.wishlist}
             key={hit.objectId}
             company={hit.company}
             link={hit.link}
             name={hit.name}
             objectId={hit.objectId}
+            onToggleWishList={onToggleWishList}
             priceRange={hit.priceRange}
             src={hit.image}
             style={{

@@ -1,4 +1,13 @@
 module.exports = {
+  redirects: async () => {
+    return [
+      {
+        source: "/dashboard",
+        destination: "/dashboard/inventory",
+        permanent: true,
+      },
+    ];
+  },
   future: {
     webpack5: true,
   },

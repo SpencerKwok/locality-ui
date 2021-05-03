@@ -1,3 +1,4 @@
+import EmailValidator from "email-validator";
 import NodeMailer from "nodemailer";
 import Xss from "xss";
 
@@ -20,8 +21,28 @@ export default async function handler(req, res) {
   }
 
   const email = Xss(req.body.email || "");
+  if (!EmailValidator.validate(email)) {
+    res.status(400).json({
+      error: "Invalid email",
+    });
+    return;
+  }
+
   const name = Xss(req.body.name || "");
+  if (name === "") {
+    res.status(400).json({
+      error: "Invalid name",
+    });
+    return;
+  }
+
   const message = Xss(req.body.message || "");
+  if (message === "") {
+    res.status(400).json({
+      error: "Invalid message",
+    });
+    return;
+  }
 
   const selfMailOptions = {
     from: process.env.EMAIL_USER,
