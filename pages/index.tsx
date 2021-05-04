@@ -17,7 +17,7 @@ function fetcher(url: string) {
 }
 
 export const getStaticProps: GetStaticProps = async () => {
-  return fetcher("/api/businesses")
+  return await fetcher("/api/businesses")
     .then((res) => ({
       props: { businesses: res.businesses },
       revalidate: 60 * 60,
