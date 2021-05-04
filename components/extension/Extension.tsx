@@ -1,6 +1,6 @@
 import React from "react";
 import ImageGallery, { ReactImageGalleryItem } from "react-image-gallery";
-import Button from "react-bootstrap/button";
+import Button from "react-bootstrap/Button";
 import "react-image-gallery/styles/css/image-gallery.css";
 
 import Stack from "../common/Stack";

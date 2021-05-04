@@ -1,5 +1,5 @@
 import { Fragment, ReactNode } from "react";
-import Button from "react-bootstrap/button";
+import Button from "react-bootstrap/Button";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Link from "next/link";

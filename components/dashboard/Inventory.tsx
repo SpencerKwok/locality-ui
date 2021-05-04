@@ -2,7 +2,7 @@ import { createRef, Fragment } from "react";
 import dynamic from "next/dynamic";
 import * as yup from "yup";
 import { Formik, FormikConfig } from "formik";
-import Button from "react-bootstrap/button";
+import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 import Select from "react-dropdown-select";
