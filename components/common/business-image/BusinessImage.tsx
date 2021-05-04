@@ -9,6 +9,7 @@ export interface BusinessImageProps
   src: string;
   height: number;
   width: number;
+  loading?: "eager" | "lazy";
 }
 
 export default function BusinessImage({
@@ -16,6 +17,7 @@ export default function BusinessImage({
   src,
   height,
   width,
+  loading,
 }: BusinessImageProps) {
   return (
     <Stack
@@ -26,10 +28,15 @@ export default function BusinessImage({
       <Stack direction="column" rowAlign="center" style={{ width: width }}>
         <picture className={styles.picture}>
           <source
-            srcSet={src.replace("upload/", "upload/w_400/")}
+            srcSet={src.replace("upload/", "upload/w_175/")}
             type="image/webp"
           />
-          <img alt={name} src={src.replace(".webp", ".jpg")} width={width} />
+          <img
+            loading={loading}
+            alt={name}
+            src={src.replace(".webp", ".jpg")}
+            width={width}
+          />
         </picture>
       </Stack>
       <h4 className={styles.h4}>{name}</h4>

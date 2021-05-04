@@ -20,7 +20,7 @@ export default function BusinessShowcase({
   );
   return (
     <Stack direction="column" rowAlign="center">
-      {startIndices.map((startIndex) => {
+      {startIndices.map((startIndex, index) => {
         return (
           <Stack
             direction="row"
@@ -45,6 +45,7 @@ export default function BusinessShowcase({
                         src={business.logo}
                         height={225}
                         width={126}
+                        loading={index <= 1 ? "eager" : "lazy"}
                       />
                     </a>
                   );
