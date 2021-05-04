@@ -27,18 +27,6 @@ export interface PostMethods {
     request: LogoUpdateRequest;
     response: LogoUpdateResponse;
   };
-  Product: {
-    request: ProductRequest;
-    response: ProductResponse;
-  };
-  Products: {
-    request: ProductsRequest;
-    response: ProductsResponse;
-  };
-  ProductUpdate: {
-    request: ProductUpdateRequest;
-    response: ProductUpdateResponse;
-  };
   ProductAdd: {
     request: ProductAddRequest;
     response: ProductAddResponse;
@@ -46,6 +34,10 @@ export interface PostMethods {
   ProductDelete: {
     request: ProductDeleteRequest;
     response: ProductDeleteResponse;
+  };
+  ProductUpdate: {
+    request: ProductUpdateRequest;
+    response: ProductUpdateResponse;
   };
   PasswordUpdate: {
     request: PasswordUpdateRequest;
@@ -99,10 +91,6 @@ export interface BaseBusiness {
   logo: string;
   homepage: string;
   departments: string;
-}
-
-export interface BusinessResponse extends BaseResponse {
-  business: BaseBusiness;
 }
 
 export interface ContactRequest {
@@ -176,23 +164,6 @@ export const EmptyProduct: Product = {
   priceRange: [-1, -1],
 };
 
-export interface ProductsRequest {
-  id: number;
-}
-
-export interface ProductsResponse extends BaseResponse {
-  products: Array<BaseProduct>;
-}
-
-export interface ProductRequest {
-  businessId: number;
-  id: number;
-}
-
-export interface ProductResponse extends BaseResponse {
-  product: Product;
-}
-
 export interface ProductUpdateRequest {
   businessId: number;
   product: {
@@ -201,10 +172,10 @@ export interface ProductUpdateRequest {
     primaryKeywords: Array<string>;
     departments: Array<string>;
     description: string;
+    image: string;
+    link: string;
     price: number;
     priceRange: Array<number>;
-    link: string;
-    image: string;
   };
 }
 
@@ -219,10 +190,10 @@ export interface ProductAddRequest {
     primaryKeywords: Array<string>;
     departments: Array<string>;
     description: string;
+    image: string;
+    link: string;
     price: number;
     priceRange: Array<number>;
-    link: string;
-    image: string;
   };
 }
 
@@ -232,7 +203,9 @@ export interface ProductAddResponse extends BaseResponse {
 
 export interface ProductDeleteRequest {
   businessId: number;
-  id: number;
+  product: {
+    id: number;
+  };
 }
 
 export interface ProductDeleteResponse extends BaseResponse {}
@@ -245,7 +218,7 @@ export interface PasswordUpdateRequest {
 export interface PasswordUpdateResponse extends BaseResponse {}
 
 export interface ShopifyProductUpdateRequest {
-  id: number;
+  businessId: number;
 }
 
 export interface ShopifyProductUpdateResponse extends BaseResponse {
@@ -266,15 +239,28 @@ export interface WishListResponse extends BaseResponse {
 export interface GetMethods {
   Business: BusinessResponse;
   Businesses: BusinessesResponse;
-  WishList: WishListResponse;
+  Product: ProductResponse;
+  Products: ProductsResponse;
   Search: SearchResponse;
-  SignOut: SignOutResponse;
+  WishList: WishListResponse;
+}
+
+export interface BusinessResponse extends BaseResponse {
+  business: BaseBusiness;
 }
 
 export interface BusinessesRequest {}
 
 export interface BusinessesResponse extends BaseResponse {
   businesses: Array<BaseBusiness>;
+}
+
+export interface ProductResponse extends BaseResponse {
+  product: Product;
+}
+
+export interface ProductsResponse extends BaseResponse {
+  products: Array<BaseProduct>;
 }
 
 export interface SearchRequest {
@@ -303,7 +289,3 @@ export const EmptySearchResponse: SearchResponse = {
   hits: [],
   nbHits: 0,
 };
-
-export interface SignOutRequest {}
-
-export interface SignOutResponse extends BaseResponse {}

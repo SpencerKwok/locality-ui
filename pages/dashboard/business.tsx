@@ -25,7 +25,7 @@ function getBusinesses(url: string) {
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const cookie = context.req.headers.cookie || "";
   const session = await getSession(context);
-  const isNewBusiness = context.query.newUser === "true";
+  const isNewBusiness = context.query.newBusiness === "true";
   let businesses = Array<BaseBusiness>();
 
   if (session && session.user) {
@@ -58,7 +58,7 @@ interface BusinessProps {
   cookie?: string;
 }
 
-export default function Account({
+export default function Business({
   isNewBusiness,
   businesses,
   cookie,

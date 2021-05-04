@@ -1,4 +1,5 @@
 import SqlString from "sqlstring";
+import Xss from "xss";
 
 import Psql from "../../lib/api/postgresql";
 import { runMiddleware } from "../../lib/api/middleware";
@@ -25,16 +26,26 @@ export default async function handler(req, res) {
 
     res.status(200).json({
       products: products.rows.map(({ object_id, name, image }) => ({
-        objectID: object_id,
+        objectId: object_id,
         name,
         image,
       })),
     });
   };
 
-  if (Number.isInteger(req.body.id)) {
-    await f(req.body.id);
-  } else {
-    res.status(400).json({ error: "Invalid business id" });
+  let id = Xss(req.query["id"] || "");
+  if (id === "") {
+    res.status(400).json({
+      error: "Invalid id",
+    });
+    return;
   }
+  try {
+    id = parseInt(id);
+  } catch {
+    res.status(400).json({ error: "Invalid id" });
+    return;
+  }
+
+  await f(id);
 }

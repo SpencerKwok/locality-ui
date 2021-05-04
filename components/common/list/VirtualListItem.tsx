@@ -6,11 +6,12 @@ import styles from "./VirtualList.module.css";
 
 export interface VirtualListItemProps extends ListGroupItemProps {}
 
-function VirtualListItem({ className, ...rest }: VirtualListItemProps) {
+function VirtualListItem({ className, style, ...rest }: VirtualListItemProps) {
   return (
     <ListGroupItem
       {...rest}
       className={`${styles["virtual-list-item"]} ${className}`}
+      style={style}
     />
   );
 }

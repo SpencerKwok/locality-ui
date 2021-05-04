@@ -9,32 +9,30 @@ export default async function handler(req, res) {
     return;
   }
 
-  /* TODO: Add sign-in
-  const productId = req.body.id;
+  const productId = req.body.product.id;
   if (!Number.isInteger(productId)) {
     res.status(400).json({ error: "Invalid product id" });
     return;
   }
 
-  const companyId = req.cookies["companyId"];
-  if (companyId === "0") {
-    if (Number.isInteger(req.body.companyId)) {
-      const error = await productDelete(req.body.companyId, [productId]);
+  const { id } = req.locals.user;
+  if (id === 0) {
+    if (Number.isInteger(req.body.businessId)) {
+      const error = await productDelete(req.body.businessId, [productId]);
       if (error) {
         res.status(500).json({ error });
-      } else {
-        res.status(200).json({});
+        return;
       }
+      res.status(200).json({});
     } else {
-      res.status(400).json({ error: "Invalid company id" });
+      res.status(400).json({ error: "Invalid business id" });
     }
   } else {
-    const error = await productDelete(parseInt(companyId), [productId]);
+    const error = await productDelete(id, [productId]);
     if (error) {
       res.status(500).json({ error });
     } else {
       res.status(200).json({});
     }
   }
-  */
 }

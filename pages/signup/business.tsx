@@ -42,7 +42,7 @@ export default function UserSignUp() {
 
         const session = await getSession();
         if (session && session.user) {
-          router.push("/dashboard?newUser=true");
+          router.push("/dashboard?newBusiness=true");
         }
       })
       .catch((error) => {

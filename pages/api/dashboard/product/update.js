@@ -6,6 +6,14 @@ import Cloudinary from "../../../../lib/api/cloudinary";
 import Psql from "../../../../lib/api/postgresql";
 import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
 
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: "5mb",
+    },
+  },
+};
+
 export default async function handler(req, res) {
   await runMiddlewareBusiness(req, res);
 
@@ -14,10 +22,9 @@ export default async function handler(req, res) {
     return;
   }
 
-  /* TODO: Add sign-in
   const f = async (product) => {
     const {
-      companyId,
+      businessId,
       departments,
       description,
       image,
@@ -32,18 +39,18 @@ export default async function handler(req, res) {
     const [url, cloudinaryError] = await Cloudinary.upload(image, {
       exif: false,
       format: "webp",
-      public_id: `${companyId}/${productId}`,
+      public_id: `${businessId}/${productId}`,
       unique_filename: false,
       overwrite: true,
     });
     if (cloudinaryError) {
-      res.status(500).json({ errror: cloudinaryError });
+      res.status(500).json({ error: cloudinaryError });
       return;
     }
 
     const algoliaError = await Algolia.partialUpdateObject(
       {
-        objectID: `${companyId}_${productId}`,
+        objectID: `${businessId}_${productId}`,
         name: name,
         primary_keywords: primaryKeywords,
         departments: departments,
@@ -55,15 +62,14 @@ export default async function handler(req, res) {
       },
       { createIfNotExists: false }
     );
-
     if (algoliaError) {
       res.status(500).json({ error: algoliaError });
       return;
     }
 
     const query = SqlString.format(
-      `UPDATE products SET name=E?, image=? WHERE company_id=? AND id=?`,
-      [name, url, companyId, productId]
+      `UPDATE products SET name=E?, image=? WHERE business_id=? AND id=?`,
+      [name, url, businessId, productId]
     );
     const [_, psqlError] = await Psql.query(query);
     if (psqlError) {
@@ -71,9 +77,9 @@ export default async function handler(req, res) {
       return;
     }
 
-    res.staus(200).json({
+    res.status(200).json({
       product: {
-        objectID: `${companyId}_${productId}`,
+        objectId: `${businessId}_${productId}`,
         name: name,
         image: url,
       },
@@ -146,21 +152,31 @@ export default async function handler(req, res) {
     return;
   }
 
-  const link = Xss(req.body.product.link || "");
+  let link = Xss(req.body.product.link || "");
   if (link === "") {
     res.status(400).json({ error: "Invalid product link" });
     return;
   }
-  // Add "https://" to link URL if not included
-  if (!link.includes("https://") && !link.includes("http://")) {
-    link = `https://${link}`;
+  // Add "https://www" to link URL if not included
+  if (!link.match(/^https:\/\/www\..*$/)) {
+    if (link.match(/^https:\/\/(?!www.).*$/)) {
+      link = `https://www.${link.slice(8)}`;
+    } else if (link.match(/^http:\/\/(?!www.).*$/)) {
+      link = `https://www.${link.slice(7)}`;
+    } else if (link.match(/^http:\/\/www\..*$/)) {
+      link = `https://www.${link.slice(11)}`;
+    } else if (link.match(/^www\..*$/)) {
+      link = `https://${link}`;
+    } else {
+      link = `https://www.${link}`;
+    }
   }
 
-  const companyId = req.cookies["companyId"];
-  if (companyId === "0") {
-    if (Number.isInteger(req.body.companyId)) {
+  const { id } = req.locals.user;
+  if (id === 0) {
+    if (Number.isInteger(req.body.businessId)) {
       await f({
-        companyId: req.body.companyId,
+        businessId: req.body.businessId,
         departments,
         description,
         image,
@@ -172,11 +188,11 @@ export default async function handler(req, res) {
         productId,
       });
     } else {
-      res.status(400).json({ error: "Invalid company id" });
+      res.status(400).json({ error: "Invalid business id" });
     }
   } else {
     await f({
-      companyId: parseInt(companyId),
+      businessId: id,
       departments,
       description,
       image,
@@ -188,5 +204,4 @@ export default async function handler(req, res) {
       productId,
     });
   }
-  */
 }

@@ -120,7 +120,7 @@ export default function Account({
                   </InputGroup>
                   <ErrorMessage name="newPassword2" />
                 </Form.Group>
-                {error && <div style={{ color: "red" }}>{error}</div>}
+                <div style={{ color: "red" }}>{error}</div>
                 {updatedPassword && (
                   <div style={{ color: "green" }}>
                     Successfully updated password!

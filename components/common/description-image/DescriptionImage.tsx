@@ -3,6 +3,7 @@ import Stack, { StackProps } from "../Stack";
 import styles from "./DescriptionImage.module.css";
 
 export interface DescriptionImageProps extends StackProps {
+  loading?: "lazy" | "eager";
   src: string;
 }
 
@@ -23,6 +24,7 @@ export default function DescriptionImage(props: DescriptionImageProps) {
         <img
           src={props.src.replace(".webp", ".jpg")}
           alt={props.alt}
+          loading={props.loading}
           width={props.width}
         />
       </picture>

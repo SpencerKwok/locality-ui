@@ -113,11 +113,10 @@ export default async function handler(req, res) {
     res.status(200).json(results);
   } else {
     const [results, error] = await Algolia.search(q, {
-      attributesToRetrieve,
       facets,
       filters,
       page,
-      restrictSearchableAttributes,
+      attributesToRetrieve,
       attributesToHighlight,
       ...(ext === "1" && { restrictSearchableAttributes }),
     });

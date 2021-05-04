@@ -14,10 +14,17 @@ export default function FormSubmitButton({
   text,
   submittingText,
   isSubmitting,
+  disabled,
+  style,
 }: FormSubmitButtonProps) {
   return (
-    <Button className={styles.button} type="submit" disabled={isSubmitting}>
-      {isSubmitting ? (
+    <Button
+      className={styles.button}
+      type="submit"
+      disabled={isSubmitting}
+      style={style}
+    >
+      {isSubmitting && !disabled ? (
         <React.Fragment>
           <span
             className="spinner-border spinner-border-sm"

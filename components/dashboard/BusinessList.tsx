@@ -7,12 +7,13 @@ import VirtualListItem from "../common/list/VirtualListItem";
 import Stack from "../common/Stack";
 import styles from "./Business.module.css";
 
-export interface BusinessListProps extends React.HTMLProps<HTMLDivElement> {
+export interface BusinessListProps {
   onBusinessClick: (id: number) => void;
   businesses: Array<BaseBusiness>;
   index: number;
   height: number;
   width: number;
+  style?: CSSProperties;
 }
 
 export default function BusinessList(props: BusinessListProps) {
@@ -32,6 +33,7 @@ export default function BusinessList(props: BusinessListProps) {
           onClick={() => {
             props.onBusinessClick(index);
           }}
+          style={{ height: 49 }}
         >
           {decode(props.businesses[index].name)}
         </VirtualListItem>

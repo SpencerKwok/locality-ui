@@ -19,7 +19,11 @@ export default function FormLabel({
 }: FormLabelProps) {
   const createTooltip = (description: string) => (
     <Popup
-      trigger={<QuestionMark width={16} />}
+      trigger={
+        <div>
+          <QuestionMark width={16} />
+        </div>
+      }
       position="right bottom"
       on={["hover"]}
     >

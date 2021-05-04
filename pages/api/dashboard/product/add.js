@@ -3,18 +3,19 @@ import Xss from "xss";
 import { productAdd } from "../../../../lib/api/dashboard";
 import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
 
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: "5mb",
+    },
+  },
+};
+
 export default async function handler(req, res) {
   await runMiddlewareBusiness(req, res);
 
   if (req.method !== "POST") {
     res.status(400).json({ error: "Must be POST method" });
-    return;
-  }
-
-  /* TODO: Add sign-in
-  const companyName = Xss(req.body.companyName || "");
-  if (companyName === "") {
-    res.status(400).json({ error: "Invalid company name" });
     return;
   }
 
@@ -28,36 +29,6 @@ export default async function handler(req, res) {
   if (image === "") {
     res.status(400).json({ error: "Invalid product image" });
     return;
-  }
-
-  let latitude = Xss(req.body.latitude || "");
-  if (latitude === "") {
-    res.status(400).json({ error: "Invalid latitude" });
-    return;
-  }
-  latitude = latitude.split(",").map((x) => Xss(x));
-  for (let i = 0; i < latitude.length; ++i) {
-    try {
-      latitude[i] = parseFloat(latitude[i]);
-    } catch (err) {
-      res.status(400).json({ error: "Invalid latitude" });
-      return;
-    }
-  }
-
-  let longitude = Xss(req.body.longitude || "");
-  if (longitude === "") {
-    res.status(400).json({ error: "Invalid longitude" });
-    return;
-  }
-  longitude = longitude.split(",").map((x) => Xss(x));
-  for (let i = 0; i < longitude.length; ++i) {
-    try {
-      longitude[i] = parseFloat(longitude[i]);
-    } catch (err) {
-      res.status(400).json({ error: "Invalid longitude" });
-      return;
-    }
   }
 
   let primaryKeywords = req.body.product.primaryKeywords;
@@ -113,56 +84,59 @@ export default async function handler(req, res) {
     res.status(400).json({ error: "Invalid product link" });
     return;
   }
-  // Add "https://" to link URL if not included
-  if (!link.includes("https://") && !link.includes("http://")) {
-    link = `https://${link}`;
+  // Add "https://www" to link URL if not included
+  if (!link.match(/^https:\/\/www\..*$/)) {
+    if (link.match(/^https:\/\/(?!www.).*$/)) {
+      link = `https://www.${link.slice(8)}`;
+    } else if (link.match(/^http:\/\/(?!www.).*$/)) {
+      link = `https://www.${link.slice(7)}`;
+    } else if (link.match(/^http:\/\/www\..*$/)) {
+      link = `https://www.${link.slice(11)}`;
+    } else if (link.match(/^www\..*$/)) {
+      link = `https://${link}`;
+    } else {
+      link = `https://www.${link}`;
+    }
   }
 
-  const companyId = req.cookies["companyId"];
-  if (companyId === "0") {
-    if (Number.isInteger(req.body.companyId)) {
+  const { id } = req.locals.user;
+  if (id === 0) {
+    if (Number.isInteger(req.body.businessId)) {
       const [product, error] = await productAdd({
-        companyId: req.body.companyId,
-        companyName,
+        businessId: req.body.businessId,
         departments,
         description,
         image,
-        latitude,
         link,
-        longitude,
         price,
         priceRange,
         primaryKeywords,
         productName,
       });
       if (error) {
-        res.status(500).json({ error });
-      } else {
-        res.status(200).json({ product });
+        res.status(500).json({ error: error });
+        return;
       }
+      res.status(200).json({ product });
     } else {
-      res.status(400).json({ error: "Invalid company id" });
+      res.status(400).json({ error: "Invalid business id" });
     }
   } else {
     const [product, error] = await productAdd({
-      companyId: parseInt(companyId),
-      companyName,
+      businessId: id,
       departments,
       description,
       image,
-      latitude,
       link,
-      longitude,
       price,
       priceRange,
       primaryKeywords,
       productName,
     });
     if (error) {
-      res.status(500).json({ error });
-    } else {
-      res.status(200).json({ product });
+      res.status(500).json({ error: error });
+      return;
     }
+    res.status(200).json({ product });
   }
-  */
 }

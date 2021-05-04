@@ -272,6 +272,7 @@ export default function Business({
                             }}
                             placeholder="e.g. www.mywebsite.com/images/wooden-cutlery"
                             ref={logoUrlRef}
+                            style={{ width: 300 }}
                           />
                         </InputGroup>
                         <InputGroup>
@@ -302,11 +303,9 @@ export default function Business({
                         </InputGroup>
                         <ErrorMessage name="logo" />
                       </Form.Group>
-                      {updateLogoStatus.error && (
-                        <div style={{ color: "red" }}>
-                          {updateLogoStatus.error}
-                        </div>
-                      )}
+                      <div style={{ color: "red" }}>
+                        {updateLogoStatus.error}
+                      </div>
                       {updateLogoStatus.successful && (
                         <div style={{ color: "green" }}>
                           Successfully updated logo!
