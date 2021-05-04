@@ -4,6 +4,10 @@
   "private": true,
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": "^15.8.0",
+    "npm": "^7.8.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
