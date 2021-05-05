@@ -49,12 +49,35 @@ app.prepare().then(() => {
           workerSrc: ["'self'"],
         },
       },
-      forceHTTPSRedirect: [true, { maxAge: 63072000 }],
-      frameGuard: "deny",
-      noopen: "noopen",
-      nosniff: "nosniff",
-      referrerPolicy: "same-origin",
-      xssProtection: "block-rendering",
+
+      // Need to be able to load images from Cloudinary
+      crossOriginEmbedderPolicy: false,
+      crossOriginOpenerPolicy: false,
+      crossOriginResourcePolicy: false,
+
+      dnsPrefetchControl: {
+        allow: true,
+      },
+      expectCt: {
+        enforce: true,
+      },
+      frameguard: {
+        action: "sameorigin",
+      },
+      hsts: {
+        includeSubDomains: true,
+        preload: true,
+      },
+      ieNoOpen: true,
+      noSniff: true,
+      originAgentCluster: true,
+      permittedCrossDomainPolicies: {
+        permittedPolicies: "none",
+      },
+      referrerPolicy: {
+        policy: "origin",
+      },
+      xssFilter: true,
     })
   );
 
