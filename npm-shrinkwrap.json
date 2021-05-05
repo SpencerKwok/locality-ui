@@ -15,11 +15,11 @@
         "cors": "^2.8.5",
         "email-validator": "^2.0.4",
         "formik": "^2.2.6",
-        "helmet": "^4.5.0",
         "heroku-ssl-redirect": "^0.1.1",
         "html-entities": "^2.3.2",
         "next": "^10.1.3",
         "next-auth": "^3.18.0",
+        "next-secure-headers": "^2.2.0",
         "nodemailer": "^6.5.0",
         "pg": "^8.6.0",
         "react": "^17.0.2",
@@ -41,6 +41,10 @@
         "@types/react-virtualized": "^9.21.11",
         "@types/styled-components": "^5.1.9",
         "typescript": "^4.2.4"
+      },
+      "engines": {
+        "node": "^15.8.0",
+        "npm": "^7.8.0"
       }
     },
     "node_modules/@algolia/cache-browser-local-storage": {
@@ -4562,14 +4566,6 @@
         "he": "bin/he"
       }
     },
-    "node_modules/helmet": {
-      "version": "4.5.0",
-      "resolved": "https://registry.npmjs.org/helmet/-/helmet-4.5.0.tgz",
-      "integrity": "sha512-GfxdTaKarneWOpxmiVb/1YsY+fIwDOxVUGrvNEM1MC8W6Z2PREfkXiWF4XHQdvkyXwUTHuY4DRwB0uH/Q6BVyQ==",
-      "engines": {
-        "node": ">=10.0.0"
-      }
-    },
     "node_modules/heroku-ssl-redirect": {
       "version": "0.1.1",
       "resolved": "https://registry.npmjs.org/heroku-ssl-redirect/-/heroku-ssl-redirect-0.1.1.tgz",
@@ -5693,6 +5689,14 @@
       "peerDependencies": {
         "react": "^16.13.1 || ^17",
         "react-dom": "16.13.1 || ^17"
+      }
+    },
+    "node_modules/next-secure-headers": {
+      "version": "2.2.0",
+      "resolved": "https://registry.npmjs.org/next-secure-headers/-/next-secure-headers-2.2.0.tgz",
+      "integrity": "sha512-C7OfZ9JdSJyYMz2ZBMI/WwNbt0qNjlFWX9afUp8nEUzbz6ez3JbeopdyxSZJZJAzVLIAfyk6n73rFpd4e22jRg==",
+      "engines": {
+        "node": ">=10.0.0"
       }
     },
     "node_modules/next/node_modules/@babel/runtime": {
@@ -13850,11 +13854,6 @@
       "resolved": "https://registry.npmjs.org/he/-/he-1.2.0.tgz",
       "integrity": "sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw=="
     },
-    "helmet": {
-      "version": "4.5.0",
-      "resolved": "https://registry.npmjs.org/helmet/-/helmet-4.5.0.tgz",
-      "integrity": "sha512-GfxdTaKarneWOpxmiVb/1YsY+fIwDOxVUGrvNEM1MC8W6Z2PREfkXiWF4XHQdvkyXwUTHuY4DRwB0uH/Q6BVyQ=="
-    },
     "heroku-ssl-redirect": {
       "version": "0.1.1",
       "resolved": "https://registry.npmjs.org/heroku-ssl-redirect/-/heroku-ssl-redirect-0.1.1.tgz",
@@ -15132,6 +15131,11 @@
         "require_optional": "^1.0.1",
         "typeorm": "^0.2.30"
       }
+    },
+    "next-secure-headers": {
+      "version": "2.2.0",
+      "resolved": "https://registry.npmjs.org/next-secure-headers/-/next-secure-headers-2.2.0.tgz",
+      "integrity": "sha512-C7OfZ9JdSJyYMz2ZBMI/WwNbt0qNjlFWX9afUp8nEUzbz6ez3JbeopdyxSZJZJAzVLIAfyk6n73rFpd4e22jRg=="
     },
     "node-fetch": {
       "version": "2.6.1",
