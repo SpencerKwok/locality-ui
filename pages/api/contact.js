@@ -2,8 +2,6 @@ import EmailValidator from "email-validator";
 import NodeMailer from "nodemailer";
 import Xss from "xss";
 
-import { runMiddleware } from "../../lib/api/middleware";
-
 const transporter = NodeMailer.createTransport({
   service: process.env.EMAIL_SERVICE,
   auth: {
@@ -13,8 +11,6 @@ const transporter = NodeMailer.createTransport({
 });
 
 export default async function handler(req, res) {
-  await runMiddleware(req, res);
-
   if (req.method !== "POST") {
     res.status(400).json({ error: "Must be POST method" });
     return;

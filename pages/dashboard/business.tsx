@@ -34,7 +34,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       businesses = await getBusinesses("/api/businesses").then(
         ({ businesses }) => businesses
       );
-    } else {
+    } else if (user.id) {
       businesses = await getBusiness(
         `/api/business?id=${user.id}`
       ).then(({ business }) => [business]);

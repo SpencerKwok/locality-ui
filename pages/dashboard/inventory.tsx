@@ -47,7 +47,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       initialProducts = await getProducts(
         `/api/products?id=${businesses[0].id}`
       ).then(({ products }) => products);
-    } else {
+    } else if (user.id) {
       businesses = await getBusiness(
         `/api/business?id=${user.id}`
       ).then(({ business }) => [business]);

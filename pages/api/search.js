@@ -4,11 +4,8 @@ import { getSession } from "next-auth/client";
 
 import Algolia from "../../lib/api/algolia";
 import Psql from "../../lib/api/postgresql";
-import { runMiddleware } from "../../lib/api/middleware";
 
 export default async function handler(req, res) {
-  await runMiddleware(req, res);
-
   if (req.method !== "GET") {
     res.status(400).json({ error: "Must be GET method" });
     return;
