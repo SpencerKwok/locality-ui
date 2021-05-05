@@ -5,6 +5,7 @@ utilizing automatic static optimization. So although
 not recommended, we use a server to run middleware
 between the user and Next application
 */
+process.env.ENV === "PROD" && require("sqreen");
 
 const express = require("express");
 const next = require("next");
