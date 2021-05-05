@@ -14,6 +14,7 @@ const { parse } = require("url");
 const cors = require("cors");
 const enforce = require("express-sslify");
 const helmet = require("helmet");
+const permissionsPolicy = require("permissions-policy");
 const shrinkRay = require("shrink-ray-current");
 
 const app = next({ dev: process.env.ENV !== "PROD" });
@@ -64,7 +65,7 @@ app.prepare().then(() => {
         enforce: true,
       },
       frameguard: {
-        action: "sameorigin",
+        action: "same-origin",
       },
       hsts: {
         includeSubDomains: true,
@@ -84,9 +85,60 @@ app.prepare().then(() => {
         permittedPolicies: "none",
       },
       referrerPolicy: {
-        policy: "sameorigin",
+        policy: "same-origin",
       },
       xssFilter: true,
+    })
+  );
+
+  server.use(
+    permissionsPolicy({
+      features: {
+        accelerometer: [],
+        ambientLightSensor: [],
+        autoplay: [],
+        battery: [],
+        camera: [],
+        displayCapture: [],
+        documentDomain: [],
+        documentWrite: [],
+        encryptedMedia: [],
+        executionWhileNotRendered: [],
+        executionWhileOutOfViewport: [],
+        fontDisplayLateSwap: [],
+        fullscreen: [],
+        geolocation: [],
+        gyroscope: [],
+        interestCohort: [],
+        layoutAnimations: [],
+        legacyImageFormats: [],
+        loadingFrameDefaultEager: [],
+        magnetometer: [],
+        microphone: [],
+        midi: [],
+        navigationOverride: [],
+        notifications: [],
+        oversizedImages: [],
+        payment: [],
+        pictureInPicture: [],
+        publickeyCredentials: [],
+        push: [],
+        serial: [],
+        speaker: [],
+        syncScript: [],
+        syncXhr: [],
+        unoptimizedImages: [],
+        unoptimizedLosslessImages: [],
+        unoptimizedLossyImages: [],
+        unsizedMedia: [],
+        usb: [],
+        verticalScroll: [],
+        vibrate: [],
+        vr: [],
+        wakeLock: [],
+        xr: [],
+        xrSpatialTracking: [],
+      },
     })
   );
 
