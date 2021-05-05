@@ -5,7 +5,7 @@ utilizing automatic static optimization. So although
 not recommended, we use a server to run middleware
 between the user and Next application
 */
-process.env.ENV === "PROD" && require("sqreen");
+process.env.NODE_ENV === "PROD" && require("sqreen");
 
 const express = require("express");
 const next = require("next");
@@ -166,7 +166,7 @@ app.prepare().then(() => {
     })
   );
 
-  if (process.env.ENV === "PROD") {
+  if (process.env.NODE_ENV === "PROD") {
     server.use(enforce.HTTPS({ trustProtoHeader: true }));
   }
 

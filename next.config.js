@@ -1,6 +1,9 @@
 module.exports = {
   poweredByHeader: false,
+
+  // Compression is done by the server
   compress: false,
+
   redirects: async () => {
     return [
       {
