@@ -57,7 +57,8 @@ app.prepare().then(() => {
       crossOriginResourcePolicy: false,
 
       dnsPrefetchControl: {
-        allow: true,
+        // Less privacy for users, but improves performance
+        allow: false,
       },
       expectCt: {
         enforce: true,
@@ -67,7 +68,14 @@ app.prepare().then(() => {
       },
       hsts: {
         includeSubDomains: true,
-        preload: true,
+
+        /*
+        We don't meet preload requirements since
+        Heroku supports TLS 1.0/1.1. We can fix
+        this by paying for the SSL add-on and
+        an SSL certificate
+        */
+        preload: false,
       },
       ieNoOpen: true,
       noSniff: true,
@@ -76,7 +84,7 @@ app.prepare().then(() => {
         permittedPolicies: "none",
       },
       referrerPolicy: {
-        policy: "origin",
+        policy: "sameorigin",
       },
       xssFilter: true,
     })
