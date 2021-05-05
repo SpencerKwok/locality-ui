@@ -4,14 +4,13 @@ import { useRouter } from "next/router";
 import Stack from "../common/Stack";
 import SearchBar from "./SearchBar";
 import LocalityLogo from "../common/images/LocalityLogo";
-import { useWindowSize } from "../../lib/common";
 
-export default function Search() {
+export interface SearchProps {
+  width: number;
+}
+
+export default function Search({ width }: SearchProps) {
   const router = useRouter();
-  const size = useWindowSize();
-  if (!size.width) {
-    return <div></div>;
-  }
 
   const onEnter = (query: string) => {
     router.push(`/search?q=${query}`);
@@ -21,11 +20,7 @@ export default function Search() {
     <Stack direction="row" columnAlign="center">
       <Stack direction="column" rowAlign="center">
         <LocalityLogo width={280} style={{ padding: "12px 24px 24px 24px" }} />
-        <SearchBar
-          autoFocus
-          width={Math.min(size.width * 0.6, 584)}
-          onEnter={onEnter}
-        />
+        <SearchBar autoFocus width={Math.min(width, 584)} onEnter={onEnter} />
       </Stack>
     </Stack>
   );

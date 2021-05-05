@@ -18,7 +18,7 @@ export default function Home({ businesses, isNewUser, width }: HomeProps) {
   return (
     <div>
       {isNewUser && <NewUser />}
-      <Search />
+      <Search width={width * 0.6} />
       <Stack
         direction="column"
         rowAlign="center"

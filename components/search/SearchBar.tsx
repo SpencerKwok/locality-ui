@@ -3,7 +3,6 @@ import { Button, InputGroup, FormControl } from "react-bootstrap";
 
 import Stack from "../common/Stack";
 import styles from "./SearchBar.module.css";
-import { useWindowSize } from "../../lib/common";
 
 export interface SearchBarProps extends React.HTMLProps<HTMLDivElement> {
   defaultQuery?: string;
@@ -19,10 +18,6 @@ export default function SearchBar({
 }: SearchBarProps) {
   const [initialQuery, setInitialQuery] = useState(defaultQuery || "");
   const [query, setQuery] = useState(defaultQuery || "");
-  const size = useWindowSize();
-  if (!size.width) {
-    return <div></div>;
-  }
 
   if (defaultQuery && defaultQuery !== initialQuery) {
     setInitialQuery(defaultQuery || "");
