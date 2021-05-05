@@ -17,7 +17,7 @@ const helmet = require("helmet");
 const permissionsPolicy = require("permissions-policy");
 const shrinkRay = require("shrink-ray-current");
 
-const app = next({ dev: process.env.ENV !== "PROD" });
+const app = next({ dev: process.env.NODE_ENV !== "production" });
 const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
