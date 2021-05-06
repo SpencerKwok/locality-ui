@@ -47,7 +47,7 @@ http {
         ssl_protocols TLSv1.2 TLSv1.3;
 
         # Specify cache key zone
-        proxy_cache locality;
+        proxy_cache one;
 
         # Set proxy rules for all pages
         location / {
