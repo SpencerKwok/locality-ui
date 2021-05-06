@@ -8,6 +8,7 @@ between the user and Next application
 process.env.NODE_ENV === "production" && require("sqreen");
 
 const express = require("express");
+const fs = require("fs");
 const next = require("next");
 const { parse } = require("url");
 
@@ -179,5 +180,9 @@ app.prepare().then(() => {
     return handle(req, res, url);
   });
 
-  server.listen(process.env.PORT || 3000);
+  server.listen("/tmp/nginx.socket", (err) => {
+    if (err) throw err;
+    console.log("NextJS Server listening to NGINX");
+    fs.openSync("/tmp/app-initialized", "w");
+  });
 });
