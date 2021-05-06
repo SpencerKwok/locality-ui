@@ -39,6 +39,8 @@ http {
         server_name _;
         keepalive_timeout 5;
 
+        proxy_set_header X-Forwarded-Proto $scheme;
+
         # Set proxy rules for all pages
         location / {
             if ($http_x_forwarded_proto != "https") {
