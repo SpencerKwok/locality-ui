@@ -39,17 +39,25 @@ http {
         server_name _;
         keepalive_timeout 5;
 
-        # Add page-specific headers here
+        # Page location
         location ~* /(?!api) {
             add_header Permissions-Policy "accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(), display-capture=(), document-domain=(), document-write=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), font-display-late-swap=(), fullscreen=(), geolocation=(), gyroscope=(), interest-cohort=(), layout-animations=(), legacy-image-formats=(), loading-frame-default-eager=(), magnetometer=(), microphone=(), midi=(), navigation-override=(), notifications=(), oversized-images=(), payment=(), picture-in-picture=(), publickey-credentials=(), push=(), serial=(), speaker=(), sync-script=(), sync-xhr=(), unoptimized-images=(), unoptimized-lossless-images=(), unoptimized-lossy-images=(), unsized-media=(), usb=(), vertical-scroll=(), vibrate=(), vr=(), wake-lock=(), xr=(), xr-spatial-tracking=()";
+
+            if ($http_x_forwarded_proto != "https") {
+                return 301 https://$host$request_uri;
+            }
+
+            proxy_http_version 1.1;
+            proxy_pass http://app_server;
+            proxy_redirect off;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header Host $http_host;
+            proxy_ssl_protocols TLSv1.2 TLSv1.3;
         }
 
-        # Add api-specific headers here
+        # API location
         location /api {
-        }
-
-        # Set proxy rules for all pages
-        location / {
             if ($http_x_forwarded_proto != "https") {
                 return 301 https://$host$request_uri;
             }
