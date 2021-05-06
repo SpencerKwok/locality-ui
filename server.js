@@ -13,9 +13,7 @@ const next = require("next");
 const { parse } = require("url");
 
 const cors = require("cors");
-const enforce = require("express-sslify");
 const helmet = require("helmet");
-const permissionsPolicy = require("permissions-policy");
 const shrinkRay = require("shrink-ray-current");
 
 const app = next({ dev: process.env.NODE_ENV !== "production" });
@@ -93,57 +91,6 @@ app.prepare().then(() => {
   );
 
   server.use(
-    permissionsPolicy({
-      features: {
-        accelerometer: [],
-        ambientLightSensor: [],
-        autoplay: [],
-        battery: [],
-        camera: [],
-        displayCapture: [],
-        documentDomain: [],
-        documentWrite: [],
-        encryptedMedia: [],
-        executionWhileNotRendered: [],
-        executionWhileOutOfViewport: [],
-        fontDisplayLateSwap: [],
-        fullscreen: [],
-        geolocation: [],
-        gyroscope: [],
-        interestCohort: [],
-        layoutAnimations: [],
-        legacyImageFormats: [],
-        loadingFrameDefaultEager: [],
-        magnetometer: [],
-        microphone: [],
-        midi: [],
-        navigationOverride: [],
-        notifications: [],
-        oversizedImages: [],
-        payment: [],
-        pictureInPicture: [],
-        publickeyCredentials: [],
-        push: [],
-        serial: [],
-        speaker: [],
-        syncScript: [],
-        syncXhr: [],
-        unoptimizedImages: [],
-        unoptimizedLosslessImages: [],
-        unoptimizedLossyImages: [],
-        unsizedMedia: [],
-        usb: [],
-        verticalScroll: [],
-        vibrate: [],
-        vr: [],
-        wakeLock: [],
-        xr: [],
-        xrSpatialTracking: [],
-      },
-    })
-  );
-
-  server.use(
     cors({
       origin: [
         "'self'",
@@ -153,7 +100,15 @@ app.prepare().then(() => {
         "https://www.walmart.ca",
         "https://www.walmart.com",
       ],
-      allowedHeaders: ["X-Requested-With", "Content-Type"],
+      allowedHeaders: [
+        "Cache-Control",
+        "Content-Type",
+        "DNT",
+        "If-Modified-Since",
+        "Origin",
+        "User-Agent",
+        "X-Requested-With",
+      ],
       credentials: true,
     })
   );
@@ -166,10 +121,6 @@ app.prepare().then(() => {
       brotli: { quality: 1 },
     })
   );
-
-  if (process.env.NODE_ENV === "production") {
-    server.use(enforce.HTTPS({ trustProtoHeader: true }));
-  }
 
   server.get("*", (req, res) => {
     const url = parse(req.url, true);
