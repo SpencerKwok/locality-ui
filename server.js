@@ -12,7 +12,6 @@ const fs = require("fs");
 const next = require("next");
 const { parse } = require("url");
 
-const cors = require("cors");
 const helmet = require("helmet");
 const shrinkRay = require("shrink-ray-current");
 
@@ -87,29 +86,6 @@ app.prepare().then(() => {
         policy: "same-origin",
       },
       xssFilter: true,
-    })
-  );
-
-  server.use(
-    cors({
-      origin: [
-        "'self'",
-        "https://www.etsy.com",
-        "https://www.amazon.ca",
-        "https://www.amazon.com",
-        "https://www.walmart.ca",
-        "https://www.walmart.com",
-      ],
-      allowedHeaders: [
-        "Cache-Control",
-        "Content-Type",
-        "DNT",
-        "If-Modified-Since",
-        "Origin",
-        "User-Agent",
-        "X-Requested-With",
-      ],
-      credentials: true,
     })
   );
 
