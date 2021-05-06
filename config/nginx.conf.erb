@@ -23,15 +23,11 @@ http {
 
     # Don't block on disk I/O if data is not in memory
     sendfile on;
-    sendfile_max_chunk 1m;
     tcp_nopush on;
     tcp_nodelay on;
 
     # Must read the body in 5 seconds.
     client_body_timeout 5;
-
-    # Enable caching
-    proxy_cache_path /data/nginx/cache keys_zone=one:10m;
 
     # Load balancer
     upstream app_server {
@@ -45,9 +41,6 @@ http {
 
         # Removing support for TLSv1.0 and TLSv1.1
         ssl_protocols TLSv1.2 TLSv1.3;
-
-        # Specify cache key zone
-        proxy_cache one;
 
         # Set proxy rules for all pages
         location / {
