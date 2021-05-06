@@ -1,0 +1,88 @@
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes checkIcon {
+  0% {
+    height: 0;
+    width: 0;
+    opacity: 1;
+  }
+  20% {
+    height: 0;
+    width: 28px;
+    opacity: 1;
+  }
+  40% {
+    height: 56px;
+    width: 28px;
+    opacity: 1;
+  }
+  100% {
+    height: 56px;
+    width: 28px;
+    opacity: 1;
+  }
+}
+
+.circular-border {
+  position: relative;
+  height: 125px;
+  width: 125px;
+  display: inline-block;
+  border: 4px solid #449ed7;
+  border-radius: 50%;
+  animation: fadeIn 0.8s ease;
+}
+
+.animated-circular-border {
+  position: relative;
+  height: 125px;
+  width: 125px;
+  display: inline-block;
+  border: 4px solid #ffffff;
+  border-radius: 50%;
+  border-left-color: #449ed7;
+  animation: rotate 1.2s linear infinite;
+}
+
+.checkmark {
+  position: absolute;
+  content: "";
+  top: 50%;
+  left: 28px;
+  transform: scaleX(-1) rotate(135deg);
+  height: 56px;
+  width: 28px;
+  border-top: 4px solid #449ed7;
+  border-right: 4px solid #449ed7;
+  transform-origin: left top;
+  animation: checkIcon 0.8s ease;
+}
+
+.button {
+  background-color: #449ed7;
+  border-color: #449ed7;
+}
+.button:link,
+.button:visited,
+.button:focus {
+  background-color: #449ed7 !important;
+  border-color: #449ed7 !important;
+}
+.button:hover,
+.button:active {
+  background-color: #3880ae !important;
+  border-color: #3880ae !important;
+}
