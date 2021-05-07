@@ -12,6 +12,7 @@ const fs = require("fs");
 const next = require("next");
 const { parse } = require("url");
 
+const enforce = require("express-sslify");
 const helmet = require("helmet");
 const shrinkRay = require("shrink-ray-current");
 
@@ -87,6 +88,10 @@ app.prepare().then(() => {
       brotli: { quality: 1 },
     })
   );
+
+  if (process.env.NODE_ENV === "production") {
+    server.use(enforce.HTTPS({ trustProtoHeader: true }));
+  }
 
   server.get("*", (req, res) => {
     const url = parse(req.url, true);

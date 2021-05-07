@@ -13,6 +13,7 @@
         "bootstrap": "^4.6.0",
         "cloudinary": "^1.25.1",
         "email-validator": "^2.0.4",
+        "enforce": "^0.1.7",
         "express": "^4.17.1",
         "express-sslify": "^1.2.0",
         "formik": "^2.2.6",
@@ -4431,6 +4432,14 @@
       "peer": true,
       "dependencies": {
         "once": "^1.4.0"
+      }
+    },
+    "node_modules/enforce": {
+      "version": "0.1.7",
+      "resolved": "https://registry.npmjs.org/enforce/-/enforce-0.1.7.tgz",
+      "integrity": "sha1-r3zdP6mCsuyq4GrntcJZUX0ivj8=",
+      "engines": {
+        "node": "*"
       }
     },
     "node_modules/enhanced-resolve": {
@@ -15911,6 +15920,11 @@
       "requires": {
         "once": "^1.4.0"
       }
+    },
+    "enforce": {
+      "version": "0.1.7",
+      "resolved": "https://registry.npmjs.org/enforce/-/enforce-0.1.7.tgz",
+      "integrity": "sha1-r3zdP6mCsuyq4GrntcJZUX0ivj8="
     },
     "enhanced-resolve": {
       "version": "4.5.0",
