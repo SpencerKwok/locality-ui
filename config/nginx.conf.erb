@@ -1,0 +1,105 @@
+daemon off;
+
+# Maximize worker processes
+worker_processes auto;
+
+events {
+    use epoll;
+    accept_mutex on;
+    worker_connections <%= ENV['NGINX_WORKER_CONNECTIONS'] || 1024 %>;
+}
+
+http {
+    # Hide that we use NGINX
+    server_tokens off;
+
+    # Disable logging for performance
+    access_log  /dev/null;
+    error_log /dev/null;
+
+    # Send application using an octet stream
+    include mime.types;
+    default_type application/octet-stream;
+
+    # Don't block on disk I/O if data is not in memory
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+
+    # Must read the body in 5 seconds.
+    client_body_timeout 5;
+
+    # Load balancer
+    upstream app_server {
+        server unix:/tmp/nginx.socket fail_timeout=0;
+    }
+
+    # Setup cache
+    proxy_cache_path /tmp/nginx.short levels=1:2 keys_zone=short:10m inactive=10m use_temp_path=off;
+    proxy_cache_path /tmp/nginx.long levels=1:2 keys_zone=long:60m inactive=60m use_temp_path=off;
+
+    # Setup rate-limiting
+    limit_req_zone $binary_remote_addr zone=ip:10m rate=10r/s;
+
+    server {
+        listen <%= ENV["PORT"] %>;
+        server_name _;
+        keepalive_timeout 5;
+
+        # API location
+        location ^~ /api {
+            if ($http_x_forwarded_proto != "https") {
+                return 301 https://$host$request_uri;
+            }
+
+            add_header Access-Control-Allow-Credentials "true";
+            add_header Access-Control-Allow-Headers "Cache-Control, Content-Type, DNT, If-Modified-Since, Origin, User-Agent, X-Requested-With";
+            add_header Access-Control-Allow-Methods "GET, POST";
+            add_header X-Cache-Status $upstream_cache_status;
+
+            limit_req zone=ip burst=20 nodelay;
+
+            proxy_cache short;
+            proxy_cache_background_update on;
+            proxy_cache_bypass $cookie_nocache
+            proxy_cache_lock on;
+            proxy_cache_revalidate on;
+
+            proxy_http_version 1.1;
+            proxy_pass http://app_server;
+            proxy_redirect off;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header Host $http_host;
+        }
+
+        # Page location
+        location ~* /(?!api) {
+            if ($http_x_forwarded_proto != "https") {
+                return 301 https://$host$request_uri;
+            }
+
+            add_header Permissions-Policy "accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(), display-capture=(), document-domain=(), document-write=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), font-display-late-swap=(), fullscreen=(), geolocation=(), gyroscope=(), interest-cohort=(), layout-animations=(), legacy-image-formats=(), loading-frame-default-eager=(), magnetometer=(), microphone=(), midi=(), navigation-override=(), notifications=(), oversized-images=(), payment=(), picture-in-picture=(), publickey-credentials=(), push=(), serial=(), speaker=(), sync-script=(), sync-xhr=(), unoptimized-images=(), unoptimized-lossless-images=(), unoptimized-lossy-images=(), unsized-media=(), usb=(), vertical-scroll=(), vibrate=(), vr=(), wake-lock=(), xr=(), xr-spatial-tracking=()";
+            add_header Access-Control-Allow-Credentials "true";
+            add_header Access-Control-Allow-Headers "Cache-Control, Content-Type, DNT, If-Modified-Since, Origin, User-Agent, X-Requested-With";
+            add_header Access-Control-Allow-Methods "GET";
+            add_header Access-Control-Max-Age "3600";
+            add_header X-Cache-Status $upstream_cache_status;
+
+            limit_req zone=ip burst=20 nodelay;
+
+            proxy_cache long;
+            proxy_cache_background_update on;
+            proxy_cache_lock on;
+            proxy_cache_revalidate on;
+            proxy_cache_use_stale error timeout updating http_500 http_502 http_503 http_504;
+
+            proxy_http_version 1.1;
+            proxy_pass http://app_server;
+            proxy_redirect off;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header Host $http_host;
+        }
+    }
+}
