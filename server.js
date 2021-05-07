@@ -12,9 +12,7 @@ const fs = require("fs");
 const next = require("next");
 const { parse } = require("url");
 
-const enforce = require("express-sslify");
 const helmet = require("helmet");
-const shrinkRay = require("shrink-ray-current");
 
 const app = next({ dev: process.env.NODE_ENV !== "production" });
 const handle = app.getRequestHandler();
@@ -66,7 +64,10 @@ app.prepare().then(() => {
       frameguard: {
         action: "same-origin",
       },
-      hsts: false,
+      hsts: {
+        includeSubDomains: true,
+        preload: true,
+      },
       ieNoOpen: true,
       noSniff: true,
       originAgentCluster: true,
@@ -79,19 +80,6 @@ app.prepare().then(() => {
       xssFilter: true,
     })
   );
-
-  server.use(
-    shrinkRay({
-      useZopfliForGzip: false,
-      cache: () => true,
-      zlib: { level: 1 },
-      brotli: { quality: 1 },
-    })
-  );
-
-  if (process.env.NODE_ENV === "production") {
-    server.use(enforce.HTTPS({ trustProtoHeader: true }));
-  }
 
   server.get("*", (req, res) => {
     const url = parse(req.url, true);
