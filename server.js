@@ -66,6 +66,7 @@ app.prepare().then(() => {
       },
       hsts: {
         includeSubDomains: true,
+        maxAge: 31536000,
         preload: true,
       },
       ieNoOpen: true,
