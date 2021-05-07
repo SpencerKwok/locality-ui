@@ -13,6 +13,7 @@ const next = require("next");
 const { parse } = require("url");
 
 const helmet = require("helmet");
+const shrinkRay = require("shrink-ray-current");
 
 const app = next({ dev: process.env.NODE_ENV !== "production" });
 const handle = app.getRequestHandler();
@@ -79,6 +80,15 @@ app.prepare().then(() => {
         policy: "same-origin",
       },
       xssFilter: true,
+    })
+  );
+
+  server.use(
+    shrinkRay({
+      useZopfliForGzip: false,
+      cache: () => true,
+      zlib: { level: 1 },
+      brotli: { quality: 1 },
     })
   );
 
