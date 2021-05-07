@@ -105,7 +105,6 @@ http {
             add_header X-Permitted-Cross-Domain-Policies "none";
             add_header X-XSS-Protection "1; mode=block";
 
-
             limit_req zone=ip burst=20 nodelay;
 
             proxy_cache long;
