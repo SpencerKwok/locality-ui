@@ -34,9 +34,6 @@ http {
         server unix:/tmp/nginx.socket fail_timeout=0;
     }
 
-    # Setup proxy cache paths
-    proxy_cache_path /tmp/nginx levels=1:2 keys_zone=cache:10m use_temp_path=off inactive=60m;
-
     server {
         listen <%= ENV["PORT"] %>;
         server_name _;
@@ -69,7 +66,6 @@ http {
             add_header Access-Control-Allow-Credentials "true";
             add_header Access-Control-Allow-Headers "Cache-Control, Content-Type, DNT, If-Modified-Since, Origin, User-Agent, X-Requested-With";
 
-            proxy_cache cache;
             proxy_http_version 1.1;
             proxy_pass http://app_server;
             proxy_redirect off;

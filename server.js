@@ -65,17 +65,7 @@ app.prepare().then(() => {
       frameguard: {
         action: "same-origin",
       },
-      hsts: {
-        includeSubDomains: true,
-
-        /*
-        We don't meet preload requirements since
-        Heroku supports TLS 1.0/1.1. We can fix
-        this by paying for the SSL add-on and
-        an SSL certificate
-        */
-        preload: false,
-      },
+      hsts: false,
       ieNoOpen: true,
       noSniff: true,
       originAgentCluster: true,
