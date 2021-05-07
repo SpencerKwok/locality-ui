@@ -138,7 +138,7 @@ export default async function handler(req, res) {
     }
 
     const [_, psqlErrorUpdateNextId] = await Psql.query(
-      SqlString.format("UPDATE companies SET next_product_id=? WHERE id=?", [
+      SqlString.format("UPDATE businesses SET next_product_id=? WHERE id=?", [
         nextProductId,
         businessId,
       ])
