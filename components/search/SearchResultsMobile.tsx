@@ -77,6 +77,7 @@ export default function Search({
         loggedIn={loggedIn}
         align="center"
         hits={searchResults.hits}
+        numEagerLoad={6}
         onToggleWishList={onToggleWishList}
         style={{ marginRight: -12 }}
       />

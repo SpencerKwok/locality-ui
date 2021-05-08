@@ -111,11 +111,11 @@ export default function Home({ cookie, ip }: SearchProps) {
       const queryString = window.location.search;
       const urlParams = new URLSearchParams(queryString);
       userInput.query = urlParams.get("q") || "";
-      userInput.page = 0;
+      setUserInput(userInput.clone());
+
       fetcher(`/api/search?${userInput.toString()}`, cookie)
         .then((newData) => {
           setData(newData);
-          setUserInput(userInput.clone());
         })
         .catch((err) => {
           console.log(err);

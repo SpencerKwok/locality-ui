@@ -18,6 +18,7 @@ export interface ProductImageProps extends React.HTMLProps<HTMLDivElement> {
   onToggleWishList: (id: string, value: boolean) => void;
   alwaysHover?: boolean;
   initialWishList?: boolean;
+  loading?: "eager" | "lazy";
   loggedIn?: boolean;
 }
 
@@ -31,6 +32,7 @@ function ProductImage({
   onToggleWishList,
   alwaysHover,
   initialWishList,
+  loading,
   loggedIn,
   style,
 }: ProductImageProps) {
@@ -103,11 +105,12 @@ function ProductImage({
               setHover(false);
             }}
           >
-            <source
-              srcSet={src.replace("/upload", "/upload/w_400")}
-              type="image/webp"
+            <img
+              alt={name}
+              loading={loading}
+              src={src.replace("/upload", "/upload/w_400")}
+              width={175}
             />
-            <img alt={name} src={src.replace(".webp", ".jpg")} width={175} />
           </picture>
           <h6 className={styles.h6}>{company}</h6>
           <h4 className={styles.h4}>{name}</h4>
