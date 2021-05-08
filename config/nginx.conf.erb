@@ -111,6 +111,7 @@ http {
 
             proxy_cache long;
             proxy_cache_background_update on;
+            proxy_cache_bypass $arg_q;
             proxy_cache_lock on;
             proxy_cache_revalidate on;
             proxy_cache_use_stale error timeout updating http_500 http_502 http_503 http_504;
