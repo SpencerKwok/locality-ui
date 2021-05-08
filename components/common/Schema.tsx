@@ -91,7 +91,6 @@ export interface BaseBusiness {
   logo: string;
   homepage: string;
   departments: string;
-  cachedLogo?: string;
 }
 
 export interface ContactRequest {
