@@ -22,7 +22,7 @@ export const getStaticProps: GetStaticProps = async () => {
       props: {
         businesses: res.businesses,
       },
-      revalidate: 5,
+      revalidate: 60 * 60,
     }))
     .catch(() => ({
       props: { businesses: [] },
