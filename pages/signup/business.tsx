@@ -39,11 +39,6 @@ export default function UserSignUp() {
           password: values.password1,
           redirect: false,
         });
-
-        const session = await getSession();
-        if (session && session.user) {
-          router.push("/dashboard?newBusiness=true");
-        }
       })
       .catch((error) => {
         setError(error);
@@ -55,7 +50,7 @@ export default function UserSignUp() {
   }
 
   if (session && session.user) {
-    router.push("/");
+    router.push("/dashboard/business?newBusiness=true");
     return null;
   }
 

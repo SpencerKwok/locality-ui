@@ -28,11 +28,6 @@ export default function UserSignUp() {
           password: values.password1,
           redirect: false,
         });
-
-        const session = await getSession();
-        if (session && session.user) {
-          router.push("/?newUser=true");
-        }
       })
       .catch((error) => {
         setError(error);
@@ -44,7 +39,7 @@ export default function UserSignUp() {
   }
 
   if (session && session.user) {
-    router.push("/");
+    router.push("/?newUser=true");
     return null;
   }
 
