@@ -1,3 +1,5 @@
+export {};
+
 /*
 DEPRECATED:
 Turns out image caching on the server side
@@ -5,6 +7,7 @@ hurts our first paint speed based on SEO
 checkers like Google Lighthouse
 */
 
+/*
 import LZString from "lz-string";
 const requestBase64 = require("base64-img").requestBase64;
 
@@ -61,3 +64,4 @@ export default class ImageManger {
     return image;
   }
 }
+*/
