@@ -187,7 +187,7 @@ export default function Home({ cookie, ip }: SearchProps) {
     fetcher(`/api/search?${userInput.toString()}`, cookie)
       .then((nextPageData) => {
         if (userInput.page === 1) {
-          fetcher(`/api/search?q=${userInput.query}`, cookie)
+          fetcher(`/api/search?q=${userInput.toString()}`, cookie)
             .then((firstPageData) => {
               data.hits = [...firstPageData.hits, ...nextPageData.hits];
               setData({ ...data });
@@ -207,10 +207,6 @@ export default function Home({ cookie, ip }: SearchProps) {
   };
 
   const onReset = () => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
     // HACK: for some reason the query value
     // on the client side doesn't change when
     // the route changes, so we reset it here
