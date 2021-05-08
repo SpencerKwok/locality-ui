@@ -107,27 +107,25 @@ export default function Home({ cookie, ip }: SearchProps) {
   const [session] = useSession();
   const router = useRouter();
 
-  if (typeof window !== "undefined") {
-    useEffect(() => {
-      const queryString = window.location.search;
-      const urlParams = new URLSearchParams(queryString);
-      const query = urlParams.get("q") || "";
-      if (userInput.query !== query) {
-        userInput.query = urlParams.get("q") || "";
-        userInput.page = 0;
-        userInput.company = new Set<string>();
-        userInput.departments = new Set<string>();
-        setUserInput(userInput.clone());
-        fetcher(`/api/search?${userInput.toString()}`, cookie)
-          .then((newData) => {
-            setData(newData);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      }
-    }, [window.location.search, refresh]);
-  }
+  useEffect(() => {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const query = urlParams.get("q") || "";
+    if (userInput.query !== query) {
+      userInput.query = query;
+      userInput.page = 0;
+      userInput.company = new Set<string>();
+      userInput.departments = new Set<string>();
+      setUserInput(userInput.clone());
+      fetcher(`/api/search?${userInput.toString()}`, cookie)
+        .then((newData) => {
+          setData(newData);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [refresh]);
 
   const onUserInputChange = () => {
     setUserInput(userInput.clone());
@@ -170,11 +168,14 @@ export default function Home({ cookie, ip }: SearchProps) {
       return;
     }
 
-    router.push({ pathname: "/search", query: { q: query } });
+    router.push({ pathname: "/search", query: { q: query } }, undefined, {
+      shallow: true,
+    });
+
     setRefresh(!refresh);
   };
 
-  const onBottom = () => {
+  const onBottom = async () => {
     if (typeof window === "undefined") {
       return;
     }
