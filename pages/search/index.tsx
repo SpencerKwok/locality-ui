@@ -187,10 +187,13 @@ export default function Home({ cookie, ip }: SearchProps) {
     fetcher(`/api/search?${userInput.toString()}`, cookie)
       .then((nextPageData) => {
         if (userInput.page === 1) {
+          userInput.page = 0;
           fetcher(`/api/search?q=${userInput.toString()}`, cookie)
             .then((firstPageData) => {
               data.hits = [...firstPageData.hits, ...nextPageData.hits];
+              userInput.page = 1;
               setData({ ...data });
+              setUserInput(userInput.clone());
             })
             .catch((err) => {
               console.log(err);
