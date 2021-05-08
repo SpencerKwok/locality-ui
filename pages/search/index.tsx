@@ -102,6 +102,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 export default function Home({ cookie, ip }: SearchProps) {
   const [data, setData] = useState(EmptySearchResponse);
+  const [refresh, setRefresh] = useState(false);
   const [userInput, setUserInput] = useState(new UserInput(ip, ""));
   const [session] = useSession();
   const router = useRouter();
@@ -110,17 +111,22 @@ export default function Home({ cookie, ip }: SearchProps) {
     useEffect(() => {
       const queryString = window.location.search;
       const urlParams = new URLSearchParams(queryString);
-      userInput.query = urlParams.get("q") || "";
-      setUserInput(userInput.clone());
-
-      fetcher(`/api/search?${userInput.toString()}`, cookie)
-        .then((newData) => {
-          setData(newData);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }, [window.location.search]);
+      const query = urlParams.get("q") || "";
+      if (userInput.query !== query) {
+        userInput.query = urlParams.get("q") || "";
+        userInput.page = 0;
+        userInput.company = new Set<string>();
+        userInput.departments = new Set<string>();
+        setUserInput(userInput.clone());
+        fetcher(`/api/search?${userInput.toString()}`, cookie)
+          .then((newData) => {
+            setData(newData);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    }, [window.location.search, refresh]);
   }
 
   const onUserInputChange = () => {
@@ -165,6 +171,7 @@ export default function Home({ cookie, ip }: SearchProps) {
     }
 
     router.push({ pathname: "/search", query: { q: query } });
+    setRefresh(!refresh);
   };
 
   const onBottom = () => {
@@ -210,24 +217,7 @@ export default function Home({ cookie, ip }: SearchProps) {
   };
 
   const onReset = () => {
-    // HACK: for some reason the query value
-    // on the client side doesn't change when
-    // the route changes, so we reset it here
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    userInput.query = urlParams.get("q") || "";
-    userInput.page = 0;
-    userInput.company = new Set<string>();
-    userInput.departments = new Set<string>();
-
-    fetcher(`/api/search?${userInput.toString()}`, cookie)
-      .then((newData) => {
-        setData(newData);
-        setUserInput(userInput.clone());
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    setRefresh(!refresh);
   };
 
   const company = new Map<string, number>();
