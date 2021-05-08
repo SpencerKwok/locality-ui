@@ -45,6 +45,7 @@ export default function BusinessShowcase({
                         src={business.logo}
                         height={225}
                         width={126}
+                        cachedSrc={business.cachedLogo}
                         loading={index <= 1 ? "eager" : "lazy"}
                       />
                     </a>

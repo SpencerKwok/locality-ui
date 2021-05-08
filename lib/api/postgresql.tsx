@@ -12,14 +12,14 @@ client
   .then(() => console.log("Connected to postgresql admin"))
   .catch((err) => console.error(err));
 
-const psql = {};
-psql.query = async (query) => {
+const psql: { [key: string]: any } = {};
+psql.query = async (query: any) => {
   let response,
     error = null;
   await client
     .query(query)
-    .then((res) => (response = res))
-    .catch((err) => {
+    .then((res: any) => (response = res))
+    .catch((err: Error) => {
       console.error(err);
       error = err.message;
     });

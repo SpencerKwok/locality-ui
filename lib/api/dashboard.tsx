@@ -1,9 +1,22 @@
-import Algolia from "./algolia.js";
-import Cloudinary from "./cloudinary.js";
-import Psql from "./postgresql.js";
+import Algolia from "./algolia";
+import Cloudinary from "./cloudinary";
+import Psql from "./postgresql";
 import SqlString from "sqlstring";
 
-export async function productAdd(product) {
+export interface Product {
+  businessId: number;
+  departments: string[];
+  description: string;
+  image: string;
+  link: string;
+  price: number;
+  priceRange: [number, number];
+  primaryKeywords: string[];
+  productName: string;
+  nextProductId?: number;
+}
+
+export async function productAdd(product: Product) {
   const {
     businessId,
     departments,
@@ -27,16 +40,16 @@ export async function productAdd(product) {
     return [null, psqlBusinessError];
   }
 
-  const businessName = businessResponse.rows[0].name;
-  const latitude = businessResponse.rows[0].latitude
+  const businessName: string = businessResponse.rows[0].name;
+  const latitude: string = businessResponse.rows[0].latitude
     .split(",")
-    .map((value) => value.trim());
-  const longitude = businessResponse.rows[0].longitude
+    .map((value: string) => value.trim());
+  const longitude: string = businessResponse.rows[0].longitude
     .split(",")
-    .map((value) => value.trim());
+    .map((value: string) => value.trim());
 
   if (!Number.isInteger(nextProductId)) {
-    nextProductId = businessResponse.rows[0].next_product_id;
+    nextProductId = businessResponse.rows[0].next_product_id as number;
 
     const [_, psqlErrorUpdateNextId] = await Psql.query(
       SqlString.format("UPDATE businesses SET next_product_id=? WHERE id=?", [
@@ -109,7 +122,7 @@ export async function productAdd(product) {
   ];
 }
 
-export async function productDelete(businessId, productIds) {
+export async function productDelete(businessId: number, productIds: string[]) {
   if (productIds.length === 0) {
     return null;
   }
@@ -134,7 +147,7 @@ export async function productDelete(businessId, productIds) {
     }
   }
 
-  const psqlObjectIds = [];
+  const psqlObjectIds = Array<string>();
   productIds.forEach((productId) => {
     psqlObjectIds.push(`id=${productId}`);
   });

@@ -5,7 +5,8 @@ utilizing automatic static optimization. So although
 not recommended, we use a server to run middleware
 between the user and Next application
 */
-process.env.NODE_ENV === "production" && require("sqreen");
+const prod = process.env.NODE_ENV === "production";
+prod && require("sqreen");
 
 const express = require("express");
 const fs = require("fs");
@@ -14,7 +15,7 @@ const { parse } = require("url");
 
 const shrinkRay = require("shrink-ray-current");
 
-const app = next({ dev: process.env.NODE_ENV !== "production" });
+const app = next({ dev: false });
 const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
@@ -38,9 +39,9 @@ app.prepare().then(() => {
     return handle(req, res, url);
   });
 
-  server.listen("/tmp/nginx.socket", (err) => {
+  server.listen(prod ? "/tmp/nginx.socket" : 3000, (err) => {
     if (err) throw err;
-    console.log("NextJS Server listening to NGINX");
-    fs.openSync("/tmp/app-initialized", "w");
+    prod && console.log("NextJS Server listening to NGINX");
+    prod && fs.openSync("/tmp/app-initialized", "w");
   });
 });

@@ -1,7 +1,7 @@
 import { v2 as Cloudinary } from "cloudinary";
 
-const cloudinaryClient = {};
-cloudinaryClient.upload = async (file, options) => {
+const cloudinaryClient: { [key: string]: any } = {};
+cloudinaryClient.upload = async (file: string, options = {}) => {
   let url,
     error = null;
   await Cloudinary.uploader
@@ -14,7 +14,7 @@ cloudinaryClient.upload = async (file, options) => {
   return [url, error];
 };
 
-cloudinaryClient.deleteResources = async (public_ids) => {
+cloudinaryClient.deleteResources = async (public_ids: string[]) => {
   let error = null;
   await Cloudinary.api.delete_resources(public_ids).catch((err) => {
     console.log(err);

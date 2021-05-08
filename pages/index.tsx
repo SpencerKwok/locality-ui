@@ -17,9 +17,11 @@ function fetcher(url: string) {
 }
 
 export const getStaticProps: GetStaticProps = async () => {
-  return await fetcher("/api/businesses")
+  return await fetcher("/api/businesses?cache=true")
     .then((res) => ({
-      props: { businesses: res.businesses },
+      props: {
+        businesses: res.businesses,
+      },
       revalidate: 60 * 60,
     }))
     .catch(() => ({
