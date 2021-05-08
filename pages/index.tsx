@@ -17,7 +17,7 @@ function fetcher(url: string) {
 }
 
 export const getStaticProps: GetStaticProps = async () => {
-  return await fetcher("/api/businesses?cache=true")
+  return await fetcher("/api/businesses")
     .then((res) => ({
       props: {
         businesses: res.businesses,
