@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { GetServerSideProps } from "next";
 import { useSession } from "next-auth/client";
 import { useRouter } from "next/router";
@@ -12,7 +12,6 @@ import { useMediaQuery } from "../../lib/common";
 
 interface SearchProps {
   ip: string;
-  query: string;
   cookie?: string;
 }
 
@@ -90,7 +89,6 @@ class UserInput {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const cookie = context.req.headers.cookie;
-  const query = context.query["q"] || "";
   const forwarded = (context.req.headers["x-forwarded-for"] || "") as string;
   const ip = forwarded.split(/,\s*/)[0];
 
@@ -98,16 +96,32 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       cookie,
       ip,
-      query,
     },
   };
 };
 
-export default function Home({ cookie, ip, query }: SearchProps) {
+export default function Home({ cookie, ip }: SearchProps) {
   const [data, setData] = useState(EmptySearchResponse);
   const [userInput, setUserInput] = useState(new UserInput(ip, ""));
   const [session] = useSession();
   const router = useRouter();
+
+  if (typeof window !== "undefined") {
+    useEffect(() => {
+      const queryString = window.location.search;
+      const urlParams = new URLSearchParams(queryString);
+      userInput.query = urlParams.get("q") || "";
+      userInput.page = 0;
+      fetcher(`/api/search?${userInput.toString()}`, cookie)
+        .then((newData) => {
+          setData(newData);
+          setUserInput(userInput.clone());
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }, [window.location.search]);
+  }
 
   const onUserInputChange = () => {
     setUserInput(userInput.clone());
@@ -122,6 +136,10 @@ export default function Home({ cookie, ip, query }: SearchProps) {
 
   const createOnFacetClick = (name: "company" | "departments") => {
     return (value: string) => {
+      if (typeof window === "undefined") {
+        return;
+      }
+
       userInput.page = 0;
       if (userInput[name].has(value)) {
         userInput[name].delete(value);
@@ -133,62 +151,85 @@ export default function Home({ cookie, ip, query }: SearchProps) {
   };
 
   const onPageClick = (value: number) => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
     userInput.page = value;
     onUserInputChange();
   };
 
   const onEnter = async (query: string) => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
     router.push({ pathname: "/search", query: { q: query } });
   };
 
   const onBottom = () => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    // HACK: for some reason the query value
+    // on the client side doesn't change when
+    // the route changes, so we reset it here
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const query = urlParams.get("q") || "";
+    if (userInput.query !== query) {
+      userInput.query = query;
+      userInput.page = 0;
+    }
+
     userInput.page += 1;
     fetcher(`/api/search?${userInput.toString()}`, cookie)
-      .then(async (nextPageData) => {
+      .then((nextPageData) => {
         if (userInput.page === 1) {
-          await fetcher(`/api/search?q=${userInput.query}`, cookie)
+          fetcher(`/api/search?q=${userInput.query}`, cookie)
             .then((firstPageData) => {
               data.hits = [...firstPageData.hits, ...nextPageData.hits];
+              setData({ ...data });
             })
             .catch((err) => {
               console.log(err);
             });
         } else {
           data.hits = [...data.hits, ...nextPageData.hits];
+          setData({ ...data });
+          setUserInput(userInput.clone());
         }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
-        setData({ ...data });
+  const onReset = () => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    // HACK: for some reason the query value
+    // on the client side doesn't change when
+    // the route changes, so we reset it here
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    userInput.query = urlParams.get("q") || "";
+    userInput.page = 0;
+    userInput.company = new Set<string>();
+    userInput.departments = new Set<string>();
+
+    fetcher(`/api/search?${userInput.toString()}`, cookie)
+      .then((newData) => {
+        setData(newData);
         setUserInput(userInput.clone());
       })
       .catch((err) => {
         console.log(err);
       });
   };
-
-  const onReset = async () => {
-    userInput.ip = ip;
-    userInput.query = query;
-    userInput.page = 0;
-    userInput.company = new Set<string>();
-    userInput.departments = new Set<string>();
-
-    await fetcher(`/api/search?${userInput.toString()}`, cookie)
-      .then(({ facets, hits, nbHits }) => {
-        data.facets = facets;
-        data.hits = hits;
-        data.nbHits = nbHits;
-
-        setData({ ...data });
-        setUserInput(new UserInput(ip, query));
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  if (userInput.query !== query) {
-    onReset();
-  }
 
   const company = new Map<string, number>();
   for (const name in data.facets.company) {
