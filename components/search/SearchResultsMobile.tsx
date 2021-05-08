@@ -1,13 +1,11 @@
 import React, { useEffect } from "react";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 
+import ProductShowcase from "./ProductShowcase";
 import SearchBar from "./SearchBar";
 import Stack from "../common/Stack";
 import { Product } from "../common/Schema";
 import LocalityLogo from "../common/images/LocalityLogo";
-
-const ProductShowcase = dynamic(() => import("./ProductShowcase"));
 
 export interface SearchResults {
   facets: {
@@ -73,14 +71,16 @@ export default function Search({
         </div>
       </Link>
       <SearchBar autoFocus defaultQuery={query} width={280} onEnter={onEnter} />
-      <ProductShowcase
-        loggedIn={loggedIn}
-        align="center"
-        hits={searchResults.hits}
-        numEagerLoad={6}
-        onToggleWishList={onToggleWishList}
-        style={{ marginRight: -12 }}
-      />
+      {searchResults.hits.length > 0 && (
+        <ProductShowcase
+          loggedIn={loggedIn}
+          align="center"
+          hits={searchResults.hits}
+          numEagerLoad={6}
+          onToggleWishList={onToggleWishList}
+          style={{ marginRight: -12 }}
+        />
+      )}
     </Stack>
   );
 }

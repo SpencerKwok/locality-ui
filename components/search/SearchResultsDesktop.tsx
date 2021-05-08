@@ -2,6 +2,8 @@ import React, { Fragment } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 
+import FacetList from "./FacetList";
+import ProductShowcase from "./ProductShowcase";
 import SearchBar from "./SearchBar";
 import Stack from "../common/Stack";
 import { Product } from "../common/Schema";
@@ -10,8 +12,6 @@ import { useWindowSize } from "../../lib/common";
 
 const Pagination = dynamic(() => import("react-bootstrap/Pagination"));
 const PaginationItem = dynamic(() => import("react-bootstrap/PageItem"));
-const FacetList = dynamic(() => import("./FacetList"));
-const ProductShowcase = dynamic(() => import("./ProductShowcase"));
 
 export type UserInputChange = {
   page: (value: number) => void;
