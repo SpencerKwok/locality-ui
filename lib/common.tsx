@@ -47,7 +47,7 @@ export function useWindowSize() {
     });
     resizeObserver.observe(document.body);
 
-    return () => resizeObserver.unobserve(document.body);
+    return () => resizeObserver.disconnect();
   }, []);
 
   return windowSize;
