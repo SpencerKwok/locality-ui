@@ -108,6 +108,9 @@ http {
 
             limit_req zone=ip burst=20 nodelay;
 
+            proxy_no_cache 1;
+            proxy_cache_bypass 1;
+
             proxy_hide_header X-Powered-By;
             proxy_hide_header X-Protected-By;
 
