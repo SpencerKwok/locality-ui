@@ -127,12 +127,12 @@ export default async function handler(req, res) {
       },
       MainListId
     );
-    */
 
     if (mailchimpError) {
       res.status(500).json({ error: mailchimpError });
       return;
     }
+    */
 
     res.status(200).json({});
   } catch (err) {
