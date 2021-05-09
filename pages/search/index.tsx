@@ -214,7 +214,7 @@ export default function Home({ cookie, ip }: SearchProps) {
       .then((nextPageData) => {
         if (userInput.page === 1) {
           userInput.page = 0;
-          fetcher(`/api/search?q=${userInput.toString()}`, cookie)
+          fetcher(`/api/search?${userInput.toString()}`, cookie)
             .then((firstPageData) => {
               data.facets = firstPageData.facets;
               data.hits = [...firstPageData.hits, ...nextPageData.hits];
