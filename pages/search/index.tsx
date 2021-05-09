@@ -95,7 +95,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       cookie,
-      ip: "", // Ignoring for now as it causes some odd glitches
+      ip,
     },
   };
 };
@@ -193,7 +193,7 @@ export default function Home({ cookie, ip }: SearchProps) {
     });
   };
 
-  const onBottom = async () => {
+  const onBottom = () => {
     if (typeof window === "undefined") {
       return;
     }
