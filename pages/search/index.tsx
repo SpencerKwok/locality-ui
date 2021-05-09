@@ -102,30 +102,33 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 export default function Home({ cookie, ip }: SearchProps) {
   const [data, setData] = useState(EmptySearchResponse);
-  const [refresh, setRefresh] = useState(false);
   const [userInput, setUserInput] = useState(new UserInput(ip, ""));
   const [session] = useSession();
   const router = useRouter();
 
-  useEffect(() => {
+  const onReset = () => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const query = urlParams.get("q") || "";
-    if (userInput.query !== query) {
-      userInput.query = query;
-      userInput.page = 0;
-      userInput.company = new Set<string>();
-      userInput.departments = new Set<string>();
-      setUserInput(userInput.clone());
-      fetcher(`/api/search?${userInput.toString()}`, cookie)
-        .then((newData) => {
-          setData(newData);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-  }, [refresh]);
+
+    userInput.query = urlParams.get("q") || "";
+    userInput.page = 0;
+    userInput.company = new Set<string>();
+    userInput.departments = new Set<string>();
+    setUserInput(userInput.clone());
+    fetcher(`/api/search?${userInput.toString()}`, cookie)
+      .then((newData) => {
+        data.facets = newData.facets;
+        data.hits = newData.hits;
+        data.nbHits = newData.nbHits;
+        setData(newData);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const isNarrow = useMediaQuery(42, "width", onReset);
+  const loggedIn = !(!session || !session.user);
 
   const onUserInputChange = () => {
     setUserInput(userInput.clone());
@@ -168,11 +171,25 @@ export default function Home({ cookie, ip }: SearchProps) {
       return;
     }
 
+    userInput.query = query;
+    userInput.page = 0;
+    userInput.company = new Set<string>();
+    userInput.departments = new Set<string>();
+    setUserInput(userInput.clone());
+    fetcher(`/api/search?${userInput.toString()}`, cookie)
+      .then((newData) => {
+        data.facets = newData.facets;
+        data.hits = newData.hits;
+        data.nbHits = newData.nbHits;
+        setData(newData);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
     router.push({ pathname: "/search", query: { q: query } }, undefined, {
       shallow: true,
     });
-
-    setRefresh(!refresh);
   };
 
   const onBottom = async () => {
@@ -217,10 +234,6 @@ export default function Home({ cookie, ip }: SearchProps) {
       });
   };
 
-  const onReset = () => {
-    setRefresh(!refresh);
-  };
-
   const company = new Map<string, number>();
   for (const name in data.facets.company) {
     company.set(name, data.facets.company[name]);
@@ -230,8 +243,16 @@ export default function Home({ cookie, ip }: SearchProps) {
     departments.set(name, data.facets.departments[name]);
   }
 
-  const isNarrow = useMediaQuery(42, "width", onReset);
-  const loggedIn = !(!session || !session.user);
+  useEffect(() => {
+    onReset();
+  }, [isNarrow]);
+
+  useEffect(() => {
+    if (!isNarrow) {
+      window.scroll(0, 0);
+    }
+  }, [data]);
+
   return (
     <RootLayout>
       {isNarrow ? (
