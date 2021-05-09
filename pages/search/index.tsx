@@ -248,6 +248,7 @@ export default function Home({ cookie, ip }: SearchProps) {
   }, [isNarrow]);
 
   useEffect(() => {
+    console.log(data);
     if (!isNarrow) {
       window.scroll(0, 0);
     }
