@@ -1,18 +1,12 @@
 import { useState, useCallback, useEffect } from "react";
 
-export function useMediaQuery(
-  length: number,
-  dimension: "height" | "width",
-  onChange: (e: boolean) => void = () => {}
-) {
+export function useMediaQuery(length: number, dimension: "height" | "width") {
   const [targetReached, setTargetReached] = useState(false);
 
   const updateTarget = useCallback((e) => {
     if (e.matches) {
-      onChange(true);
       setTargetReached(true);
     } else {
-      onChange(false);
       setTargetReached(false);
     }
   }, []);

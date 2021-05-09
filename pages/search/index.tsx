@@ -95,7 +95,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       cookie,
-      ip,
+      ip: "", // Ignoring for now as it causes some odd glitches
     },
   };
 };
@@ -115,6 +115,7 @@ export default function Home({ cookie, ip }: SearchProps) {
     userInput.company = new Set<string>();
     userInput.departments = new Set<string>();
     setUserInput(userInput.clone());
+
     fetcher(`/api/search?${userInput.toString()}`, cookie)
       .then((newData) => {
         data.facets = newData.facets;
@@ -127,7 +128,7 @@ export default function Home({ cookie, ip }: SearchProps) {
       });
   };
 
-  const isNarrow = useMediaQuery(42, "width", onReset);
+  const isNarrow = useMediaQuery(42, "width");
   const loggedIn = !(!session || !session.user);
 
   const onUserInputChange = () => {
@@ -215,7 +216,9 @@ export default function Home({ cookie, ip }: SearchProps) {
           userInput.page = 0;
           fetcher(`/api/search?q=${userInput.toString()}`, cookie)
             .then((firstPageData) => {
+              data.facets = firstPageData.facets;
               data.hits = [...firstPageData.hits, ...nextPageData.hits];
+              data.nbHits = firstPageData.nbHits;
               userInput.page = 1;
               setData({ ...data });
               setUserInput(userInput.clone());
