@@ -48,7 +48,7 @@ export default async function handler(req, res) {
 
   const userId = user.rows[0].id + 1;
   const hash = await Bcrypt.hash(password, 12);
-  const [_, psqlErrorAddUser] = await Psql.query(
+  const [, psqlErrorAddUser] = await Psql.query(
     SqlString.format(
       "INSERT INTO users (username, email, password, first_name, last_name, id, wishlist) VALUES (E?, E?, E?, E?, E?, ?, E?)",
       [email, email, hash, firstName, lastName, userId, ""]

@@ -35,7 +35,7 @@ export default async function handler(req, res) {
       return;
     }
 
-    const [_, psqlError] = await Psql.query(
+    const [, psqlError] = await Psql.query(
       SqlString.format("UPDATE businesses SET logo=? WHERE id=?", [
         url,
         businessId,

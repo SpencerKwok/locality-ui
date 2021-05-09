@@ -13,7 +13,7 @@ export default async function handler(req, res) {
   }
 
   const f = async (businessId, departments) => {
-    const [_, psqlDepartmentsError] = await Psql.query(
+    const [, psqlDepartmentsError] = await Psql.query(
       SqlString.format("UPDATE businesses SET departments=E? WHERE id=?", [
         departments.join(":"),
         businessId,

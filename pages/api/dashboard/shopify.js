@@ -28,16 +28,7 @@ export default async function handler(req, res) {
     }
 
     let nextProductId = businessResponse.rows[0].next_product_id;
-    const businessName = businessResponse.rows[0].name;
     const departments = businessResponse.rows[0].departments.split(":");
-    const latitude = businessResponse.rows[0].latitude
-      .split(",")
-      .map((x) => x.trim())
-      .map((x) => parseFloat(x));
-    const longitude = businessResponse.rows[0].longitude
-      .split(",")
-      .map((x) => x.trim())
-      .map((x) => parseFloat(x));
     const homepage = businessResponse.rows[0].homepage;
     if (!homepage) {
       res.status(400).json({
@@ -137,7 +128,7 @@ export default async function handler(req, res) {
       return;
     }
 
-    const [_, psqlErrorUpdateNextId] = await Psql.query(
+    const [, psqlErrorUpdateNextId] = await Psql.query(
       SqlString.format("UPDATE businesses SET next_product_id=? WHERE id=?", [
         nextProductId,
         businessId,
@@ -170,7 +161,7 @@ export default async function handler(req, res) {
           priceRange,
           nextProductId,
         }) => {
-          const [baseProduct, _] = await productAdd({
+          const [baseProduct] = await productAdd({
             businessId,
             departments,
             description,

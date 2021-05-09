@@ -71,7 +71,7 @@ export default async function handler(req, res) {
       `UPDATE products SET name=E?, image=? WHERE business_id=? AND id=?`,
       [name, url, businessId, productId]
     );
-    const [_, psqlError] = await Psql.query(query);
+    const [, psqlError] = await Psql.query(query);
     if (psqlError) {
       res.status(500).json({ error: psqlError });
       return;

@@ -35,19 +35,24 @@ export function useWindowSize() {
     const handleResize = () => {
       setWindowSize({
         width: document.body.clientWidth,
-        height: document.body.clientHeight,
+        height: window.innerHeight,
       });
     };
 
     // Initialize window size on mount
     handleResize();
 
+    // Handle window + document resize
+    window.addEventListener("resize", handleResize);
     const resizeObserver = new ResizeObserver(() => {
       handleResize();
     });
     resizeObserver.observe(document.body);
 
-    return () => resizeObserver.disconnect();
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      resizeObserver.disconnect();
+    };
   }, []);
 
   return windowSize;
