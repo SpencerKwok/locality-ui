@@ -226,6 +226,8 @@ export interface ShopifyProductUpdateResponse extends BaseResponse {
 }
 
 export interface UserSignUpRequest {
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
 }

@@ -1,3 +1,4 @@
+import Md5 from "md5";
 const mailchimp = require("@mailchimp/mailchimp_marketing");
 
 mailchimp.setConfig({
@@ -15,21 +16,24 @@ export interface Subscriber {
 
 const mailchimpClient: { [key: string]: any } = {};
 mailchimpClient.addSubscriber = async (
-  subscriber: Subscriber,
+  { firstName, lastName, email }: Subscriber,
   listId: string
 ) => {
+  const subscriberHash = Md5(email.toLowerCase());
   try {
-    return [
-      await mailchimp.lists.addListMember(listId, {
-        email_address: subscriber.email,
-        status: "subscribed",
+    const response = await mailchimp.lists.updateListMember(
+      listId,
+      subscriberHash,
+      {
+        email_address: email,
+        status_if_new: "subscribed",
         merge_fields: {
-          FNAME: subscriber.firstName,
-          LNAME: subscriber.lastName,
+          FNAME: firstName,
+          LNAME: lastName,
         },
-      }),
-      null,
-    ];
+      }
+    );
+    return [response, null];
   } catch (error) {
     return [null, error.message];
   }

@@ -118,12 +118,11 @@ export default async function handler(req, res) {
       return;
     }
 
-    /*
-    const [, mailchimpError] = MailChimp.addSubscriber(
+    const [, mailchimpError] = await MailChimp.addSubscriber(
       {
+        email,
         firstName,
         lastName,
-        email,
       },
       MainListId
     );
@@ -132,7 +131,6 @@ export default async function handler(req, res) {
       res.status(500).json({ error: mailchimpError });
       return;
     }
-    */
 
     res.status(200).json({});
   } catch (err) {

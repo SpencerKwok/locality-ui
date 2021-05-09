@@ -9,6 +9,8 @@ import { SubmitButton, ErrorMessage, InputGroup, Label } from "../common/form";
 import styles from "./Signup.module.css";
 
 const SignUpSchema = yup.object().shape({
+  firstName: yup.string().required("Required").max(255, "Too long"),
+  lastName: yup.string().required("Required").max(255, "Too long"),
   email: yup
     .string()
     .email("Invalid email address")
@@ -28,6 +30,8 @@ const SignUpSchema = yup.object().shape({
 });
 
 export interface SignUpRequest {
+  firstName: string;
+  lastName: string;
   email: string;
   password1: string;
   password2: string;
@@ -46,6 +50,8 @@ export default function Customer({ error, onSubmit }: SignInProps) {
         <Formik
           initialValues={
             {
+              firstName: "",
+              lastName: "",
               email: "",
               password1: "",
               password2: "",
@@ -62,6 +68,40 @@ export default function Customer({ error, onSubmit }: SignInProps) {
             handleSubmit,
           }) => (
             <Form onSubmit={handleSubmit}>
+              <Form.Group>
+                <Label required>First Name</Label>
+                <InputGroup>
+                  <FormControl
+                    aria-required
+                    aria-label="First Name"
+                    aria-details="Enter first name here"
+                    id="firstName"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    placeholder="Enter first name"
+                    type="text"
+                    value={values.firstName}
+                  />
+                </InputGroup>
+                <ErrorMessage name="firstName" />
+              </Form.Group>
+              <Form.Group>
+                <Label required>Last Name</Label>
+                <InputGroup>
+                  <FormControl
+                    aria-required
+                    aria-label="Last Name"
+                    aria-details="Enter last name here"
+                    id="lastName"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    placeholder="Enter last name"
+                    type="text"
+                    value={values.lastName}
+                  />
+                </InputGroup>
+                <ErrorMessage name="lastName" />
+              </Form.Group>
               <Form.Group>
                 <Label required>Email</Label>
                 <InputGroup>
