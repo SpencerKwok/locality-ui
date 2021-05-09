@@ -15,6 +15,7 @@ type SortFilter =
 
 export interface ProductShowcaseProps extends React.HTMLProps<HTMLDivElement> {
   hits: Array<Product>;
+  numEagerLoad: number;
   onToggleWishList: (objectId: string, value: boolean) => void;
   align?: StackAlignment;
   loggedIn?: boolean;
@@ -31,6 +32,7 @@ const allSortFilters: Array<SortFilter> = [
 
 export default function ProductShowcase({
   hits,
+  numEagerLoad,
   onToggleWishList,
   align,
   loggedIn,
@@ -93,6 +95,7 @@ export default function ProductShowcase({
           <ProductImage
             loggedIn={loggedIn}
             initialWishList={hit.wishlist}
+            loading={index < numEagerLoad ? "eager" : "lazy"}
             key={hit.objectId}
             company={hit.company}
             link={hit.link}

@@ -7,8 +7,9 @@ const client = AlgoliaSearch(
 );
 const index = client.initIndex(process.env.ALGOLIA_INDEX || "");
 
-const algoliaClient = {};
-algoliaClient.getObject = async (objectID, options = {}) => {
+const algoliaClient: { [key: string]: any } = {};
+
+algoliaClient.getObject = async (objectID: string, options = {}) => {
   let object,
     error = null;
   await index
@@ -21,7 +22,10 @@ algoliaClient.getObject = async (objectID, options = {}) => {
   return [object, error];
 };
 
-algoliaClient.getObjects = async (objectIDs, options = {}) => {
+algoliaClient.getObjects = async (
+  objectIDs: readonly string[],
+  options = {}
+) => {
   let objects,
     error = null;
   await index
@@ -34,7 +38,10 @@ algoliaClient.getObjects = async (objectIDs, options = {}) => {
   return [objects, error];
 };
 
-algoliaClient.partialUpdateObject = async (object, options = {}) => {
+algoliaClient.partialUpdateObject = async (
+  object: Record<string, any>,
+  options = {}
+) => {
   let error = null;
   await index.partialUpdateObject(object, options).catch((err) => {
     console.log(err);
@@ -43,7 +50,10 @@ algoliaClient.partialUpdateObject = async (object, options = {}) => {
   return error;
 };
 
-algoliaClient.saveObject = async (object, options = {}) => {
+algoliaClient.saveObject = async (
+  object: Readonly<Record<string, any>>,
+  options = {}
+) => {
   let error = null;
   await index.saveObject(object, options).catch((err) => {
     console.log(err);
@@ -52,7 +62,10 @@ algoliaClient.saveObject = async (object, options = {}) => {
   return error;
 };
 
-algoliaClient.saveObjects = async (objects, options = {}) => {
+algoliaClient.saveObjects = async (
+  objects: Readonly<Record<string, any>>[],
+  options = {}
+) => {
   let error = null;
   await index.saveObjects(objects, options).catch((err) => {
     console.log(err);
@@ -61,7 +74,7 @@ algoliaClient.saveObjects = async (objects, options = {}) => {
   return error;
 };
 
-algoliaClient.deleteObjects = async (objectIDs) => {
+algoliaClient.deleteObjects = async (objectIDs: readonly string[]) => {
   let error = null;
   await index.deleteObjects(objectIDs).catch((err) => {
     console.log(err);
@@ -70,7 +83,7 @@ algoliaClient.deleteObjects = async (objectIDs) => {
   return error;
 };
 
-algoliaClient.search = async (query, options = {}) => {
+algoliaClient.search = async (query: string, options = {}) => {
   let error = null;
   let results = {};
   await index

@@ -1,18 +1,12 @@
 import { useState, useCallback, useEffect } from "react";
 
-export function useMediaQuery(
-  length: number,
-  dimension: "height" | "width",
-  onChange: (e: boolean) => void = () => {}
-) {
+export function useMediaQuery(length: number, dimension: "height" | "width") {
   const [targetReached, setTargetReached] = useState(false);
 
   const updateTarget = useCallback((e) => {
     if (e.matches) {
-      onChange(true);
       setTargetReached(true);
     } else {
-      onChange(false);
       setTargetReached(false);
     }
   }, []);
@@ -21,7 +15,6 @@ export function useMediaQuery(
     const media = window.matchMedia(`(max-${dimension}: ${length}em)`);
     media.addEventListener("change", (e) => updateTarget(e));
 
-    // Check on mount (callback is not called until a change occurs)
     if (media.matches) {
       setTargetReached(true);
     }
@@ -33,32 +26,29 @@ export function useMediaQuery(
 }
 
 export function useWindowSize() {
-  // Initialize state with undefined width/height so server and client renders match
-  // Learn more here: https://joshwcomeau.com/react/the-perils-of-rehydration/
   const [windowSize, setWindowSize] = useState({
     width: undefined as number | undefined,
     height: undefined as number | undefined,
   });
 
   useEffect(() => {
-    // Handler to call on window resize
     const handleResize = () => {
-      // Set window width/height to state
       setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
+        width: document.body.clientWidth,
+        height: document.body.clientHeight,
       });
     };
 
-    // Add event listener
-    window.addEventListener("resize", handleResize);
-
-    // Call handler right away so state gets updated with initial window size
+    // Initialize window size on mount
     handleResize();
 
-    // Remove event listener on cleanup
-    return () => window.removeEventListener("resize", handleResize);
-  }, []); // Empty array ensures that effect is only run on mount
+    const resizeObserver = new ResizeObserver(() => {
+      handleResize();
+    });
+    resizeObserver.observe(document.body);
+
+    return () => resizeObserver.disconnect();
+  }, []);
 
   return windowSize;
 }

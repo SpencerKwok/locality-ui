@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { GetServerSideProps } from "next";
 import { useSession } from "next-auth/client";
 import { useRouter } from "next/router";
@@ -12,7 +12,6 @@ import { useMediaQuery } from "../../lib/common";
 
 interface SearchProps {
   ip: string;
-  query: string;
   cookie?: string;
 }
 
@@ -90,7 +89,6 @@ class UserInput {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const cookie = context.req.headers.cookie;
-  const query = context.query["q"] || "";
   const forwarded = (context.req.headers["x-forwarded-for"] || "") as string;
   const ip = forwarded.split(/,\s*/)[0];
 
@@ -98,16 +96,40 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       cookie,
       ip,
-      query,
     },
   };
 };
 
-export default function Home({ cookie, ip, query }: SearchProps) {
+export default function Home({ cookie, ip }: SearchProps) {
   const [data, setData] = useState(EmptySearchResponse);
   const [userInput, setUserInput] = useState(new UserInput(ip, ""));
   const [session] = useSession();
   const router = useRouter();
+
+  const onReset = () => {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+
+    userInput.query = urlParams.get("q") || "";
+    userInput.page = 0;
+    userInput.company = new Set<string>();
+    userInput.departments = new Set<string>();
+    setUserInput(userInput.clone());
+
+    fetcher(`/api/search?${userInput.toString()}`, cookie)
+      .then((newData) => {
+        data.facets = newData.facets;
+        data.hits = newData.hits;
+        data.nbHits = newData.nbHits;
+        setData(newData);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const isNarrow = useMediaQuery(42, "width");
+  const loggedIn = !(!session || !session.user);
 
   const onUserInputChange = () => {
     setUserInput(userInput.clone());
@@ -138,57 +160,66 @@ export default function Home({ cookie, ip, query }: SearchProps) {
   };
 
   const onEnter = async (query: string) => {
-    router.push({ pathname: "/search", query: { q: query } });
+    userInput.query = query;
+    userInput.page = 0;
+    userInput.company = new Set<string>();
+    userInput.departments = new Set<string>();
+    setUserInput(userInput.clone());
+    fetcher(`/api/search?${userInput.toString()}`, cookie)
+      .then((newData) => {
+        data.facets = newData.facets;
+        data.hits = newData.hits;
+        data.nbHits = newData.nbHits;
+        setData(newData);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    router.push({ pathname: "/search", query: { q: query } }, undefined, {
+      shallow: true,
+    });
   };
 
+  // HACK: this function only runs on
+  // the client side, so we need to update
+  // the query value using the url
   const onBottom = () => {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const query = urlParams.get("q") || "";
+    if (userInput.query !== query) {
+      userInput.query = query;
+      userInput.page = 0;
+    }
+
     userInput.page += 1;
     fetcher(`/api/search?${userInput.toString()}`, cookie)
-      .then(async (nextPageData) => {
+      .then((nextPageData) => {
         if (userInput.page === 1) {
-          await fetcher(`/api/search?q=${userInput.query}`, cookie)
+          userInput.page = 0;
+          fetcher(`/api/search?${userInput.toString()}`, cookie)
             .then((firstPageData) => {
+              data.facets = firstPageData.facets;
               data.hits = [...firstPageData.hits, ...nextPageData.hits];
+              data.nbHits = firstPageData.nbHits;
+              userInput.page = 1;
+              setData({ ...data });
+              setUserInput(userInput.clone());
             })
             .catch((err) => {
               console.log(err);
             });
         } else {
           data.hits = [...data.hits, ...nextPageData.hits];
+          setData({ ...data });
+          setUserInput(userInput.clone());
         }
-
-        setData({ ...data });
-        setUserInput(userInput.clone());
       })
       .catch((err) => {
         console.log(err);
       });
   };
-
-  const onReset = async () => {
-    userInput.ip = ip;
-    userInput.query = query;
-    userInput.page = 0;
-    userInput.company = new Set<string>();
-    userInput.departments = new Set<string>();
-
-    await fetcher(`/api/search?${userInput.toString()}`, cookie)
-      .then(({ facets, hits, nbHits }) => {
-        data.facets = facets;
-        data.hits = hits;
-        data.nbHits = nbHits;
-
-        setData({ ...data });
-        setUserInput(new UserInput(ip, query));
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  if (userInput.query !== query) {
-    onReset();
-  }
 
   const company = new Map<string, number>();
   for (const name in data.facets.company) {
@@ -199,8 +230,16 @@ export default function Home({ cookie, ip, query }: SearchProps) {
     departments.set(name, data.facets.departments[name]);
   }
 
-  const isNarrow = useMediaQuery(42, "width", onReset);
-  const loggedIn = !(!session || !session.user);
+  useEffect(() => {
+    onReset();
+  }, [isNarrow]);
+
+  useEffect(() => {
+    if (!isNarrow) {
+      window.scroll(0, 0);
+    }
+  }, [data]);
+
   return (
     <RootLayout>
       {isNarrow ? (

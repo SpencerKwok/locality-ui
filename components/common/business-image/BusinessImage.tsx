@@ -27,14 +27,10 @@ export default function BusinessImage({
     >
       <Stack direction="column" rowAlign="center" style={{ width: width }}>
         <picture className={styles.picture}>
-          <source
-            srcSet={src.replace("upload/", "upload/w_175/")}
-            type="image/webp"
-          />
           <img
             loading={loading}
             alt={name}
-            src={src.replace(".webp", ".jpg")}
+            src={src.replace("upload/", "upload/w_175/")}
             width={width}
           />
         </picture>
