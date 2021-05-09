@@ -144,10 +144,6 @@ export default function Home({ cookie, ip }: SearchProps) {
 
   const createOnFacetClick = (name: "company" | "departments") => {
     return (value: string) => {
-      if (typeof window === "undefined") {
-        return;
-      }
-
       userInput.page = 0;
       if (userInput[name].has(value)) {
         userInput[name].delete(value);
@@ -159,19 +155,11 @@ export default function Home({ cookie, ip }: SearchProps) {
   };
 
   const onPageClick = (value: number) => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
     userInput.page = value;
     onUserInputChange();
   };
 
   const onEnter = async (query: string) => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
     userInput.query = query;
     userInput.page = 0;
     userInput.company = new Set<string>();
@@ -193,14 +181,10 @@ export default function Home({ cookie, ip }: SearchProps) {
     });
   };
 
+  // HACK: this function only runs on
+  // the client side, so we need to update
+  // the query value using the url
   const onBottom = () => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    // HACK: for some reason the query value
-    // on the client side doesn't change when
-    // the route changes, so we reset it here
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const query = urlParams.get("q") || "";
