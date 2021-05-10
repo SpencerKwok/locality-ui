@@ -94,7 +94,7 @@ http {
             add_header Access-Control-Allow-Headers "Cache-Control, Content-Type, DNT, If-Modified-Since, Origin, User-Agent, X-Requested-With";
             add_header Access-Control-Allow-Methods "GET";
             add_header Access-Control-Max-Age "3600";
-            add_header Content-Security-Policy "child-src 'self';connect-src 'self' https://ipv4.icanhazip.com https://api.ipify.org https://api.cloudinary.com;default-src 'self';font-src 'self';frame-src 'self';img-src 'self' blob: data: https://res.cloudinary.com;manifest-src 'self';media-src 'self' https://res.cloudinary.com;prefetch-src 'self';object-src 'self';script-src 'self';script-src-elem 'self';script-src-attr 'self';style-src 'self' 'unsafe-inline';style-src-elem 'self' 'unsafe-inline';style-src-attr 'self' 'unsafe-inline';worker-src 'self'";
+            add_header Content-Security-Policy "child-src 'self';connect-src 'self' https://ipv4.icanhazip.com https://api.ipify.org https://api.cloudinary.com;default-src 'self';font-src 'self';frame-src 'self';img-src 'self' blob: data: https://res.cloudinary.com;manifest-src 'self';media-src 'self' https://res.cloudinary.com;prefetch-src 'self';object-src 'self';script-src 'self';script-src-elem 'self' https://ajax.cloudflare.com/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js;script-src-attr 'self';style-src 'self' 'unsafe-inline';style-src-elem 'self' 'unsafe-inline';style-src-attr 'self' 'unsafe-inline';worker-src 'self'";
             add_header Expect-Ct "max-age=3600, enforce";
             add_header Origin-Agent-Cluster "?1";
             add_header Referrer-Policy "same-origin";
