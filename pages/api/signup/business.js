@@ -3,6 +3,7 @@ import EmailValidator from "email-validator";
 import SqlString from "sqlstring";
 import Xss from "xss";
 
+import MailChimp, { MainListId } from "../../../lib/api/mailchimp";
 import Psql from "../../../lib/api/postgresql";
 
 export default async function handler(req, res) {
@@ -114,6 +115,20 @@ export default async function handler(req, res) {
     );
     if (psqlErrorAddUser) {
       res.status(500).json({ error: psqlErrorAddUser });
+      return;
+    }
+
+    const [, mailchimpError] = await MailChimp.addSubscriber(
+      {
+        email,
+        firstName,
+        lastName,
+      },
+      MainListId
+    );
+
+    if (mailchimpError) {
+      res.status(500).json({ error: mailchimpError });
       return;
     }
 

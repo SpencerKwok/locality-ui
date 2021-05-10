@@ -45,7 +45,7 @@ export default async function handler(req, res) {
       newPassword,
       parseInt(process.env.SALT)
     );
-    const [_, psqlError] = await Psql.query(
+    const [, psqlError] = await Psql.query(
       SqlString.format("UPDATE users SET password=? WHERE email=E?", [
         newPasswordHash,
         email,

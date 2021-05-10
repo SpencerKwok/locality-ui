@@ -7,10 +7,7 @@ const client = new Pg.Client({
   connectionString: process.env.DATABASE_URL,
 });
 
-client
-  .connect()
-  .then(() => console.log("Connected to postgresql admin"))
-  .catch((err) => console.error(err));
+client.connect().catch((err) => console.error(err));
 
 const psql: { [key: string]: any } = {};
 psql.query = async (query: any) => {

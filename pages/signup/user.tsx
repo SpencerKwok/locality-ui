@@ -14,6 +14,8 @@ export default function UserSignUp() {
   const onSubmit = async (values: SignUpRequest) => {
     await PostRpcClient.getInstance()
       .call("UserSignUp", {
+        firstName: values.firstName,
+        lastName: values.lastName,
         email: values.email,
         password: values.password1,
       })
