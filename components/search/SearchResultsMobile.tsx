@@ -71,16 +71,14 @@ export default function Search({
         </div>
       </Link>
       <SearchBar autoFocus defaultQuery={query} width={280} onEnter={onEnter} />
-      {searchResults.hits.length > 0 && (
-        <ProductShowcase
-          loggedIn={loggedIn}
-          align="center"
-          hits={searchResults.hits}
-          numEagerLoad={6}
-          onToggleWishList={onToggleWishList}
-          style={{ marginRight: -12 }}
-        />
-      )}
+      <ProductShowcase
+        loggedIn={loggedIn}
+        align="center"
+        hits={searchResults.hits}
+        numEagerLoad={6}
+        onToggleWishList={onToggleWishList}
+        style={{ marginRight: -12 }}
+      />
     </Stack>
   );
 }

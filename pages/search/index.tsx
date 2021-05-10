@@ -100,7 +100,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function Home({ cookie, ip }: SearchProps) {
+export default function Search({ cookie, ip }: SearchProps) {
   const [data, setData] = useState(EmptySearchResponse);
   const [userInput, setUserInput] = useState(new UserInput(ip, ""));
   const [session] = useSession();

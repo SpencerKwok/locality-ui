@@ -80,67 +80,58 @@ export default function Search({
           onEnter={onEnter}
         />
       </Stack>
-      {searchResults.hits.length > 0 && (
-        <Fragment>
-          <Stack direction="column" rowAlign="flex-start">
-            <Stack
-              direction="row"
-              columnAlign="flex-start"
-              style={{ marginLeft: 14 }}
-            >
-              <Stack direction="column" rowAlign="flex-start" spacing={12}>
-                <FacetList
-                  name="Departments"
-                  facets={searchResults.facets.departments}
-                  selectedFacets={userInput.departments}
-                  onFacetClick={(value) => {
-                    onUserInputChange.departments(value);
-                  }}
-                />
-                <FacetList
-                  name="Companies"
-                  facets={searchResults.facets.company}
-                  selectedFacets={userInput.company}
-                  onFacetClick={(value) => {
-                    onUserInputChange.company(value);
-                  }}
-                />
-              </Stack>
-              <Stack direction="column" rowAlign="center">
-                <ProductShowcase
-                  loggedIn={loggedIn}
-                  hits={searchResults.hits}
-                  numEagerLoad={12}
-                  query={query}
-                  onToggleWishList={onToggleWishList}
-                />
-              </Stack>
-            </Stack>
+      <Stack direction="column" rowAlign="flex-start">
+        <Stack
+          direction="row"
+          columnAlign="flex-start"
+          style={{ marginLeft: 14 }}
+        >
+          <Stack direction="column" rowAlign="flex-start" spacing={12}>
+            <FacetList
+              name="Departments"
+              facets={searchResults.facets.departments}
+              selectedFacets={userInput.departments}
+              onFacetClick={(value) => {
+                onUserInputChange.departments(value);
+              }}
+            />
+            <FacetList
+              name="Companies"
+              facets={searchResults.facets.company}
+              selectedFacets={userInput.company}
+              onFacetClick={(value) => {
+                onUserInputChange.company(value);
+              }}
+            />
           </Stack>
-
-          <Stack
-            direction="row"
-            columnAlign="center"
-            style={{ width: size.width }}
-          >
-            <Pagination>
-              {Array.from(
-                Array(Math.ceil(searchResults.nbHits / 24)).keys()
-              ).map((index) => (
-                <PaginationItem
-                  active={userInput.page === index}
-                  key={index}
-                  onClick={() => {
-                    onUserInputChange.page(index);
-                  }}
-                >
-                  {index + 1}
-                </PaginationItem>
-              ))}
-            </Pagination>
+          <Stack direction="column" rowAlign="center">
+            <ProductShowcase
+              loggedIn={loggedIn}
+              hits={searchResults.hits}
+              numEagerLoad={12}
+              query={query}
+              onToggleWishList={onToggleWishList}
+            />
           </Stack>
-        </Fragment>
-      )}
+        </Stack>
+      </Stack>
+      <Stack direction="row" columnAlign="center" style={{ width: size.width }}>
+        <Pagination>
+          {Array.from(Array(Math.ceil(searchResults.nbHits / 24)).keys()).map(
+            (index) => (
+              <PaginationItem
+                active={userInput.page === index}
+                key={index}
+                onClick={() => {
+                  onUserInputChange.page(index);
+                }}
+              >
+                {index + 1}
+              </PaginationItem>
+            )
+          )}
+        </Pagination>
+      </Stack>
     </Stack>
   );
 }
