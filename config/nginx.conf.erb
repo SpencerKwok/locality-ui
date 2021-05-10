@@ -69,9 +69,9 @@ http {
 
             proxy_cache short;
             proxy_cache_background_update on;
+            proxy_cache_bypass $arg_ip;
             proxy_cache_lock on;
             proxy_cache_revalidate on;
-            proxy_cache_bypass $arg_ip;
             proxy_hide_header X-Powered-By;
             proxy_hide_header X-Protected-By;
 
@@ -110,6 +110,7 @@ http {
             limit_req zone=ip burst=20 nodelay;
 
             proxy_cache long;
+            proxy_cache_bypass $arg_q;
             proxy_cache_background_update on;
             proxy_cache_lock on;
             proxy_cache_use_stale error timeout updating http_500 http_502 http_503 http_504;
