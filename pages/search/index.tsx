@@ -4,7 +4,7 @@ import { useSession } from "next-auth/client";
 import { useRouter } from "next/router";
 
 import { GetRpcClient, PostRpcClient } from "../../components/common/RpcClient";
-import { EmptySearchResponse } from "../../components/common/Schema";
+import { SearchResponse } from "../../components/common/Schema";
 import SearchResultsDesktop from "../../components/search/SearchResultsDesktop";
 import SearchResultsMobile from "../../components/search/SearchResultsMobile";
 import RootLayout from "../../components/common/RootLayout";
@@ -12,6 +12,8 @@ import { useMediaQuery } from "../../lib/common";
 
 interface SearchProps {
   ip: string;
+  query: string;
+  results: SearchResponse;
   cookie?: string;
 }
 
@@ -91,18 +93,22 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const cookie = context.req.headers.cookie;
   const forwarded = (context.req.headers["x-forwarded-for"] || "") as string;
   const ip = forwarded.split(/,\s*/)[0];
+  const query = context.query["q"] || "";
+  const results = await fetcher(`/api/search?q=${query}&ip=${ip}`);
 
   return {
     props: {
       cookie,
+      query,
       ip,
+      results,
     },
   };
 };
 
-export default function Search({ cookie, ip }: SearchProps) {
-  const [data, setData] = useState(EmptySearchResponse);
-  const [userInput, setUserInput] = useState(new UserInput(ip, ""));
+export default function Search({ cookie, query, results, ip }: SearchProps) {
+  const [data, setData] = useState(results);
+  const [userInput, setUserInput] = useState(new UserInput(ip, query));
   const [session] = useSession();
   const router = useRouter();
 
