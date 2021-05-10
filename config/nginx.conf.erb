@@ -36,7 +36,7 @@ http {
 
     # Setup cache
     proxy_cache_path /tmp/nginx.short levels=1:2 keys_zone=short:10m inactive=10m use_temp_path=off;
-    proxy_cache_path /tmp/nginx.long levels=1:2 keys_zone=long:1y inactive=1y use_temp_path=off;
+    proxy_cache_path /tmp/nginx.long levels=1:2 keys_zone=long:10m inactive=60m use_temp_path=off;
 
     # Setup rate-limiting
     limit_req_zone $binary_remote_addr zone=ip:10m rate=10r/s;
@@ -83,7 +83,7 @@ http {
             proxy_set_header Host $http_host;
         }
 
-        # Everything else
+        # Search
         location ~* /search {
             if ($http_x_forwarded_proto != "https") {
                 return 301 https://$host$request_uri;
