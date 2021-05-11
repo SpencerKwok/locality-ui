@@ -36,7 +36,8 @@ http {
 
     # Setup cache
     proxy_cache_path /tmp/nginx.short levels=1:2 keys_zone=short:10m inactive=10m use_temp_path=off;
-    proxy_cache_path /tmp/nginx.long levels=1:2 keys_zone=long:60m inactive=60m use_temp_path=off;
+    proxy_cache_path /tmp/nginx.long levels=1:2 keys_zone=long:10m inactive=60m use_temp_path=off;
+    proxy_cache_path /tmp/nginx.forever levels=1:2 keys_zone=forever:10m inactive=1y use_temp_path=off;
 
     # Setup rate-limiting
     limit_req_zone $binary_remote_addr zone=ip:10m rate=10r/s;
@@ -46,8 +47,43 @@ http {
         server_name _;
         keepalive_timeout 5;
 
-        # API
-        location ~* /api {
+        # Search/Dashboard/Wishlist API
+        location ~* /api/(?=(search|dashboard|wishlist)) {
+            if ($http_x_forwarded_proto != "https") {
+                return 301 https://$host$request_uri;
+            }
+
+            add_header Access-Control-Allow-Credentials "true";
+            add_header Access-Control-Allow-Headers "Cache-Control, Content-Type, DNT, If-Modified-Since, Origin, User-Agent, X-Requested-With";
+            add_header Access-Control-Allow-Methods "GET, POST";
+            add_header Expect-Ct "max-age=3600, enforce";
+            add_header Origin-Agent-Cluster "?1";
+            add_header Referrer-Policy "same-origin";
+            add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload";
+            add_header X-Cache-Status $upstream_cache_status;
+            add_header X-Content-Type-Options "nosniff";
+            add_header X-Dns-Prefetch-Control "off";
+            add_header X-Download-Options "noopen";
+            add_header X-Permitted-Cross-Domain-Policies "none";
+
+            limit_req zone=ip burst=20 nodelay;
+
+            proxy_cache off;
+            expires off;
+
+            proxy_hide_header X-Powered-By;
+            proxy_hide_header X-Protected-By;
+
+            proxy_http_version 1.1;
+            proxy_pass http://app_server;
+            proxy_redirect off;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header Host $http_host;
+        }
+
+        # Rest of API
+        location ~* /api/(?!(search|dashboard|wishlist)) {
             if ($http_x_forwarded_proto != "https") {
                 return 301 https://$host$request_uri;
             }
@@ -69,9 +105,8 @@ http {
 
             proxy_cache short;
             proxy_cache_background_update on;
-            proxy_cache_lock on;
             proxy_cache_revalidate on;
-            proxy_cache_bypass $arg_ip;
+            proxy_cache_use_stale error updating timeout http_500 http_502 http_503 http_504;
             proxy_hide_header X-Powered-By;
             proxy_hide_header X-Protected-By;
 
@@ -83,7 +118,7 @@ http {
             proxy_set_header Host $http_host;
         }
 
-        # Everything else
+        # Pages
         location ~* /(?!api) {
             if ($http_x_forwarded_proto != "https") {
                 return 301 https://$host$request_uri;
@@ -94,7 +129,7 @@ http {
             add_header Access-Control-Allow-Headers "Cache-Control, Content-Type, DNT, If-Modified-Since, Origin, User-Agent, X-Requested-With";
             add_header Access-Control-Allow-Methods "GET";
             add_header Access-Control-Max-Age "3600";
-            add_header Content-Security-Policy "child-src 'self';connect-src 'self' https://ipv4.icanhazip.com https://api.ipify.org https://api.cloudinary.com;default-src 'self';font-src 'self';frame-src 'self';img-src 'self' blob: data: https://res.cloudinary.com;manifest-src 'self';media-src 'self' https://res.cloudinary.com;prefetch-src 'self';object-src 'self';script-src 'self';script-src-elem 'self';script-src-attr 'self';style-src 'self' 'unsafe-inline';style-src-elem 'self' 'unsafe-inline';style-src-attr 'self' 'unsafe-inline';worker-src 'self'";
+            add_header Content-Security-Policy "upgrade-insecure-requests;child-src 'self';connect-src 'self' https://ipv4.icanhazip.com https://api.ipify.org https://api.cloudinary.com;default-src 'self';font-src 'self';frame-src 'self';img-src 'self' blob: data: https://res.cloudinary.com;manifest-src 'self';media-src 'self' https://res.cloudinary.com;prefetch-src 'self';object-src 'self';script-src 'self' https://ajax.cloudflare.com/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js;script-src-elem 'self' https://ajax.cloudflare.com/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js;script-src-attr 'self';style-src 'self' 'unsafe-inline';style-src-elem 'self' 'unsafe-inline';style-src-attr 'self' 'unsafe-inline';worker-src 'self'";
             add_header Expect-Ct "max-age=3600, enforce";
             add_header Origin-Agent-Cluster "?1";
             add_header Referrer-Policy "same-origin";
@@ -111,8 +146,8 @@ http {
 
             proxy_cache long;
             proxy_cache_background_update on;
-            proxy_cache_lock on;
-            proxy_cache_use_stale error timeout updating http_500 http_502 http_503 http_504;
+            proxy_cache_revalidate on;
+            proxy_cache_use_stale error updating timeout http_500 http_502 http_503 http_504;
             proxy_hide_header X-Powered-By;
             proxy_hide_header X-Protected-By;
 

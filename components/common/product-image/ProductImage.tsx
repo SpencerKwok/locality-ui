@@ -1,11 +1,11 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 
+import Heart from "../images/Heart";
+import HeartFilled from "../images/HeartFilled";
 import Stack from "../Stack";
 import styles from "./ProductImage.module.css";
 
-const Heart = dynamic(() => import("../images/Heart"));
-const HeartFilled = dynamic(() => import("../images/HeartFilled"));
 const WishlistToolTip = dynamic(() => import("./WishlistToolTip"));
 
 export interface ProductImageProps extends React.HTMLProps<HTMLDivElement> {
