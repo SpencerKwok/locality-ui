@@ -47,8 +47,8 @@ http {
         server_name _;
         keepalive_timeout 5;
 
-        # Dashboard/Wishlist API
-        location ~* /api/(?=(dashboard|wishlist)) {
+        # Search/Dashboard/Wishlist API
+        location ~* /api/(?=(search|dashboard|wishlist)) {
             if ($http_x_forwarded_proto != "https") {
                 return 301 https://$host$request_uri;
             }
@@ -83,7 +83,7 @@ http {
         }
 
         # Rest of API
-        location ~* /api/(?!(dashboard|wishlist)) {
+        location ~* /api/(?!(search|dashboard|wishlist)) {
             if ($http_x_forwarded_proto != "https") {
                 return 301 https://$host$request_uri;
             }
