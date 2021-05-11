@@ -29,11 +29,11 @@ export default async function handler(req, res) {
 
     let nextProductId = businessResponse.rows[0].next_product_id;
     const departments = businessResponse.rows[0].departments.split(":");
-    const homepage = businessResponse.rows[0].homepage;
+    const homepage = businessResponse.rows[0].shopify_homepage;
     if (!homepage) {
       res.status(400).json({
         error:
-          'It looks like you haven\'t set your Shopify homepage yet! Please go to the "Company" tab and add your homepage to your profile',
+          "It looks like you haven't set your business's Shopify website yet! Please go to the \"Business\" tab and add your Shopify website",
       });
       return;
     }
@@ -53,7 +53,7 @@ export default async function handler(req, res) {
     });
     if (!isShopify) {
       const message =
-        "Failed to upload products from your Shopify homepage. Please make sure you have set up your Shopify homepage properly!";
+        "Failed to upload products from your Shopify website. Please make sure you have set up your Shopify website properly!";
       res.status(400).json({ error: message });
       return;
     }

@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 
 import BusinessPage, {
   UpdateDepartmentsRequest,
-  UpdateHomepageRequest,
+  UpdateHomepagesRequest,
   UpdateLogoRequest,
 } from "../../components/dashboard/Business";
 import { GetRpcClient, PostRpcClient } from "../../components/common/RpcClient";
@@ -72,7 +72,7 @@ export default function Business({
     error: "",
     successful: false,
   });
-  const [updateHomepageStatus, setUpdateHomepageStatus] = useState({
+  const [updateHomepagesStatus, setUpdateHomepageStatus] = useState({
     error: "",
     successful: false,
   });
@@ -107,22 +107,30 @@ export default function Business({
       });
   };
 
-  const onSubmitHomepage = async ({ homepage }: UpdateHomepageRequest) => {
+  const onSubmitHomepages = async ({
+    homepage,
+    shopifyHomepage,
+    etsyHomepage,
+  }: UpdateHomepagesRequest) => {
     await PostRpcClient.getInstance()
       .call(
-        "HomepageUpdate",
+        "HomepagesUpdate",
         {
           id: businesses[businessIndex].id,
           homepage,
+          shopifyHomepage: shopifyHomepage || "",
+          etsyHomepage: etsyHomepage || "",
         },
         cookie
       )
-      .then(({ homepage, error }) => {
+      .then(({ homepage, shopifyHomepage, etsyHomepage, error }) => {
         if (error) {
           setUpdateHomepageStatus({ error, successful: false });
           return;
         }
         businesses[businessIndex].homepage = homepage;
+        businesses[businessIndex].shopifyHomepage = shopifyHomepage;
+        businesses[businessIndex].etsyHomepage = etsyHomepage;
         setUpdateHomepageStatus({ error: "", successful: true });
       })
       .catch((error) => {
@@ -191,13 +199,13 @@ export default function Business({
         businesses={businesses}
         businessIndex={businessIndex}
         updateDepartmentsStatus={updateDepartmentsStatus}
-        updateHomepageStatus={updateHomepageStatus}
+        updateHomepagesStatus={updateHomepagesStatus}
         updateLogoStatus={updateLogoStatus}
         height={size.height}
         onBusinessClick={onBusinessClick}
         onSubmitDepartments={onSubmitDepartments}
         onSubmitLogo={onSubmitLogo}
-        onSubmitHomepage={onSubmitHomepage}
+        onSubmitHomepages={onSubmitHomepages}
       />
     </RootLayout>
   );

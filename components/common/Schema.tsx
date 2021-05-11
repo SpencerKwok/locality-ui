@@ -19,9 +19,9 @@ export interface PostMethods {
     request: DepartmentsUpdateRequest;
     response: DepartmentsUpdateResponse;
   };
-  HomepageUpdate: {
-    request: HomepageUpdateRequest;
-    response: HomepageUpdateResponse;
+  HomepagesUpdate: {
+    request: HomepagesUpdateRequest;
+    response: HomepagesUpdateResponse;
   };
   LogoUpdate: {
     request: LogoUpdateRequest;
@@ -90,6 +90,8 @@ export interface BaseBusiness {
   longitude: string;
   logo: string;
   homepage: string;
+  shopifyHomepage: string;
+  etsyHomepage: string;
   departments: string;
 }
 
@@ -116,13 +118,17 @@ export interface DeleteFromWishListRequest {
 
 export interface DeleteFromWishListResponse extends BaseResponse {}
 
-export interface HomepageUpdateRequest {
+export interface HomepagesUpdateRequest {
   id: number;
   homepage: string;
+  shopifyHomepage: string;
+  etsyHomepage: string;
 }
 
-export interface HomepageUpdateResponse extends BaseResponse {
+export interface HomepagesUpdateResponse extends BaseResponse {
   homepage: string;
+  shopifyHomepage: string;
+  etsyHomepage: string;
 }
 
 export interface LogoUpdateRequest {
