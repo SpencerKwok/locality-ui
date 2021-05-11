@@ -47,8 +47,8 @@ http {
         server_name _;
         keepalive_timeout 5;
 
-        # Search/Dashboard/Wishlist API
-        location ~* /api/(?=(search|dashboard|wishlist)) {
+        # Dashboard/Wishlist API
+        location ~* /api/(?=(dashboard|wishlist)) {
             if ($http_x_forwarded_proto != "https") {
                 return 301 https://$host$request_uri;
             }
@@ -83,7 +83,7 @@ http {
         }
 
         # Rest of API
-        location ~* /api/(?!(search|dashboard|wishlist)) {
+        location ~* /api/(?!(dashboard|wishlist)) {
             if ($http_x_forwarded_proto != "https") {
                 return 301 https://$host$request_uri;
             }
@@ -118,8 +118,8 @@ http {
             proxy_set_header Host $http_host;
         }
 
-        # Search/Dashboard/Wishlist pages
-        location ~* /(?=(search|dashboard|wishlist)) {
+        # Dashboard/Wishlist pages
+        location ~* /(?=(dashboard|wishlist)) {
             if ($http_x_forwarded_proto != "https") {
                 return 301 https://$host$request_uri;
             }
@@ -159,7 +159,7 @@ http {
         }
 
         # Rest of pages
-        location ~* /(?!(api|search|dashboard|wishlist)) {
+        location ~* /(?!(api|dashboard|wishlist)) {
             if ($http_x_forwarded_proto != "https") {
                 return 301 https://$host$request_uri;
             }
