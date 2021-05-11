@@ -245,7 +245,7 @@ export default function SignupBusiness({
               </div>
               <Stack direction="row-reverse">
                 <SubmitButton
-                  text="Signing up"
+                  text="Sign up"
                   submittingText="Signing up..."
                   isSubmitting={isSubmitting}
                 />
