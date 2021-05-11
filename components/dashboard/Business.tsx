@@ -147,12 +147,17 @@ export default function Business({
                     setFieldValue,
                   }) => (
                     <Form onSubmit={handleSubmit}>
-                      <Stack direction="column" rowAlign="center">
+                      <Stack
+                        direction="column"
+                        columnAlign="center"
+                        rowAlign="center"
+                        style={{ height: 250 }}
+                      >
                         <picture className={styles.picture}>
                           <img
                             src={values.logo}
                             alt={businesses[businessIndex].name}
-                            width={175}
+                            style={{ maxHeight: 250 }}
                           />
                         </picture>
                       </Stack>

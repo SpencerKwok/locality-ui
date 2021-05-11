@@ -43,8 +43,8 @@ function AddProduct({
             {error && (
               <p color="red">
                 Error occurred when uploading Shopify data. Please make sure
-                your homepage is correct or contact us at
-                locality.info@yahoo.com
+                your Shopify website is setup correctly in the "Business" tab or
+                contact us at locality.info@yahoo.com for assistance
               </p>
             )}
             {loading && (
