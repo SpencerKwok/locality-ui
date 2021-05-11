@@ -237,6 +237,11 @@ export default function Search({ cookie, query, results, ip }: SearchProps) {
   }
 
   useEffect(() => {
+    window.addEventListener("popstate", onReset);
+    return () => window.removeEventListener("popstate", onReset);
+  }, []);
+
+  useEffect(() => {
     onReset();
   }, [isNarrow]);
 
