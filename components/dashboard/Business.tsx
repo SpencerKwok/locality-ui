@@ -56,7 +56,7 @@ const UpdateLogoSchema = yup.object().shape({
 
 const UpdateHomepagesSchema = yup.object().shape({
   homepage: yup.string().required("Required").max(255, "Too long"),
-  shopifyHomepage: yup.string().required("Required").max(255, "Too long"),
+  shopifyHomepage: yup.string().optional().max(255, "Too long"),
   etsyHomepage: yup
     .string()
     .optional()
