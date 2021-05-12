@@ -157,7 +157,7 @@ export default function Business({
                           <img
                             src={values.logo}
                             alt={businesses[businessIndex].name}
-                            style={{ maxHeight: 250 }}
+                            style={{ maxHeight: 250, maxWidth: 300 }}
                           />
                         </picture>
                       </Stack>
