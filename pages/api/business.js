@@ -1,3 +1,5 @@
+import { camelCase, mapKeys } from "lodash";
+
 import Psql from "../../lib/api/postgresql";
 import SqlString from "sqlstring";
 import Xss from "xss";
@@ -22,7 +24,9 @@ export default async function handler(req, res) {
       return;
     }
 
-    res.status(200).json({ business: businesses.rows[0] });
+    res.status(200).json({
+      business: mapKeys(businesses.rows[0], (v, k) => camelCase(k)),
+    });
   };
 
   let id = Xss(req.query["id"] || "");

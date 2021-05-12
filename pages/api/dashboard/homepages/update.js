@@ -48,34 +48,34 @@ export default async function handler(req, res) {
     res.status(400).json({ error: "Invalid homepage" });
     return;
   }
+  homepage = addHttpsProtocol(homepage);
   try {
     new URL(homepage);
   } catch (error) {
     res.status(400).json({ error: "Invalid homepage" });
     return;
   }
-  homepage = addHttpsProtocol(homepage);
 
   let shopifyHomepage = Xss(req.body.shopifyHomepage || "");
   if (shopifyHomepage !== "") {
+    shopifyHomepage = addHttpsProtocol(shopifyHomepage);
     try {
       new URL(shopifyHomepage);
     } catch (error) {
       res.status(400).json({ error: "Invalid Shopify Website" });
       return;
     }
-    shopifyHomepage = addHttpsProtocol(shopifyHomepage);
   }
 
   let etsyHomepage = Xss(req.body.etsyHomepage || "");
   if (etsyHomepage !== "") {
+    etsyHomepage = addHttpsProtocol(etsyHomepage);
     try {
       new URL(etsyHomepage);
     } catch (error) {
       res.status(400).json({ error: "Invalid Etsy Storefront" });
       return;
     }
-    etsyHomepage = addHttpsProtocol(etsyHomepage);
   }
 
   const { id } = req.locals.user;

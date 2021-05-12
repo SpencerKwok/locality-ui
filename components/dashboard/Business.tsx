@@ -244,7 +244,7 @@ export default function Business({
                         homepage: businesses[businessIndex].homepage,
                         shopifyHomepage:
                           businesses[businessIndex].shopifyHomepage,
-                        etsyHomeage: businesses[businessIndex].etsyHomepage,
+                        etsyHomepage: businesses[businessIndex].etsyHomepage,
                       } as UpdateHomepagesRequest
                     }
                     onSubmit={onSubmitHomepages}
