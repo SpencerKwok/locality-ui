@@ -81,7 +81,11 @@ export default async function handler(req, res) {
             return;
           }
 
-          data.products.map((product, index) => {
+          data.products.forEach((product, index) => {
+            if (product.images.length <= 0 || product.variants.length <= 0) {
+              return;
+            }
+
             const productName = product.title;
             const image = product.images[0].src;
             const primaryKeywords = product.product_type.split(",");
