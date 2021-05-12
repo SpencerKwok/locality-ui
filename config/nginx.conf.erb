@@ -35,9 +35,7 @@ http {
     }
 
     # Setup cache
-    proxy_cache_path /tmp/nginx.short levels=1:2 keys_zone=short:10m inactive=10m use_temp_path=off;
-    proxy_cache_path /tmp/nginx.long levels=1:2 keys_zone=long:10m inactive=60m use_temp_path=off;
-    proxy_cache_path /tmp/nginx.forever levels=1:2 keys_zone=forever:10m inactive=1y use_temp_path=off;
+    proxy_cache_path /tmp/nginx.cache levels=1:2 keys_zone=cache:10m inactive=60m use_temp_path=off;
 
     # Setup rate-limiting
     limit_req_zone $binary_remote_addr zone=ip:10m rate=10r/s;
@@ -108,7 +106,7 @@ http {
 
             limit_req zone=ip burst=20 nodelay;
 
-            proxy_cache long;
+            proxy_cache cache;
             proxy_cache_background_update on;
             proxy_cache_revalidate on;
             proxy_cache_use_stale error updating timeout http_500 http_502 http_503 http_504;
