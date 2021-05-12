@@ -21,7 +21,7 @@ mailchimpClient.addSubscriber = async (
 ) => {
   const subscriberHash = Md5(email.toLowerCase());
   try {
-    const response = await mailchimp.lists.updateListMember(
+    const response = await mailchimp.lists.setListMember(
       listId,
       subscriberHash,
       {
