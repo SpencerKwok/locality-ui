@@ -79,9 +79,11 @@
 .dropdown:link,
 .dropdown:visited,
 .dropdown:focus,
+.dropdown:not(:disabled),
 .button:link,
 .button:visited,
-.button:focus {
+.button:focus,
+.button:not(:disabled) {
   background-color: #449ed7 !important;
   border-color: #449ed7 !important;
 }
@@ -96,4 +98,8 @@
 .button:disabled {
   background-color: #449ed7 !important;
   border-color: #449ed7 !important;
+}
+
+.dropdown-item:active {
+  background-color: #3880ae;
 }

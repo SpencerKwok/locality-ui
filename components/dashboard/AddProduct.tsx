@@ -1,4 +1,3 @@
-import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Dropdown from "react-bootstrap/Dropdown";
 import Popup from "reactjs-popup";
@@ -7,13 +6,17 @@ import "reactjs-popup/dist/index.css";
 import Stack from "../common/Stack";
 import styles from "./AddProduct.module.css";
 
+export type UploadType = "" | "Shopify" | "Etsy";
+
 export interface AddProductProps extends React.HTMLProps<HTMLDivElement> {
-  error: boolean;
+  error: string;
   open: boolean;
   loading: boolean;
   successful: boolean;
+  uploadType: UploadType;
+  onUploadTypeChange: (uploadType: UploadType) => void;
+  onUpload: (uploadType: UploadType) => void;
   onAddProduct: () => void;
-  onShopifyUpload: () => void;
 }
 
 function AddProduct({
@@ -21,17 +24,18 @@ function AddProduct({
   open,
   loading,
   successful,
+  uploadType,
+  width,
+  onUploadTypeChange,
   onAddProduct,
-  onShopifyUpload,
+  onUpload,
 }: AddProductProps) {
-  const [uploadType, setUploadType] = useState("Select Upload Type");
-
   return (
     <Stack direction="column" spacing={12}>
       <Stack
         direction="row"
         columnAlign="flex-start"
-        priority={[1, 0]}
+        priority={[2, 1]}
         spacing={12}
       >
         <Dropdown>
@@ -40,40 +44,44 @@ function AddProduct({
             variant="primary"
             style={{ width: "100%" }}
           >
-            {uploadType}
+            {uploadType === "" ? "Select Upload Type" : uploadType}
           </Dropdown.Toggle>
           <Dropdown.Menu>
             <Dropdown.Item
+              className={styles["dropdown-item"]}
               onClick={() => {
-                setUploadType("Shopify");
+                onUploadTypeChange("Shopify");
               }}
             >
               Shopify
             </Dropdown.Item>
             <Dropdown.Item
-              disabled={true}
+              className={styles["dropdown-item"]}
               onClick={() => {
-                setUploadType("Etsy");
+                onUploadTypeChange("Etsy");
               }}
             >
-              Etsy (Coming soon)
+              Etsy
             </Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
         <Popup
           modal
-          closeOnDocumentClick={error}
-          closeOnEscape={error}
+          closeOnDocumentClick={error !== ""}
+          closeOnEscape={error !== ""}
           open={open}
           trigger={
             <Button
               className={styles.button}
-              disabled={uploadType === "Select Upload Type"}
+              disabled={uploadType === ""}
+              style={{ width: "100%" }}
             >
               Upload
             </Button>
           }
-          onOpen={onShopifyUpload}
+          onOpen={() => {
+            onUpload(uploadType);
+          }}
         >
           {() => (
             <Stack
@@ -83,16 +91,10 @@ function AddProduct({
               height={400}
               style={{ margin: 24 }}
             >
-              {error && (
-                <p color="red">
-                  Error occurred when uploading Shopify data. Please make sure
-                  your Shopify website is setup correctly in the "Business" tab
-                  or contact us at locality.info@yahoo.com for assistance
-                </p>
-              )}
+              {error !== "" && <p color="red">{error}</p>}
               {loading && (
                 <Stack direction="column" rowAlign="center" spacing={24}>
-                  <h3>Uploading Shopify data...</h3>
+                  <h3>Uploading {uploadType} data...</h3>
                   <div className={styles["animated-circular-border"]} />
                 </Stack>
               )}
@@ -111,7 +113,7 @@ function AddProduct({
       <Button
         className={styles.button}
         onClick={onAddProduct}
-        style={{ width: 300 }}
+        style={{ width: width }}
       >
         Add Product
       </Button>

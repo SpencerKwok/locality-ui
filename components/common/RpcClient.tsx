@@ -13,7 +13,8 @@ const endpoints = new Map<keyof PostMethods, string>([
   ["ProductAdd", "/api/dashboard/product/add"],
   ["ProductDelete", "/api/dashboard/product/delete"],
   ["ProductUpdate", "/api/dashboard/product/update"],
-  ["ShopifyProductUpdate", "/api/dashboard/shopify"],
+  ["EtsyProductUpload", "/api/dashboard/etsy"],
+  ["ShopifyProductUpload", "/api/dashboard/shopify"],
   ["UserSignUp", "/api/signup/user"],
 ]);
 

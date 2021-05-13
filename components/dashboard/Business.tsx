@@ -66,7 +66,7 @@ const UpdateHomepagesSchema = yup.object().shape({
       (page) => {
         return (!page ||
           page.length === 0 ||
-          page.match(/etsy\.com\/shop\/.+$/g)) as boolean;
+          page.match(/etsy\.com\/([^\/]+\/)*shop\/[a-zA-Z0-9]+$/g)) as boolean;
       }
     )
     .max(255, "Too long"),

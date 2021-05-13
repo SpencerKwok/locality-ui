@@ -7,7 +7,7 @@ import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 import Select from "react-dropdown-select";
 
-import AddProduct from "./AddProduct";
+import AddProduct, { UploadType } from "./AddProduct";
 import { Base64, fileToBase64, urlToBase64 } from "./ImageHelpers";
 import { BaseBusiness, BaseProduct, Product } from "../common/Schema";
 import DashboardLayout from "./Layout";
@@ -24,11 +24,8 @@ const ProductSchema = yup.object().shape({
   primaryKeywords: yup
     .string()
     .optional()
-    .max(128, "Too long")
-    .matches(
-      /^\s*[^,]+\s*(,(\s*[^,\s]\s*)+){0,2}\s*$/g,
-      "Must be a comma list with at most 3 terms"
-    ),
+    .max(255, "Too long")
+    .matches(/^\s*[^,]+\s*(,(\s*[^,\s]\s*)+)*\s*$/g, "Must be a comma list"),
   departments: yup.array().of(yup.string()).required("Required"),
   description: yup.string().optional().max(2048, "Too long"),
   price: yup.mixed().when("isRange", {
@@ -82,16 +79,18 @@ export interface InventoryProps {
   productIndex: number;
   product: Product;
   error: string;
-  shopifyError: boolean;
-  shopifyOpen: boolean;
-  shopifyLoading: boolean;
-  shopifySuccessful: boolean;
+  uploadType: UploadType;
+  uploadError: string;
+  uploadOpen: boolean;
+  uploadLoading: boolean;
+  uploadSuccessful: boolean;
   success: string;
   height: number;
   onAddProduct: () => void;
   onBusinessClick: (index: number) => void;
   onProductClick: (index: number) => void;
-  onShopifyUpload: () => void;
+  onUploadTypeChange: (uploadType: UploadType) => void;
+  onUpload: (UploadType: UploadType) => void;
   onSubmit: FormikConfig<ProductRequest>["onSubmit"];
 }
 
@@ -117,16 +116,18 @@ export default function Inventory({
   productIndex,
   product,
   error,
-  shopifyError,
-  shopifyOpen,
-  shopifyLoading,
-  shopifySuccessful,
+  uploadType,
+  uploadError,
+  uploadOpen,
+  uploadLoading,
+  uploadSuccessful,
   success,
   height,
   onAddProduct,
   onBusinessClick,
   onProductClick,
-  onShopifyUpload,
+  onUpload,
+  onUploadTypeChange,
   onSubmit,
 }: InventoryProps) {
   const logoUrlRef = createRef<HTMLInputElement>();
@@ -156,12 +157,15 @@ export default function Inventory({
                 <div style={{ marginBottom: 12 }}>
                   <h1 className={styles.label}>Products</h1>
                   <AddProduct
-                    error={shopifyError}
-                    open={shopifyOpen}
-                    loading={shopifyLoading}
-                    successful={shopifySuccessful}
+                    error={uploadError}
+                    open={uploadOpen}
+                    loading={uploadLoading}
+                    successful={uploadSuccessful}
+                    uploadType={uploadType}
+                    onUploadTypeChange={onUploadTypeChange}
                     onAddProduct={onAddProduct}
-                    onShopifyUpload={onShopifyUpload}
+                    onUpload={onUpload}
+                    width={400}
                   />
                 </div>
               }
@@ -169,7 +173,7 @@ export default function Inventory({
               products={products}
               height={height - 249}
               index={productIndex}
-              width={300}
+              width={400}
               style={{ marginRight: 32 }}
             />
           )}

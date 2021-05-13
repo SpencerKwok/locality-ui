@@ -19,6 +19,10 @@ export interface PostMethods {
     request: DepartmentsUpdateRequest;
     response: DepartmentsUpdateResponse;
   };
+  EtsyProductUpload: {
+    request: ProductUploadRequest;
+    response: ProductUploadResponse;
+  };
   HomepagesUpdate: {
     request: HomepagesUpdateRequest;
     response: HomepagesUpdateResponse;
@@ -43,9 +47,9 @@ export interface PostMethods {
     request: PasswordUpdateRequest;
     response: PasswordUpdateResponse;
   };
-  ShopifyProductUpdate: {
-    request: ShopifyProductUpdateRequest;
-    response: ShopifyProductUpdateResponse;
+  ShopifyProductUpload: {
+    request: ProductUploadRequest;
+    response: ProductUploadResponse;
   };
   UserSignUp: {
     request: UserSignUpRequest;
@@ -223,11 +227,11 @@ export interface PasswordUpdateRequest {
 
 export interface PasswordUpdateResponse extends BaseResponse {}
 
-export interface ShopifyProductUpdateRequest {
+export interface ProductUploadRequest {
   businessId: number;
 }
 
-export interface ShopifyProductUpdateResponse extends BaseResponse {
+export interface ProductUploadResponse extends BaseResponse {
   products: Array<BaseProduct>;
 }
 

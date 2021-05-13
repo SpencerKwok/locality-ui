@@ -95,7 +95,7 @@ export default function Search({
               }}
             />
             <FacetList
-              name="Companies"
+              name="Businesses"
               facets={searchResults.facets.company}
               selectedFacets={userInput.company}
               onFacetClick={(value) => {

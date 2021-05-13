@@ -9,6 +9,7 @@ import InventoryPage, {
 } from "../../components/dashboard/Inventory";
 import { GetRpcClient, PostRpcClient } from "../../components/common/RpcClient";
 import RootLayout from "../../components/common/RootLayout";
+import { UploadType } from "../../components/dashboard/AddProduct";
 import {
   BaseBusiness,
   BaseProduct,
@@ -92,8 +93,9 @@ export default function Inventory({
     error: "",
     success: "",
   });
-  const [shopifyUploadStatus, setShopifyUploadStatus] = useState({
-    error: false,
+  const [uploadStatus, setUploadStatus] = useState({
+    uploadType: "" as UploadType,
+    error: "",
     open: false,
     loading: false,
     successful: false,
@@ -128,23 +130,40 @@ export default function Inventory({
     setProductStatus({ error: "", success: "" });
   };
 
-  const onShopifyUpload = async () => {
-    setShopifyUploadStatus({
-      error: false,
+  const onUploadTypeChange = (uploadType: UploadType) => {
+    setUploadStatus({
+      ...uploadStatus,
+      uploadType,
+    });
+  };
+
+  const onUpload = async (uploadType: UploadType) => {
+    let methodName: "ShopifyProductUpload" | "EtsyProductUpload";
+    switch (uploadType) {
+      case "Shopify":
+        methodName = "ShopifyProductUpload";
+        break;
+      case "Etsy":
+        methodName = "EtsyProductUpload";
+        break;
+      default:
+        return;
+    }
+
+    setUploadStatus({
+      uploadType,
+      error: "",
       open: true,
       loading: true,
       successful: false,
     });
     await PostRpcClient.getInstance()
-      .call(
-        "ShopifyProductUpdate",
-        { businessId: businesses[businessIndex].id },
-        cookie
-      )
+      .call(methodName, { businessId: businesses[businessIndex].id }, cookie)
       .then(({ products, error }) => {
         if (error) {
-          setShopifyUploadStatus({
-            error: true,
+          setUploadStatus({
+            uploadType,
+            error: error,
             open: true,
             loading: false,
             successful: false,
@@ -156,16 +175,18 @@ export default function Inventory({
         setProductIndex(-1);
         setProducts(products);
         setIsNewItem(false);
-        setShopifyUploadStatus({
-          error: false,
+        setUploadStatus({
+          uploadType,
+          error: "",
           open: true,
           loading: false,
           successful: true,
         });
 
         setTimeout(() => {
-          setShopifyUploadStatus({
-            error: false,
+          setUploadStatus({
+            uploadType,
+            error: "",
             open: false,
             loading: false,
             successful: false,
@@ -173,16 +194,18 @@ export default function Inventory({
         }, 2000);
       })
       .catch((error) => {
-        setShopifyUploadStatus({
+        setUploadStatus({
+          uploadType,
           open: true,
-          error: true,
+          error: error,
           loading: false,
           successful: false,
         });
 
         setTimeout(() => {
-          setShopifyUploadStatus({
-            error: false,
+          setUploadStatus({
+            uploadType,
+            error: "",
             open: false,
             loading: false,
             successful: false,
@@ -355,17 +378,19 @@ export default function Inventory({
         products={products}
         productIndex={productIndex}
         product={product}
-        shopifyError={shopifyUploadStatus.error}
-        shopifyOpen={shopifyUploadStatus.open}
-        shopifyLoading={shopifyUploadStatus.loading}
-        shopifySuccessful={shopifyUploadStatus.successful}
+        uploadType={uploadStatus.uploadType}
+        uploadError={uploadStatus.error}
+        uploadOpen={uploadStatus.open}
+        uploadLoading={uploadStatus.loading}
+        uploadSuccessful={uploadStatus.successful}
         error={productStatus.error}
         success={productStatus.success}
         height={size.height}
         onAddProduct={onAddProduct}
         onBusinessClick={onBusinessClick}
         onProductClick={onProductClick}
-        onShopifyUpload={onShopifyUpload}
+        onUpload={onUpload}
+        onUploadTypeChange={onUploadTypeChange}
         onSubmit={onSubmit}
       />
     </RootLayout>
