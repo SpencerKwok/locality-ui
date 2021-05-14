@@ -8,6 +8,7 @@ between the user and Next application
 const prod = process.env.NODE_ENV === "production";
 prod && require("sqreen");
 
+const cors = require("cors");
 const express = require("express");
 const fs = require("fs");
 const next = require("next");
@@ -27,6 +28,19 @@ app.prepare().then(() => {
       cache: () => true,
       zlib: { level: 1 },
       brotli: { quality: 1 },
+    })
+  );
+
+  server.use(
+    cors({
+      origin: [
+        "'self'",
+        "https://www.etsy.com",
+        "https://www.amazon.ca",
+        "https://www.amazon.com",
+        "https://www.walmart.ca",
+        "https://www.walmart.com",
+      ],
     })
   );
 
