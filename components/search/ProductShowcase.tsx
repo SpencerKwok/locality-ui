@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Dropdown } from "react-bootstrap";
+import { useState } from "react";
+import Dropdown from "react-bootstrap/Dropdown";
 
 import { Product } from "../common/Schema";
 import ProductImage from "../common/product-image/ProductImage";

@@ -5,9 +5,8 @@ import { Formik, FormikConfig } from "formik";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
-import Select from "react-dropdown-select";
 
-import AddProduct from "./AddProduct";
+import AddProduct, { UploadType } from "./AddProduct";
 import { Base64, fileToBase64, urlToBase64 } from "./ImageHelpers";
 import { BaseBusiness, BaseProduct, Product } from "../common/Schema";
 import DashboardLayout from "./Layout";
@@ -15,6 +14,7 @@ import { Departments, DepartmentsToId } from "./Departments";
 import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
 import ProductList from "./ProductList";
 import Stack from "../common/Stack";
+import Select from "../common/select/VirtualSelect";
 import styles from "./Inventory.module.css";
 
 const BusinessList = dynamic(() => import("./BusinessList"));
@@ -24,11 +24,8 @@ const ProductSchema = yup.object().shape({
   primaryKeywords: yup
     .string()
     .optional()
-    .max(128, "Too long")
-    .matches(
-      /^\s*[^,]+\s*(,(\s*[^,\s]\s*)+){0,2}\s*$/g,
-      "Must be a comma list with at most 3 terms"
-    ),
+    .max(255, "Too long")
+    .matches(/^\s*[^,]+\s*(,(\s*[^,\s]\s*)+)*\s*$/g, "Must be a comma list"),
   departments: yup.array().of(yup.string()).required("Required"),
   description: yup.string().optional().max(2048, "Too long"),
   price: yup.mixed().when("isRange", {
@@ -78,20 +75,23 @@ export interface InventoryProps {
   isNewItem: boolean;
   businesses: Array<BaseBusiness>;
   businessIndex: number;
+  departments: Array<string>;
   products: Array<BaseProduct>;
   productIndex: number;
   product: Product;
   error: string;
-  shopifyError: boolean;
-  shopifyOpen: boolean;
-  shopifyLoading: boolean;
-  shopifySuccessful: boolean;
+  uploadType: UploadType;
+  uploadError: string;
+  uploadOpen: boolean;
+  uploadLoading: boolean;
+  uploadSuccessful: boolean;
   success: string;
   height: number;
   onAddProduct: () => void;
   onBusinessClick: (index: number) => void;
   onProductClick: (index: number) => void;
-  onShopifyUpload: () => void;
+  onUploadTypeChange: (uploadType: UploadType) => void;
+  onUpload: (UploadType: UploadType) => void;
   onSubmit: FormikConfig<ProductRequest>["onSubmit"];
 }
 
@@ -113,24 +113,31 @@ export default function Inventory({
   isNewItem,
   businesses,
   businessIndex,
+  departments,
   products,
   productIndex,
   product,
   error,
-  shopifyError,
-  shopifyOpen,
-  shopifyLoading,
-  shopifySuccessful,
+  uploadType,
+  uploadError,
+  uploadOpen,
+  uploadLoading,
+  uploadSuccessful,
   success,
   height,
   onAddProduct,
   onBusinessClick,
   onProductClick,
-  onShopifyUpload,
+  onUpload,
+  onUploadTypeChange,
   onSubmit,
 }: InventoryProps) {
   const logoUrlRef = createRef<HTMLInputElement>();
   const logoFileRef = createRef<HTMLInputElement>();
+  const departmentsWithIds = departments.map((department, index) => ({
+    label: department,
+    value: index,
+  }));
 
   return (
     <DashboardLayout tab="inventory">
@@ -156,12 +163,15 @@ export default function Inventory({
                 <div style={{ marginBottom: 12 }}>
                   <h1 className={styles.label}>Products</h1>
                   <AddProduct
-                    error={shopifyError}
-                    open={shopifyOpen}
-                    loading={shopifyLoading}
-                    successful={shopifySuccessful}
+                    error={uploadError}
+                    open={uploadOpen}
+                    loading={uploadLoading}
+                    successful={uploadSuccessful}
+                    uploadType={uploadType}
+                    onUploadTypeChange={onUploadTypeChange}
                     onAddProduct={onAddProduct}
-                    onShopifyUpload={onShopifyUpload}
+                    onUpload={onUpload}
+                    width={400}
                   />
                 </div>
               }
@@ -169,7 +179,7 @@ export default function Inventory({
               products={products}
               height={height - 249}
               index={productIndex}
-              width={300}
+              width={400}
               style={{ marginRight: 32 }}
             />
           )}
@@ -242,23 +252,25 @@ export default function Inventory({
                           </Label>
                           <InputGroup>
                             <Select
-                              multi
-                              color="#449ed7"
-                              onChange={(departments) => {
+                              isClearable
+                              isMulti
+                              isSearchable
+                              searchable
+                              clearable
+                              onChange={(newValues) => {
                                 setFieldValue(
                                   "departments",
-                                  departments.map(({ name }) => name),
+                                  newValues.map((value: any) => value.label),
                                   true
                                 );
                               }}
-                              options={Departments}
-                              style={{ width: 300 }}
-                              labelField="name"
-                              valueField="name"
-                              values={values.departments.map((name) => ({
-                                id: DepartmentsToId.get(name),
-                                name,
+                              options={departmentsWithIds}
+                              value={values.departments.map((department) => ({
+                                label: department,
                               }))}
+                              styles={{
+                                container: (obj) => ({ ...obj, width: 300 }),
+                              }}
                             />
                           </InputGroup>
                           <ErrorMessage name="departments" />

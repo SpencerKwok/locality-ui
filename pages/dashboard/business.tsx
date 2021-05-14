@@ -6,13 +6,17 @@ import { useRouter } from "next/router";
 
 import BusinessPage, {
   UpdateDepartmentsRequest,
-  UpdateHomepageRequest,
+  UpdateHomepagesRequest,
   UpdateLogoRequest,
 } from "../../components/dashboard/Business";
 import { GetRpcClient, PostRpcClient } from "../../components/common/RpcClient";
 import RootLayout from "../../components/common/RootLayout";
 import { BaseBusiness } from "../../components/common/Schema";
 import { useWindowSize } from "../../lib/common";
+
+function getDepartments(url: string) {
+  return GetRpcClient.getInstance().call("Departments", url);
+}
 
 function getBusiness(url: string) {
   return GetRpcClient.getInstance().call("Business", url);
@@ -41,9 +45,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
   }
 
+  const departments = await getDepartments("/api/departments/get").then(
+    ({ departments }) => departments
+  );
+
   return {
     props: {
       cookie,
+      departments,
       session,
       isNewBusiness,
       businesses,
@@ -54,6 +63,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 interface BusinessProps {
   isNewBusiness: boolean;
   businesses: Array<BaseBusiness>;
+  departments: Array<string>;
   session: Session | null;
   cookie?: string;
 }
@@ -62,6 +72,7 @@ export default function Business({
   isNewBusiness,
   businesses,
   cookie,
+  departments,
 }: BusinessProps) {
   const router = useRouter();
   const [session, loading] = useSession();
@@ -72,7 +83,7 @@ export default function Business({
     error: "",
     successful: false,
   });
-  const [updateHomepageStatus, setUpdateHomepageStatus] = useState({
+  const [updateHomepagesStatus, setUpdateHomepageStatus] = useState({
     error: "",
     successful: false,
   });
@@ -107,22 +118,30 @@ export default function Business({
       });
   };
 
-  const onSubmitHomepage = async ({ homepage }: UpdateHomepageRequest) => {
+  const onSubmitHomepages = async ({
+    homepage,
+    shopifyHomepage,
+    etsyHomepage,
+  }: UpdateHomepagesRequest) => {
     await PostRpcClient.getInstance()
       .call(
-        "HomepageUpdate",
+        "HomepagesUpdate",
         {
           id: businesses[businessIndex].id,
           homepage,
+          shopifyHomepage: shopifyHomepage || "",
+          etsyHomepage: etsyHomepage || "",
         },
         cookie
       )
-      .then(({ homepage, error }) => {
+      .then(({ homepage, shopifyHomepage, etsyHomepage, error }) => {
         if (error) {
           setUpdateHomepageStatus({ error, successful: false });
           return;
         }
         businesses[businessIndex].homepage = homepage;
+        businesses[businessIndex].shopifyHomepage = shopifyHomepage;
+        businesses[businessIndex].etsyHomepage = etsyHomepage;
         setUpdateHomepageStatus({ error: "", successful: true });
       })
       .catch((error) => {
@@ -190,14 +209,15 @@ export default function Business({
         isNewBusiness={isNewBusiness}
         businesses={businesses}
         businessIndex={businessIndex}
+        departments={departments}
         updateDepartmentsStatus={updateDepartmentsStatus}
-        updateHomepageStatus={updateHomepageStatus}
+        updateHomepagesStatus={updateHomepagesStatus}
         updateLogoStatus={updateLogoStatus}
         height={size.height}
         onBusinessClick={onBusinessClick}
         onSubmitDepartments={onSubmitDepartments}
         onSubmitLogo={onSubmitLogo}
-        onSubmitHomepage={onSubmitHomepage}
+        onSubmitHomepages={onSubmitHomepages}
       />
     </RootLayout>
   );

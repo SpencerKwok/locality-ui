@@ -1,5 +1,5 @@
 import React from "react";
-import { GetStaticProps } from "next";
+import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 
 import { BaseBusiness } from "../components/common/Schema";
@@ -16,16 +16,15 @@ function fetcher(url: string) {
   return GetRpcClient.getInstance().call("Businesses", url);
 }
 
-export const getStaticProps: GetStaticProps = async () => {
-  return await fetcher("/api/businesses")
-    .then((res) => ({
-      props: { businesses: res.businesses },
-      revalidate: 60 * 60,
-    }))
-    .catch(() => ({
-      props: { businesses: [] },
-      revalidate: 1,
-    }));
+export const getServerSideProps: GetServerSideProps = async () => {
+  const businesses = await fetcher("/api/businesses").then(
+    ({ businesses }) => businesses
+  );
+  return {
+    props: {
+      businesses,
+    },
+  };
 };
 
 export default function Home({ businesses }: HomeProps) {

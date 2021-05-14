@@ -1,4 +1,3 @@
-import React, { Fragment } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 
@@ -96,7 +95,7 @@ export default function Search({
               }}
             />
             <FacetList
-              name="Companies"
+              name="Businesses"
               facets={searchResults.facets.company}
               selectedFacets={userInput.company}
               onFacetClick={(value) => {

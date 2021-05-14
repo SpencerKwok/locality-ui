@@ -27,32 +27,21 @@ export default async function handler(req, res) {
     }
 
     let nextProductId = businessResponse.rows[0].next_product_id;
-    const departments = businessResponse.rows[0].departments.split(":");
-    const homepage = businessResponse.rows[0].shopify_homepage;
+    const homepage = businessResponse.rows[0].etsy_homepage;
     if (homepage === "") {
       res.status(400).json({
         error:
-          "It looks like you haven't set your business's Shopify website yet! Please go to the \"Business\" tab and add your Shopify website",
+          "It looks like you haven't set your business's Etsy storefront yet! Please go to the \"Business\" tab and add your Etsy storefront",
       });
       return;
     }
 
+    const homepageSections = homepage.split("/");
+    const shopId = homepageSections[homepageSections.length - 1];
     const domain = homepage.match(/(?<=http(s?):\/\/)[^\/]*/g)[0];
-    let addresses = [];
-    try {
-      addresses = await Dns.promises.resolveCname(domain);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-      return;
-    }
-
-    let isShopify = false;
-    addresses.forEach((address) => {
-      isShopify = isShopify || address.match(/^.*\.myshopify.com$/) !== null;
-    });
-    if (!isShopify) {
+    if (domain !== "www.etsy.com") {
       const message =
-        "Failed to upload products from your Shopify website. Please make sure you have set up your Shopify website properly!";
+        "Failed to upload products from your Etsy website. Please make sure you have set up your Etsy website properly!";
       res.status(400).json({ error: message });
       return;
     }
@@ -70,38 +59,26 @@ export default async function handler(req, res) {
     let error = null;
     const products = [];
     while (!done) {
-      await fetch(`${homepage}/collections/all/products.json?page=${page}`)
+      await fetch(
+        `https://openapi.etsy.com/v2/shops/${shopId}/listings/active?api_key=${process.env.ETSY_API_KEY}&page=${page}&includes=MainImage`
+      )
         .then((res) => res.json())
         .then(async (data) => {
-          if (data.products.length === 0) {
+          if (data.results.length === 0) {
             done = true;
             return;
           }
 
-          data.products.forEach((product, index) => {
-            if (product.images.length <= 0 || product.variants.length <= 0) {
-              return;
-            }
-
+          data.results.forEach((product, index) => {
             const productName = product.title;
-            const image = product.images[0].src;
-            const primaryKeywords = product.product_type.split(",");
-            const description = product.body_html.replace(/<[^>]*>/g, "");
-            const link = `${homepage}/products/${product.handle}`;
-            let price = parseFloat(product.variants[0].price);
-            let priceRange = [price, price];
-            product.variants.forEach((variant) => {
-              priceRange[0] = Math.min(
-                priceRange[0],
-                parseFloat(variant.price)
-              );
-              priceRange[1] = Math.max(
-                priceRange[1],
-                parseFloat(variant.price)
-              );
-            });
-            price = priceRange[0];
-
+            const image =
+              product.MainImage.url_570xN || product.MainImage.url_fullxfull;
+            const primaryKeywords = product.tags;
+            const departments = product.taxonomy_path;
+            const description = product.description.replace(/<[^>]*>/g, "");
+            const link = product.url;
+            const price = parseFloat(product.price);
+            const priceRange = [price, price];
             products.push({
               departments,
               description,
@@ -115,8 +92,11 @@ export default async function handler(req, res) {
             });
           });
 
-          nextProductId += data.products.length;
+          nextProductId += data.results.length;
           page += 1;
+
+          // Etsy API has a maximum of 5 requests per second
+          await new Promise((resolve) => setTimeout(resolve, 200));
         })
         .catch((err) => {
           console.log(err);

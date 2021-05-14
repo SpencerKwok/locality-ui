@@ -19,9 +19,13 @@ export interface PostMethods {
     request: DepartmentsUpdateRequest;
     response: DepartmentsUpdateResponse;
   };
-  HomepageUpdate: {
-    request: HomepageUpdateRequest;
-    response: HomepageUpdateResponse;
+  EtsyProductUpload: {
+    request: ProductUploadRequest;
+    response: ProductUploadResponse;
+  };
+  HomepagesUpdate: {
+    request: HomepagesUpdateRequest;
+    response: HomepagesUpdateResponse;
   };
   LogoUpdate: {
     request: LogoUpdateRequest;
@@ -43,9 +47,9 @@ export interface PostMethods {
     request: PasswordUpdateRequest;
     response: PasswordUpdateResponse;
   };
-  ShopifyProductUpdate: {
-    request: ShopifyProductUpdateRequest;
-    response: ShopifyProductUpdateResponse;
+  ShopifyProductUpload: {
+    request: ProductUploadRequest;
+    response: ProductUploadResponse;
   };
   UserSignUp: {
     request: UserSignUpRequest;
@@ -90,6 +94,8 @@ export interface BaseBusiness {
   longitude: string;
   logo: string;
   homepage: string;
+  shopifyHomepage: string;
+  etsyHomepage: string;
   departments: string;
 }
 
@@ -116,13 +122,17 @@ export interface DeleteFromWishListRequest {
 
 export interface DeleteFromWishListResponse extends BaseResponse {}
 
-export interface HomepageUpdateRequest {
+export interface HomepagesUpdateRequest {
   id: number;
   homepage: string;
+  shopifyHomepage: string;
+  etsyHomepage: string;
 }
 
-export interface HomepageUpdateResponse extends BaseResponse {
+export interface HomepagesUpdateResponse extends BaseResponse {
   homepage: string;
+  shopifyHomepage: string;
+  etsyHomepage: string;
 }
 
 export interface LogoUpdateRequest {
@@ -217,11 +227,11 @@ export interface PasswordUpdateRequest {
 
 export interface PasswordUpdateResponse extends BaseResponse {}
 
-export interface ShopifyProductUpdateRequest {
+export interface ProductUploadRequest {
   businessId: number;
 }
 
-export interface ShopifyProductUpdateResponse extends BaseResponse {
+export interface ProductUploadResponse extends BaseResponse {
   products: Array<BaseProduct>;
 }
 
@@ -241,6 +251,7 @@ export interface WishListResponse extends BaseResponse {
 export interface GetMethods {
   Business: BusinessResponse;
   Businesses: BusinessesResponse;
+  Departments: DepartmentsResponse;
   Product: ProductResponse;
   Products: ProductsResponse;
   Search: SearchResponse;
@@ -251,10 +262,12 @@ export interface BusinessResponse extends BaseResponse {
   business: BaseBusiness;
 }
 
-export interface BusinessesRequest {}
-
 export interface BusinessesResponse extends BaseResponse {
   businesses: Array<BaseBusiness>;
+}
+
+export interface DepartmentsResponse extends BaseResponse {
+  departments: Array<string>;
 }
 
 export interface ProductResponse extends BaseResponse {

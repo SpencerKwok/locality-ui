@@ -7,13 +7,14 @@ const endpoints = new Map<keyof PostMethods, string>([
   ["Contact", "/api/contact"],
   ["DeleteFromWishList", "/api/wishlist/delete"],
   ["DepartmentsUpdate", "/api/dashboard/departments/update"],
-  ["HomepageUpdate", "/api/dashboard/homepage/update"],
+  ["HomepagesUpdate", "/api/dashboard/homepages/update"],
   ["LogoUpdate", "/api/dashboard/logo/update"],
   ["PasswordUpdate", "/api/dashboard/password/update"],
   ["ProductAdd", "/api/dashboard/product/add"],
   ["ProductDelete", "/api/dashboard/product/delete"],
   ["ProductUpdate", "/api/dashboard/product/update"],
-  ["ShopifyProductUpdate", "/api/dashboard/shopify"],
+  ["EtsyProductUpload", "/api/dashboard/etsy"],
+  ["ShopifyProductUpload", "/api/dashboard/shopify"],
   ["UserSignUp", "/api/signup/user"],
 ]);
 
