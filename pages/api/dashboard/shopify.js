@@ -28,7 +28,10 @@ export default async function handler(req, res) {
 
     let nextProductId = businessResponse.rows[0].next_product_id;
     const departments = businessResponse.rows[0].departments.split(":");
-    const homepage = businessResponse.rows[0].shopify_homepage;
+    const homepage = businessResponse.rows[0].shopify_homepage.replace(
+      "https",
+      "http"
+    );
     if (homepage === "") {
       res.status(400).json({
         error:
@@ -117,6 +120,9 @@ export default async function handler(req, res) {
 
           nextProductId += data.products.length;
           page += 1;
+
+          // Cap Shopify API calls to 100 requests per second
+          await new Promise((resolve) => setTimeout(resolve, 10));
         })
         .catch((err) => {
           console.log(err);
@@ -149,47 +155,18 @@ export default async function handler(req, res) {
       return;
     }
 
-    await Promise.all(
-      products.map(
-        async ({
-          productName,
-          image,
-          primaryKeywords,
-          departments,
-          description,
-          link,
-          price,
-          priceRange,
-          nextProductId,
-        }) => {
-          const [baseProduct] = await productAdd({
-            businessId,
-            departments,
-            description,
-            image,
-            link,
-            nextProductId,
-            price,
-            priceRange,
-            primaryKeywords,
-            productName,
-          });
-          return baseProduct;
-        }
-      )
-    )
-      .then((products) => {
-        products.sort((a, b) => a.name.localeCompare(b.name));
-        res.status(200).json({
-          products: products.map((product) => ({
-            ...mapKeys(product, (v, k) => camelCase(k)),
-          })),
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        res.status(500).json({ error: err.message });
-      });
+    const [baseProducts, addError] = await productAdd(businessId, products);
+    if (addError) {
+      res.status(500).json({ error: addError });
+      return;
+    }
+
+    baseProducts.sort((a, b) => a.name.localeCompare(b.name));
+    res.status(200).json({
+      products: baseProducts.map((product) => ({
+        ...mapKeys(product, (v, k) => camelCase(k)),
+      })),
+    });
   };
 
   const { id } = req.locals.user;

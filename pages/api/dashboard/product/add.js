@@ -102,8 +102,29 @@ export default async function handler(req, res) {
   const { id } = req.locals.user;
   if (id === 0) {
     if (Number.isInteger(req.body.businessId)) {
-      const [product, error] = await productAdd({
-        businessId: req.body.businessId,
+      const [products, error] = await productAdd(req.body.businessId, [
+        {
+          departments,
+          description,
+          image,
+          link,
+          price,
+          priceRange,
+          primaryKeywords,
+          productName,
+        },
+      ]);
+      if (error) {
+        res.status(500).json({ error: error });
+        return;
+      }
+      res.status(200).json({ product: products[0] });
+    } else {
+      res.status(400).json({ error: "Invalid business id" });
+    }
+  } else {
+    const [products, error] = await productAdd(id, [
+      {
         departments,
         description,
         image,
@@ -112,31 +133,12 @@ export default async function handler(req, res) {
         priceRange,
         primaryKeywords,
         productName,
-      });
-      if (error) {
-        res.status(500).json({ error: error });
-        return;
-      }
-      res.status(200).json({ product });
-    } else {
-      res.status(400).json({ error: "Invalid business id" });
-    }
-  } else {
-    const [product, error] = await productAdd({
-      businessId: id,
-      departments,
-      description,
-      image,
-      link,
-      price,
-      priceRange,
-      primaryKeywords,
-      productName,
-    });
+      },
+    ]);
     if (error) {
       res.status(500).json({ error: error });
       return;
     }
-    res.status(200).json({ product });
+    res.status(200).json({ product: products[0] });
   }
 }

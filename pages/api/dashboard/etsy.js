@@ -1,5 +1,4 @@
 import { camelCase, mapKeys } from "lodash";
-import Dns from "dns";
 import SqlString from "sqlstring";
 
 import Psql from "../../../lib/api/postgresql";
@@ -129,47 +128,18 @@ export default async function handler(req, res) {
       return;
     }
 
-    await Promise.all(
-      products.map(
-        async ({
-          productName,
-          image,
-          primaryKeywords,
-          departments,
-          description,
-          link,
-          price,
-          priceRange,
-          nextProductId,
-        }) => {
-          const [baseProduct] = await productAdd({
-            businessId,
-            departments,
-            description,
-            image,
-            link,
-            nextProductId,
-            price,
-            priceRange,
-            primaryKeywords,
-            productName,
-          });
-          return baseProduct;
-        }
-      )
-    )
-      .then((products) => {
-        products.sort((a, b) => a.name.localeCompare(b.name));
-        res.status(200).json({
-          products: products.map((product) => ({
-            ...mapKeys(product, (v, k) => camelCase(k)),
-          })),
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        res.status(500).json({ error: err.message });
-      });
+    const [baseProducts, addError] = await productAdd(businessId, products);
+    if (addError) {
+      res.status(500).json({ error: addError });
+      return;
+    }
+
+    baseProducts.sort((a, b) => a.name.localeCompare(b.name));
+    res.status(200).json({
+      products: baseProducts.map((product) => ({
+        ...mapKeys(product, (v, k) => camelCase(k)),
+      })),
+    });
   };
 
   const { id } = req.locals.user;
