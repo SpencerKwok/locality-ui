@@ -4,7 +4,7 @@ const client = new Pg.Client({
   // See: https://help.heroku.com/DR0TTWWD/seeing-fatal-no-pg_hba-conf-entry-errors-in-postgres
   // and https://stackoverflow.com/questions/61097695/self-signed-certificate-error-during-query-the-heroku-hosted-postgres-database
   ssl: { rejectUnauthorized: false },
-  connectionString: process.env.HEROKU_POSTGRESQL_IVORY,
+  connectionString: process.env.HEROKU_POSTGRESQL_IVORY_URL,
 });
 
 client.connect().catch((err) => console.error(err));
