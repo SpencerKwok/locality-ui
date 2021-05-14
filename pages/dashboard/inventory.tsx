@@ -17,6 +17,10 @@ import {
 } from "../../components/common/Schema";
 import { useWindowSize } from "../../lib/common";
 
+function getDepartments(url: string) {
+  return GetRpcClient.getInstance().call("Departments", url);
+}
+
 function getProduct(url: string) {
   return GetRpcClient.getInstance().call("Product", url);
 }
@@ -58,9 +62,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
   }
 
+  const departments = await getDepartments("/api/departments/get").then(
+    ({ departments }) => departments
+  );
+
   return {
     props: {
       cookie,
+      departments,
       session,
       businesses,
       initialProducts,
@@ -70,6 +79,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 interface InventoryProps {
   businesses: Array<BaseBusiness>;
+  departments: Array<string>;
   initialProducts: Array<BaseProduct>;
   session: Session | null;
   cookie?: string;
@@ -77,6 +87,7 @@ interface InventoryProps {
 
 export default function Inventory({
   businesses,
+  departments,
   initialProducts,
   cookie,
 }: InventoryProps) {
@@ -375,6 +386,7 @@ export default function Inventory({
         isNewItem={isNewItem}
         businesses={businesses}
         businessIndex={businessIndex}
+        departments={departments}
         products={products}
         productIndex={productIndex}
         product={product}

@@ -4,14 +4,13 @@ import * as yup from "yup";
 import { Formik, FormikConfig } from "formik";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
-import Select from "react-dropdown-select";
 
 import { BaseBusiness } from "../common/Schema";
 import DashboardLayout from "./Layout";
-import { Departments, DepartmentsToId } from "./Departments";
 import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
 import { Base64, fileToBase64, urlToBase64 } from "./ImageHelpers";
 import Stack from "../common/Stack";
+import Select from "../common/select/VirtualSelect";
 import styles from "./Business.module.css";
 
 const BusinessList = dynamic(() => import("./BusinessList"));
@@ -40,6 +39,7 @@ export interface BusinessProps {
   isNewBusiness: boolean;
   businesses: Array<BaseBusiness>;
   businessIndex: number;
+  departments: Array<string>;
   updateDepartmentsStatus: UpdateStatus;
   updateHomepagesStatus: UpdateStatus;
   updateLogoStatus: UpdateStatus;
@@ -80,6 +80,7 @@ export default function Business({
   isNewBusiness,
   businesses,
   businessIndex,
+  departments,
   updateDepartmentsStatus,
   updateHomepagesStatus,
   updateLogoStatus,
@@ -91,6 +92,10 @@ export default function Business({
 }: BusinessProps) {
   const logoUrlRef = createRef<HTMLInputElement>();
   const logoFileRef = createRef<HTMLInputElement>();
+  const departmentsWithIds = departments.map((department, index) => ({
+    label: department,
+    value: index,
+  }));
 
   return (
     <DashboardLayout tab="business">
@@ -357,23 +362,25 @@ export default function Business({
                         <Form.Group>
                           <InputGroup>
                             <Select
-                              multi
-                              color="#449ed7"
-                              onChange={(departments) => {
+                              isClearable
+                              isMulti
+                              isSearchable
+                              searchable
+                              clearable
+                              onChange={(newValues) => {
                                 setFieldValue(
                                   "departments",
-                                  departments.map(({ name }) => name),
+                                  newValues.map((value: any) => value.label),
                                   true
                                 );
                               }}
-                              options={Departments}
-                              style={{ width: 300 }}
-                              labelField="name"
-                              valueField="name"
-                              values={values.departments.map((name) => ({
-                                id: DepartmentsToId.get(name),
-                                name,
+                              options={departmentsWithIds}
+                              value={values.departments.map((department) => ({
+                                label: department,
                               }))}
+                              styles={{
+                                container: (obj) => ({ ...obj, width: 300 }),
+                              }}
                             />
                           </InputGroup>
                           <ErrorMessage name="departments" />

@@ -5,7 +5,6 @@ import { Formik, FormikConfig } from "formik";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
-import Select from "react-dropdown-select";
 
 import AddProduct, { UploadType } from "./AddProduct";
 import { Base64, fileToBase64, urlToBase64 } from "./ImageHelpers";
@@ -15,6 +14,7 @@ import { Departments, DepartmentsToId } from "./Departments";
 import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
 import ProductList from "./ProductList";
 import Stack from "../common/Stack";
+import Select from "../common/select/VirtualSelect";
 import styles from "./Inventory.module.css";
 
 const BusinessList = dynamic(() => import("./BusinessList"));
@@ -75,6 +75,7 @@ export interface InventoryProps {
   isNewItem: boolean;
   businesses: Array<BaseBusiness>;
   businessIndex: number;
+  departments: Array<string>;
   products: Array<BaseProduct>;
   productIndex: number;
   product: Product;
@@ -112,6 +113,7 @@ export default function Inventory({
   isNewItem,
   businesses,
   businessIndex,
+  departments,
   products,
   productIndex,
   product,
@@ -132,6 +134,10 @@ export default function Inventory({
 }: InventoryProps) {
   const logoUrlRef = createRef<HTMLInputElement>();
   const logoFileRef = createRef<HTMLInputElement>();
+  const departmentsWithIds = departments.map((department, index) => ({
+    label: department,
+    value: index,
+  }));
 
   return (
     <DashboardLayout tab="inventory">
@@ -246,23 +252,25 @@ export default function Inventory({
                           </Label>
                           <InputGroup>
                             <Select
-                              multi
-                              color="#449ed7"
-                              onChange={(departments) => {
+                              isClearable
+                              isMulti
+                              isSearchable
+                              searchable
+                              clearable
+                              onChange={(newValues) => {
                                 setFieldValue(
                                   "departments",
-                                  departments.map(({ name }) => name),
+                                  newValues.map((value: any) => value.label),
                                   true
                                 );
                               }}
-                              options={Departments}
-                              style={{ width: 300 }}
-                              labelField="name"
-                              valueField="name"
-                              values={values.departments.map((name) => ({
-                                id: DepartmentsToId.get(name),
-                                name,
+                              options={departmentsWithIds}
+                              value={values.departments.map((department) => ({
+                                label: department,
                               }))}
+                              styles={{
+                                container: (obj) => ({ ...obj, width: 300 }),
+                              }}
                             />
                           </InputGroup>
                           <ErrorMessage name="departments" />

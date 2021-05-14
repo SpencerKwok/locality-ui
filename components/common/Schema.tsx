@@ -251,6 +251,7 @@ export interface WishListResponse extends BaseResponse {
 export interface GetMethods {
   Business: BusinessResponse;
   Businesses: BusinessesResponse;
+  Departments: DepartmentsResponse;
   Product: ProductResponse;
   Products: ProductsResponse;
   Search: SearchResponse;
@@ -261,10 +262,12 @@ export interface BusinessResponse extends BaseResponse {
   business: BaseBusiness;
 }
 
-export interface BusinessesRequest {}
-
 export interface BusinessesResponse extends BaseResponse {
   businesses: Array<BaseBusiness>;
+}
+
+export interface DepartmentsResponse extends BaseResponse {
+  departments: Array<string>;
 }
 
 export interface ProductResponse extends BaseResponse {

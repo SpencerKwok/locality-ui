@@ -14,6 +14,10 @@ import RootLayout from "../../components/common/RootLayout";
 import { BaseBusiness } from "../../components/common/Schema";
 import { useWindowSize } from "../../lib/common";
 
+function getDepartments(url: string) {
+  return GetRpcClient.getInstance().call("Departments", url);
+}
+
 function getBusiness(url: string) {
   return GetRpcClient.getInstance().call("Business", url);
 }
@@ -41,9 +45,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
   }
 
+  const departments = await getDepartments("/api/departments/get").then(
+    ({ departments }) => departments
+  );
+
   return {
     props: {
       cookie,
+      departments,
       session,
       isNewBusiness,
       businesses,
@@ -54,6 +63,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 interface BusinessProps {
   isNewBusiness: boolean;
   businesses: Array<BaseBusiness>;
+  departments: Array<string>;
   session: Session | null;
   cookie?: string;
 }
@@ -62,6 +72,7 @@ export default function Business({
   isNewBusiness,
   businesses,
   cookie,
+  departments,
 }: BusinessProps) {
   const router = useRouter();
   const [session, loading] = useSession();
@@ -198,6 +209,7 @@ export default function Business({
         isNewBusiness={isNewBusiness}
         businesses={businesses}
         businessIndex={businessIndex}
+        departments={departments}
         updateDepartmentsStatus={updateDepartmentsStatus}
         updateHomepagesStatus={updateHomepagesStatus}
         updateLogoStatus={updateLogoStatus}
