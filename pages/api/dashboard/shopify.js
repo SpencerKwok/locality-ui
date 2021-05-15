@@ -92,7 +92,15 @@ export default async function handler(req, res) {
 
             const productName = product.title;
             const image = product.images[0].src;
-            const primaryKeywords = product.product_type.split(",");
+            const primaryKeywords = [
+              ...new Set([
+                ...product.product_type
+                  .split(",")
+                  .map((x) => x.trim())
+                  .filter(Boolean),
+                ...product.tags,
+              ]),
+            ];
             const description = product.body_html.replace(/<[^>]*>/g, "");
             const link = `${homepage}/products/${product.handle}`;
             let price = parseFloat(product.variants[0].price);
