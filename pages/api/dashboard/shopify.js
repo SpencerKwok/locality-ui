@@ -1,5 +1,6 @@
 import { camelCase, mapKeys } from "lodash";
 import SqlString from "sqlstring";
+import Xss from "xss";
 
 import Psql from "../../../lib/api/postgresql";
 import { productAdd, productDelete } from "../../../lib/api/dashboard";
@@ -29,7 +30,7 @@ export default async function handler(req, res) {
     const departments = businessResponse.rows[0].departments.split(":");
 
     // TODO: Sometimes there is a certificate hostname mismatch that
-    // causes an issue when connecting directly with https. Although
+    // causes an issue when connecting directly with HSTS. Although
     // not recommended due to MITMA, we switch to http and hope redirect
     // to https by the server is good enough
     const homepage = businessResponse.rows[0].shopify_homepage.replace(
@@ -44,36 +45,6 @@ export default async function handler(req, res) {
       });
       return;
     }
-
-    // TODO: Not all Shopify domains were bought through Shopify,
-    // so this is not a valid way of checking if the website belongs
-    // to a Shopify site. Instead, we should force users to write
-    // the .myshopify.com
-
-    /*
-    const domain = homepage.match(/(?<=http(s?):\/\/)[^\/]
-    */
-
-    /*g)[0];
-    let addresses = [];
-    try {
-      addresses = await Dns.promises.resolveCname(domain);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-      return;
-    }
-
-    let isShopify = false;
-    addresses.forEach((address) => {
-      isShopify = isShopify || address.match(/^.*\.myshopify.com$/) !== null;
-    });
-    if (!isShopify) {
-      const message =
-        'Failed to upload products from your Shopify website. Please make sure you have set up your Shopify website properly or contact us with the subject "Shopify Upload" and your account email to locality.info@yahoo.com';
-      res.status(400).json({ error: message });
-      return;
-    }
-    */
 
     const [productsResponse, productsError] = await Psql.query(
       `SELECT id FROM products WHERE business_id=${businessId}`
@@ -103,23 +74,19 @@ export default async function handler(req, res) {
           }
 
           data.products.forEach((product, index) => {
-            if (product.images.length <= 0 || product.variants.length <= 0) {
-              return;
-            }
-
-            const productName = product.title;
-            const image = product.images[0].src;
+            const productName = Xss(product.title);
+            const image = Xss(product.images[0].src);
             const primaryKeywords = [
               ...new Set([
                 ...product.product_type
                   .split(",")
-                  .map((x) => x.trim())
+                  .map((x) => Xss(x.trim()))
                   .filter(Boolean),
-                ...product.tags,
+                ...product.tags.map((x) => Xss(x.trim())),
               ]),
             ];
-            const description = product.body_html.replace(/<[^>]*>/g, "");
-            const link = `${homepage}/products/${product.handle}`;
+            const description = Xss(product.body_html.replace(/<[^>]*>/g, ""));
+            const link = Xss(`${homepage}/products/${product.handle}`);
             let price = parseFloat(product.variants[0].price);
             let priceRange = [price, price];
             product.variants.forEach((variant) => {

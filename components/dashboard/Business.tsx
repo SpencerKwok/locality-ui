@@ -56,7 +56,21 @@ const UpdateLogoSchema = yup.object().shape({
 
 const UpdateHomepagesSchema = yup.object().shape({
   homepage: yup.string().required("Required").max(255, "Too long"),
-  shopifyHomepage: yup.string().optional().max(255, "Too long"),
+  shopifyHomepage: yup
+    .string()
+    .optional()
+    .test(
+      "EtsyFormat",
+      "Must have the following format: [SHOP_ID].myshopify.com",
+      (page) => {
+        return (!page ||
+          page.length === 0 ||
+          page.match(
+            /^(http(s?):\/\/)?(www\.)?[a-zA-Z0-9_\-]+\.myshopify\.com(\/?)$/g
+          )) as boolean;
+      }
+    )
+    .max(255, "Too long"),
   etsyHomepage: yup
     .string()
     .optional()
@@ -66,7 +80,9 @@ const UpdateHomepagesSchema = yup.object().shape({
       (page) => {
         return (!page ||
           page.length === 0 ||
-          page.match(/etsy\.com\/([^\/]+\/)*shop\/[a-zA-Z0-9]+$/g)) as boolean;
+          page.match(
+            /^(http(s?):\/\/)?(www\.)?etsy\.com\/([^\/]+\/)*shop\/[a-zA-Z0-9_\-]+(\/?)$/g
+          )) as boolean;
       }
     )
     .max(255, "Too long"),

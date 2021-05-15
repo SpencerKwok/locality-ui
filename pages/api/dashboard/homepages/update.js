@@ -59,9 +59,11 @@ export default async function handler(req, res) {
   let shopifyHomepage = Xss(req.body.shopifyHomepage || "");
   if (shopifyHomepage !== "") {
     shopifyHomepage = addHttpsProtocol(shopifyHomepage);
-    try {
-      new URL(shopifyHomepage);
-    } catch (error) {
+    if (
+      !shopifyHomepage.match(
+        /^https:\/\/www\.[a-zA-Z0-9_\-]+\.myshopify\.com(\/?)$/g
+      )
+    ) {
       res.status(400).json({ error: "Invalid Shopify Website" });
       return;
     }
@@ -70,9 +72,11 @@ export default async function handler(req, res) {
   let etsyHomepage = Xss(req.body.etsyHomepage || "");
   if (etsyHomepage !== "") {
     etsyHomepage = addHttpsProtocol(etsyHomepage);
-    try {
-      new URL(etsyHomepage);
-    } catch (error) {
+    if (
+      !etsyHomepage.match(
+        /^https:\/\/www\.etsy\.com\/([^\/]+\/)*shop\/[a-zA-Z0-9_\-]+(\/?)$/g
+      )
+    ) {
       res.status(400).json({ error: "Invalid Etsy Storefront" });
       return;
     }

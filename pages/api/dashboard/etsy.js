@@ -1,5 +1,6 @@
 import { camelCase, mapKeys } from "lodash";
 import SqlString from "sqlstring";
+import Xss from "xss";
 
 import Psql from "../../../lib/api/postgresql";
 import { productAdd, productDelete } from "../../../lib/api/dashboard";
@@ -37,14 +38,6 @@ export default async function handler(req, res) {
 
     const homepageSections = homepage.split("/");
     const shopId = homepageSections[homepageSections.length - 1];
-    const domain = homepage.match(/(?<=http(s?):\/\/)[^\/]*/g)[0];
-    if (domain !== "www.etsy.com") {
-      const message =
-        'Failed to upload products from your Etsy storefront. Please make sure you have set up your Etsy storefront properly or contact us with the subject "Etsy Upload" and your account email to locality.info@yahoo.com';
-      res.status(400).json({ error: message });
-      return;
-    }
-
     const [productsResponse, productsError] = await Psql.query(
       `SELECT id FROM products WHERE business_id=${businessId}`
     );
@@ -75,13 +68,16 @@ export default async function handler(req, res) {
           }
 
           data.results.forEach((product, index) => {
-            const productName = product.title;
-            const image =
-              product.MainImage.url_570xN || product.MainImage.url_fullxfull;
-            const primaryKeywords = product.tags;
-            const departments = product.taxonomy_path;
-            const description = product.description.replace(/<[^>]*>/g, "");
-            const link = product.url;
+            const productName = Xss(product.title);
+            const image = Xss(
+              product.MainImage.url_570xN || product.MainImage.url_fullxfull
+            );
+            const primaryKeywords = product.tags.map((x) => Xss(x));
+            const departments = product.taxonomy_path.map((x) => Xss(x));
+            const description = Xss(
+              product.description.replace(/<[^>]*>/g, "")
+            );
+            const link = Xss(product.url);
             const price = parseFloat(product.price);
             const priceRange = [price, price];
             products.push({
