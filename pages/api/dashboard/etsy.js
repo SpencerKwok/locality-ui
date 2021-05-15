@@ -40,7 +40,7 @@ export default async function handler(req, res) {
     const domain = homepage.match(/(?<=http(s?):\/\/)[^\/]*/g)[0];
     if (domain !== "www.etsy.com") {
       const message =
-        "Failed to upload products from your Etsy website. Please make sure you have set up your Etsy website properly!";
+        'Failed to upload products from your Etsy storefront. Please make sure you have set up your Etsy storefront properly or contact us with the subject "Etsy Upload" and your account email to locality.info@yahoo.com';
       res.status(400).json({ error: message });
       return;
     }
@@ -64,6 +64,12 @@ export default async function handler(req, res) {
         .then((res) => res.json())
         .then(async (data) => {
           if (data.results.length === 0) {
+            done = true;
+            return;
+          }
+
+          // Cap user upload to 1000 products
+          if (products.length >= 1000) {
             done = true;
             return;
           }
@@ -108,6 +114,13 @@ export default async function handler(req, res) {
       return;
     }
 
+    if (products.length >= 1000) {
+      const message =
+        'Yippers! It appears that your Etsy storefront has more than 1000 products! Please contact us with the subject "Large Etsy Upload" and your account email to locality.info@yahoo.com';
+      res.status(400).json({ error: message });
+      return;
+    }
+
     const [, psqlErrorUpdateNextId] = await Psql.query(
       SqlString.format("UPDATE businesses SET next_product_id=? WHERE id=?", [
         nextProductId,
@@ -134,9 +147,11 @@ export default async function handler(req, res) {
       return;
     }
 
-    baseProducts.sort((a, b) => a.name.localeCompare(b.name));
+    const sortedBaseProducts = baseProducts.sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
     res.status(200).json({
-      products: baseProducts.map((product) => ({
+      products: sortedBaseProducts.map((product) => ({
         ...mapKeys(product, (v, k) => camelCase(k)),
       })),
     });

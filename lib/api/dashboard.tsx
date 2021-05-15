@@ -41,91 +41,106 @@ export async function productAdd(businessId: number, products: Array<Product>) {
     .split(",")
     .map((value: string) => value.trim());
 
-  const baseProducts = Array<BaseProduct>();
-  for (let i = 0; i < products.length; i++) {
-    const {
-      departments,
-      description,
-      image,
-      link,
-      price,
-      priceRange,
-      primaryKeywords,
-      productName,
-    } = products[i];
+  try {
+    const baseProducts = await Promise.all(
+      products.map(
+        async (
+          {
+            departments,
+            description,
+            image,
+            link,
+            price,
+            priceRange,
+            primaryKeywords,
+            productName,
+            nextProductId,
+          },
+          index
+        ) => {
+          // Slow down requests to 2 requests/second
+          await new Promise((resolve) => setTimeout(resolve, index * 500));
 
-    let { nextProductId } = products[i];
+          if (!Number.isInteger(nextProductId)) {
+            nextProductId = businessResponse.rows[0].next_product_id as number;
+            const [_, psqlErrorUpdateNextId] = await Psql.query(
+              SqlString.format(
+                "UPDATE businesses SET next_product_id=? WHERE id=?",
+                [nextProductId + 1, businessId]
+              )
+            );
+            if (psqlErrorUpdateNextId) {
+              throw psqlErrorUpdateNextId;
+            }
+          }
 
-    if (!Number.isInteger(nextProductId)) {
-      nextProductId = businessResponse.rows[0].next_product_id as number;
-      const [_, psqlErrorUpdateNextId] = await Psql.query(
-        SqlString.format("UPDATE businesses SET next_product_id=? WHERE id=?", [
-          nextProductId + 1,
-          businessId,
-        ])
-      );
-      if (psqlErrorUpdateNextId) {
-        return [null, psqlErrorUpdateNextId];
-      }
-    }
+          const [url, cloudinaryError] = await Cloudinary.upload(image, {
+            exif: false,
+            format: "webp",
+            public_id: `${businessId}/${nextProductId}`,
+            unique_filename: false,
+            overwrite: true,
+          });
+          if (cloudinaryError) {
+            throw cloudinaryError;
+          }
 
-    const [url, cloudinaryError] = await Cloudinary.upload(image, {
-      exif: false,
-      format: "webp",
-      public_id: `${businessId}/${nextProductId}`,
-      unique_filename: false,
-      overwrite: true,
-    });
-    if (cloudinaryError) {
-      return [null, cloudinaryError];
-    }
+          const geolocation = [];
+          for (
+            let i = 0;
+            i < Math.min(latitude.length, longitude.length);
+            ++i
+          ) {
+            geolocation.push({
+              lat: parseFloat(latitude[i]),
+              lng: parseFloat(longitude[i]),
+            });
+          }
 
-    const geolocation = [];
-    for (let i = 0; i < Math.min(latitude.length, longitude.length); ++i) {
-      geolocation.push({
-        lat: parseFloat(latitude[i]),
-        lng: parseFloat(longitude[i]),
-      });
-    }
+          const algoliaError = await Algolia.saveObject(
+            {
+              objectID: `${businessId}_${nextProductId}`,
+              _geoloc: geolocation,
+              name: productName,
+              company: businessName,
+              business: businessName,
+              primary_keywords: primaryKeywords,
+              departments,
+              description: description,
+              price: price,
+              price_range: priceRange,
+              link: link,
+              image: url,
+            },
+            { autoGenerateObjectIDIfNotExist: false }
+          );
+          if (algoliaError) {
+            throw algoliaError;
+          }
 
-    const algoliaError = await Algolia.saveObject(
-      {
-        objectID: `${businessId}_${nextProductId}`,
-        _geoloc: geolocation,
-        name: productName,
-        company: businessName,
-        business: businessName,
-        primary_keywords: primaryKeywords,
-        departments,
-        description: description,
-        price: price,
-        price_range: priceRange,
-        link: link,
-        image: url,
-      },
-      { autoGenerateObjectIDIfNotExist: false }
-    );
-    if (algoliaError) {
-      return [null, algoliaError];
-    }
+          const [, psqlErrorAddProduct] = await Psql.query(
+            SqlString.format(
+              "INSERT INTO products (business_id, id, name, image) VALUES (?, ?, E?, ?)",
+              [businessId, nextProductId, productName, url]
+            )
+          );
+          if (psqlErrorAddProduct) {
+            throw psqlErrorAddProduct;
+          }
 
-    const [_, psqlErrorAddProduct] = await Psql.query(
-      SqlString.format(
-        "INSERT INTO products (business_id, id, name, image) VALUES (?, ?, E?, ?)",
-        [businessId, nextProductId, productName, url]
+          return {
+            objectId: `${businessId}_${nextProductId}`,
+            name: productName,
+            image: url,
+          };
+        }
       )
     );
-    if (psqlErrorAddProduct) {
-      return [null, psqlErrorAddProduct];
-    }
 
-    baseProducts.push({
-      objectId: `${businessId}_${nextProductId}`,
-      name: productName,
-      image: url,
-    });
+    return [baseProducts, null];
+  } catch (error) {
+    return [null, error];
   }
-  return [baseProducts, null];
 }
 
 export async function productDelete(businessId: number, productIds: string[]) {
@@ -133,46 +148,48 @@ export async function productDelete(businessId: number, productIds: string[]) {
     return null;
   }
 
+  const productIdsSegments = [];
   for (let i = 0; i < productIds.length; i += 100) {
-    const algoliaObjectIds = productIds
-      .slice(i, Math.min(i + 100, productIds.length))
-      .map((productId) => `${businessId}_${productId}`);
-    const algoliaError = await Algolia.deleteObjects(algoliaObjectIds);
-    if (algoliaError) {
-      return algoliaError;
-    }
-  }
-
-  for (let i = 0; i < productIds.length; i += 100) {
-    const cloudinaryObjectIds = productIds
-      .slice(i, Math.min(i + 100, productIds.length))
-      .map((productId) => `${businessId}/${productId}`);
-    const cloudinaryError = await Cloudinary.deleteResources(
-      cloudinaryObjectIds
+    productIdsSegments.push(
+      productIds.slice(i, Math.min(i + 100, productIds.length))
     );
-    if (cloudinaryError) {
-      return cloudinaryError;
-    }
   }
 
-  const psqlObjectIds = Array<string>();
-  productIds.forEach((productId) => {
-    psqlObjectIds.push(`id=${productId}`);
-  });
-  for (let i = 0; i < psqlObjectIds.length; i += 100) {
-    const psqlObjectIdString = `(${psqlObjectIds
-      .slice(i, Math.min(i + 100, productIds.length))
-      .join(" OR ")})`;
+  try {
+    await Promise.all(
+      productIdsSegments.map(async (productIdsSegment, index) => {
+        // Slow down requests to 2 requests/second
+        await new Promise((resolve) => setTimeout(resolve, index * 500));
+
+        const algoliaObjectIds = productIdsSegment.map(
+          (productId) => `${businessId}_${productId}`
+        );
+        const algoliaError = await Algolia.deleteObjects(algoliaObjectIds);
+        if (algoliaError) {
+          throw algoliaError;
+        }
+
+        const cloudinaryObjectIds = productIdsSegment.map(
+          (productId) => `${businessId}/${productId}`
+        );
+        const cloudinaryError = await Cloudinary.deleteResources(
+          cloudinaryObjectIds
+        );
+        if (cloudinaryError) {
+          throw cloudinaryError;
+        }
+      })
+    );
+
     const [, psqlError] = await Psql.query(
-      SqlString.format(
-        `DELETE FROM products WHERE business_id=? AND ${psqlObjectIdString}`,
-        [businessId]
-      )
+      SqlString.format(`DELETE FROM products WHERE business_id=?`, [businessId])
     );
     if (psqlError) {
-      return psqlError;
+      throw psqlError;
     }
-  }
 
-  return null;
+    return null;
+  } catch (error) {
+    return error;
+  }
 }
