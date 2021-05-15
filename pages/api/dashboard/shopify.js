@@ -1,8 +1,6 @@
 import { camelCase, mapKeys } from "lodash";
-import Dns from "dns";
 import SqlString from "sqlstring";
 
-import Algolia from "../../../lib/api/algolia";
 import Psql from "../../../lib/api/postgresql";
 import { productAdd, productDelete } from "../../../lib/api/dashboard";
 import { runMiddlewareBusiness } from "../../../lib/api/middleware";
@@ -29,7 +27,16 @@ export default async function handler(req, res) {
 
     let nextProductId = businessResponse.rows[0].next_product_id;
     const departments = businessResponse.rows[0].departments.split(":");
-    const homepage = businessResponse.rows[0].shopify_homepage;
+
+    // TODO: Sometimes there is a certificate hostname mismatch that
+    // causes an issue when connecting directly with https. Although
+    // not recommended due to MITMA, we switch to http and hope redirect
+    // to https by the server is good enough
+    const homepage = businessResponse.rows[0].shopify_homepage.replace(
+      "https",
+      "http"
+    );
+
     if (homepage === "") {
       res.status(400).json({
         error:
@@ -38,7 +45,16 @@ export default async function handler(req, res) {
       return;
     }
 
-    const domain = homepage.match(/(?<=http(s?):\/\/)[^\/]*/g)[0];
+    // TODO: Not all Shopify domains were bought through Shopify,
+    // so this is not a valid way of checking if the website belongs
+    // to a Shopify site. Instead, we should force users to write
+    // the .myshopify.com
+
+    /*
+    const domain = homepage.match(/(?<=http(s?):\/\/)[^\/]
+    */
+
+    /*g)[0];
     let addresses = [];
     try {
       addresses = await Dns.promises.resolveCname(domain);
@@ -57,6 +73,7 @@ export default async function handler(req, res) {
       res.status(400).json({ error: message });
       return;
     }
+    */
 
     const [productsResponse, productsError] = await Psql.query(
       `SELECT id FROM products WHERE business_id=${businessId}`
