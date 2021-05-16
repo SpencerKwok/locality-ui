@@ -1,6 +1,6 @@
 import { camelCase, mapKeys } from "lodash";
-import Dns from "dns";
 import SqlString from "sqlstring";
+import Xss from "xss";
 
 import Psql from "../../../lib/api/postgresql";
 import { productAdd, productDelete } from "../../../lib/api/dashboard";
@@ -38,14 +38,6 @@ export default async function handler(req, res) {
 
     const homepageSections = homepage.split("/");
     const shopId = homepageSections[homepageSections.length - 1];
-    const domain = homepage.match(/(?<=http(s?):\/\/)[^\/]*/g)[0];
-    if (domain !== "www.etsy.com") {
-      const message =
-        "Failed to upload products from your Etsy website. Please make sure you have set up your Etsy website properly!";
-      res.status(400).json({ error: message });
-      return;
-    }
-
     const [productsResponse, productsError] = await Psql.query(
       `SELECT id FROM products WHERE business_id=${businessId}`
     );
@@ -69,14 +61,23 @@ export default async function handler(req, res) {
             return;
           }
 
+          // Cap user upload to 1000 products
+          if (products.length >= 1000) {
+            done = true;
+            return;
+          }
+
           data.results.forEach((product, index) => {
-            const productName = product.title;
-            const image =
-              product.MainImage.url_570xN || product.MainImage.url_fullxfull;
-            const primaryKeywords = product.tags;
-            const departments = product.taxonomy_path;
-            const description = product.description.replace(/<[^>]*>/g, "");
-            const link = product.url;
+            const productName = Xss(product.title);
+            const image = Xss(
+              product.MainImage.url_570xN || product.MainImage.url_fullxfull
+            );
+            const primaryKeywords = product.tags.map((x) => Xss(x));
+            const departments = product.taxonomy_path.map((x) => Xss(x));
+            const description = Xss(
+              product.description.replace(/<[^>]*>/g, "")
+            );
+            const link = Xss(product.url);
             const price = parseFloat(product.price);
             const priceRange = [price, price];
             products.push({
@@ -109,6 +110,13 @@ export default async function handler(req, res) {
       return;
     }
 
+    if (products.length >= 1000) {
+      const message =
+        'Yippers! It appears that your Etsy storefront has more than 1000 products! Please contact us with the subject "Large Etsy Upload" and your account email to locality.info@yahoo.com';
+      res.status(400).json({ error: message });
+      return;
+    }
+
     const [, psqlErrorUpdateNextId] = await Psql.query(
       SqlString.format("UPDATE businesses SET next_product_id=? WHERE id=?", [
         nextProductId,
@@ -129,47 +137,20 @@ export default async function handler(req, res) {
       return;
     }
 
-    await Promise.all(
-      products.map(
-        async ({
-          productName,
-          image,
-          primaryKeywords,
-          departments,
-          description,
-          link,
-          price,
-          priceRange,
-          nextProductId,
-        }) => {
-          const [baseProduct] = await productAdd({
-            businessId,
-            departments,
-            description,
-            image,
-            link,
-            nextProductId,
-            price,
-            priceRange,
-            primaryKeywords,
-            productName,
-          });
-          return baseProduct;
-        }
-      )
-    )
-      .then((products) => {
-        products.sort((a, b) => a.name.localeCompare(b.name));
-        res.status(200).json({
-          products: products.map((product) => ({
-            ...mapKeys(product, (v, k) => camelCase(k)),
-          })),
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        res.status(500).json({ error: err.message });
-      });
+    const [baseProducts, addError] = await productAdd(businessId, products);
+    if (addError) {
+      res.status(500).json({ error: addError });
+      return;
+    }
+
+    const sortedBaseProducts = baseProducts.sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+    res.status(200).json({
+      products: sortedBaseProducts.map((product) => ({
+        ...mapKeys(product, (v, k) => camelCase(k)),
+      })),
+    });
   };
 
   const { id } = req.locals.user;

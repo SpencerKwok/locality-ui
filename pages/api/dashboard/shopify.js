@@ -1,6 +1,6 @@
 import { camelCase, mapKeys } from "lodash";
-import Dns from "dns";
 import SqlString from "sqlstring";
+import Xss from "xss";
 
 import Psql from "../../../lib/api/postgresql";
 import { productAdd, productDelete } from "../../../lib/api/dashboard";
@@ -28,32 +28,21 @@ export default async function handler(req, res) {
 
     let nextProductId = businessResponse.rows[0].next_product_id;
     const departments = businessResponse.rows[0].departments.split(":");
-    const homepage = businessResponse.rows[0].shopify_homepage;
+
+    // TODO: Sometimes there is a certificate hostname mismatch that
+    // causes an issue when connecting directly with HSTS. Although
+    // not recommended due to MITMA, we switch to http and hope redirect
+    // to https by the server is good enough
+    const homepage = businessResponse.rows[0].shopify_homepage.replace(
+      "https",
+      "http"
+    );
+
     if (homepage === "") {
       res.status(400).json({
         error:
           "It looks like you haven't set your business's Shopify website yet! Please go to the \"Business\" tab and add your Shopify website",
       });
-      return;
-    }
-
-    const domain = homepage.match(/(?<=http(s?):\/\/)[^\/]*/g)[0];
-    let addresses = [];
-    try {
-      addresses = await Dns.promises.resolveCname(domain);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-      return;
-    }
-
-    let isShopify = false;
-    addresses.forEach((address) => {
-      isShopify = isShopify || address.match(/^.*\.myshopify.com$/) !== null;
-    });
-    if (!isShopify) {
-      const message =
-        "Failed to upload products from your Shopify website. Please make sure you have set up your Shopify website properly!";
-      res.status(400).json({ error: message });
       return;
     }
 
@@ -78,16 +67,26 @@ export default async function handler(req, res) {
             return;
           }
 
-          data.products.forEach((product, index) => {
-            if (product.images.length <= 0 || product.variants.length <= 0) {
-              return;
-            }
+          // Cap user upload to 1000 products
+          if (products.length >= 1000) {
+            done = true;
+            return;
+          }
 
-            const productName = product.title;
-            const image = product.images[0].src;
-            const primaryKeywords = product.product_type.split(",");
-            const description = product.body_html.replace(/<[^>]*>/g, "");
-            const link = `${homepage}/products/${product.handle}`;
+          data.products.forEach((product, index) => {
+            const productName = Xss(product.title);
+            const image = Xss(product.images[0].src);
+            const primaryKeywords = [
+              ...new Set([
+                ...product.product_type
+                  .split(",")
+                  .map((x) => Xss(x.trim()))
+                  .filter(Boolean),
+                ...product.tags.map((x) => Xss(x.trim())),
+              ]),
+            ];
+            const description = Xss(product.body_html.replace(/<[^>]*>/g, ""));
+            const link = Xss(`${homepage}/products/${product.handle}`);
             let price = parseFloat(product.variants[0].price);
             let priceRange = [price, price];
             product.variants.forEach((variant) => {
@@ -117,6 +116,9 @@ export default async function handler(req, res) {
 
           nextProductId += data.products.length;
           page += 1;
+
+          // Cap Shopify API calls to 100 requests per second
+          await new Promise((resolve) => setTimeout(resolve, 10));
         })
         .catch((err) => {
           console.log(err);
@@ -126,6 +128,13 @@ export default async function handler(req, res) {
     }
     if (error) {
       res.status(500).json({ error });
+      return;
+    }
+
+    if (products.length >= 1000) {
+      const message =
+        'Yippers! It appears that your Shopify website has more than 1000 products! Please contact us with the subject "Large Shopify Upload" and your account email to locality.info@yahoo.com';
+      res.status(400).json({ error: message });
       return;
     }
 
@@ -149,47 +158,20 @@ export default async function handler(req, res) {
       return;
     }
 
-    await Promise.all(
-      products.map(
-        async ({
-          productName,
-          image,
-          primaryKeywords,
-          departments,
-          description,
-          link,
-          price,
-          priceRange,
-          nextProductId,
-        }) => {
-          const [baseProduct] = await productAdd({
-            businessId,
-            departments,
-            description,
-            image,
-            link,
-            nextProductId,
-            price,
-            priceRange,
-            primaryKeywords,
-            productName,
-          });
-          return baseProduct;
-        }
-      )
-    )
-      .then((products) => {
-        products.sort((a, b) => a.name.localeCompare(b.name));
-        res.status(200).json({
-          products: products.map((product) => ({
-            ...mapKeys(product, (v, k) => camelCase(k)),
-          })),
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        res.status(500).json({ error: err.message });
-      });
+    const [baseProducts, addError] = await productAdd(businessId, products);
+    if (addError) {
+      res.status(500).json({ error: addError });
+      return;
+    }
+
+    const sortedBasePorducts = baseProducts.sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+    res.status(200).json({
+      products: sortedBasePorducts.map((product) => ({
+        ...mapKeys(product, (v, k) => camelCase(k)),
+      })),
+    });
   };
 
   const { id } = req.locals.user;

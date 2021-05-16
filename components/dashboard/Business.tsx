@@ -8,7 +8,7 @@ import FormControl from "react-bootstrap/FormControl";
 import { BaseBusiness } from "../common/Schema";
 import DashboardLayout from "./Layout";
 import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
-import { Base64, fileToBase64, urlToBase64 } from "./ImageHelpers";
+import { Base64, fileToBase64 } from "./ImageHelpers";
 import Stack from "../common/Stack";
 import Select from "../common/select/VirtualSelect";
 import styles from "./Business.module.css";
@@ -56,7 +56,21 @@ const UpdateLogoSchema = yup.object().shape({
 
 const UpdateHomepagesSchema = yup.object().shape({
   homepage: yup.string().required("Required").max(255, "Too long"),
-  shopifyHomepage: yup.string().optional().max(255, "Too long"),
+  shopifyHomepage: yup
+    .string()
+    .optional()
+    .test(
+      "EtsyFormat",
+      "Must have the following format: [SHOP_ID].myshopify.com",
+      (page) => {
+        return (!page ||
+          page.length === 0 ||
+          page.match(
+            /^(http(s?):\/\/)?(www\.)?[a-zA-Z0-9_\-]+\.myshopify\.com(\/?)$/g
+          )) as boolean;
+      }
+    )
+    .max(255, "Too long"),
   etsyHomepage: yup
     .string()
     .optional()
@@ -66,7 +80,9 @@ const UpdateHomepagesSchema = yup.object().shape({
       (page) => {
         return (!page ||
           page.length === 0 ||
-          page.match(/etsy\.com\/([^\/]+\/)*shop\/[a-zA-Z0-9]+$/g)) as boolean;
+          page.match(
+            /^(http(s?):\/\/)?(www\.)?etsy\.com\/([^\/]+\/)*shop\/[a-zA-Z0-9_\-]+(\/?)$/g
+          )) as boolean;
       }
     )
     .max(255, "Too long"),
@@ -150,6 +166,9 @@ export default function Business({
                           <img
                             src={values.logo}
                             alt={businesses[businessIndex].name}
+                            onError={() => {
+                              setFieldValue("logo", "", true);
+                            }}
                             style={{ maxHeight: 250, maxWidth: 300 }}
                           />
                         </picture>
@@ -166,12 +185,13 @@ export default function Business({
                               if (event.currentTarget.value !== "") {
                                 try {
                                   const url = event.currentTarget.value;
-                                  const logo = await urlToBase64(url);
-                                  setFieldValue("logo", logo, true);
+                                  setFieldValue("logo", url, true);
                                   if (logoFileRef.current) {
                                     logoFileRef.current.value = "";
                                   }
-                                } catch {}
+                                } catch {
+                                  setFieldValue("logo", "", true);
+                                }
                               }
                             }}
                             placeholder="e.g. www.mywebsite.com/images/wooden-cutlery"
@@ -199,7 +219,11 @@ export default function Business({
                                   if (logoUrlRef.current) {
                                     logoUrlRef.current.value = "";
                                   }
-                                } catch {}
+                                } catch {
+                                  setFieldValue("logo", "", true);
+                                }
+                              } else {
+                                setFieldValue("logo", "", true);
                               }
                             }}
                             ref={logoFileRef}

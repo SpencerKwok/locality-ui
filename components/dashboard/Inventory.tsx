@@ -7,10 +7,9 @@ import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 
 import AddProduct, { UploadType } from "./AddProduct";
-import { Base64, fileToBase64, urlToBase64 } from "./ImageHelpers";
+import { Base64, fileToBase64 } from "./ImageHelpers";
 import { BaseBusiness, BaseProduct, Product } from "../common/Schema";
 import DashboardLayout from "./Layout";
-import { Departments, DepartmentsToId } from "./Departments";
 import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
 import ProductList from "./ProductList";
 import Stack from "../common/Stack";
@@ -422,6 +421,9 @@ export default function Inventory({
                           <img
                             src={values.image}
                             alt={businesses[businessIndex].name}
+                            onError={() => {
+                              setFieldValue("image", "", true);
+                            }}
                             width={175}
                           />
                         </picture>
@@ -436,8 +438,7 @@ export default function Inventory({
                               onChange={async (event) => {
                                 try {
                                   const url = event.currentTarget.value;
-                                  const image = await urlToBase64(url);
-                                  setFieldValue("image", image, true);
+                                  setFieldValue("image", url, true);
                                   if (logoFileRef.current) {
                                     logoFileRef.current.value = "";
                                   }
