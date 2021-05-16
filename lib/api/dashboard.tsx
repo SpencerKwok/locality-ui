@@ -39,6 +39,23 @@ export interface Product {
   nextProductId?: number;
 }
 
+export function addHttpsProtocol(url: string) {
+  if (!url.match(/^https:\/\/www\..*$/)) {
+    if (url.match(/^https:\/\/(?!www.).*$/)) {
+      url = `https://www.${url.slice(8)}`;
+    } else if (url.match(/^http:\/\/(?!www.).*$/)) {
+      url = `https://www.${url.slice(7)}`;
+    } else if (url.match(/^http:\/\/www\..*$/)) {
+      url = `https://www.${url.slice(11)}`;
+    } else if (url.match(/^www\..*$/)) {
+      url = `https://${url}`;
+    } else {
+      url = `https://www.${url}`;
+    }
+  }
+  return url;
+}
+
 export async function productAdd(businessId: number, products: Array<Product>) {
   if (products.length === 0) {
     return [[], null];

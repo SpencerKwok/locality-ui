@@ -8,7 +8,7 @@ import FormControl from "react-bootstrap/FormControl";
 import { BaseBusiness } from "../common/Schema";
 import DashboardLayout from "./Layout";
 import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
-import { Base64, fileToBase64, urlToBase64 } from "./ImageHelpers";
+import { Base64, fileToBase64 } from "./ImageHelpers";
 import Stack from "../common/Stack";
 import Select from "../common/select/VirtualSelect";
 import styles from "./Business.module.css";
@@ -166,6 +166,9 @@ export default function Business({
                           <img
                             src={values.logo}
                             alt={businesses[businessIndex].name}
+                            onError={() => {
+                              setFieldValue("logo", "", true);
+                            }}
                             style={{ maxHeight: 250, maxWidth: 300 }}
                           />
                         </picture>
@@ -182,12 +185,13 @@ export default function Business({
                               if (event.currentTarget.value !== "") {
                                 try {
                                   const url = event.currentTarget.value;
-                                  const logo = await urlToBase64(url);
-                                  setFieldValue("logo", logo, true);
+                                  setFieldValue("logo", url, true);
                                   if (logoFileRef.current) {
                                     logoFileRef.current.value = "";
                                   }
-                                } catch {}
+                                } catch {
+                                  setFieldValue("logo", "", true);
+                                }
                               }
                             }}
                             placeholder="e.g. www.mywebsite.com/images/wooden-cutlery"
@@ -215,7 +219,11 @@ export default function Business({
                                   if (logoUrlRef.current) {
                                     logoUrlRef.current.value = "";
                                   }
-                                } catch {}
+                                } catch {
+                                  setFieldValue("logo", "", true);
+                                }
+                              } else {
+                                setFieldValue("logo", "", true);
                               }
                             }}
                             ref={logoFileRef}

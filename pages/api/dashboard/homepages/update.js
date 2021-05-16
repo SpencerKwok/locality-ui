@@ -2,24 +2,8 @@ import SqlString from "sqlstring";
 import Xss from "xss";
 
 import Psql from "../../../../lib/api/postgresql";
+import { addHttpsProtocol } from "../../../../lib/api/dashboard";
 import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
-
-const addHttpsProtocol = (url) => {
-  if (!url.match(/^https:\/\/www\..*$/)) {
-    if (url.match(/^https:\/\/(?!www.).*$/)) {
-      url = `https://www.${url.slice(8)}`;
-    } else if (url.match(/^http:\/\/(?!www.).*$/)) {
-      url = `https://www.${url.slice(7)}`;
-    } else if (url.match(/^http:\/\/www\..*$/)) {
-      url = `https://www.${url.slice(11)}`;
-    } else if (url.match(/^www\..*$/)) {
-      url = `https://${url}`;
-    } else {
-      url = `https://www.${url}`;
-    }
-  }
-  return url;
-};
 
 export default async function handler(req, res) {
   await runMiddlewareBusiness(req, res);
@@ -48,8 +32,8 @@ export default async function handler(req, res) {
     res.status(400).json({ error: "Invalid homepage" });
     return;
   }
-  homepage = addHttpsProtocol(homepage);
   try {
+    homepage = addHttpsProtocol(homepage);
     new URL(homepage);
   } catch (error) {
     res.status(400).json({ error: "Invalid homepage" });
