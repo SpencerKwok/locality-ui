@@ -42,7 +42,7 @@ export default async function handler(req, res) {
   }
 
   res.status(200).json({
-    products: products.map((product) => ({
+    products: products.filter(Boolean).map((product) => ({
       ...mapKeys(product, (v, k) => camelCase(k)),
     })),
   });

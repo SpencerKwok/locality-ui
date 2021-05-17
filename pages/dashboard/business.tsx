@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { GetServerSideProps } from "next";
 import { Session } from "next-auth";
 import { getSession, useSession } from "next-auth/client";
@@ -45,14 +45,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
   }
 
-  const departments = await getDepartments("/api/departments/get").then(
-    ({ departments }) => departments
-  );
-
   return {
     props: {
       cookie,
-      departments,
       session,
       isNewBusiness,
       businesses,
@@ -63,7 +58,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 interface BusinessProps {
   isNewBusiness: boolean;
   businesses: Array<BaseBusiness>;
-  departments: Array<string>;
   session: Session | null;
   cookie?: string;
 }
@@ -72,13 +66,13 @@ export default function Business({
   isNewBusiness,
   businesses,
   cookie,
-  departments,
 }: BusinessProps) {
   const router = useRouter();
   const [session, loading] = useSession();
   const size = useWindowSize();
 
   const [businessIndex, setBusinessIndex] = useState(0);
+  const [departments, setDepartments] = useState<Array<string>>([]);
   const [updateDepartmentsStatus, setUpdateDepartmentsStatus] = useState({
     error: "",
     successful: false,
@@ -91,6 +85,12 @@ export default function Business({
     error: "",
     successful: false,
   });
+
+  useEffect(() => {
+    getDepartments("/api/departments/get").then(({ departments }) => {
+      setDepartments(departments);
+    });
+  }, []);
 
   const onSubmitDepartments = async ({
     departments,
