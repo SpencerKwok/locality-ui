@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { GetServerSideProps } from "next";
 import { Session } from "next-auth";
 import { getSession, useSession } from "next-auth/client";
@@ -62,14 +62,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
   }
 
-  const departments = await getDepartments("/api/departments/get").then(
-    ({ departments }) => departments
-  );
-
   return {
     props: {
       cookie,
-      departments,
       session,
       businesses,
       initialProducts,
@@ -79,7 +74,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 interface InventoryProps {
   businesses: Array<BaseBusiness>;
-  departments: Array<string>;
   initialProducts: Array<BaseProduct>;
   session: Session | null;
   cookie?: string;
@@ -87,7 +81,6 @@ interface InventoryProps {
 
 export default function Inventory({
   businesses,
-  departments,
   initialProducts,
   cookie,
 }: InventoryProps) {
@@ -97,6 +90,7 @@ export default function Inventory({
 
   const [isNewItem, setIsNewItem] = useState(false);
   const [businessIndex, setBusinessIndex] = useState(0);
+  const [departments, setDepartments] = useState<Array<string>>([]);
   const [products, setProducts] = useState<Array<BaseProduct>>(initialProducts);
   const [productIndex, setProductIndex] = useState(-1);
   const [product, setProduct] = useState(EmptyProduct);
@@ -111,6 +105,12 @@ export default function Inventory({
     loading: false,
     successful: false,
   });
+
+  useEffect(() => {
+    getDepartments("/api/departments/get").then(({ departments }) => {
+      setDepartments(departments);
+    });
+  }, []);
 
   const onAddProduct = () => {
     setIsNewItem(true);
