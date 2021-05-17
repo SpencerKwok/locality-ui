@@ -1,7 +1,6 @@
 import React, { ReactNode } from "react";
 import { useSession } from "next-auth/client";
 
-import Headers from "./Headers";
 import NavigationDesktop from "./navigation/NavigationDesktop";
 import NavigationMobile from "./navigation/NavigationMobile";
 import { NavigationType } from "./navigation/NavigationProps";
@@ -15,7 +14,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   const size = useWindowSize();
   const [session, loading] = useSession();
   if (!size.width || loading) {
-    return Headers;
+    return null;
   }
 
   let navigationType: NavigationType = "none";
@@ -28,7 +27,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
 
   return (
     <div>
-      {Headers}
       {size.width <= breakpoint ? (
         <NavigationMobile type={navigationType} />
       ) : (
