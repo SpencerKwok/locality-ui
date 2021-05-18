@@ -2,9 +2,9 @@ import { camelCase, mapKeys } from "lodash";
 import SqlString from "sqlstring";
 import Xss from "xss";
 
-import Psql from "../../../lib/api/postgresql";
-import { productAdd, productDelete } from "../../../lib/api/dashboard";
-import { runMiddlewareBusiness } from "../../../lib/api/middleware";
+import Psql from "../../../../lib/api/postgresql";
+import { productAdd, productDelete } from "../../../../lib/api/dashboard";
+import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
 
 export default async function handler(req, res) {
   await runMiddlewareBusiness(req, res);
