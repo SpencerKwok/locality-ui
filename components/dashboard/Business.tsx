@@ -4,8 +4,10 @@ import * as yup from "yup";
 import { Formik, FormikConfig } from "formik";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
+import Tab from "react-bootstrap/Tab";
+import Tabs from "react-bootstrap/Tabs";
 
-import { BaseBusiness } from "../common/Schema";
+import type { BaseBusiness, UploadTypeSettings } from "../common/Schema";
 import DashboardLayout from "./Layout";
 import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
 import { Base64, fileToBase64 } from "./ImageHelpers";
@@ -30,6 +32,17 @@ export interface UpdateDepartmentsRequest {
   departments: Array<string>;
 }
 
+export interface UpdateUploadSettingsRequest {
+  Etsy?: {
+    includeTags?: string;
+    excludeTags?: string;
+  };
+  Shopify?: {
+    includeTags?: string;
+    excludeTags?: string;
+  };
+}
+
 export interface UpdateStatus {
   error: string;
   successful: boolean;
@@ -43,11 +56,13 @@ export interface BusinessProps {
   updateDepartmentsStatus: UpdateStatus;
   updateHomepagesStatus: UpdateStatus;
   updateLogoStatus: UpdateStatus;
+  updateUploadSettingsStatus: UpdateStatus;
   height: number;
   onBusinessClick: (index: number) => void;
   onSubmitDepartments: FormikConfig<UpdateDepartmentsRequest>["onSubmit"];
   onSubmitLogo: FormikConfig<UpdateLogoRequest>["onSubmit"];
   onSubmitHomepages: FormikConfig<UpdateHomepagesRequest>["onSubmit"];
+  onSubmitUploadSettings: FormikConfig<UpdateUploadSettingsRequest>["onSubmit"];
 }
 
 const UpdateLogoSchema = yup.object().shape({
@@ -92,6 +107,22 @@ const UpdateDepartmentsSchema = yup.object().shape({
   departments: yup.array().of(yup.string()).optional(),
 });
 
+const CommaListValidator = yup
+  .string()
+  .optional()
+  .max(255, "Too long")
+  .matches(/^\s*[^,]+\s*(,(\s*[^,\s]\s*)+)*\s*$/g, "Must be a comma list");
+const UpdateUploadSettingsSchema = yup.object().shape({
+  Shopify: yup.object().optional().shape({
+    includeTags: CommaListValidator,
+    excludeTags: CommaListValidator,
+  }),
+  Etsy: yup.object().optional().shape({
+    includeTags: CommaListValidator,
+    excludeTags: CommaListValidator,
+  }),
+});
+
 export default function Business({
   isNewBusiness,
   businesses,
@@ -100,11 +131,13 @@ export default function Business({
   updateDepartmentsStatus,
   updateHomepagesStatus,
   updateLogoStatus,
+  updateUploadSettingsStatus,
   height,
   onBusinessClick,
   onSubmitLogo,
   onSubmitHomepages,
   onSubmitDepartments,
+  onSubmitUploadSettings,
 }: BusinessProps) {
   const logoUrlRef = createRef<HTMLInputElement>();
   const logoFileRef = createRef<HTMLInputElement>();
@@ -112,6 +145,114 @@ export default function Business({
     label: department,
     value: index,
   }));
+
+  const UpdateUploadSettings = ({
+    uploadType,
+  }: {
+    uploadType: "Shopify" | "Etsy";
+  }) => {
+    const uploadSettings = businesses[businessIndex].uploadSettings;
+    const uploadTypeSettings: UploadTypeSettings =
+      uploadSettings[uploadType] || {};
+    const includeTags = uploadTypeSettings.includeTags || [];
+    const excludeTags = uploadTypeSettings.excludeTags || [];
+    const initialValues: UpdateUploadSettingsRequest = {};
+    initialValues[uploadType] = {
+      includeTags: includeTags.filter(Boolean).join(", "),
+      excludeTags: excludeTags.filter(Boolean).join(", "),
+    };
+
+    return (
+      <Formik
+        enableReinitialize
+        initialValues={initialValues as UpdateUploadSettingsRequest}
+        onSubmit={onSubmitUploadSettings}
+        validationSchema={UpdateUploadSettingsSchema}
+      >
+        {({ isSubmitting, values, handleBlur, handleChange, handleSubmit }) => (
+          <Form onSubmit={handleSubmit}>
+            <Form.Group>
+              <Label
+                description={`When uploading products from ${uploadType}, we will only upload products with at least one of the include tags. By default, we will include all products`}
+              >
+                Tags to Include (comma list)
+              </Label>
+              <InputGroup>
+                <FormControl
+                  as="textarea"
+                  aria-label="Tags to Include"
+                  aria-details="Enter tags to include here"
+                  id={`${uploadType}.includeTags`}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  placeholder="feature,in-stock,..."
+                  type="text"
+                  value={values[uploadType]?.includeTags || ""}
+                />
+              </InputGroup>
+              <div
+                style={{
+                  textAlign: "right",
+                  color:
+                    (values[uploadType]?.includeTags?.length || 0) > 255
+                      ? "red"
+                      : "black",
+                }}
+              >{`${values[uploadType]?.includeTags?.length || 0}/255`}</div>
+              <ErrorMessage name="includeTags" />
+            </Form.Group>
+            <Form.Group>
+              <Label
+                description={`When uploading products from ${uploadType}, we will exclude products with at least one of the exclusion tags. If the same tag is added as both an inclusion and exclusion tag, the product will not be uploaded. By default, we will not exclude any products`}
+              >
+                Tags to Exclude (comma list)
+              </Label>
+              <InputGroup>
+                <FormControl
+                  as="textarea"
+                  aria-label="Tags to Exclude"
+                  aria-details="Enter tags to exclude here"
+                  id={`${uploadType}.excludeTags`}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  placeholder="out-of-stock,unavailable,..."
+                  type="text"
+                  value={values[uploadType]?.excludeTags || ""}
+                />
+              </InputGroup>
+              <div
+                style={{
+                  textAlign: "right",
+                  color:
+                    (values[uploadType]?.excludeTags?.length || 0) > 255
+                      ? "red"
+                      : "black",
+                }}
+              >{`${values[uploadType]?.excludeTags?.length || 0}/255`}</div>
+              <ErrorMessage name="excludeTags" />
+            </Form.Group>
+            {updateUploadSettingsStatus.error && (
+              <div style={{ color: "red" }}>
+                {updateUploadSettingsStatus.error}
+              </div>
+            )}
+            {updateUploadSettingsStatus.successful && (
+              <div style={{ color: "green" }}>
+                Successfully updated upload settings!
+              </div>
+            )}
+            <Stack direction="row-reverse">
+              <SubmitButton
+                text="Update"
+                submittingText="Updating..."
+                isSubmitting={isSubmitting}
+              />
+            </Stack>
+          </Form>
+        )}
+      </Formik>
+    );
+  };
 
   return (
     <DashboardLayout tab="business">
@@ -275,13 +416,13 @@ export default function Business({
                       handleSubmit,
                     }) => (
                       <Form onSubmit={handleSubmit}>
-                        <Label
-                          required
-                          description="This is the website you want new customers to land on!"
-                        >
-                          Homepage
-                        </Label>
                         <Form.Group>
+                          <Label
+                            required
+                            description="This is the website you want new customers to land on!"
+                          >
+                            Homepage
+                          </Label>
                           <InputGroup>
                             <FormControl
                               aria-required
@@ -297,14 +438,14 @@ export default function Business({
                           </InputGroup>
                           <ErrorMessage name="homepage" />
                         </Form.Group>
-                        <Label
-                          description={
-                            'Adding your Shopify website (if applicable) will enable you to upload your products to Locality from your Shopify website in the "Inventory" tab'
-                          }
-                        >
-                          Shopify Website
-                        </Label>
                         <Form.Group>
+                          <Label
+                            description={
+                              'Adding your Shopify website (if applicable) will enable you to upload your products to Locality from your Shopify website in the "Inventory" tab'
+                            }
+                          >
+                            Shopify Website
+                          </Label>
                           <InputGroup>
                             <FormControl
                               aria-label="Shopify Homepage"
@@ -319,14 +460,14 @@ export default function Business({
                           </InputGroup>
                           <ErrorMessage name="shopifyHomepage" />
                         </Form.Group>
-                        <Label
-                          description={
-                            'Adding your Etsy storefront (if applicable) will enable you to upload your products to Locality from your Etsy storefront in the "Inventory" tab'
-                          }
-                        >
-                          Etsy Storefront
-                        </Label>
                         <Form.Group>
+                          <Label
+                            description={
+                              'Adding your Etsy storefront (if applicable) will enable you to upload your products to Locality from your Etsy storefront in the "Inventory" tab'
+                            }
+                          >
+                            Etsy Storefront
+                          </Label>
                           <InputGroup>
                             <FormControl
                               aria-label="Etsy Homepage"
@@ -348,7 +489,7 @@ export default function Business({
                         )}
                         {updateHomepagesStatus.successful && (
                           <div style={{ color: "green" }}>
-                            Successfully updated homepage!
+                            Successfully updated homepages!
                           </div>
                         )}
                         <Stack direction="row-reverse">
@@ -429,6 +570,19 @@ export default function Business({
                       </Form>
                     )}
                   </Formik>
+                </div>
+              </Stack>
+              <Stack direction="column" rowAlign="flex-start" spacing={32}>
+                <div style={{ width: 300 }}>
+                  <h1 className={styles.label}>Upload Settings</h1>
+                  <Tabs defaultActiveKey="Shopify">
+                    <Tab eventKey="Shopify" title="Shopify">
+                      <UpdateUploadSettings uploadType="Shopify" />
+                    </Tab>
+                    <Tab eventKey="Etsy" title="Etsy">
+                      <UpdateUploadSettings uploadType="Etsy" />
+                    </Tab>
+                  </Tabs>
                 </div>
               </Stack>
             </Stack>

@@ -55,6 +55,10 @@ export interface PostMethods {
     request: UserSignUpRequest;
     response: UserSignUpResponse;
   };
+  UploadSettingsUpdate: {
+    request: UploadSettingsUpdateRequest;
+    response: UploadSettingsUpdateResponse;
+  };
 }
 
 export interface BaseResponse {
@@ -83,6 +87,11 @@ export interface BusinessSignUpRequest extends UserSignUpRequest {
 
 export interface BusinessSignUpResponse extends SignUpResponse {}
 
+export interface UploadTypeSettings {
+  includeTags?: Array<string>;
+  excludeTags?: Array<string>;
+}
+
 export interface BaseBusiness {
   id: number;
   name: string;
@@ -97,6 +106,10 @@ export interface BaseBusiness {
   shopifyHomepage: string;
   etsyHomepage: string;
   departments: string;
+  uploadSettings: {
+    Etsy?: UploadTypeSettings;
+    Shopify?: UploadTypeSettings;
+  };
 }
 
 export interface ContactRequest {
@@ -244,8 +257,15 @@ export interface UserSignUpRequest {
 
 export interface UserSignUpResponse extends SignUpResponse {}
 
-export interface WishListResponse extends BaseResponse {
-  products: Array<Product>;
+export interface UploadSettingsUpdateRequest extends BaseResponse {
+  businessId: number;
+  Etsy?: UploadTypeSettings;
+  Shopify?: UploadTypeSettings;
+}
+
+export interface UploadSettingsUpdateResponse extends BaseResponse {
+  Etsy?: UploadTypeSettings;
+  Shopify?: UploadTypeSettings;
 }
 
 export interface GetMethods {
@@ -304,3 +324,7 @@ export const EmptySearchResponse: SearchResponse = {
   hits: [],
   nbHits: 0,
 };
+
+export interface WishListResponse extends BaseResponse {
+  products: Array<Product>;
+}

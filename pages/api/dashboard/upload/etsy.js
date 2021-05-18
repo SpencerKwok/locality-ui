@@ -2,9 +2,9 @@ import { camelCase, mapKeys } from "lodash";
 import SqlString from "sqlstring";
 import Xss from "xss";
 
-import Psql from "../../../lib/api/postgresql";
-import { productAdd, productDelete } from "../../../lib/api/dashboard";
-import { runMiddlewareBusiness } from "../../../lib/api/middleware";
+import Psql from "../../../../lib/api/postgresql";
+import { productAdd, productDelete } from "../../../../lib/api/dashboard";
+import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
 
 export default async function handler(req, res) {
   await runMiddlewareBusiness(req, res);
@@ -27,6 +27,15 @@ export default async function handler(req, res) {
     }
 
     let nextProductId = businessResponse.rows[0].next_product_id;
+    const uploadSettings =
+      JSON.parse(businessResponse.rows[0].upload_settings).Etsy || {};
+    const includeTags = new Set(
+      (uploadSettings.includeTags || []).map((x) => x.toLowerCase())
+    );
+    const excludeTags = new Set(
+      (uploadSettings.excludeTags || []).map((x) => x.toLowerCase())
+    );
+
     const homepage = businessResponse.rows[0].etsy_homepage;
     if (homepage === "") {
       res.status(400).json({
@@ -61,13 +70,31 @@ export default async function handler(req, res) {
             return;
           }
 
-          // Cap user upload to 1000 products
-          if (products.length >= 1000) {
-            done = true;
-            return;
-          }
-
           data.results.forEach((product, index) => {
+            let shouldInclude = true;
+            let shouldExclude = false;
+            if (includeTags.size > 0) {
+              shouldInclude = false;
+              for (let i = 0; i < product.tags.length; i++) {
+                if (includeTags.has(product.tags[i].toLowerCase())) {
+                  shouldInclude = true;
+                  break;
+                }
+              }
+            }
+            if (excludeTags.size > 0) {
+              for (let i = 0; i < product.tags.length; i++) {
+                if (excludeTags.has(product.tags[i].toLowerCase())) {
+                  shouldExclude = true;
+                  break;
+                }
+              }
+            }
+
+            if (shouldExclude || !shouldInclude) {
+              return;
+            }
+
             const productName = Xss(product.title);
             const image = Xss(
               product.MainImage.url_570xN || product.MainImage.url_fullxfull
@@ -110,13 +137,6 @@ export default async function handler(req, res) {
       return;
     }
 
-    if (products.length >= 1000) {
-      const message =
-        'Yippers! It appears that your Etsy storefront has more than 1000 products! Please contact us with the subject "Large Etsy Upload" and your account email to locality.info@yahoo.com';
-      res.status(400).json({ error: message });
-      return;
-    }
-
     const [, psqlErrorUpdateNextId] = await Psql.query(
       SqlString.format("UPDATE businesses SET next_product_id=? WHERE id=?", [
         nextProductId,
@@ -137,7 +157,11 @@ export default async function handler(req, res) {
       return;
     }
 
-    const [baseProducts, addError] = await productAdd(businessId, products);
+    const [baseProducts, addError] = await productAdd(
+      businessId,
+      products,
+      products.length < 1000
+    );
     if (addError) {
       res.status(500).json({ error: addError });
       return;

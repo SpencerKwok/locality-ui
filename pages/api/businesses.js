@@ -20,6 +20,7 @@ export default async function handler(req, res) {
   res.status(200).json({
     businesses: businesses.rows.map((business) => ({
       ...mapKeys(business, (v, k) => camelCase(k)),
+      uploadSettings: JSON.parse(businesses.rows[0].upload_settings),
     })),
   });
 }
