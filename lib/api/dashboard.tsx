@@ -56,7 +56,11 @@ export function addHttpsProtocol(url: string) {
   return url;
 }
 
-export async function productAdd(businessId: number, products: Array<Product>) {
+export async function productAdd(
+  businessId: number,
+  products: Array<Product>,
+  addToCloudinary = true
+) {
   if (products.length === 0) {
     return [[], null];
   }
@@ -111,15 +115,22 @@ export async function productAdd(businessId: number, products: Array<Product>) {
           }
         }
 
-        const [url, cloudinaryError] = await Cloudinary.upload(image, {
-          exif: false,
-          format: "webp",
-          public_id: `${businessId}/${nextProductId}`,
-          unique_filename: false,
-          overwrite: true,
-        });
-        if (cloudinaryError) {
-          throw cloudinaryError;
+        let url = image;
+        if (addToCloudinary) {
+          const [cloudinaryUrl, cloudinaryError] = await Cloudinary.upload(
+            image,
+            {
+              exif: false,
+              format: "webp",
+              public_id: `${businessId}/${nextProductId}`,
+              unique_filename: false,
+              overwrite: true,
+            }
+          );
+          if (cloudinaryError) {
+            throw cloudinaryError;
+          }
+          url = cloudinaryUrl;
         }
 
         const geolocation = [];

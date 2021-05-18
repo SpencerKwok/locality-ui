@@ -158,8 +158,8 @@ export default function Business({
     const excludeTags = uploadTypeSettings.excludeTags || [];
     const initialValues: UpdateUploadSettingsRequest = {};
     initialValues[uploadType] = {
-      includeTags: includeTags.filter(Boolean).join(","),
-      excludeTags: excludeTags.filter(Boolean).join(","),
+      includeTags: includeTags.filter(Boolean).join(", "),
+      excludeTags: excludeTags.filter(Boolean).join(", "),
     };
 
     return (
@@ -203,7 +203,7 @@ export default function Business({
             </Form.Group>
             <Form.Group>
               <Label
-                description={`When uploading products from ${uploadType}, we will exclude products with at least one of the exclusion tags. By default, we will not exclude any products`}
+                description={`When uploading products from ${uploadType}, we will exclude products with at least one of the exclusion tags. If the same tag is added as both an inclusion and exclusion tag, the product will not be uploaded. By default, we will not exclude any products`}
               >
                 Tags to Exclude (comma list)
               </Label>
