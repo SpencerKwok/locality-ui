@@ -244,9 +244,7 @@ export interface ProductUploadRequest {
   businessId: number;
 }
 
-export interface ProductUploadResponse extends BaseResponse {
-  products: Array<BaseProduct>;
-}
+export interface ProductUploadResponse extends BaseResponse {}
 
 export interface UserSignUpRequest {
   firstName: string;

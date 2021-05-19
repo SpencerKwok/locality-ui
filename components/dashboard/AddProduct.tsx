@@ -67,8 +67,8 @@ function AddProduct({
         </Dropdown>
         <Popup
           modal
-          closeOnDocumentClick={error !== ""}
-          closeOnEscape={error !== ""}
+          closeOnDocumentClick={error !== "" || successful}
+          closeOnEscape={error !== "" || successful}
           open={open}
           trigger={
             <Button
@@ -102,7 +102,10 @@ function AddProduct({
               )}
               {successful && (
                 <Stack direction="column" rowAlign="center" spacing={24}>
-                  <h3>Upload complete!</h3>
+                  <h4>
+                    Upload has been queued! Please check back later to see your
+                    uploaded products.
+                  </h4>
                   <div className={styles["circular-border"]}>
                     <div className={styles.checkmark} />
                   </div>

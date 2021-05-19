@@ -167,7 +167,7 @@ export default function Inventory({
     });
     await PostRpcClient.getInstance()
       .call(methodName, { businessId: businesses[businessIndex].id }, cookie)
-      .then(({ products, error }) => {
+      .then(({ error }) => {
         if (error) {
           setUploadStatus({
             uploadType,
@@ -181,7 +181,7 @@ export default function Inventory({
 
         setProduct(EmptyProduct);
         setProductIndex(-1);
-        setProducts(products);
+        setProducts([]);
         setIsNewItem(false);
         setUploadStatus({
           uploadType,
@@ -199,7 +199,7 @@ export default function Inventory({
             loading: false,
             successful: false,
           });
-        }, 2000);
+        }, 5000);
       })
       .catch((error) => {
         setUploadStatus({

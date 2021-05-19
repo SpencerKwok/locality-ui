@@ -55,6 +55,13 @@ export default async function handler(req, res) {
       return;
     }
 
+    // TODO: Heroku has a timeout restriction
+    // that can't be changed, so large uploads
+    // cause UI errors. For now, we preemptively
+    // return success even though we don't know
+    // if the upload will actually succeed
+    res.status(200).json({});
+
     let page = 1;
     let done = false;
     let error = null;
@@ -127,13 +134,12 @@ export default async function handler(req, res) {
           await new Promise((resolve) => setTimeout(resolve, 200));
         })
         .catch((err) => {
-          console.log(err);
           error = err;
           done = true;
         });
     }
     if (error) {
-      res.status(500).json({ error });
+      console.log(error);
       return;
     }
 
@@ -144,7 +150,7 @@ export default async function handler(req, res) {
       ])
     );
     if (psqlErrorUpdateNextId) {
-      res.status(500).JSON.stringify({ error: psqlErrorUpdateNextId });
+      console.log(psqlErrorUpdateNextId);
       return;
     }
 
@@ -153,28 +159,19 @@ export default async function handler(req, res) {
       productsResponse.rows.map((product) => product.id)
     );
     if (deleteError) {
-      res.status(500).json({ error: deleteError });
+      console.log(deleteError);
       return;
     }
 
-    const [baseProducts, addError] = await productAdd(
+    const [, addError] = await productAdd(
       businessId,
       products,
       products.length < 1000
     );
     if (addError) {
-      res.status(500).json({ error: addError });
+      console.log(addError);
       return;
     }
-
-    const sortedBaseProducts = baseProducts.sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
-    res.status(200).json({
-      products: sortedBaseProducts.map((product) => ({
-        ...mapKeys(product, (v, k) => camelCase(k)),
-      })),
-    });
   };
 
   const { id } = req.locals.user;
