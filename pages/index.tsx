@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
 import { GetRpcClient } from "../components/common/RpcClient";
@@ -11,32 +11,21 @@ import { helper } from "./api/businesses";
 import type { GetStaticProps } from "next";
 import type { BaseBusiness } from "../components/common/Schema";
 
-interface HomeProps {
-  businesses: Array<BaseBusiness>;
+function fetcher(url: string) {
+  return GetRpcClient.getInstance().call("Businesses", url);
 }
 
-export const getStaticProps: GetStaticProps = async () => {
-  const [{ businesses }, error] = await helper();
-  if (error) {
-    console.log(error);
-    return {
-      props: {
-        businesses: [],
-      },
-      revalidate: 1,
-    };
-  }
-  return {
-    props: {
-      businesses,
-    },
-    revalidate: 60 * 60,
-  };
-};
-
-export default function Home({ businesses }: HomeProps) {
+export default function Home() {
   const { query } = useRouter();
   const size = useWindowSize();
+  const [businesses, setBusinesses] = useState<Array<BaseBusiness>>([]);
+
+  useEffect(() => {
+    fetcher("/api/businesses").then(({ businesses }) =>
+      setBusinesses(businesses)
+    );
+  }, []);
+
   if (!size.width) {
     return <RootLayout />;
   }
