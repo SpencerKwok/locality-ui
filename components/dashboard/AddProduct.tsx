@@ -91,7 +91,7 @@ function AddProduct({
               height={400}
               style={{ margin: 24 }}
             >
-              {error !== "" && <p color="red">{error}</p>}
+              {error !== "" && <p style={{ textAlign: "center" }}>{error}</p>}
               {loading && (
                 <Stack direction="column" rowAlign="center" spacing={24}>
                   <h4>

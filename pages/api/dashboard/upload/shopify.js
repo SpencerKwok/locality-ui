@@ -1,4 +1,3 @@
-import { camelCase, mapKeys } from "lodash";
 import SqlString from "sqlstring";
 import Xss from "xss";
 
@@ -6,6 +5,7 @@ import Psql from "../../../../lib/api/postgresql";
 import { productAdd, productDelete } from "../../../../lib/api/dashboard";
 import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
 
+const currentUploadsRunning = new Set();
 export default async function handler(req, res) {
   await runMiddlewareBusiness(req, res);
 
@@ -61,6 +61,16 @@ export default async function handler(req, res) {
       res.status(500).json({ error: productsError });
       return;
     }
+
+    if (currentUploadsRunning.has(businessId)) {
+      res.status(400).json({
+        error:
+          "You have an unfinished upload queued. Please wait for it to complete before submitting another upload request",
+      });
+      return;
+    }
+
+    currentUploadsRunning.add(businessId);
 
     // TODO: Heroku has a timeout restriction
     // that can't be changed, so large uploads
@@ -160,6 +170,7 @@ export default async function handler(req, res) {
     }
     if (error) {
       console.log(error);
+      currentUploadsRunning.delete(businessId);
       return;
     }
 
@@ -171,6 +182,7 @@ export default async function handler(req, res) {
     );
     if (psqlErrorUpdateNextId) {
       console.log(psqlErrorUpdateNextId);
+      currentUploadsRunning.delete(businessId);
       return;
     }
 
@@ -180,6 +192,7 @@ export default async function handler(req, res) {
     );
     if (deleteError) {
       console.log(deleteError);
+      currentUploadsRunning.delete(businessId);
       return;
     }
 
@@ -190,8 +203,11 @@ export default async function handler(req, res) {
     );
     if (addError) {
       console.log(addError);
+      currentUploadsRunning.delete(businessId);
       return;
     }
+
+    currentUploadsRunning.delete(businessId);
   };
 
   const { id } = req.locals.user;

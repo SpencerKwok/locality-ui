@@ -209,16 +209,6 @@ export default function Inventory({
           loading: false,
           successful: false,
         });
-
-        setTimeout(() => {
-          setUploadStatus({
-            uploadType,
-            error: "",
-            open: false,
-            loading: false,
-            successful: false,
-          });
-        }, 5000);
       });
   };
 
