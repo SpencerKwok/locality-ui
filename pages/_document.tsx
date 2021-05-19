@@ -43,6 +43,11 @@ export default class MyDocument extends Document {
 
           <meta name="application-name" content="Locality" />
           <meta name="apple-mobile-web-app-capable" content="yes" />
+          <meta
+            name="apple-mobile-web-app-status-bar-style"
+            content="default"
+          />
+          <meta name="apple-mobile-web-app-title" content="Locality" />
           <meta name="mobile-web-app-capable" content="yes" />
           <meta name="theme-color" content="#449ed7" />
 
