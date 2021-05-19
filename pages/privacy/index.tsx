@@ -1,8 +1,14 @@
 import RootLayout from "../../components/common/RootLayout";
 
-export default function Privacy() {
+import type { Session } from "next-auth";
+
+export interface PrivacyProps {
+  session: Session | null;
+}
+
+export default function Privacy({ session }: PrivacyProps) {
   return (
-    <RootLayout>
+    <RootLayout session={session}>
       <div style={{ marginLeft: 12 }}>
         <h1>Privacy Policy</h1>
         <p>

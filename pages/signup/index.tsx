@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { getSession } from "next-auth/client";
 
 import SignUpDesktop from "../../components/signup/SignupDesktop";
 import SignUpMobile from "../../components/signup/SignupMobile";
@@ -9,18 +7,13 @@ import { useMediaQuery } from "../../lib/common";
 
 import type { Session } from "next-auth";
 
-export default function SignUp() {
-  const [session, setSession] = useState<Session | null>(null);
+export interface SignUpProps {
+  session: Session | null;
+}
+
+export default function SignUp({ session }: SignUpProps) {
   const isNarrow = useMediaQuery(42, "width");
   const router = useRouter();
-
-  useEffect(() => {
-    getSession().then((value) => {
-      if (value !== session) {
-        setSession(value);
-      }
-    });
-  }, []);
 
   if (session && session.user) {
     router.push("/");
@@ -28,6 +21,8 @@ export default function SignUp() {
   }
 
   return (
-    <RootLayout>{isNarrow ? <SignUpMobile /> : <SignUpDesktop />}</RootLayout>
+    <RootLayout session={session}>
+      {isNarrow ? <SignUpMobile /> : <SignUpDesktop />}
+    </RootLayout>
   );
 }

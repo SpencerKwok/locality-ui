@@ -267,11 +267,11 @@ export default function Business({
   }
 
   if (!size.height) {
-    return <RootLayout />;
+    return <RootLayout session={session} />;
   }
 
   return (
-    <RootLayout>
+    <RootLayout session={session}>
       <BusinessPage
         isNewBusiness={isNewBusiness}
         businesses={businesses}

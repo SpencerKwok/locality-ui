@@ -1,9 +1,15 @@
 import ExtensionPage from "../../components/extension/Extension";
 import RootLayout from "../../components/common/RootLayout";
 
-export default function Extension() {
+import type { Session } from "next-auth";
+
+export interface ExtensionProps {
+  session: Session | null;
+}
+
+export default function Extension({ session }: ExtensionProps) {
   return (
-    <RootLayout>
+    <RootLayout session={session}>
       <ExtensionPage />
     </RootLayout>
   );

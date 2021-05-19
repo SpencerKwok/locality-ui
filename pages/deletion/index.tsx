@@ -1,8 +1,14 @@
 import RootLayout from "../../components/common/RootLayout";
 
-export default function Privacy() {
+import type { Session } from "next-auth";
+
+export interface DeletionProps {
+  session: Session | null;
+}
+
+export default function Deletion({ session }: DeletionProps) {
   return (
-    <RootLayout>
+    <RootLayout session={session}>
       <div style={{ marginLeft: 12 }}>
         <h1>User Data Deletion Instructions</h1>
         <p>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { getSession, signIn } from "next-auth/client";
 import { useRouter } from "next/router";
 
@@ -9,18 +9,14 @@ import SignUpUser from "../../components/signup/SignupUser";
 import type { SignUpRequest } from "../../components/signup/SignupUser";
 import type { Session } from "next-auth";
 
-export default function UserSignUp() {
-  const [error, setError] = useState("");
-  const [session, setSession] = useState<Session | null>(null);
-  const router = useRouter();
+export interface UserSignUpProps {
+  session: Session | null;
+}
 
-  useEffect(() => {
-    getSession().then((value) => {
-      if (value !== session) {
-        setSession(value);
-      }
-    });
-  }, []);
+export default function UserSignUp({ session }: UserSignUpProps) {
+  const [error, setError] = useState("");
+  const [currentSession, setCurrentSession] = useState(session);
+  const router = useRouter();
 
   const onSubmit = async (values: SignUpRequest) => {
     await PostRpcClient.getInstance()
@@ -43,13 +39,12 @@ export default function UserSignUp() {
         });
 
         getSession().then((value) => {
-          if (value && value.user) {
-            setSession(value);
-          } else {
+          if (!value || !value.user) {
             setError(
               "Sign up failed. Please contact us at locality.info@yahoo.com for assistance."
             );
           }
+          setCurrentSession(value);
         });
       })
       .catch((error) => {
@@ -57,13 +52,13 @@ export default function UserSignUp() {
       });
   };
 
-  if (session && session.user) {
+  if (currentSession && currentSession.user) {
     router.push("/?newUser=true");
     return null;
   }
 
   return (
-    <RootLayout>
+    <RootLayout session={session}>
       <SignUpUser error={error} onSubmit={onSubmit} />
     </RootLayout>
   );

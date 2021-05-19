@@ -66,7 +66,7 @@ export default function Account({ cookie, session }: AccountProps) {
   const firstName: string = user.firstName;
   const lastName: string = user.lastName;
   return (
-    <RootLayout>
+    <RootLayout session={session}>
       <AccountPage
         error={updatePasswordStatus.error}
         updatedPassword={updatePasswordStatus.updatedPassword}

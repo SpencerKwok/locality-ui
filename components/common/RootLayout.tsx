@@ -10,19 +10,11 @@ import type { NavigationType } from "./navigation/NavigationProps";
 
 export interface RootLayoutProps {
   children?: ReactNode;
+  session: Session | null;
 }
 
-export default function RootLayout({ children }: RootLayoutProps) {
+export default function RootLayout({ children, session }: RootLayoutProps) {
   const size = useWindowSize();
-  const [session, setSession] = useState<Session | null>(null);
-
-  useEffect(() => {
-    getSession().then((value) => {
-      if (value !== session) {
-        setSession(value);
-      }
-    });
-  }, []);
 
   if (!size.width) {
     return null;

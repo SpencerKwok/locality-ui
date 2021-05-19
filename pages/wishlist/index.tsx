@@ -51,7 +51,7 @@ export default function WishList({ wishlist, session }: WishListProps) {
   }
 
   return (
-    <RootLayout>
+    <RootLayout session={session}>
       <WishlistPage
         products={wishlist.products}
         onToggleWishList={onToggleWishList}

@@ -1,21 +1,15 @@
 import { useEffect, useState } from "react";
-import { GetServerSideProps } from "next";
-import { useSession } from "next-auth/client";
 import { useRouter } from "next/router";
 
 import { GetRpcClient, PostRpcClient } from "../../components/common/RpcClient";
-import { SearchResponse } from "../../components/common/Schema";
 import SearchResultsDesktop from "../../components/search/SearchResultsDesktop";
 import SearchResultsMobile from "../../components/search/SearchResultsMobile";
 import RootLayout from "../../components/common/RootLayout";
 import { useMediaQuery } from "../../lib/common";
 
-interface SearchProps {
-  ip: string;
-  query: string;
-  results: SearchResponse;
-  cookie?: string;
-}
+import type { GetServerSideProps } from "next";
+import type { Session } from "next-auth";
+import type { SearchResponse } from "../../components/common/Schema";
 
 function onToggleWishList(objectId: string, value: boolean, cookie?: string) {
   if (value) {
@@ -89,6 +83,14 @@ class UserInput {
   }
 }
 
+export interface SearchProps {
+  ip: string;
+  query: string;
+  session: Session | null;
+  results: SearchResponse;
+  cookie?: string;
+}
+
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const cookie = context.req.headers.cookie;
   const forwarded = (context.req.headers["x-forwarded-for"] || "") as string;
@@ -106,10 +108,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function Search({ cookie, query, results, ip }: SearchProps) {
+export default function Search({
+  cookie,
+  query,
+  results,
+  ip,
+  session,
+}: SearchProps) {
   const [data, setData] = useState(results);
   const [userInput, setUserInput] = useState(new UserInput(ip, query));
-  const [session] = useSession();
   const router = useRouter();
 
   const onReset = () => {
@@ -252,7 +259,7 @@ export default function Search({ cookie, query, results, ip }: SearchProps) {
   }, [data]);
 
   return (
-    <RootLayout>
+    <RootLayout session={session}>
       {isNarrow ? (
         <SearchResultsMobile
           loggedIn={loggedIn}

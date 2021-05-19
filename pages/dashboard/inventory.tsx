@@ -360,11 +360,11 @@ export default function Inventory({
   }
 
   if (!size.height) {
-    return <RootLayout />;
+    return <RootLayout session={session} />;
   }
 
   return (
-    <RootLayout>
+    <RootLayout session={session}>
       <InventoryPage
         isNewItem={isNewItem}
         businesses={businesses}

@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
+import { getSession } from "next-auth/client";
 
-import { GetRpcClient } from "../components/common/RpcClient";
 import HomePage from "../components/home/Home";
 import RootLayout from "../components/common/RootLayout";
 import { useWindowSize } from "../lib/common";
@@ -9,9 +9,11 @@ import { helper } from "./api/businesses";
 
 import type { GetStaticProps } from "next";
 import type { BaseBusiness } from "../components/common/Schema";
+import type { Session } from "next-auth";
 
 interface HomeProps {
   businesses: Array<BaseBusiness>;
+  session: Session | null;
 }
 
 export const getStaticProps: GetStaticProps = async () => {
@@ -32,16 +34,16 @@ export const getStaticProps: GetStaticProps = async () => {
   };
 };
 
-export default function Home({ businesses }: HomeProps) {
+export default function Home({ businesses, session }: HomeProps) {
   const { query } = useRouter();
   const size = useWindowSize();
   if (!size.width) {
-    return <RootLayout />;
+    return <RootLayout session={session} />;
   }
 
   const isNewUser = query.newUser === "true";
   return (
-    <RootLayout>
+    <RootLayout session={session}>
       <HomePage
         businesses={businesses}
         isNewUser={isNewUser}

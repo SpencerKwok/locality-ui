@@ -11,19 +11,15 @@ import { useMediaQuery } from "../../lib/common";
 import type { SignUpRequest } from "../../components/signup/SignupBusinessForm";
 import type { Session } from "next-auth";
 
-export default function UserSignUp() {
+export interface BusinessSignUpProps {
+  session: Session | null;
+}
+
+export default function BusinessSignUp({ session }: BusinessSignUpProps) {
   const [error, setError] = useState("");
-  const [session, setSession] = useState<Session | null>(null);
+  const [currentSession, setCurrentSession] = useState(session);
   const isNarrow = useMediaQuery(38, "width");
   const router = useRouter();
-
-  useEffect(() => {
-    getSession().then((value) => {
-      if (value !== session) {
-        setSession(value);
-      }
-    });
-  }, []);
 
   const onSubmit = async (values: SignUpRequest) => {
     await PostRpcClient.getInstance()
@@ -51,13 +47,12 @@ export default function UserSignUp() {
         });
 
         getSession().then((value) => {
-          if (value && value.user) {
-            setSession(value);
-          } else {
+          if (!value || !value.user) {
             setError(
               "Sign up failed. Please contact us at locality.info@yahoo.com for assistance."
             );
           }
+          setCurrentSession(value);
         });
       })
       .catch((error) => {
@@ -65,13 +60,13 @@ export default function UserSignUp() {
       });
   };
 
-  if (session && session.user) {
+  if (currentSession && currentSession.user) {
     router.push("/dashboard/business?newBusiness=true");
     return null;
   }
 
   return (
-    <RootLayout>
+    <RootLayout session={session}>
       {isNarrow ? (
         <SignUpBusinessMobile error={error} onSubmit={onSubmit} />
       ) : (

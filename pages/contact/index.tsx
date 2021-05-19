@@ -5,7 +5,13 @@ import RootLayout from "../../components/common/RootLayout";
 import { PostRpcClient } from "../../components/common/RpcClient";
 import { useWindowSize } from "../../lib/common";
 
-export default function Contact() {
+import type { Session } from "next-auth";
+
+export interface ContactProps {
+  session: Session | null;
+}
+
+export default function Contact({ session }: ContactProps) {
   const [contactStatus, setContactStatus] = useState({
     error: "",
     success: false,
@@ -36,7 +42,7 @@ export default function Contact() {
   };
 
   return (
-    <RootLayout>
+    <RootLayout session={session}>
       <ContactPage
         error={contactStatus.error}
         success={contactStatus.success}

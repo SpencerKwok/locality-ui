@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { getSession, signIn } from "next-auth/client";
 import { useRouter } from "next/router";
 
@@ -8,18 +8,14 @@ import RootLayout from "../../components/common/RootLayout";
 import type { Session } from "next-auth";
 import type { SignInRequest } from "../../components/signin/Signin";
 
-export default function Signin() {
-  const [error, setError] = useState("");
-  const [session, setSession] = useState<Session | null>(null);
-  const router = useRouter();
+export interface SignUpProps {
+  session: Session | null;
+}
 
-  useEffect(() => {
-    getSession().then((value) => {
-      if (value !== session) {
-        setSession(value);
-      }
-    });
-  }, []);
+export default function Signin({ session }: SignUpProps) {
+  const [error, setError] = useState("");
+  const [currentSession, setCurrentSession] = useState(session);
+  const router = useRouter();
 
   const onSubmit = async (values: SignInRequest) => {
     await signIn("credentials", {
@@ -29,13 +25,13 @@ export default function Signin() {
     });
 
     getSession().then((value) => {
-      if (value && value.user) {
-        setSession(value);
-      } else {
+      if (!value || !value.user) {
         setError(
           "Sign in failed. Please check the details you provided are correct."
         );
+        return;
       }
+      setCurrentSession(value);
     });
   };
 
@@ -43,14 +39,14 @@ export default function Signin() {
     signIn(provider, { redirect: false });
   };
 
-  if (session && session.user) {
-    const user: any = session.user;
+  if (currentSession && currentSession.user) {
+    const user: any = currentSession.user;
     router.push(user.isBusiness ? "/dashboard" : "/");
     return null;
   }
 
   return (
-    <RootLayout>
+    <RootLayout session={session}>
       <SigninPage
         error={error}
         onSubmit={onSubmit}
