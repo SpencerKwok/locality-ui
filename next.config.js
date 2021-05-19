@@ -1,6 +1,4 @@
-const withPWA = require("next-pwa");
-
-module.exports = withPWA({
+module.exports = {
   // Compression is done by the server
   compress: false,
   future: {
@@ -19,12 +17,6 @@ module.exports = withPWA({
     },
   },
   poweredByHeader: false,
-  pwa: {
-    dest: "public",
-    disable: process.env.NODE_ENV !== "production",
-    dynamicStartUrl: false,
-    runtimeCaching: [],
-  },
   reactStrictMode: true,
   redirects: async () => {
     return [
@@ -35,4 +27,4 @@ module.exports = withPWA({
       },
     ];
   },
-});
+};
