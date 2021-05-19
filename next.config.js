@@ -21,7 +21,7 @@ module.exports = withPWA({
   poweredByHeader: false,
   pwa: {
     dest: "public",
-    disable: true, //process.env.NODE_ENV !== "production",
+    disable: process.env.NODE_ENV !== "production",
     dynamicStartUrl: false,
     runtimeCaching: [],
   },
