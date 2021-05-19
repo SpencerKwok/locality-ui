@@ -120,9 +120,13 @@ export default NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
+
+  // We don't encrypt the JWT as there isn't
+  // much private information and isn't worth
+  // the performance trade off
   jwt: {
-    encryption: true,
-    secret: process.env.JWT_SECRET,
+    //encryption: true,
+    //secret: process.env.JWT_SECRET,
     signingKey: process.env.JWT_SIGNING_KEY,
   },
   secret: process.env.SESSION_SECRET,
