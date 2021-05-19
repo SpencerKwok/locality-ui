@@ -1,10 +1,11 @@
-import { ReactNode } from "react";
-import { useSession } from "next-auth/client";
+import { ReactNode, useEffect, useState } from "react";
+import { getSession } from "next-auth/client";
 
 import NavigationDesktop from "./navigation/NavigationDesktop";
 import NavigationMobile from "./navigation/NavigationMobile";
 import { useWindowSize } from "../../lib/common";
 
+import type { Session } from "next-auth";
 import type { NavigationType } from "./navigation/NavigationProps";
 
 export interface RootLayoutProps {
@@ -13,8 +14,17 @@ export interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   const size = useWindowSize();
-  const [session, loading] = useSession();
-  if (!size.width || loading) {
+  const [session, setSession] = useState<Session | null>(null);
+
+  useEffect(() => {
+    getSession().then((value) => {
+      if (value !== session) {
+        setSession(value);
+      }
+    });
+  }, []);
+
+  if (!size.width) {
     return null;
   }
 

@@ -1,21 +1,18 @@
 import { useEffect, useState } from "react";
-import { GetServerSideProps } from "next";
-import { Session } from "next-auth";
-import { getSession, useSession } from "next-auth/client";
+import { getSession } from "next-auth/client";
 import { useRouter } from "next/router";
 
-import InventoryPage, {
-  ProductRequest,
-} from "../../components/dashboard/Inventory";
+import { EmptyProduct } from "../../components/common/Schema";
+import InventoryPage from "../../components/dashboard/Inventory";
 import { GetRpcClient, PostRpcClient } from "../../components/common/RpcClient";
 import RootLayout from "../../components/common/RootLayout";
-import { UploadType } from "../../components/dashboard/AddProduct";
-import {
-  BaseBusiness,
-  BaseProduct,
-  EmptyProduct,
-} from "../../components/common/Schema";
 import { useWindowSize } from "../../lib/common";
+
+import type { BaseBusiness, BaseProduct } from "../../components/common/Schema";
+import type { GetServerSideProps } from "next";
+import type { ProductRequest } from "../../components/dashboard/Inventory";
+import type { Session } from "next-auth";
+import type { UploadType } from "../../components/dashboard/AddProduct";
 
 function getDepartments(url: string) {
   return GetRpcClient.getInstance().call("Departments", url);
@@ -82,9 +79,9 @@ interface InventoryProps {
 export default function Inventory({
   businesses,
   initialProducts,
+  session,
   cookie,
 }: InventoryProps) {
-  const [session, loading] = useSession();
   const router = useRouter();
   const size = useWindowSize();
 
@@ -364,10 +361,6 @@ export default function Inventory({
         break;
     }
   };
-
-  if (loading) {
-    return null;
-  }
 
   if (!session || !session.user) {
     if (typeof window !== "undefined") {

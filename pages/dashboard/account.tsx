@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { GetServerSideProps } from "next";
-import { Session } from "next-auth";
-import { getSession, useSession } from "next-auth/client";
+import { getSession } from "next-auth/client";
 import { useRouter } from "next/router";
 
-import AccountPage, {
-  UpdatePasswordRequest,
-} from "../../components/dashboard/Account";
+import AccountPage from "../../components/dashboard/Account";
 import { PostRpcClient } from "../../components/common/RpcClient";
 import RootLayout from "../../components/common/RootLayout";
+
+import type { GetServerSideProps } from "next";
+import type { Session } from "next-auth";
+import type { UpdatePasswordRequest } from "../../components/dashboard/Account";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const cookie = context.req.headers.cookie || "";
@@ -26,9 +26,8 @@ interface AccountProps {
   cookie?: string;
 }
 
-export default function Account({ cookie }: AccountProps) {
+export default function Account({ cookie, session }: AccountProps) {
   const router = useRouter();
-  const [session, loading] = useSession();
   const [updatePasswordStatus, setUpdatePasswordStatus] = useState({
     error: "",
     updatedPassword: false,
@@ -55,10 +54,6 @@ export default function Account({ cookie }: AccountProps) {
         setUpdatePasswordStatus({ error, updatedPassword: false });
       });
   };
-
-  if (loading) {
-    return null;
-  }
 
   if (!session || !session.user) {
     if (typeof window !== "undefined") {
