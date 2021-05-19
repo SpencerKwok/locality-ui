@@ -30,7 +30,7 @@ export default function BusinessImage({
           <img
             loading={loading}
             alt={name}
-            src={src.replace("upload/", "upload/w_175/")}
+            src={src.replace("upload/", "upload/w_200/")}
             width={width}
           />
         </picture>

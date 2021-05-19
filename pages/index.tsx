@@ -1,12 +1,13 @@
 import React from "react";
-import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 
-import { BaseBusiness } from "../components/common/Schema";
 import { GetRpcClient } from "../components/common/RpcClient";
 import HomePage from "../components/home/Home";
 import RootLayout from "../components/common/RootLayout";
 import { useWindowSize } from "../lib/common";
+
+import type { GetServerSideProps } from "next";
+import type { BaseBusiness } from "../components/common/Schema";
 
 interface HomeProps {
   businesses: Array<BaseBusiness>;
@@ -16,13 +17,21 @@ function fetcher(url: string) {
   return GetRpcClient.getInstance().call("Businesses", url);
 }
 
+let cachedBusinesses: Array<BaseBusiness>;
 export const getServerSideProps: GetServerSideProps = async () => {
-  const businesses = await fetcher("/api/businesses").then(
-    ({ businesses }) => businesses
-  );
+  if (cachedBusinesses) {
+    fetcher("/api/businesses").then(({ businesses }) => {
+      cachedBusinesses = businesses;
+    });
+  } else {
+    cachedBusinesses = await fetcher("/api/businesses").then(
+      ({ businesses }) => businesses
+    );
+  }
+
   return {
     props: {
-      businesses,
+      businesses: cachedBusinesses,
     },
   };
 };

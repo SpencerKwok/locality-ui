@@ -1,10 +1,11 @@
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import { useSession } from "next-auth/client";
 
 import NavigationDesktop from "./navigation/NavigationDesktop";
 import NavigationMobile from "./navigation/NavigationMobile";
-import { NavigationType } from "./navigation/NavigationProps";
 import { useWindowSize } from "../../lib/common";
+
+import type { NavigationType } from "./navigation/NavigationProps";
 
 export interface RootLayoutProps {
   children?: ReactNode;
