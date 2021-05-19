@@ -75,8 +75,10 @@ typings/
 .next
 
 # Next PWA build output
-public/sw.js
+public/sw\.js
+public/sw\.js\.map
 public/workbox\-[a-zA-Z0-9]*\.js
+public/workbox\-[a-zA-Z0-9]*\.js\.map
 
 # Nuxt.js build / generate output
 .nuxt
