@@ -21,6 +21,7 @@ module.exports = withPWA({
   poweredByHeader: false,
   pwa: {
     dest: "public",
+    runtimeCaching: [],
   },
   reactStrictMode: true,
   redirects: async () => {

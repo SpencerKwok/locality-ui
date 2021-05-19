@@ -6,33 +6,31 @@ import HomePage from "../components/home/Home";
 import RootLayout from "../components/common/RootLayout";
 import { useWindowSize } from "../lib/common";
 
-import type { GetServerSideProps } from "next";
+import { helper } from "./api/businesses";
+
+import type { GetStaticProps } from "next";
 import type { BaseBusiness } from "../components/common/Schema";
 
 interface HomeProps {
   businesses: Array<BaseBusiness>;
 }
 
-function fetcher(url: string) {
-  return GetRpcClient.getInstance().call("Businesses", url);
-}
-
-let cachedBusinesses: Array<BaseBusiness>;
-export const getServerSideProps: GetServerSideProps = async () => {
-  if (cachedBusinesses) {
-    fetcher("/api/businesses").then(({ businesses }) => {
-      cachedBusinesses = businesses;
-    });
-  } else {
-    cachedBusinesses = await fetcher("/api/businesses").then(
-      ({ businesses }) => businesses
-    );
+export const getStaticProps: GetStaticProps = async () => {
+  const [{ businesses }, error] = await helper();
+  if (error) {
+    console.log(error);
+    return {
+      props: {
+        businesses: [],
+      },
+      revalidate: 1,
+    };
   }
-
   return {
     props: {
-      businesses: cachedBusinesses,
+      businesses,
     },
+    revalidate: 60 * 60,
   };
 };
 
