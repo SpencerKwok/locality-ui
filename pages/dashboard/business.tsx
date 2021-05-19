@@ -253,6 +253,10 @@ export default function Business({
       error: "",
       successful: false,
     });
+    setUpdateUploadSettingsStatus({
+      error: "",
+      successful: false,
+    });
   };
 
   if (!session || !session.user) {

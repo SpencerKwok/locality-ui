@@ -14,7 +14,7 @@ export async function helper() {
     {
       businesses: businesses.rows.map((business) => ({
         ...mapKeys(business, (v, k) => camelCase(k)),
-        uploadSettings: JSON.parse(businesses.rows[0].upload_settings),
+        uploadSettings: JSON.parse(business.upload_settings),
       })),
     },
     null,
