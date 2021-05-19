@@ -101,11 +101,13 @@ function AddProduct({
                 </Stack>
               )}
               {successful && (
-                <Stack direction="column" rowAlign="center" spacing={24}>
-                  <h4>
-                    Upload has been queued! Please check back later to see your
-                    uploaded products.
+                <Stack direction="column" rowAlign="center">
+                  <h4 style={{ textAlign: "center" }}>
+                    Upload has been queued!
                   </h4>
+                  <h6 style={{ marginBottom: 24 }}>
+                    Please check back later to see your uploaded products.
+                  </h6>
                   <div className={styles["circular-border"]}>
                     <div className={styles.checkmark} />
                   </div>
