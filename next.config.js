@@ -1,18 +1,8 @@
-module.exports = {
-  poweredByHeader: false,
+const withPWA = require("next-pwa");
 
+module.exports = withPWA({
   // Compression is done by the server
   compress: false,
-
-  redirects: async () => {
-    return [
-      {
-        source: "/dashboard",
-        destination: "/dashboard/inventory",
-        permanent: true,
-      },
-    ];
-  },
   future: {
     webpack5: true,
   },
@@ -28,5 +18,18 @@ module.exports = {
       },
     },
   },
+  poweredByHeader: false,
+  pwa: {
+    dest: "public",
+  },
   reactStrictMode: true,
-};
+  redirects: async () => {
+    return [
+      {
+        source: "/dashboard",
+        destination: "/dashboard/inventory",
+        permanent: true,
+      },
+    ];
+  },
+});
