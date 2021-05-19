@@ -37,10 +37,7 @@ export default function Home({ businesses, isNewUser, width }: HomeProps) {
         style={{ margin: "0px auto 0px auto" }}
       >
         <Stack direction="column" rowAlign="center">
-          <BusinessShowcase
-            businesses={businesses.sort((a, b) => b.id - a.id)}
-            width={width}
-          />
+          <BusinessShowcase businesses={businesses} width={width} />
         </Stack>
       </Stack>
     </div>

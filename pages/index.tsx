@@ -16,11 +16,14 @@ interface HomeProps {
 
 export const getStaticProps: GetStaticProps = async () => {
   const businesses = await helper().then((res) =>
-    res[0].businesses.map(({ logo, homepage, name }: BaseBusiness) => ({
-      logo,
-      homepage,
-      name,
-    }))
+    res[0].businesses
+      .map(({ id, logo, homepage, name }: BaseBusiness) => ({
+        id,
+        logo,
+        homepage,
+        name,
+      }))
+      .sort((a: { id: number }, b: { id: number }) => b.id - a.id)
   );
   return {
     props: {
