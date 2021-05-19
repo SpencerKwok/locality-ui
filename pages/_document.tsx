@@ -44,6 +44,7 @@ export default class MyDocument extends Document {
           <meta name="application-name" content="Locality" />
           <meta name="apple-mobile-web-app-capable" content="yes" />
           <meta name="mobile-web-app-capable" content="yes" />
+          <meta name="theme-color" content="#449ed7" />
 
           <meta name="title" content="Locality | Online Local Marketplace" />
           <meta
