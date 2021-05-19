@@ -176,7 +176,7 @@ export default function Inventory({
               }
               onProductClick={onProductClick}
               products={products}
-              height={height - 249}
+              height={height - 300}
               index={productIndex}
               width={400}
               style={{ marginRight: 32 }}

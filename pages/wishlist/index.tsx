@@ -11,7 +11,6 @@ import RootLayout from "../../components/common/RootLayout";
 interface WishListProps {
   wishlist: WishListResponse;
   session: Session | null;
-  cookie?: string;
 }
 
 function onToggleWishList(objectId: string, value: boolean, cookie?: string) {
@@ -39,11 +38,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const wishlist = await fetcher("/api/wishlist/get", cookie);
 
   return {
-    props: { cookie, wishlist, session },
+    props: { wishlist, session },
   };
 };
 
-export default function WishList({ cookie, wishlist, session }: WishListProps) {
+export default function WishList({ wishlist, session }: WishListProps) {
   const router = useRouter();
 
   if (typeof window !== "undefined" && !session) {

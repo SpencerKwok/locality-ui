@@ -1,28 +1,33 @@
-import React from "react";
-import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 
-import { BaseBusiness } from "../components/common/Schema";
 import { GetRpcClient } from "../components/common/RpcClient";
 import HomePage from "../components/home/Home";
 import RootLayout from "../components/common/RootLayout";
 import { useWindowSize } from "../lib/common";
 
+import { helper } from "./api/businesses";
+
+import type { GetStaticProps } from "next";
+import type { BaseBusiness } from "../components/common/Schema";
+
 interface HomeProps {
   businesses: Array<BaseBusiness>;
 }
 
-function fetcher(url: string) {
-  return GetRpcClient.getInstance().call("Businesses", url);
-}
-
-export const getServerSideProps: GetServerSideProps = async () => {
-  const businesses = await fetcher("/api/businesses").then(
-    ({ businesses }) => businesses
-  );
+export const getStaticProps: GetStaticProps = async () => {
+  const [rawBusinesses] = await helper();
+  const businesses = rawBusinesses.businesses
+    .map(({ id, logo, homepage, name }: BaseBusiness) => ({
+      id,
+      logo,
+      homepage,
+      name,
+    }))
+    .sort((a: { id: number }, b: { id: number }) => b.id - a.id);
   return {
     props: {
       businesses,
+      revalidate: 60 * 60,
     },
   };
 };

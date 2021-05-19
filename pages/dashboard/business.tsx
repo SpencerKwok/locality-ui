@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { Session } from "next-auth";
-import { getSession, useSession } from "next-auth/client";
+import { getSession } from "next-auth/client";
 import { useRouter } from "next/router";
 
 import BusinessPage from "../../components/dashboard/Business";
@@ -12,8 +11,8 @@ import type { GetServerSideProps } from "next";
 import type {
   BaseBusiness,
   UploadSettingsUpdateRequest,
-  UploadTypeSettings,
 } from "../../components/common/Schema";
+import type { Session } from "next-auth";
 import type {
   UpdateDepartmentsRequest,
   UpdateHomepagesRequest,
@@ -72,10 +71,10 @@ interface BusinessProps {
 export default function Business({
   isNewBusiness,
   businesses,
+  session,
   cookie,
 }: BusinessProps) {
   const router = useRouter();
-  const [session, loading] = useSession();
   const size = useWindowSize();
 
   const [businessIndex, setBusinessIndex] = useState(0);
@@ -255,10 +254,6 @@ export default function Business({
       successful: false,
     });
   };
-
-  if (loading) {
-    return null;
-  }
 
   if (!session || !session.user) {
     if (typeof window !== "undefined") {

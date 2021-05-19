@@ -1,10 +1,11 @@
 import React from "react";
 import dynamic from "next/dynamic";
 
-import { BaseBusiness } from "../common/Schema";
 import BusinessShowcase from "./BusinessShowcase";
 import Search from "../search/Search";
 import Stack from "../common/Stack";
+
+import type { BaseBusiness } from "../common/Schema";
 
 const NewUser = dynamic(() => import("../common/popups/NewUser"));
 
@@ -36,10 +37,7 @@ export default function Home({ businesses, isNewUser, width }: HomeProps) {
         style={{ margin: "0px auto 0px auto" }}
       >
         <Stack direction="column" rowAlign="center">
-          <BusinessShowcase
-            businesses={businesses.sort((a, b) => b.id - a.id)}
-            width={width}
-          />
+          <BusinessShowcase businesses={businesses} width={width} />
         </Stack>
       </Stack>
     </div>

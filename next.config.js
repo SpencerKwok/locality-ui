@@ -1,18 +1,6 @@
 module.exports = {
-  poweredByHeader: false,
-
   // Compression is done by the server
   compress: false,
-
-  redirects: async () => {
-    return [
-      {
-        source: "/dashboard",
-        destination: "/dashboard/inventory",
-        permanent: true,
-      },
-    ];
-  },
   future: {
     webpack5: true,
   },
@@ -28,5 +16,15 @@ module.exports = {
       },
     },
   },
+  poweredByHeader: false,
   reactStrictMode: true,
+  redirects: async () => {
+    return [
+      {
+        source: "/dashboard",
+        destination: "/dashboard/inventory",
+        permanent: true,
+      },
+    ];
+  },
 };
