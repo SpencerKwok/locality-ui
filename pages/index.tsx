@@ -15,10 +15,18 @@ interface HomeProps {
 }
 
 export const getStaticProps: GetStaticProps = async () => {
-  const [businesses] = await helper();
+  const [rawBusinesses] = await helper();
+  const businesses = rawBusinesses.businesses
+    .map(({ id, logo, homepage, name }: BaseBusiness) => ({
+      id,
+      logo,
+      homepage,
+      name,
+    }))
+    .sort((a: { id: number }, b: { id: number }) => b.id - a.id);
   return {
     props: {
-      businesses: businesses.businesses,
+      businesses,
       revalidate: 60 * 60,
     },
   };

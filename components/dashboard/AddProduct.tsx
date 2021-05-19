@@ -94,9 +94,9 @@ function AddProduct({
               {error !== "" && <p color="red">{error}</p>}
               {loading && (
                 <Stack direction="column" rowAlign="center" spacing={24}>
-                  <h3>
+                  <h4>
                     Uploading {uploadType} data (may take several minutes)...
-                  </h3>
+                  </h4>
                   <div className={styles["animated-circular-border"]} />
                 </Stack>
               )}
