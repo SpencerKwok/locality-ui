@@ -16,7 +16,9 @@ export default function DashboardLayout({
   return (
     <Tabs
       defaultActiveKey={tab}
-      onSelect={(key) => router.push(`/dashboard/${key}`)}
+      onSelect={(key) =>
+        router.push(`/dashboard/${key}`, undefined, { shallow: true })
+      }
     >
       <Tab eventKey="inventory" title="Inventory">
         {tab === "inventory" &&
