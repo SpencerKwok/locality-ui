@@ -84,10 +84,13 @@ export default class MyDocument extends Document {
           />
           <meta property="twitter:url" content="https://www.mylocality.shop" />
 
-          <link rel="apple-touch-icon" href="/locality-icon.ico" />
+          <link
+            rel="apple-touch-icon"
+            href="/icons/locality-icon-192x192.png"
+          />
+          <link rel="shortcut icon" href="/icons/locality-icon-192x192.png" />
           <link rel="icon" href="/locality-icon.ico" />
           <link rel="manifest" href="/manifest.json" />
-          <link rel="shortcut icon" href="/locality-icon.ico" />
 
           <link rel="canonical" href="https://www.mylocality.shop" />
         </Head>
