@@ -23,21 +23,19 @@ export default function Signin({ session }: SignUpProps) {
       redirect: false,
     });
 
-    await getSession().then((value) => {
-      if (!value || !value.user) {
-        setError(
-          "Sign in failed. Please check the details you provided are correct."
-        );
-        return;
-      }
-
-      const user: any = value.user;
-      router.push(user.isBusiness ? "/dashboard" : "/");
-    });
+    const newSession = await getSession();
+    if (!newSession || !newSession.user) {
+      setError(
+        "Sign in failed. Please check the details you provided are correct."
+      );
+      return;
+    }
+    const user: any = newSession.user;
+    router.push(user.isBusiness ? "/dashboard" : "/");
   };
 
-  const onProviderSignIn = async (provider: string) => {
-    await signIn(provider, { redirect: false });
+  const onProviderSignIn = (provider: string) => {
+    signIn(provider, { redirect: false });
   };
 
   if (session && session.user) {

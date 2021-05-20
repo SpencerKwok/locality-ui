@@ -37,15 +37,14 @@ export default function UserSignUp({ session }: UserSignUpProps) {
           redirect: false,
         });
 
-        await getSession().then((value) => {
-          if (!value || !value.user) {
-            setError(
-              "Sign up failed. Please check the details you provided are correct."
-            );
-            return;
-          }
-          router.push("/?newUser=true");
-        });
+        const newSession = await getSession();
+        if (!newSession || !newSession.user) {
+          setError(
+            "Sign in failed. Please check the details you provided are correct."
+          );
+          return;
+        }
+        router.push("/?newUser=true");
       })
       .catch((error) => {
         setError(error);
@@ -53,7 +52,8 @@ export default function UserSignUp({ session }: UserSignUpProps) {
   };
 
   if (session && session.user) {
-    router.push("/");
+    const user: any = session.user;
+    router.push(user.isBusiness ? "/dashboard" : "/");
     return null;
   }
 

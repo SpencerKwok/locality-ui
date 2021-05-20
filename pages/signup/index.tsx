@@ -16,7 +16,8 @@ export default function SignUp({ session }: SignUpProps) {
   const router = useRouter();
 
   if (session && session.user) {
-    router.push("/");
+    const user: any = session.user;
+    router.push(user.isBusiness ? "/dashboard" : "/");
     return null;
   }
 

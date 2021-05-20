@@ -1,7 +1,6 @@
 import { Fragment, useEffect, useState } from "react";
 import { getSession } from "next-auth/client";
 import Head from "next/head";
-import { Provider } from "next-auth/client";
 import { useRouter } from "next/router";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -9,30 +8,28 @@ import type { AppProps } from "next/app";
 import type { Session } from "next-auth";
 
 export default function App({ Component, pageProps }: AppProps) {
+  const [loaded, setLoaded] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
   const router = useRouter();
 
   useEffect(() => {
+    setLoaded(false);
     getSession().then((value) => {
       setSession(value);
+      setLoaded(true);
     });
-  }, [router]);
+  }, [router.pathname]);
 
-  // Only use the provider for the dashboard
-  // since it improves performance navigating
-  // the dashboard and is worth the worse first
-  // paint tradeoff
-  if (router.pathname.match(/^\/dashboard/g)) {
+  // Wait for session data for session-protected pages
+  const sessionProtected = router.pathname.match(
+    /^\/(dashboard|signin|signup|wishlist)/g
+  );
+  if (sessionProtected && !loaded) {
     return (
-      <Fragment>
-        <Head>
-          <title>Locality | Online Local Marketplace</title>
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-        </Head>
-        <Provider session={pageProps.session}>
-          <Component {...pageProps} />
-        </Provider>
-      </Fragment>
+      <Head>
+        <title>Locality | Online Local Marketplace</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
     );
   }
 

@@ -45,15 +45,14 @@ export default function BusinessSignUp({ session }: BusinessSignUpProps) {
           redirect: false,
         });
 
-        await getSession().then((value) => {
-          if (!value || !value.user) {
-            setError(
-              "Sign up failed. Please check the details you provided are correct."
-            );
-            return;
-          }
-          router.push("/dashboard/business?newBusiness=true");
-        });
+        const newSession = await getSession();
+        if (!newSession || !newSession.user) {
+          setError(
+            "Sign in failed. Please check the details you provided are correct."
+          );
+          return;
+        }
+        router.push("/dashboard/business?newBusiness=true");
       })
       .catch((error) => {
         setError(error);
@@ -61,7 +60,8 @@ export default function BusinessSignUp({ session }: BusinessSignUpProps) {
   };
 
   if (session && session.user) {
-    router.push("/");
+    const user: any = session.user;
+    router.push(user.isBusiness ? "/dashboard" : "/");
     return null;
   }
 
