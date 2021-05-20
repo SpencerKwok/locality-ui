@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { getSession, signIn } from "next-auth/client";
 import { useRouter } from "next/router";
 
@@ -17,7 +17,6 @@ export interface BusinessSignUpProps {
 
 export default function BusinessSignUp({ session }: BusinessSignUpProps) {
   const [error, setError] = useState("");
-  const [currentSession, setCurrentSession] = useState(session);
   const isNarrow = useMediaQuery(38, "width");
   const router = useRouter();
 
@@ -46,13 +45,14 @@ export default function BusinessSignUp({ session }: BusinessSignUpProps) {
           redirect: false,
         });
 
-        getSession().then((value) => {
+        await getSession().then((value) => {
           if (!value || !value.user) {
             setError(
-              "Sign up failed. Please contact us at locality.info@yahoo.com for assistance."
+              "Sign up failed. Please check the details you provided are correct."
             );
+            return;
           }
-          setCurrentSession(value);
+          router.push("/dashboard/business?newBusiness=true");
         });
       })
       .catch((error) => {
@@ -60,8 +60,8 @@ export default function BusinessSignUp({ session }: BusinessSignUpProps) {
       });
   };
 
-  if (currentSession && currentSession.user) {
-    router.push("/dashboard/business?newBusiness=true");
+  if (session && session.user) {
+    router.push("/");
     return null;
   }
 

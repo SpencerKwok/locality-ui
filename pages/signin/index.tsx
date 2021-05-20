@@ -14,7 +14,6 @@ export interface SignUpProps {
 
 export default function Signin({ session }: SignUpProps) {
   const [error, setError] = useState("");
-  const [currentSession, setCurrentSession] = useState(session);
   const router = useRouter();
 
   const onSubmit = async (values: SignInRequest) => {
@@ -24,23 +23,25 @@ export default function Signin({ session }: SignUpProps) {
       redirect: false,
     });
 
-    getSession().then((value) => {
+    await getSession().then((value) => {
       if (!value || !value.user) {
         setError(
           "Sign in failed. Please check the details you provided are correct."
         );
         return;
       }
-      setCurrentSession(value);
+
+      const user: any = value.user;
+      router.push(user.isBusiness ? "/dashboard" : "/");
     });
   };
 
-  const onProviderSignIn = (provider: string) => {
-    signIn(provider, { redirect: false });
+  const onProviderSignIn = async (provider: string) => {
+    await signIn(provider, { redirect: false });
   };
 
-  if (currentSession && currentSession.user) {
-    const user: any = currentSession.user;
+  if (session && session.user) {
+    const user: any = session.user;
     router.push(user.isBusiness ? "/dashboard" : "/");
     return null;
   }

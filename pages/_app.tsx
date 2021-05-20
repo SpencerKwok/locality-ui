@@ -16,13 +16,13 @@ export default function App({ Component, pageProps }: AppProps) {
     getSession().then((value) => {
       setSession(value);
     });
-  }, [router.pathname]);
+  }, [router]);
 
   // Only use the provider for the dashboard
   // since it improves performance navigating
   // the dashboard and is worth the worse first
   // paint tradeoff
-  if (router.pathname.match(/^\/dashboard\/.*/g)) {
+  if (router.pathname.match(/^\/dashboard/g)) {
     return (
       <Fragment>
         <Head>

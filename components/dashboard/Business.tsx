@@ -199,7 +199,7 @@ export default function Business({
                       : "black",
                 }}
               >{`${values[uploadType]?.includeTags?.length || 0}/255`}</div>
-              <ErrorMessage name="includeTags" />
+              <ErrorMessage name={`${uploadType}.includeTags`} />
             </Form.Group>
             <Form.Group>
               <Label
@@ -229,7 +229,7 @@ export default function Business({
                       : "black",
                 }}
               >{`${values[uploadType]?.excludeTags?.length || 0}/255`}</div>
-              <ErrorMessage name="excludeTags" />
+              <ErrorMessage name={`${uploadType}.excludeTags`} />
             </Form.Group>
             {updateUploadSettingsStatus.error && (
               <div style={{ color: "red" }}>

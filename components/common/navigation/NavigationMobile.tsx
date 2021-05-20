@@ -60,7 +60,7 @@ export default function Navigation({ type }: NavigationProps) {
         const navLinks = [];
         const customSignOut = async () => {
           await signOut({ redirect: false });
-          router.push("/signin");
+          window.location.pathname = "/signin";
         };
         switch (type) {
           case "business":
