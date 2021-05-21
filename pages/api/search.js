@@ -12,8 +12,8 @@ export default async function handler(req, res) {
   }
 
   const q = Xss(req.query["q"] || "");
-  const ip = Xss(req.query["ip"] || "");
-  const ext = Xss(req.query["ext"] || "");
+  const ip_header = Xss(req.headers["x-forwarded-for"] || "");
+  const ip = Xss(req.query["ip"] || ip_header.split(/,\s*/)[0] || "");
   const filters = Xss(decodeURIComponent(req.query["filters"] || ""));
 
   let page = 0;
@@ -63,7 +63,6 @@ export default async function handler(req, res) {
       page,
       attributesToRetrieve,
       attributesToHighlight,
-      ...(ext === "1" && { removeWordsIfNoResults: "none" }),
     });
     if (error) {
       res.status(500).json({ error });
@@ -87,7 +86,6 @@ export default async function handler(req, res) {
       page,
       attributesToRetrieve,
       attributesToHighlight,
-      ...(ext === "1" && { removeWordsIfNoResults: "none" }),
     });
     if (error) {
       res.status(500).json({ error });
