@@ -188,7 +188,6 @@ export default function Business({
           setFieldValue,
         }) => (
           <Form onSubmit={handleSubmit} style={{ marginTop: 12 }}>
-            {console.log(values)}
             {uploadType === "Shopify" && (
               <Form.Group>
                 <Label description="By default, uploaded products are linked to your Shopify website (i.e. myshopify.com domain). If your homepage is a custom domain for your Shopify website, enable this option so users are sent to your homepage instead">
@@ -202,7 +201,7 @@ export default function Business({
                     checked={values["Shopify"]?.isHomepage || false}
                     id="Shopify.isHomepage"
                     onBlur={handleBlur}
-                    onChange={(event) => {
+                    onChange={() => {
                       setFieldValue(
                         "Shopify.isHomepage",
                         !values["Shopify"]?.isHomepage,
