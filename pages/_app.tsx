@@ -7,13 +7,26 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import type { AppProps } from "next/app";
 import type { Session } from "next-auth";
 
+const protectedPagesRegex = /^\/(dashboard|signin|signup|wishlist)/g;
 export default function App({ Component, pageProps }: AppProps) {
   const [loaded, setLoaded] = useState(false);
+  const [prevPath, setPrevPath] = useState("/");
   const [session, setSession] = useState<Session | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    setLoaded(false);
+    // By-pass waiting if user is transitioning
+    // within session protected pages
+    if (
+      prevPath.match(protectedPagesRegex) &&
+      router.pathname.match(protectedPagesRegex)
+    ) {
+      setLoaded(true);
+    } else {
+      setLoaded(false);
+    }
+
+    setPrevPath(router.pathname);
     getSession().then((value) => {
       setSession(value);
       setLoaded(true);
@@ -21,9 +34,7 @@ export default function App({ Component, pageProps }: AppProps) {
   }, [router.pathname]);
 
   // Wait for session data for session-protected pages
-  const sessionProtected = router.pathname.match(
-    /^\/(dashboard|signin|signup|wishlist)/g
-  );
+  const sessionProtected = router.pathname.match(protectedPagesRegex);
   if (sessionProtected && !loaded) {
     return (
       <Head>
