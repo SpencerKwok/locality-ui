@@ -4,6 +4,18 @@ import Xss from "xss";
 import Psql from "../../../../../lib/api/postgresql";
 import { runMiddlewareBusiness } from "../../../../../lib/api/middleware";
 
+function isStringArray(value) {
+  if (!Array.isArray(value)) {
+    return false;
+  }
+  for (let i = 0; i < value.length; ++i) {
+    if (typeof value[i] !== "string") {
+      return false;
+    }
+  }
+  return true;
+}
+
 export default async function handler(req, res) {
   await runMiddlewareBusiness(req, res);
 
@@ -35,6 +47,15 @@ export default async function handler(req, res) {
   const etsy = req.body.Etsy;
   const shopify = req.body.Shopify;
   if (etsy) {
+    if (etsy.includeTags && !isStringArray(etsy.includeTags)) {
+      res.status(400).json({ error: "Invalid Etsy Include Tags" });
+      return;
+    }
+    if (etsy.excludeTags && !isStringArray(etsy.excludeTags)) {
+      res.status(400).json({ error: "Invalid Etsy exclude Tags" });
+      return;
+    }
+
     uploadSettings.Etsy = {
       includeTags: etsy.includeTags
         ? etsy.includeTags.map((x) => Xss(x))
@@ -45,7 +66,21 @@ export default async function handler(req, res) {
     };
   }
   if (shopify) {
+    if (shopify.isHomepage && typeof shopify.isHomepage !== "boolean") {
+      res.status(400).json({ error: "Invalid Shopify Homepage Option" });
+      return;
+    }
+    if (shopify.includeTags && !isStringArray(shopify.includeTags)) {
+      res.status(400).json({ error: "Invalid Shopify Include Tags" });
+      return;
+    }
+    if (shopify.excludeTags && !isStringArray(shopify.excludeTags)) {
+      res.status(400).json({ error: "Invalid Shopify exclude Tags" });
+      return;
+    }
+
     uploadSettings.Shopify = {
+      isHomepage: shopify.isHomepage,
       includeTags: shopify.includeTags
         ? shopify.includeTags.map((x) => Xss(x))
         : undefined,

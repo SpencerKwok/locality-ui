@@ -203,6 +203,7 @@ export default function Business({
           : undefined,
       },
       Shopify: Shopify && {
+        isHomepage: Shopify.isHomepage,
         includeTags: Shopify.includeTags
           ? Shopify.includeTags
               .split(",")
@@ -228,6 +229,7 @@ export default function Business({
           });
           return;
         }
+
         businesses[businessIndex].uploadSettings = {
           Etsy,
           Shopify,

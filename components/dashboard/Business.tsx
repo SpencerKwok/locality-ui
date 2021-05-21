@@ -1,4 +1,4 @@
-import { createRef } from "react";
+import { createRef, Fragment } from "react";
 import dynamic from "next/dynamic";
 import * as yup from "yup";
 import { Formik, FormikConfig } from "formik";
@@ -7,7 +7,11 @@ import FormControl from "react-bootstrap/FormControl";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 
-import type { BaseBusiness, UploadTypeSettings } from "../common/Schema";
+import type {
+  BaseBusiness,
+  EtsyUploadTypeSettings,
+  ShopifyUploadTypeSettings,
+} from "../common/Schema";
 import DashboardLayout from "./Layout";
 import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
 import { Base64, fileToBase64 } from "./ImageHelpers";
@@ -38,6 +42,7 @@ export interface UpdateUploadSettingsRequest {
     excludeTags?: string;
   };
   Shopify?: {
+    isHomepage?: boolean;
     includeTags?: string;
     excludeTags?: string;
   };
@@ -114,6 +119,7 @@ const CommaListValidator = yup
   .matches(/^\s*[^,]+\s*(,(\s*[^,\s]\s*)+)*\s*$/g, "Must be a comma list");
 const UpdateUploadSettingsSchema = yup.object().shape({
   Shopify: yup.object().optional().shape({
+    isHomepage: yup.boolean().optional(),
     includeTags: CommaListValidator,
     excludeTags: CommaListValidator,
   }),
@@ -152,8 +158,9 @@ export default function Business({
     uploadType: "Shopify" | "Etsy";
   }) => {
     const uploadSettings = businesses[businessIndex].uploadSettings;
-    const uploadTypeSettings: UploadTypeSettings =
-      uploadSettings[uploadType] || {};
+    const uploadTypeSettings:
+      | EtsyUploadTypeSettings
+      | ShopifyUploadTypeSettings = uploadSettings[uploadType] || {};
     const includeTags = uploadTypeSettings.includeTags || [];
     const excludeTags = uploadTypeSettings.excludeTags || [];
     const initialValues: UpdateUploadSettingsRequest = {};
@@ -161,6 +168,9 @@ export default function Business({
       includeTags: includeTags.filter(Boolean).join(", "),
       excludeTags: excludeTags.filter(Boolean).join(", "),
     };
+    if (initialValues["Shopify"]) {
+      initialValues["Shopify"].isHomepage = uploadSettings.Shopify?.isHomepage;
+    }
 
     return (
       <Formik
@@ -169,8 +179,42 @@ export default function Business({
         onSubmit={onSubmitUploadSettings}
         validationSchema={UpdateUploadSettingsSchema}
       >
-        {({ isSubmitting, values, handleBlur, handleChange, handleSubmit }) => (
-          <Form onSubmit={handleSubmit}>
+        {({
+          isSubmitting,
+          values,
+          handleBlur,
+          handleChange,
+          handleSubmit,
+          setFieldValue,
+        }) => (
+          <Form onSubmit={handleSubmit} style={{ marginTop: 12 }}>
+            {console.log(values)}
+            {uploadType === "Shopify" && (
+              <Form.Group>
+                <Label description="By default, uploaded products are linked to your Shopify website (i.e. myshopify.com domain). If your homepage is a custom domain for your Shopify website, enable this option so users are sent to your homepage instead">
+                  Set Base URL to Homepage
+                </Label>
+                <InputGroup>
+                  <Form.Check
+                    aria-label="Set Base URL to Homepage"
+                    aria-details="Switch to enable/disable Set Base URL to Homepage"
+                    aria-checked={values["Shopify"]?.isHomepage || false}
+                    checked={values["Shopify"]?.isHomepage || false}
+                    id="Shopify.isHomepage"
+                    onBlur={handleBlur}
+                    onChange={(event) => {
+                      setFieldValue(
+                        "Shopify.isHomepage",
+                        !values["Shopify"]?.isHomepage,
+                        true
+                      );
+                    }}
+                    type="switch"
+                  />
+                </InputGroup>
+                <ErrorMessage name="Shopify.isHomepage" />
+              </Form.Group>
+            )}
             <Form.Group>
               <Label
                 description={`When uploading products from ${uploadType}, we will only upload products with at least one of the include tags. By default, we will include all products`}
