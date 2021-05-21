@@ -87,13 +87,7 @@ export interface BusinessSignUpRequest extends UserSignUpRequest {
 
 export interface BusinessSignUpResponse extends SignUpResponse {}
 
-export interface EtsyUploadTypeSettings {
-  includeTags?: Array<string>;
-  excludeTags?: Array<string>;
-}
-
-export interface ShopifyUploadTypeSettings {
-  isHomepage?: boolean;
+export interface UploadTypeSettings {
   includeTags?: Array<string>;
   excludeTags?: Array<string>;
 }
@@ -113,8 +107,8 @@ export interface BaseBusiness {
   etsyHomepage: string;
   departments: string;
   uploadSettings: {
-    Etsy?: EtsyUploadTypeSettings;
-    Shopify?: ShopifyUploadTypeSettings;
+    Etsy?: UploadTypeSettings;
+    Shopify?: UploadTypeSettings;
   };
 }
 
@@ -263,13 +257,13 @@ export interface UserSignUpResponse extends SignUpResponse {}
 
 export interface UploadSettingsUpdateRequest extends BaseResponse {
   businessId: number;
-  Etsy?: EtsyUploadTypeSettings;
-  Shopify?: ShopifyUploadTypeSettings;
+  Etsy?: UploadTypeSettings;
+  Shopify?: UploadTypeSettings;
 }
 
 export interface UploadSettingsUpdateResponse extends BaseResponse {
-  Etsy?: EtsyUploadTypeSettings;
-  Shopify?: ShopifyUploadTypeSettings;
+  Etsy?: UploadTypeSettings;
+  Shopify?: UploadTypeSettings;
 }
 
 export interface GetMethods {

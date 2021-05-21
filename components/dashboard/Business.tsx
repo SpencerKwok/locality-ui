@@ -7,11 +7,7 @@ import FormControl from "react-bootstrap/FormControl";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 
-import type {
-  BaseBusiness,
-  EtsyUploadTypeSettings,
-  ShopifyUploadTypeSettings,
-} from "../common/Schema";
+import type { BaseBusiness, UploadTypeSettings } from "../common/Schema";
 import DashboardLayout from "./Layout";
 import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
 import { Base64, fileToBase64 } from "./ImageHelpers";
@@ -42,7 +38,6 @@ export interface UpdateUploadSettingsRequest {
     excludeTags?: string;
   };
   Shopify?: {
-    isHomepage?: boolean;
     includeTags?: string;
     excludeTags?: string;
   };
@@ -76,21 +71,7 @@ const UpdateLogoSchema = yup.object().shape({
 
 const UpdateHomepagesSchema = yup.object().shape({
   homepage: yup.string().required("Required").max(255, "Too long"),
-  shopifyHomepage: yup
-    .string()
-    .optional()
-    .test(
-      "EtsyFormat",
-      "Must have the following format: [SHOP_ID].myshopify.com",
-      (page) => {
-        return (!page ||
-          page.length === 0 ||
-          page.match(
-            /^(http(s?):\/\/)?(www\.)?[a-zA-Z0-9_\-]+\.myshopify\.com(\/?)$/g
-          )) as boolean;
-      }
-    )
-    .max(255, "Too long"),
+  shopifyHomepage: yup.string().optional().max(255, "Too long"),
   etsyHomepage: yup
     .string()
     .optional()
@@ -119,7 +100,6 @@ const CommaListValidator = yup
   .matches(/^\s*[^,]+\s*(,(\s*[^,\s]\s*)+)*\s*$/g, "Must be a comma list");
 const UpdateUploadSettingsSchema = yup.object().shape({
   Shopify: yup.object().optional().shape({
-    isHomepage: yup.boolean().optional(),
     includeTags: CommaListValidator,
     excludeTags: CommaListValidator,
   }),
@@ -158,9 +138,8 @@ export default function Business({
     uploadType: "Shopify" | "Etsy";
   }) => {
     const uploadSettings = businesses[businessIndex].uploadSettings;
-    const uploadTypeSettings:
-      | EtsyUploadTypeSettings
-      | ShopifyUploadTypeSettings = uploadSettings[uploadType] || {};
+    const uploadTypeSettings: UploadTypeSettings =
+      uploadSettings[uploadType] || {};
     const includeTags = uploadTypeSettings.includeTags || [];
     const excludeTags = uploadTypeSettings.excludeTags || [];
     const initialValues: UpdateUploadSettingsRequest = {};
@@ -168,9 +147,6 @@ export default function Business({
       includeTags: includeTags.filter(Boolean).join(", "),
       excludeTags: excludeTags.filter(Boolean).join(", "),
     };
-    if (initialValues["Shopify"]) {
-      initialValues["Shopify"].isHomepage = uploadSettings.Shopify?.isHomepage;
-    }
 
     return (
       <Formik
@@ -179,41 +155,8 @@ export default function Business({
         onSubmit={onSubmitUploadSettings}
         validationSchema={UpdateUploadSettingsSchema}
       >
-        {({
-          isSubmitting,
-          values,
-          handleBlur,
-          handleChange,
-          handleSubmit,
-          setFieldValue,
-        }) => (
+        {({ isSubmitting, values, handleBlur, handleChange, handleSubmit }) => (
           <Form onSubmit={handleSubmit} style={{ marginTop: 12 }}>
-            {uploadType === "Shopify" && (
-              <Form.Group>
-                <Label description="By default, uploaded products are linked to your Shopify website (i.e. myshopify.com domain). If your homepage is a custom domain for your Shopify website, enable this option so users are sent to your homepage instead">
-                  Set Base URL to Homepage
-                </Label>
-                <InputGroup>
-                  <Form.Check
-                    aria-label="Set Base URL to Homepage"
-                    aria-details="Switch to enable/disable Set Base URL to Homepage"
-                    aria-checked={values["Shopify"]?.isHomepage || false}
-                    checked={values["Shopify"]?.isHomepage || false}
-                    id="Shopify.isHomepage"
-                    onBlur={handleBlur}
-                    onChange={() => {
-                      setFieldValue(
-                        "Shopify.isHomepage",
-                        !values["Shopify"]?.isHomepage,
-                        true
-                      );
-                    }}
-                    type="switch"
-                  />
-                </InputGroup>
-                <ErrorMessage name="Shopify.isHomepage" />
-              </Form.Group>
-            )}
             <Form.Group>
               <Label
                 description={`When uploading products from ${uploadType}, we will only upload products with at least one of the include tags. By default, we will include all products`}
@@ -484,7 +427,7 @@ export default function Business({
                         <Form.Group>
                           <Label
                             description={
-                              'Adding your Shopify website (if applicable) will enable you to upload your products to Locality from your Shopify website in the "Inventory" tab'
+                              'Adding your Shopify website (if applicable) will enable you to upload your products to Locality from your Shopify website in the "Inventory" tab.'
                             }
                           >
                             Shopify Website
@@ -496,7 +439,7 @@ export default function Business({
                               id="shopifyHomepage"
                               onBlur={handleBlur}
                               onChange={handleChange}
-                              placeholder="e.g. www.bombshell-boxing.myshopify.com"
+                              placeholder="e.g. www.cantiqliving.com"
                               type="text"
                               value={values.shopifyHomepage}
                             />
@@ -506,7 +449,7 @@ export default function Business({
                         <Form.Group>
                           <Label
                             description={
-                              'Adding your Etsy storefront (if applicable) will enable you to upload your products to Locality from your Etsy storefront in the "Inventory" tab'
+                              'Adding your Etsy storefront (if applicable) will enable you to upload your products to Locality from your Etsy storefront in the "Inventory" tab.'
                             }
                           >
                             Etsy Storefront

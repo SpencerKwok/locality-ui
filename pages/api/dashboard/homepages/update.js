@@ -42,12 +42,10 @@ export default async function handler(req, res) {
 
   let shopifyHomepage = Xss(req.body.shopifyHomepage || "");
   if (shopifyHomepage !== "") {
-    shopifyHomepage = addHttpsProtocol(shopifyHomepage);
-    if (
-      !shopifyHomepage.match(
-        /^https:\/\/www\.[a-zA-Z0-9_\-]+\.myshopify\.com(\/?)$/g
-      )
-    ) {
+    try {
+      shopifyHomepage = addHttpsProtocol(shopifyHomepage);
+      new URL(shopifyHomepage);
+    } catch (error) {
       res.status(400).json({ error: "Invalid Shopify Website" });
       return;
     }

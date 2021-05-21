@@ -1,9 +1,29 @@
+import Dns from "dns";
 import SqlString from "sqlstring";
 import Xss from "xss";
 
 import Psql from "../../../../lib/api/postgresql";
 import { productAdd, productDelete } from "../../../../lib/api/dashboard";
 import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
+
+/*
+This list may change at any time, but for now these are all the valid Shopify IP addresses
+Source: https://help.shopify.com/en/manual/online-store/domains/managing-domains/troubleshooting
+*/
+const validShopifyIp4 = new Set([
+  "23.227.38.32",
+  "23.227.38.36",
+  "23.227.38.65",
+  "23.227.38.66",
+  "23.227.38.67",
+  "23.227.38.68",
+  "23.227.38.69",
+  "23.227.38.70",
+  "23.227.38.71",
+  "23.227.38.72",
+  "23.227.38.73",
+  "23.227.38.74",
+]);
 
 const currentUploadsRunning = new Set();
 export default async function handler(req, res) {
@@ -36,22 +56,46 @@ export default async function handler(req, res) {
     const excludeTags = new Set(
       (uploadSettings.excludeTags || []).map((x) => x.toLowerCase())
     );
+    let shopifyHomepage = businessResponse.rows[0].shopify_homepage;
+    const domain = shopifyHomepage.match(/www\.[^\/]+/g)[0] || "";
 
-    // TODO: Sometimes there is a certificate hostname mismatch that
-    // causes an issue when connecting directly with HSTS. Although
-    // not recommended due to MITMA, we switch to http and hope redirect
-    // to https by the server is good enough
-    const homepage = businessResponse.rows[0].shopify_homepage.replace(
-      "https",
-      "http"
-    );
-
-    if (homepage === "") {
+    if (shopifyHomepage === "") {
       res.status(400).json({
         error:
           "It looks like you haven't set your business's Shopify website yet! Please go to the \"Business\" tab and add your Shopify website",
       });
       return;
+    }
+
+    const addresses = await Dns.promises.resolve4(domain).catch(() => {
+      res.status(400).json({
+        error:
+          'It looks like your Shopify website has not been set up properly. Please go to the "Business" tab and make sure your Shopify website URL is setup properly or contact us at locality.info@yahoo.com for assistance',
+      });
+      return;
+    });
+
+    let isShopify = true;
+    for (let i = 0; i < addresses.length; ++i) {
+      if (!validShopifyIp4.has(addresses[i])) {
+        isShopify = false;
+        break;
+      }
+    }
+    if (!isShopify) {
+      res.status(400).json({
+        error:
+          'It looks like your Shopify website has not been set up properly. Please go to the "Business" tab and make sure your Shopify website URL is setup properly or contact us at locality.info@yahoo.com for assistance',
+      });
+      return;
+    }
+
+    // TODO: There is a certificate hostname mismatch that causes
+    // an fetch error when connecting to a myshopify.com domain
+    // using HTTPS. Although not recommended due to MITMA, we switch
+    // to http and hope redirect to https by the server is good enough
+    if (domain.match(/.*\.myshopify.com(\/)?/g)) {
+      shopifyHomepage = shopifyHomepage.replace("https", "http");
     }
 
     const [productsResponse, productsError] = await Psql.query(
@@ -84,7 +128,9 @@ export default async function handler(req, res) {
     let error = null;
     const products = [];
     while (!done) {
-      await fetch(`${homepage}/collections/all/products.json?page=${page}`)
+      await fetch(
+        `${shopifyHomepage}/collections/all/products.json?page=${page}`
+      )
         .then((res) => res.json())
         .then(async (data) => {
           if (data.products.length === 0) {
@@ -129,7 +175,9 @@ export default async function handler(req, res) {
               ]),
             ];
             const description = Xss(product.body_html.replace(/<[^>]*>/g, ""));
-            const link = Xss(`${homepage}/products/${product.handle}`);
+            const link = Xss(`${shopifyHomepage}/products/${product.handle}`)
+              .replace(/\/\//g, "/")
+              .replace("https:/", "https://");
             let price = parseFloat(product.variants[0].price);
             let priceRange = [price, price];
             product.variants.forEach((variant) => {

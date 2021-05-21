@@ -203,7 +203,6 @@ export default function Business({
           : undefined,
       },
       Shopify: Shopify && {
-        isHomepage: Shopify.isHomepage,
         includeTags: Shopify.includeTags
           ? Shopify.includeTags
               .split(",")
