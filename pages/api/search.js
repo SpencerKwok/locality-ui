@@ -12,10 +12,8 @@ export default async function handler(req, res) {
   }
 
   const q = Xss(req.query["q"] || "");
-  const ip = Xss(req.query["ip"] || "");
-  const lat = Xss(req.query["lat"] || "");
-  const lng = Xss(req.query["lng"] || "");
-  const ext = Xss(req.query["ext"] || "");
+  const ip_header = Xss(req.headers["x-forwarded-for"] || "");
+  const ip = Xss(req.query["ip"] || ip_header.split(/,\s*/)[0] || "");
   const filters = Xss(decodeURIComponent(req.query["filters"] || ""));
 
   let page = 0;
@@ -28,7 +26,6 @@ export default async function handler(req, res) {
   }
 
   const facets = ["company", "departments"];
-  const restrictSearchableAttributes = ["name", "primary_keywords"];
   const attributesToRetrieve = [
     "objectId",
     "company",
@@ -57,32 +54,7 @@ export default async function handler(req, res) {
     }
   }
 
-  if (lat !== "" && lng !== "") {
-    const [results, error] = await Algolia.search(q, {
-      aroundLatLng: `${lat}, ${lng}`,
-      facets,
-      filters,
-      page,
-      attributesToRetrieve,
-      attributesToHighlight,
-      ...(ext === "1" && { restrictSearchableAttributes }),
-    });
-    if (error) {
-      res.status(500).json({ error });
-      return;
-    }
-
-    if (wishlist.length > 0) {
-      results.hits = results.hits.map((hit) => {
-        return {
-          ...hit,
-          wishlist: wishlist.includes(hit.objectId),
-        };
-      });
-    }
-
-    res.status(200).json(results);
-  } else if (ip !== "") {
+  if (ip !== "") {
     const [results, error] = await Algolia.search(q, {
       aroundLatLngViaIP: true,
       facets,
@@ -91,7 +63,6 @@ export default async function handler(req, res) {
       page,
       attributesToRetrieve,
       attributesToHighlight,
-      ...(ext === "1" && { restrictSearchableAttributes }),
     });
     if (error) {
       res.status(500).json({ error });
@@ -115,7 +86,6 @@ export default async function handler(req, res) {
       page,
       attributesToRetrieve,
       attributesToHighlight,
-      ...(ext === "1" && { restrictSearchableAttributes }),
     });
     if (error) {
       res.status(500).json({ error });
