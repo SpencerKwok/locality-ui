@@ -73,21 +73,7 @@ const UpdateLogoSchema = yup.object().shape({
 
 const UpdateHomepagesSchema = yup.object().shape({
   homepage: yup.string().required("Required").max(255, "Too long"),
-  shopifyHomepage: yup
-    .string()
-    .optional()
-    .test(
-      "EtsyFormat",
-      "Must have the following format: [SHOP_ID].myshopify.com",
-      (page) => {
-        return (!page ||
-          page.length === 0 ||
-          page.match(
-            /^(http(s?):\/\/)?(www\.)?[a-zA-Z0-9_\-]+\.myshopify\.com(\/?)$/g
-          )) as boolean;
-      }
-    )
-    .max(255, "Too long"),
+  shopifyHomepage: yup.string().optional().max(255, "Too long"),
   etsyHomepage: yup
     .string()
     .optional()
@@ -172,7 +158,7 @@ export default function Business({
         validationSchema={UpdateUploadSettingsSchema}
       >
         {({ isSubmitting, values, handleBlur, handleChange, handleSubmit }) => (
-          <Form onSubmit={handleSubmit}>
+          <Form onSubmit={handleSubmit} style={{ marginTop: 12 }}>
             <Form.Group>
               <Label
                 description={`When uploading products from ${uploadType}, we will only upload products with at least one of the include tags. By default, we will include all products`}
@@ -443,7 +429,7 @@ export default function Business({
                         <Form.Group>
                           <Label
                             description={
-                              'Adding your Shopify website (if applicable) will enable you to upload your products to Locality from your Shopify website in the "Inventory" tab'
+                              'Adding your Shopify website (if applicable) will enable you to upload your products to Locality from your Shopify website in the "Inventory" tab.'
                             }
                           >
                             Shopify Website
@@ -455,7 +441,7 @@ export default function Business({
                               id="shopifyHomepage"
                               onBlur={handleBlur}
                               onChange={handleChange}
-                              placeholder="e.g. www.bombshell-boxing.myshopify.com"
+                              placeholder="e.g. www.cantiqliving.com"
                               type="text"
                               value={values.shopifyHomepage}
                             />
@@ -465,7 +451,7 @@ export default function Business({
                         <Form.Group>
                           <Label
                             description={
-                              'Adding your Etsy storefront (if applicable) will enable you to upload your products to Locality from your Etsy storefront in the "Inventory" tab'
+                              'Adding your Etsy storefront (if applicable) will enable you to upload your products to Locality from your Etsy storefront in the "Inventory" tab.'
                             }
                           >
                             Etsy Storefront

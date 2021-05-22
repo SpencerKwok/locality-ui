@@ -26,10 +26,10 @@ export default function App({ Component, pageProps }: AppProps) {
       setLoaded(false);
     }
 
-    setPrevPath(router.pathname);
     getSession().then((value) => {
       setSession(value);
       setLoaded(true);
+      setPrevPath(router.pathname);
     });
   }, [router.pathname]);
 

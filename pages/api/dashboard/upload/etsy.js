@@ -141,7 +141,7 @@ export default async function handler(req, res) {
           page += 1;
 
           // Etsy API has a maximum of 5 requests per second
-          await new Promise((resolve) => setTimeout(resolve, 200));
+          await new Promise((resolve) => setTimeout(resolve, 500));
         })
         .catch((err) => {
           error = err;
