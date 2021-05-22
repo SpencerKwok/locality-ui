@@ -66,10 +66,6 @@ export default async function handler(req, res) {
     };
   }
   if (shopify) {
-    if (shopify.isHomepage && typeof shopify.isHomepage !== "boolean") {
-      res.status(400).json({ error: "Invalid Shopify Homepage Option" });
-      return;
-    }
     if (shopify.includeTags && !isStringArray(shopify.includeTags)) {
       res.status(400).json({ error: "Invalid Shopify Include Tags" });
       return;

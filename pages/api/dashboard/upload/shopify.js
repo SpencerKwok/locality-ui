@@ -70,12 +70,12 @@ export default async function handler(req, res) {
     const addresses = await Dns.promises.resolve4(domain).catch(() => {
       res.status(400).json({
         error:
-          'It looks like your Shopify website has not been set up properly. Please go to the "Business" tab and make sure your Shopify website URL is setup properly or contact us at locality.info@yahoo.com for assistance',
+          'It looks like your Shopify website has not been set up properly. Please go to the "Business" tab and make sure your Shopify website URL is setup correctly or contact us at locality.info@yahoo.com for assistance',
       });
       return;
     });
 
-    let isShopify = true;
+    let isShopify = addresses.length > 0;
     for (let i = 0; i < addresses.length; ++i) {
       if (!validShopifyIp4.has(addresses[i])) {
         isShopify = false;
@@ -85,7 +85,7 @@ export default async function handler(req, res) {
     if (!isShopify) {
       res.status(400).json({
         error:
-          'It looks like your Shopify website has not been set up properly. Please go to the "Business" tab and make sure your Shopify website URL is setup properly or contact us at locality.info@yahoo.com for assistance',
+          'It looks like your Shopify website has not been set up properly. Please go to the "Business" tab and make sure your Shopify website URL is setup correctly or contact us at locality.info@yahoo.com for assistance',
       });
       return;
     }
