@@ -228,6 +228,7 @@ export default function Business({
           });
           return;
         }
+
         businesses[businessIndex].uploadSettings = {
           Etsy,
           Shopify,
