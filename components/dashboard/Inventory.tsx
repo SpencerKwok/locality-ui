@@ -193,7 +193,7 @@ export default function Inventory({
                   {
                     name: product.name,
                     primaryKeywords: product.primaryKeywords.join(", "),
-                    departments: product.departments,
+                    departments: product.departments.filter(Boolean),
                     description: product.description,
                     isRange: product.price !== product.priceRange[1],
                     price: isNewItem ? "" : product.price.toFixed(2),

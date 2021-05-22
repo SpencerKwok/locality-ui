@@ -130,8 +130,9 @@ export default function Business({
 
   const onSubmitHomepages = async ({
     homepage,
-    shopifyHomepage,
     etsyHomepage,
+    shopifyHomepage,
+    squareHomepage,
   }: UpdateHomepagesRequest) => {
     await PostRpcClient.getInstance()
       .call(
@@ -139,21 +140,31 @@ export default function Business({
         {
           id: businesses[businessIndex].id,
           homepage,
-          shopifyHomepage: shopifyHomepage || "",
           etsyHomepage: etsyHomepage || "",
+          shopifyHomepage: shopifyHomepage || "",
+          squareHomepage: squareHomepage || "",
         },
         cookie
       )
-      .then(({ homepage, shopifyHomepage, etsyHomepage, error }) => {
-        if (error) {
-          setUpdateHomepageStatus({ error, successful: false });
-          return;
+      .then(
+        ({
+          homepage,
+          etsyHomepage,
+          shopifyHomepage,
+          squareHomepage,
+          error,
+        }) => {
+          if (error) {
+            setUpdateHomepageStatus({ error, successful: false });
+            return;
+          }
+          businesses[businessIndex].homepage = homepage;
+          businesses[businessIndex].etsyHomepage = etsyHomepage;
+          businesses[businessIndex].shopifyHomepage = shopifyHomepage;
+          businesses[businessIndex].squareHomepage = squareHomepage;
+          setUpdateHomepageStatus({ error: "", successful: true });
         }
-        businesses[businessIndex].homepage = homepage;
-        businesses[businessIndex].shopifyHomepage = shopifyHomepage;
-        businesses[businessIndex].etsyHomepage = etsyHomepage;
-        setUpdateHomepageStatus({ error: "", successful: true });
-      })
+      )
       .catch((error) => {
         setUpdateHomepageStatus({ error, successful: false });
       });

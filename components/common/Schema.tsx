@@ -107,8 +107,9 @@ export interface BaseBusiness {
   longitude: string;
   logo: string;
   homepage: string;
-  shopifyHomepage: string;
   etsyHomepage: string;
+  shopifyHomepage: string;
+  squareHomepage: string;
   departments: string;
   uploadSettings: {
     Etsy?: UploadTypeSettings;
@@ -142,14 +143,16 @@ export interface DeleteFromWishListResponse extends BaseResponse {}
 export interface HomepagesUpdateRequest {
   id: number;
   homepage: string;
-  shopifyHomepage: string;
   etsyHomepage: string;
+  shopifyHomepage: string;
+  squareHomepage: string;
 }
 
 export interface HomepagesUpdateResponse extends BaseResponse {
   homepage: string;
-  shopifyHomepage: string;
   etsyHomepage: string;
+  shopifyHomepage: string;
+  squareHomepage: string;
 }
 
 export interface LogoUpdateRequest {
