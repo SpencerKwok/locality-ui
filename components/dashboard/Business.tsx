@@ -1,19 +1,21 @@
 import { createRef } from "react";
 import dynamic from "next/dynamic";
 import * as yup from "yup";
-import { Formik, FormikConfig } from "formik";
+import { Formik } from "formik";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 
-import type { BaseBusiness, UploadTypeSettings } from "../common/Schema";
 import DashboardLayout from "./Layout";
 import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
 import { Base64, fileToBase64 } from "./ImageHelpers";
 import Stack from "../common/Stack";
 import Select from "../common/select/VirtualSelect";
 import styles from "./Business.module.css";
+
+import type { BaseBusiness, UploadTypeSettings } from "../common/Schema";
+import type { FormikConfig } from "formik";
 
 const BusinessList = dynamic(() => import("./BusinessList"));
 const NewBusiness = dynamic(() => import("../common/popups/NewBusiness"));

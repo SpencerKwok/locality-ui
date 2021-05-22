@@ -51,6 +51,10 @@ export interface PostMethods {
     request: ProductUploadRequest;
     response: ProductUploadResponse;
   };
+  SquareProductUpload: {
+    request: SquareProductUploadRequest;
+    response: SquareProductUploadResponse;
+  };
   UserSignUp: {
     request: UserSignUpRequest;
     response: UserSignUpResponse;
@@ -245,6 +249,12 @@ export interface ProductUploadRequest {
 }
 
 export interface ProductUploadResponse extends BaseResponse {}
+
+export interface SquareProductUploadRequest extends ProductUploadRequest {
+  csv: string;
+}
+
+export interface SquareProductUploadResponse extends ProductUploadResponse {}
 
 export interface UserSignUpRequest {
   firstName: string;
