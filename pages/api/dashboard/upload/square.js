@@ -178,7 +178,7 @@ export default async function handler(req, res) {
   const [, addError] = await productAdd(
     businessId,
     products,
-    products.length < 1000
+    false //products.length < 1000
   );
   if (addError) {
     console.log(addError);
