@@ -459,12 +459,16 @@ export default function Business({
                     enableReinitialize
                     initialValues={
                       {
-                        homepage: businesses[businessIndex].homepage,
-                        etsyHomepage: businesses[businessIndex].etsyHomepage,
+                        homepage: businesses[businessIndex].homepages.homepage,
+                        etsyHomepage:
+                          businesses[businessIndex].homepages.etsyHomepage ||
+                          "",
                         shopifyHomepage:
-                          businesses[businessIndex].shopifyHomepage,
+                          businesses[businessIndex].homepages.shopifyHomepage ||
+                          "",
                         squareHomepage:
-                          businesses[businessIndex].squareHomepage,
+                          businesses[businessIndex].homepages.squareHomepage ||
+                          "",
                       } as UpdateHomepagesRequest
                     }
                     onSubmit={onSubmitHomepages}

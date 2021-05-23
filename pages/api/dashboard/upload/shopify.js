@@ -50,6 +50,7 @@ export default async function handler(req, res) {
     const departments = businessResponse.rows[0].departments
       .split(":")
       .filter(Boolean);
+    const homepages = JSON.parse(businessResponse.rows[0].homepages);
     const uploadSettings =
       JSON.parse(businessResponse.rows[0].upload_settings).Shopify || {};
     const includeTags = new Set(
@@ -58,7 +59,7 @@ export default async function handler(req, res) {
     const excludeTags = new Set(
       (uploadSettings.excludeTags || []).map((x) => x.toLowerCase())
     );
-    let shopifyHomepage = businessResponse.rows[0].shopify_homepage;
+    let shopifyHomepage = homepages.shopifyHomepage || "";
     const domain = shopifyHomepage.match(/www\.[^\/]+/g)[0] || "";
 
     if (shopifyHomepage === "") {
@@ -92,12 +93,13 @@ export default async function handler(req, res) {
       return;
     }
 
-    // TODO: There is a certificate hostname mismatch that causes
-    // an fetch error when connecting to a myshopify.com domain
-    // using HTTPS. Although not recommended due to MITMA, we switch
-    // to http and hope redirect to https by the server is good enough
+    // TODO: There is a certificate hostname mismatch when
+    // fetching from the www subdomain instead of the root
+    // domain. For now, we just replace the www subdomain
+    // with the root domain, but there is probably a better
+    // way of handling this...
     if (domain.match(/.*\.myshopify.com(\/)?/g)) {
-      shopifyHomepage = shopifyHomepage.replace("https", "http");
+      shopifyHomepage = shopifyHomepage.replace("https://www.", "https://");
     }
 
     const [productsResponse, productsError] = await Psql.query(
@@ -162,6 +164,10 @@ export default async function handler(req, res) {
             }
 
             if (shouldExclude || !shouldInclude) {
+              return;
+            }
+
+            if (product.images.length === 0 || product.variants.length === 0) {
               return;
             }
 
@@ -249,7 +255,7 @@ export default async function handler(req, res) {
     const [, addError] = await productAdd(
       businessId,
       products,
-      products.length < 1000
+      false //products.length < 1000
     );
     if (addError) {
       console.log(addError);

@@ -13,29 +13,14 @@ export default async function handler(req, res) {
     return;
   }
 
-  const f = async (
-    businessId,
-    homepage,
-    etsyHomepage,
-    shopifyHomepage,
-    squareHomepage
-  ) => {
-    const [, psqlError] = await Psql.query(
-      SqlString.format(
-        "UPDATE businesses SET homepage=E?, etsy_homepage=E?, shopify_homepage=E?, square_homepage=E? WHERE id=?",
-        [homepage, etsyHomepage, shopifyHomepage, squareHomepage, businessId]
-      )
-    );
-    if (psqlError) {
-      res.status(500).json({ error: psqlError });
-      return;
-    }
-    res
-      .status(200)
-      .json({ homepage, etsyHomepage, shopifyHomepage, squareHomepage });
-  };
+  const { id } = req.locals.user;
+  const businessId = id === 0 ? req.body.id : id;
+  if (!Number.isInteger(businessId)) {
+    res.status(400).json({ error: "Invalid business id" });
+    return;
+  }
 
-  let homepage = Xss(req.body.homepage || "");
+  let homepage = Xss(req.body.homepages.homepage || "");
   if (homepage === "") {
     res.status(400).json({ error: "Invalid homepage" });
     return;
@@ -48,7 +33,20 @@ export default async function handler(req, res) {
     return;
   }
 
-  let shopifyHomepage = Xss(req.body.shopifyHomepage || "");
+  let etsyHomepage = Xss(req.body.homepages.etsyHomepage || "");
+  if (etsyHomepage !== "") {
+    etsyHomepage = addHttpsProtocol(etsyHomepage);
+    if (
+      !etsyHomepage.match(
+        /^https:\/\/www\.etsy\.com\/([^\/]+\/)*shop\/[a-zA-Z0-9_\-]+(\/?)$/g
+      )
+    ) {
+      res.status(400).json({ error: "Invalid Etsy Storefront" });
+      return;
+    }
+  }
+
+  let shopifyHomepage = Xss(req.body.homepages.shopifyHomepage || "");
   if (shopifyHomepage !== "") {
     try {
       shopifyHomepage = addHttpsProtocol(shopifyHomepage);
@@ -70,34 +68,40 @@ export default async function handler(req, res) {
     }
   }
 
-  let etsyHomepage = Xss(req.body.etsyHomepage || "");
-  if (etsyHomepage !== "") {
-    etsyHomepage = addHttpsProtocol(etsyHomepage);
-    if (
-      !etsyHomepage.match(
-        /^https:\/\/www\.etsy\.com\/([^\/]+\/)*shop\/[a-zA-Z0-9_\-]+(\/?)$/g
-      )
-    ) {
-      res.status(400).json({ error: "Invalid Etsy Storefront" });
-      return;
-    }
+  const [prevHomepages, psqlGetHomepagesError] = await Psql.query(
+    SqlString.format("SELECT homepages FROM businesses WHERE id=?", [
+      businessId,
+    ])
+  );
+  if (psqlGetHomepagesError) {
+    res.status(500).json({ error: psqlGetHomepagesError });
+    return;
+  } else if (prevHomepages.rows.length !== 1) {
+    res.status(400).json({ error: "Invalid business id" });
+    return;
   }
 
-  const { id } = req.locals.user;
-  const businessId = id;
-  if (businessId === 0) {
-    if (Number.isInteger(req.body.id)) {
-      await f(
-        req.body.id,
-        homepage,
-        etsyHomepage,
-        shopifyHomepage,
-        squareHomepage
-      );
-    } else {
-      res.status(400).json({ error: "Invalid company id" });
-    }
-  } else {
-    await f(id, homepage, etsyHomepage, shopifyHomepage, squareHomepage);
+  const homepages = JSON.parse(prevHomepages.rows[0].homepages);
+  homepages.homepage = homepage;
+  if (etsyHomepage !== "") {
+    homepages.etsyHomepage = etsyHomepage;
   }
+  if (shopifyHomepage !== "") {
+    homepages.shopifyHomepage = shopifyHomepage;
+  }
+  if (squareHomepage !== "") {
+    homepages.squareHomepage = squareHomepage;
+  }
+
+  const [, psqlError] = await Psql.query(
+    SqlString.format("UPDATE businesses SET homepages=E? WHERE id=?", [
+      JSON.stringify(homepages),
+      businessId,
+    ])
+  );
+  if (psqlError) {
+    res.status(500).json({ error: psqlError });
+    return;
+  }
+  res.status(200).json({ homepages });
 }

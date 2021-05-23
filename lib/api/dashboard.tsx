@@ -40,18 +40,10 @@ export interface Product {
 }
 
 export function addHttpsProtocol(url: string) {
-  if (!url.match(/^https:\/\/www\..*$/)) {
-    if (url.match(/^https:\/\/(?!www.).*$/)) {
-      url = `https://www.${url.slice(8)}`;
-    } else if (url.match(/^http:\/\/(?!www.).*$/)) {
-      url = `https://www.${url.slice(7)}`;
-    } else if (url.match(/^http:\/\/www\..*$/)) {
-      url = `https://www.${url.slice(11)}`;
-    } else if (url.match(/^www\..*$/)) {
-      url = `https://${url}`;
-    } else {
-      url = `https://www.${url}`;
-    }
+  if (url.match(/^http:\/\/.+/g)) {
+    url = `https://${url.slice(7)}`;
+  } else if (!url.match(/^https:\/\/.+/g)) {
+    url = `https://${url}`;
   }
   return url;
 }

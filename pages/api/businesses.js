@@ -14,6 +14,7 @@ export async function helper() {
     {
       businesses: businesses.rows.map((business) => ({
         ...mapKeys(business, (v, k) => camelCase(k)),
+        homepages: JSON.parse(business.homepages),
         uploadSettings: JSON.parse(business.upload_settings),
       })),
     },

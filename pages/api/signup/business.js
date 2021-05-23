@@ -84,9 +84,10 @@ export default async function handler(req, res) {
     const userId = user.rows[0].id + 1;
     const [, psqlErrorAddBusiness] = await Psql.query(
       SqlString.format(
-        "INSERT INTO businesses (id, name, address, city, province, country, latitude, longitude, next_product_id, logo, homepage, etsy_homepage, shopify_homepage, square_homepage, departments, upload_settings) VALUES (?, E?, E?, E?, E?, E?, ?, ?, ?, E?, E?, E?, E?, E?, E?, E?)",
+        "INSERT INTO businesses (id, next_product_id, name, address, city, province, country, latitude, longitude) VALUES (?, ?, E?, E?, E?, E?, E?, E?, E?)",
         [
           userId,
+          0,
           businessName,
           address,
           city,
@@ -94,14 +95,6 @@ export default async function handler(req, res) {
           country,
           latLng.lat,
           latLng.lng,
-          0,
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "{}",
         ]
       )
     );
@@ -113,8 +106,8 @@ export default async function handler(req, res) {
     const hash = await Bcrypt.hash(password, 12);
     const [, psqlErrorAddUser] = await Psql.query(
       SqlString.format(
-        "INSERT INTO users (username, email, password, first_name, last_name, id, wishlist) VALUES (E?, E?, ?, E?, E?, ?, E?)",
-        [email, email, hash, firstName, lastName, userId, ""]
+        "INSERT INTO users (id, username, email, password, first_name, last_name) VALUES (?, E?, E?, E?, E?, E?)",
+        [userId, email, email, hash, firstName, lastName]
       )
     );
     if (psqlErrorAddUser) {

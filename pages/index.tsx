@@ -19,10 +19,10 @@ interface HomeProps {
 export const getStaticProps: GetStaticProps = async () => {
   const [rawBusinesses] = await helper();
   const businesses = rawBusinesses.businesses
-    .map(({ id, logo, homepage, name }: BaseBusiness) => ({
+    .map(({ id, logo, homepages, name }: BaseBusiness) => ({
       id,
       logo,
-      homepage,
+      homepages: { homepage: homepages.homepage },
       name,
     }))
     .sort((a: { id: number }, b: { id: number }) => b.id - a.id);

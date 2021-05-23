@@ -106,11 +106,13 @@ export interface BaseBusiness {
   latitude: string;
   longitude: string;
   logo: string;
-  homepage: string;
-  etsyHomepage: string;
-  shopifyHomepage: string;
-  squareHomepage: string;
   departments: string;
+  homepages: {
+    homepage: string;
+    etsyHomepage?: string;
+    shopifyHomepage?: string;
+    squareHomepage?: string;
+  };
   uploadSettings: {
     Etsy?: UploadTypeSettings;
     Shopify?: UploadTypeSettings;
@@ -142,17 +144,21 @@ export interface DeleteFromWishListResponse extends BaseResponse {}
 
 export interface HomepagesUpdateRequest {
   id: number;
-  homepage: string;
-  etsyHomepage: string;
-  shopifyHomepage: string;
-  squareHomepage: string;
+  homepages: {
+    homepage: string;
+    etsyHomepage?: string;
+    shopifyHomepage?: string;
+    squareHomepage?: string;
+  };
 }
 
 export interface HomepagesUpdateResponse extends BaseResponse {
-  homepage: string;
-  etsyHomepage: string;
-  shopifyHomepage: string;
-  squareHomepage: string;
+  homepages: {
+    homepage: string;
+    etsyHomepage?: string;
+    shopifyHomepage?: string;
+    squareHomepage?: string;
+  };
 }
 
 export interface LogoUpdateRequest {
