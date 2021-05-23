@@ -120,8 +120,14 @@ export default async function handler(req, res) {
     const image = Xss(hostedImageUrls.split(",")[0]);
     const primaryKeywords = [
       ...new Set([
-        ...categories.split(",").map((x) => Xss(x)),
-        ...tags.split(",").map((x) => Xss(x)),
+        ...categories
+          .split(",")
+          .map((x) => Xss(x))
+          .filter(Boolean),
+        ...tags
+          .split(",")
+          .map((x) => Xss(x))
+          .filter(Boolean),
       ]),
     ];
     const cleansedDescription = Xss(description.replace(/<[^>]*>/g, ""));
