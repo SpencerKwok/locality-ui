@@ -139,32 +139,23 @@ export default function Business({
         "HomepagesUpdate",
         {
           id: businesses[businessIndex].id,
-          homepage,
-          etsyHomepage: etsyHomepage || "",
-          shopifyHomepage: shopifyHomepage || "",
-          squareHomepage: squareHomepage || "",
+          homepages: {
+            homepage,
+            etsyHomepage,
+            shopifyHomepage,
+            squareHomepage,
+          },
         },
         cookie
       )
-      .then(
-        ({
-          homepage,
-          etsyHomepage,
-          shopifyHomepage,
-          squareHomepage,
-          error,
-        }) => {
-          if (error) {
-            setUpdateHomepageStatus({ error, successful: false });
-            return;
-          }
-          businesses[businessIndex].homepage = homepage;
-          businesses[businessIndex].etsyHomepage = etsyHomepage;
-          businesses[businessIndex].shopifyHomepage = shopifyHomepage;
-          businesses[businessIndex].squareHomepage = squareHomepage;
-          setUpdateHomepageStatus({ error: "", successful: true });
+      .then(({ homepages, error }) => {
+        if (error) {
+          setUpdateHomepageStatus({ error, successful: false });
+          return;
         }
-      )
+        businesses[businessIndex].homepages = homepages;
+        setUpdateHomepageStatus({ error: "", successful: true });
+      })
       .catch((error) => {
         setUpdateHomepageStatus({ error, successful: false });
       });

@@ -27,6 +27,7 @@ export default async function handler(req, res) {
     }
 
     let nextProductId = businessResponse.rows[0].next_product_id;
+    const homepages = JSON.parse(businessResponse.rows[0].homepages);
     const uploadSettings =
       JSON.parse(businessResponse.rows[0].upload_settings).Etsy || {};
     const includeTags = new Set(
@@ -36,8 +37,8 @@ export default async function handler(req, res) {
       (uploadSettings.excludeTags || []).map((x) => x.toLowerCase())
     );
 
-    const homepage = businessResponse.rows[0].etsy_homepage;
-    if (homepage === "") {
+    const etsyHomepage = homepages.etsyHomepage || "";
+    if (etsyHomepage === "") {
       res.status(400).json({
         error:
           "It looks like you haven't set your business's Etsy storefront yet! Please go to the \"Business\" tab and add your Etsy storefront",
@@ -45,8 +46,8 @@ export default async function handler(req, res) {
       return;
     }
 
-    const homepageSections = homepage.split("/");
-    const shopId = homepageSections[homepageSections.length - 1];
+    const etsyHomepageSections = etsyHomepage.split("/");
+    const shopId = etsyHomepageSections[etsyHomepageSections.length - 1];
     const [productsResponse, productsError] = await Psql.query(
       `SELECT id FROM products WHERE business_id=${businessId}`
     );

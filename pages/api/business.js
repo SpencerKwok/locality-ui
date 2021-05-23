@@ -27,6 +27,7 @@ export default async function handler(req, res) {
     res.status(200).json({
       business: {
         ...mapKeys(businesses.rows[0], (v, k) => camelCase(k)),
+        homepages: JSON.parse(businesses.rows[0].homepages),
         uploadSettings: JSON.parse(businesses.rows[0].upload_settings),
       },
     });

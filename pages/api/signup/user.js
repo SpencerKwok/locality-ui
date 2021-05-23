@@ -50,8 +50,8 @@ export default async function handler(req, res) {
   const hash = await Bcrypt.hash(password, 12);
   const [, psqlErrorAddUser] = await Psql.query(
     SqlString.format(
-      "INSERT INTO users (username, email, password, first_name, last_name, id, wishlist) VALUES (E?, E?, E?, E?, E?, ?, E?)",
-      [email, email, hash, firstName, lastName, userId, ""]
+      "INSERT INTO users (id, username, email, password, first_name, last_name) VALUES (?, E?, E?, E?, E?, E?)",
+      [userId, email, email, hash, firstName, lastName]
     )
   );
   if (psqlErrorAddUser) {

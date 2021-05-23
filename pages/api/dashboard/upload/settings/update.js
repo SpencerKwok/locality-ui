@@ -28,6 +28,7 @@ export default async function handler(req, res) {
   const businessId = id === 0 ? req.body.businessId : id;
   if (!Number.isInteger(businessId)) {
     res.status(400).json({ error: "Invalid business id" });
+    return;
   }
 
   const [prevUploadSettings, psqlGetUploadSettingsError] = await Psql.query(

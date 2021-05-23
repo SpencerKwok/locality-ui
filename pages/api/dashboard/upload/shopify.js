@@ -50,6 +50,7 @@ export default async function handler(req, res) {
     const departments = businessResponse.rows[0].departments
       .split(":")
       .filter(Boolean);
+    const homepages = JSON.parse(businessResponse.rows[0].homepages);
     const uploadSettings =
       JSON.parse(businessResponse.rows[0].upload_settings).Shopify || {};
     const includeTags = new Set(
@@ -58,7 +59,7 @@ export default async function handler(req, res) {
     const excludeTags = new Set(
       (uploadSettings.excludeTags || []).map((x) => x.toLowerCase())
     );
-    let shopifyHomepage = businessResponse.rows[0].shopify_homepage;
+    let shopifyHomepage = homepages.shopifyHomepage || "";
     const domain = shopifyHomepage.match(/www\.[^\/]+/g)[0] || "";
 
     if (shopifyHomepage === "") {

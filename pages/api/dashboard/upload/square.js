@@ -53,7 +53,8 @@ export default async function handler(req, res) {
   const departments = businessResponse.rows[0].departments
     .split(":")
     .filter(Boolean);
-  const squareHomepage = businessResponse.rows[0].square_homepage;
+  const homepages = JSON.parse(businessResponse.rows[0].homepages);
+  const squareHomepage = homepages.squareHomepage || "";
   if (squareHomepage === "") {
     res.status(400).json({
       error:

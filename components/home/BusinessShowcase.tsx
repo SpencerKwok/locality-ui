@@ -35,7 +35,7 @@ export default function BusinessShowcase({
                 .forEach((business) => {
                   elements.push(
                     <a
-                      href={business.homepage}
+                      href={business.homepages.homepage}
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{ textDecoration: "none", color: "black" }}
