@@ -47,7 +47,9 @@ export default async function handler(req, res) {
     }
 
     let nextProductId = businessResponse.rows[0].next_product_id;
-    const departments = businessResponse.rows[0].departments.split(":");
+    const departments = businessResponse.rows[0].departments
+      .split(":")
+      .filter(Boolean);
     const uploadSettings =
       JSON.parse(businessResponse.rows[0].upload_settings).Shopify || {};
     const includeTags = new Set(
@@ -176,7 +178,7 @@ export default async function handler(req, res) {
             ];
             const description = Xss(product.body_html.replace(/<[^>]*>/g, ""));
             const link = Xss(`${shopifyHomepage}/products/${product.handle}`)
-              .replace(/\/\//g, "/")
+              .replace(/\/\/+/g, "/")
               .replace("https:/", "https://");
             let price = parseFloat(product.variants[0].price);
             let priceRange = [price, price];

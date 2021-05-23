@@ -110,7 +110,9 @@ export default async function handler(req, res) {
     return;
   }
   try {
-    primaryKeywords = primaryKeywords.map((keyword) => Xss(keyword));
+    primaryKeywords = primaryKeywords
+      .map((keyword) => Xss(keyword))
+      .filter(Boolean);
   } catch {
     res.status(400).json({ error: "Invalid primary keywords" });
     return;

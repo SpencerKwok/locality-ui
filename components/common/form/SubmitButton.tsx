@@ -3,8 +3,9 @@ import Button from "react-bootstrap/Button";
 
 import styles from "./form.module.css";
 
-export interface FormSubmitButtonProps
-  extends React.HTMLProps<HTMLButtonElement> {
+import type { ButtonProps } from "react-bootstrap/Button";
+
+export interface FormSubmitButtonProps extends ButtonProps {
   text: string;
   submittingText: string;
   isSubmitting: boolean;
@@ -15,14 +16,14 @@ export default function FormSubmitButton({
   submittingText,
   isSubmitting,
   disabled,
-  style,
+  ...rest
 }: FormSubmitButtonProps) {
   return (
     <Button
+      {...rest}
       className={styles.button}
       type="submit"
       disabled={isSubmitting}
-      style={style}
     >
       {isSubmitting && !disabled ? (
         <React.Fragment>

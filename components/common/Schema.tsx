@@ -51,6 +51,10 @@ export interface PostMethods {
     request: ProductUploadRequest;
     response: ProductUploadResponse;
   };
+  SquareProductUpload: {
+    request: SquareProductUploadRequest;
+    response: SquareProductUploadResponse;
+  };
   UserSignUp: {
     request: UserSignUpRequest;
     response: UserSignUpResponse;
@@ -103,8 +107,9 @@ export interface BaseBusiness {
   longitude: string;
   logo: string;
   homepage: string;
-  shopifyHomepage: string;
   etsyHomepage: string;
+  shopifyHomepage: string;
+  squareHomepage: string;
   departments: string;
   uploadSettings: {
     Etsy?: UploadTypeSettings;
@@ -138,14 +143,16 @@ export interface DeleteFromWishListResponse extends BaseResponse {}
 export interface HomepagesUpdateRequest {
   id: number;
   homepage: string;
-  shopifyHomepage: string;
   etsyHomepage: string;
+  shopifyHomepage: string;
+  squareHomepage: string;
 }
 
 export interface HomepagesUpdateResponse extends BaseResponse {
   homepage: string;
-  shopifyHomepage: string;
   etsyHomepage: string;
+  shopifyHomepage: string;
+  squareHomepage: string;
 }
 
 export interface LogoUpdateRequest {
@@ -245,6 +252,12 @@ export interface ProductUploadRequest {
 }
 
 export interface ProductUploadResponse extends BaseResponse {}
+
+export interface SquareProductUploadRequest extends ProductUploadRequest {
+  csv: string;
+}
+
+export interface SquareProductUploadResponse extends ProductUploadResponse {}
 
 export interface UserSignUpRequest {
   firstName: string;

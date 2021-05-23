@@ -116,8 +116,12 @@ export default async function handler(req, res) {
             const image = Xss(
               product.MainImage.url_570xN || product.MainImage.url_fullxfull
             );
-            const primaryKeywords = product.tags.map((x) => Xss(x));
-            const departments = product.taxonomy_path.map((x) => Xss(x));
+            const primaryKeywords = product.tags
+              .map((x) => Xss(x))
+              .filter(Boolean);
+            const departments = product.taxonomy_path
+              .map((x) => Xss(x))
+              .filter(Boolean);
             const description = Xss(
               product.description.replace(/<[^>]*>/g, "")
             );

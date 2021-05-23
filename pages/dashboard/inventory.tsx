@@ -145,14 +145,20 @@ export default function Inventory({
     });
   };
 
-  const onUpload = async (uploadType: UploadType) => {
-    let methodName: "ShopifyProductUpload" | "EtsyProductUpload";
+  const onUpload = async (uploadType: UploadType, file?: string) => {
+    let methodName:
+      | "ShopifyProductUpload"
+      | "EtsyProductUpload"
+      | "SquareProductUpload";
     switch (uploadType) {
+      case "Etsy":
+        methodName = "EtsyProductUpload";
+        break;
       case "Shopify":
         methodName = "ShopifyProductUpload";
         break;
-      case "Etsy":
-        methodName = "EtsyProductUpload";
+      case "Square":
+        methodName = "SquareProductUpload";
         break;
       default:
         return;
@@ -166,7 +172,14 @@ export default function Inventory({
       successful: false,
     });
     await PostRpcClient.getInstance()
-      .call(methodName, { businessId: businesses[businessIndex].id }, cookie)
+      .call(
+        methodName,
+        {
+          businessId: businesses[businessIndex].id,
+          csv: file,
+        },
+        cookie
+      )
       .then(({ error }) => {
         if (error) {
           setUploadStatus({

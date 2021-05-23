@@ -1,19 +1,21 @@
 import { createRef } from "react";
 import dynamic from "next/dynamic";
 import * as yup from "yup";
-import { Formik, FormikConfig } from "formik";
+import { Formik } from "formik";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 
-import type { BaseBusiness, UploadTypeSettings } from "../common/Schema";
 import DashboardLayout from "./Layout";
 import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
 import { Base64, fileToBase64 } from "./ImageHelpers";
 import Stack from "../common/Stack";
 import Select from "../common/select/VirtualSelect";
 import styles from "./Business.module.css";
+
+import type { BaseBusiness, UploadTypeSettings } from "../common/Schema";
+import type { FormikConfig } from "formik";
 
 const BusinessList = dynamic(() => import("./BusinessList"));
 const NewBusiness = dynamic(() => import("../common/popups/NewBusiness"));
@@ -24,8 +26,9 @@ export interface UpdateLogoRequest {
 
 export interface UpdateHomepagesRequest {
   homepage: string;
-  shopifyHomepage?: string;
   etsyHomepage?: string;
+  shopifyHomepage?: string;
+  squareHomepage?: string;
 }
 
 export interface UpdateDepartmentsRequest {
@@ -71,7 +74,6 @@ const UpdateLogoSchema = yup.object().shape({
 
 const UpdateHomepagesSchema = yup.object().shape({
   homepage: yup.string().required("Required").max(255, "Too long"),
-  shopifyHomepage: yup.string().optional().max(255, "Too long"),
   etsyHomepage: yup
     .string()
     .optional()
@@ -87,6 +89,8 @@ const UpdateHomepagesSchema = yup.object().shape({
       }
     )
     .max(255, "Too long"),
+  shopifyHomepage: yup.string().optional().max(255, "Too long"),
+  squareHomepage: yup.string().optional().max(255, "Too long"),
 });
 
 const UpdateDepartmentsSchema = yup.object().shape({
@@ -264,6 +268,76 @@ export default function Business({
                     {businesses[businessIndex].name}
                   </h1>
                 </div>
+                <div style={{ width: 300 }}>
+                  <h1 className={styles.label}>Departments</h1>
+                  <Formik
+                    enableReinitialize
+                    initialValues={
+                      {
+                        departments: businesses[businessIndex].departments
+                          .split(":")
+                          .filter(Boolean),
+                      } as UpdateDepartmentsRequest
+                    }
+                    onSubmit={onSubmitDepartments}
+                    validationSchema={UpdateDepartmentsSchema}
+                  >
+                    {({
+                      isSubmitting,
+                      values,
+                      handleSubmit,
+                      setFieldValue,
+                    }) => (
+                      <Form onSubmit={handleSubmit}>
+                        <Form.Group>
+                          <InputGroup>
+                            <Select
+                              isClearable
+                              isMulti
+                              isSearchable
+                              searchable
+                              clearable
+                              onChange={(newValues) => {
+                                setFieldValue(
+                                  "departments",
+                                  newValues.map((value: any) => value.label),
+                                  true
+                                );
+                              }}
+                              options={departmentsWithIds}
+                              value={values.departments.map((department) => ({
+                                label: department,
+                              }))}
+                              styles={{
+                                container: (obj) => ({ ...obj, width: 300 }),
+                              }}
+                            />
+                          </InputGroup>
+                          <ErrorMessage name="departments" />
+                        </Form.Group>
+                        {updateDepartmentsStatus.error && (
+                          <div style={{ color: "red" }}>
+                            {updateDepartmentsStatus.error}
+                          </div>
+                        )}
+                        {updateDepartmentsStatus.successful && (
+                          <div style={{ color: "green" }}>
+                            Successfully updated departments!
+                          </div>
+                        )}
+                        <Stack direction="row-reverse">
+                          <SubmitButton
+                            text="Update"
+                            submittingText="Updating..."
+                            isSubmitting={isSubmitting}
+                          />
+                        </Stack>
+                      </Form>
+                    )}
+                  </Formik>
+                </div>
+              </Stack>
+              <div>
                 <h1 className={styles.label}>Logo</h1>
                 <Formik
                   enableReinitialize
@@ -377,7 +451,7 @@ export default function Business({
                     </Form>
                   )}
                 </Formik>
-              </Stack>
+              </div>
               <Stack direction="column" rowAlign="flex-start" spacing={32}>
                 <div style={{ width: 300 }}>
                   <h1 className={styles.label}>Homepages</h1>
@@ -386,9 +460,11 @@ export default function Business({
                     initialValues={
                       {
                         homepage: businesses[businessIndex].homepage,
+                        etsyHomepage: businesses[businessIndex].etsyHomepage,
                         shopifyHomepage:
                           businesses[businessIndex].shopifyHomepage,
-                        etsyHomepage: businesses[businessIndex].etsyHomepage,
+                        squareHomepage:
+                          businesses[businessIndex].squareHomepage,
                       } as UpdateHomepagesRequest
                     }
                     onSubmit={onSubmitHomepages}
@@ -427,6 +503,28 @@ export default function Business({
                         <Form.Group>
                           <Label
                             description={
+                              'Adding your Etsy storefront (if applicable) will enable you to upload your products to Locality from your Etsy storefront in the "Inventory" tab.'
+                            }
+                          >
+                            Etsy Storefront
+                          </Label>
+                          <InputGroup>
+                            <FormControl
+                              aria-label="Etsy Storefront"
+                              aria-details="Enter Etsy storefront here"
+                              id="etsyHomepage"
+                              onBlur={handleBlur}
+                              onChange={handleChange}
+                              placeholder="e.g. www.etsy.com/shop/Dogzsquadarts"
+                              type="text"
+                              value={values.etsyHomepage}
+                            />
+                          </InputGroup>
+                          <ErrorMessage name="etsyHomepage" />
+                        </Form.Group>
+                        <Form.Group>
+                          <Label
+                            description={
                               'Adding your Shopify website (if applicable) will enable you to upload your products to Locality from your Shopify website in the "Inventory" tab.'
                             }
                           >
@@ -449,24 +547,24 @@ export default function Business({
                         <Form.Group>
                           <Label
                             description={
-                              'Adding your Etsy storefront (if applicable) will enable you to upload your products to Locality from your Etsy storefront in the "Inventory" tab.'
+                              'Adding your Square website (if applicable) will enable you to upload your products to Locality from your Square website in the "Inventory" tab.'
                             }
                           >
-                            Etsy Storefront
+                            Square Website
                           </Label>
                           <InputGroup>
                             <FormControl
-                              aria-label="Etsy Homepage"
-                              aria-details="Enter Etsy homepage here"
-                              id="etsyHomepage"
+                              aria-label="Square Website"
+                              aria-details="Enter Square website here"
+                              id="squareHomepage"
                               onBlur={handleBlur}
                               onChange={handleChange}
-                              placeholder="e.g. www.etsy.com/shop/Dogzsquadarts"
+                              placeholder="e.g. www.cantiqliving.com"
                               type="text"
-                              value={values.etsyHomepage}
+                              value={values.squareHomepage}
                             />
                           </InputGroup>
-                          <ErrorMessage name="etsyHomepage" />
+                          <ErrorMessage name="squareHomepage" />
                         </Form.Group>
                         {updateHomepagesStatus.error && (
                           <div style={{ color: "red" }}>
@@ -476,74 +574,6 @@ export default function Business({
                         {updateHomepagesStatus.successful && (
                           <div style={{ color: "green" }}>
                             Successfully updated homepages!
-                          </div>
-                        )}
-                        <Stack direction="row-reverse">
-                          <SubmitButton
-                            text="Update"
-                            submittingText="Updating..."
-                            isSubmitting={isSubmitting}
-                          />
-                        </Stack>
-                      </Form>
-                    )}
-                  </Formik>
-                </div>
-                <div style={{ width: 300 }}>
-                  <h1 className={styles.label}>Departments</h1>
-                  <Formik
-                    enableReinitialize
-                    initialValues={
-                      {
-                        departments: businesses[businessIndex].departments
-                          .split(":")
-                          .filter(Boolean),
-                      } as UpdateDepartmentsRequest
-                    }
-                    onSubmit={onSubmitDepartments}
-                    validationSchema={UpdateDepartmentsSchema}
-                  >
-                    {({
-                      isSubmitting,
-                      values,
-                      handleSubmit,
-                      setFieldValue,
-                    }) => (
-                      <Form onSubmit={handleSubmit}>
-                        <Form.Group>
-                          <InputGroup>
-                            <Select
-                              isClearable
-                              isMulti
-                              isSearchable
-                              searchable
-                              clearable
-                              onChange={(newValues) => {
-                                setFieldValue(
-                                  "departments",
-                                  newValues.map((value: any) => value.label),
-                                  true
-                                );
-                              }}
-                              options={departmentsWithIds}
-                              value={values.departments.map((department) => ({
-                                label: department,
-                              }))}
-                              styles={{
-                                container: (obj) => ({ ...obj, width: 300 }),
-                              }}
-                            />
-                          </InputGroup>
-                          <ErrorMessage name="departments" />
-                        </Form.Group>
-                        {updateDepartmentsStatus.error && (
-                          <div style={{ color: "red" }}>
-                            {updateDepartmentsStatus.error}
-                          </div>
-                        )}
-                        {updateDepartmentsStatus.successful && (
-                          <div style={{ color: "green" }}>
-                            Successfully updated departments!
                           </div>
                         )}
                         <Stack direction="row-reverse">

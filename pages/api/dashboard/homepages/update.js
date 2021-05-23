@@ -13,18 +13,26 @@ export default async function handler(req, res) {
     return;
   }
 
-  const f = async (businessId, homepage, shopifyHomepage, etsyHomepage) => {
+  const f = async (
+    businessId,
+    homepage,
+    etsyHomepage,
+    shopifyHomepage,
+    squareHomepage
+  ) => {
     const [, psqlError] = await Psql.query(
       SqlString.format(
-        "UPDATE businesses SET homepage=E?, shopify_homepage=E?, etsy_homepage=E? WHERE id=?",
-        [homepage, shopifyHomepage, etsyHomepage, businessId]
+        "UPDATE businesses SET homepage=E?, etsy_homepage=E?, shopify_homepage=E?, square_homepage=E? WHERE id=?",
+        [homepage, etsyHomepage, shopifyHomepage, squareHomepage, businessId]
       )
     );
     if (psqlError) {
       res.status(500).json({ error: psqlError });
       return;
     }
-    res.status(200).json({ homepage, shopifyHomepage, etsyHomepage });
+    res
+      .status(200)
+      .json({ homepage, etsyHomepage, shopifyHomepage, squareHomepage });
   };
 
   let homepage = Xss(req.body.homepage || "");
@@ -51,6 +59,17 @@ export default async function handler(req, res) {
     }
   }
 
+  let squareHomepage = Xss(req.body.squareHomepage || "");
+  if (squareHomepage !== "") {
+    try {
+      squareHomepage = addHttpsProtocol(squareHomepage);
+      new URL(squareHomepage);
+    } catch (error) {
+      res.status(400).json({ error: "Invalid Square Website" });
+      return;
+    }
+  }
+
   let etsyHomepage = Xss(req.body.etsyHomepage || "");
   if (etsyHomepage !== "") {
     etsyHomepage = addHttpsProtocol(etsyHomepage);
@@ -68,11 +87,17 @@ export default async function handler(req, res) {
   const businessId = id;
   if (businessId === 0) {
     if (Number.isInteger(req.body.id)) {
-      await f(req.body.id, homepage, shopifyHomepage, etsyHomepage);
+      await f(
+        req.body.id,
+        homepage,
+        etsyHomepage,
+        shopifyHomepage,
+        squareHomepage
+      );
     } else {
       res.status(400).json({ error: "Invalid company id" });
     }
   } else {
-    await f(id, homepage, shopifyHomepage, etsyHomepage);
+    await f(id, homepage, etsyHomepage, shopifyHomepage, squareHomepage);
   }
 }
