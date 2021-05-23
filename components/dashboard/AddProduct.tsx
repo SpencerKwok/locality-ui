@@ -150,16 +150,6 @@ function AddProduct({
               style={{ margin: 24 }}
             >
               {uploadType === "Square" && !loading && !successful && (
-                <button
-                  className={styles["close-button"]}
-                  onClick={() => {
-                    !loading && close();
-                  }}
-                >
-                  &times;
-                </button>
-              )}
-              {uploadType === "Square" && !loading && !successful && (
                 <Formik
                   enableReinitialize
                   initialValues={{} as UploadSquareProductsRequest}
@@ -236,6 +226,16 @@ function AddProduct({
                 </Formik>
               )}
               {error !== "" && <p style={{ textAlign: "center" }}>{error}</p>}
+              {!loading && (
+                <button
+                  className={styles["close-button"]}
+                  onClick={() => {
+                    !loading && close();
+                  }}
+                >
+                  &times;
+                </button>
+              )}
               {loading && (
                 <Stack direction="column" rowAlign="center" spacing={24}>
                   <h4>Uploading {uploadType} data...</h4>

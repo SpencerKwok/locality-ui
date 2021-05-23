@@ -510,8 +510,8 @@ export default function Business({
                           </Label>
                           <InputGroup>
                             <FormControl
-                              aria-label="Etsy Homepage"
-                              aria-details="Enter Etsy homepage here"
+                              aria-label="Etsy Storefront"
+                              aria-details="Enter Etsy storefront here"
                               id="etsyHomepage"
                               onBlur={handleBlur}
                               onChange={handleChange}
