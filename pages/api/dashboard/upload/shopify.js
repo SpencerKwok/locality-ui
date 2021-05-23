@@ -93,12 +93,13 @@ export default async function handler(req, res) {
       return;
     }
 
-    // TODO: There is a certificate hostname mismatch that causes
-    // an fetch error when connecting to a myshopify.com domain
-    // using HTTPS. Although not recommended due to MITMA, we switch
-    // to http and hope redirect to https by the server is good enough
+    // TODO: There is a certificate hostname mismatch when
+    // fetching from the www subdomain instead of the root
+    // domain. For now, we just replace the www subdomain
+    // with the root domain, but there is probably a better
+    // way of handling this...
     if (domain.match(/.*\.myshopify.com(\/)?/g)) {
-      shopifyHomepage = shopifyHomepage.replace("https", "http");
+      shopifyHomepage = shopifyHomepage.replace("https://www.", "https://");
     }
 
     const [productsResponse, productsError] = await Psql.query(
@@ -163,6 +164,10 @@ export default async function handler(req, res) {
             }
 
             if (shouldExclude || !shouldInclude) {
+              return;
+            }
+
+            if (product.images.length === 0 || product.variants.length === 0) {
               return;
             }
 
