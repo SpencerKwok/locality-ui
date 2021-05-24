@@ -1,5 +1,4 @@
 import { useRouter } from "next/router";
-import { getSession } from "next-auth/client";
 
 import HomePage from "../components/home/Home";
 import RootLayout from "../components/common/RootLayout";
