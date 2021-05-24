@@ -93,8 +93,8 @@ export default async function handler(req, res) {
           city,
           province,
           country,
-          latLng.lat,
-          latLng.lng,
+          latLng.lat.toString(),
+          latLng.lng.toString(),
         ]
       )
     );

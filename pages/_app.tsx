@@ -19,7 +19,7 @@ export default function App({ Component, pageProps }: AppProps) {
     // within session protected pages with the
     // exception of signup to the dashboard
     if (
-      !prevPath.match(/^\/signup/g) &&
+      !router.pathname.match(/^\/signup/g) &&
       prevPath.match(protectedPagesRegex) &&
       router.pathname.match(protectedPagesRegex)
     ) {
