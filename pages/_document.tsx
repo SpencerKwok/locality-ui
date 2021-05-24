@@ -8,6 +8,7 @@ import Document, {
 } from "next/document";
 import { ServerStyleSheet } from "styled-components";
 
+const prod = process.env.NODE_ENV === "production";
 export default class MyDocument extends Document {
   static async getInitialProps(context: DocumentContext) {
     const sheet = new ServerStyleSheet();
@@ -93,6 +94,8 @@ export default class MyDocument extends Document {
           <link rel="manifest" href="/manifest.json" />
 
           <link rel="canonical" href="https://www.mylocality.shop" />
+
+          {prod && <script src={"/js/hotjar.js"}></script>}
         </Head>
         <body>
           <Main />
