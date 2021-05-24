@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getSession } from "next-auth/client";
 import { useRouter } from "next/router";
 
@@ -33,6 +33,14 @@ export default function Account({ cookie, session }: AccountProps) {
     updatedPassword: false,
   });
 
+  useEffect(() => {
+    getSession().then((value) => {
+      if (!value || !value.user) {
+        router.push("/");
+      }
+    });
+  }, []);
+
   const onSubmitPassword = async (values: UpdatePasswordRequest) => {
     await PostRpcClient.getInstance()
       .call(
@@ -56,9 +64,6 @@ export default function Account({ cookie, session }: AccountProps) {
   };
 
   if (!session || !session.user) {
-    if (typeof window !== "undefined") {
-      router.push("/");
-    }
     return null;
   }
 

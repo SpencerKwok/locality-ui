@@ -48,7 +48,7 @@ export default function BusinessSignUp({ session }: BusinessSignUpProps) {
         const newSession = await getSession();
         if (!newSession || !newSession.user) {
           setError(
-            "Sign in failed. Please check the details you provided are correct."
+            "Sign up failed. Please check the details you provided are correct."
           );
           return;
         }
