@@ -100,6 +100,11 @@ export default function Business({
     getDepartments("/api/departments/get").then(({ departments }) => {
       setDepartments(departments);
     });
+    getSession().then((value) => {
+      if (!value || !value.user) {
+        router.push("/");
+      }
+    });
   }, []);
 
   const onSubmitDepartments = async ({
@@ -263,9 +268,6 @@ export default function Business({
   };
 
   if (!session || !session.user) {
-    if (typeof window !== "undefined") {
-      router.push("/");
-    }
     return null;
   }
 

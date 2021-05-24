@@ -16,10 +16,8 @@ export default function App({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
     // By-pass waiting if user is transitioning
-    // within session protected pages with the
-    // exception of signup to the dashboard
+    // within session protected pages
     if (
-      !prevPath.match(/^\/signup/g) &&
       prevPath.match(protectedPagesRegex) &&
       router.pathname.match(protectedPagesRegex)
     ) {
