@@ -46,7 +46,7 @@ export default async function handler(req, res) {
     return;
   }
 
-  const userId = user.rows[0].id + 1;
+  const userId = (user.rows[0].id || 0) + 1;
   const hash = await Bcrypt.hash(password, 12);
   const [, psqlErrorAddUser] = await Psql.query(
     SqlString.format(
