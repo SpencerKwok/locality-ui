@@ -5,12 +5,18 @@ import FacetList from "./FacetList";
 import ProductShowcase from "./ProductShowcase";
 import SearchBar from "./SearchBar";
 import Stack from "../common/Stack";
-import { Product } from "../common/Schema";
+
 import LocalityLogo from "../common/images/LocalityLogo";
 import { useWindowSize } from "../../lib/common";
 
+import type { Ellipsis } from "react-bootstrap/PageItem";
+import type { Product } from "../common/Schema";
+
 const Pagination = dynamic(() => import("react-bootstrap/Pagination"));
 const PaginationItem = dynamic(() => import("react-bootstrap/PageItem"));
+const PaginationEllipsis = dynamic(() =>
+  import("react-bootstrap/PageItem").then((module) => module.Ellipsis)
+) as typeof Ellipsis;
 
 export type UserInputChange = {
   page: (value: number) => void;
@@ -53,9 +59,135 @@ export default function Search({
   onToggleWishList,
 }: SearchProps) {
   const size = useWindowSize();
+
   if (!size.width) {
     return null;
   }
+
+  const PaginationDisplay = () => {
+    return (
+      <Pagination>
+        {(() => {
+          const numPages = Math.ceil(searchResults.nbHits / 24);
+          if (numPages < 12) {
+            return Array.from(Array(numPages).keys()).map((index) => (
+              <PaginationItem
+                active={userInput.page === index}
+                key={index}
+                onClick={() => {
+                  onUserInputChange.page(index);
+                }}
+              >
+                {index + 1}
+              </PaginationItem>
+            ));
+          }
+
+          const pages = Array<JSX.Element>();
+          if (userInput.page <= 6) {
+            const maxPageBeforeEllipsis = userInput.page === 6 ? 11 : 10;
+            for (let index = 0; index < maxPageBeforeEllipsis; ++index) {
+              pages.push(
+                <PaginationItem
+                  active={userInput.page === index}
+                  key={index}
+                  onClick={() => {
+                    onUserInputChange.page(index);
+                  }}
+                >
+                  {index + 1}
+                </PaginationItem>
+              );
+            }
+            pages.push(<PaginationEllipsis key="ellipsis_1" />);
+            pages.push(
+              <PaginationItem
+                active={userInput.page === numPages - 1}
+                key={numPages - 1}
+                onClick={() => {
+                  onUserInputChange.page(numPages - 1);
+                }}
+              >
+                {numPages}
+              </PaginationItem>
+            );
+          } else if (userInput.page <= numPages - 8) {
+            pages.push(
+              <PaginationItem
+                active={userInput.page === 0}
+                key={0}
+                onClick={() => {
+                  onUserInputChange.page(0);
+                }}
+              >
+                1
+              </PaginationItem>
+            );
+            pages.push(<PaginationEllipsis key="ellipsis_1" />);
+            for (
+              let index = userInput.page - 5;
+              index <= userInput.page + 5;
+              ++index
+            ) {
+              pages.push(
+                <PaginationItem
+                  active={userInput.page === index}
+                  key={index}
+                  onClick={() => {
+                    onUserInputChange.page(index);
+                  }}
+                >
+                  {index + 1}
+                </PaginationItem>
+              );
+            }
+            pages.push(<PaginationEllipsis key="ellipsis_2" />);
+            pages.push(
+              <PaginationItem
+                active={userInput.page === numPages - 1}
+                key={numPages - 1}
+                onClick={() => {
+                  onUserInputChange.page(numPages - 1);
+                }}
+              >
+                {numPages}
+              </PaginationItem>
+            );
+          } else {
+            pages.push(
+              <PaginationItem
+                active={userInput.page === 0}
+                key={0}
+                onClick={() => {
+                  onUserInputChange.page(0);
+                }}
+              >
+                1
+              </PaginationItem>
+            );
+            pages.push(<PaginationEllipsis key="ellipsis_1" />);
+            const minPageBeforeEllipsis =
+              userInput.page === numPages - 7 ? numPages - 11 : numPages - 10;
+            for (let index = minPageBeforeEllipsis; index < numPages; ++index) {
+              pages.push(
+                <PaginationItem
+                  active={userInput.page === index}
+                  key={index}
+                  onClick={() => {
+                    onUserInputChange.page(index);
+                  }}
+                >
+                  {index + 1}
+                </PaginationItem>
+              );
+            }
+          }
+
+          return pages;
+        })()}
+      </Pagination>
+    );
+  };
 
   return (
     <Stack direction="column" rowAlign="flex-start">
@@ -116,19 +248,7 @@ export default function Search({
       </Stack>
       <Stack direction="row" columnAlign="center" style={{ width: size.width }}>
         <Pagination>
-          {Array.from(Array(Math.ceil(searchResults.nbHits / 24)).keys()).map(
-            (index) => (
-              <PaginationItem
-                active={userInput.page === index}
-                key={index}
-                onClick={() => {
-                  onUserInputChange.page(index);
-                }}
-              >
-                {index + 1}
-              </PaginationItem>
-            )
-          )}
+          <PaginationDisplay />
         </Pagination>
       </Stack>
     </Stack>
