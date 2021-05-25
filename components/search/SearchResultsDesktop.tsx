@@ -41,22 +41,30 @@ export interface SearchResults {
 
 export interface SearchProps {
   loggedIn: boolean;
+  showAllBusinesses: boolean;
+  showAllDepartments: boolean;
   query: string;
   searchResults: SearchResults;
   userInput: UserInput;
   onUserInputChange: UserInputChange;
   onEnter: (query: string) => void;
   onToggleWishList: (objectId: string, value: boolean) => void;
+  onToggleShowAllBusinesses: () => void;
+  onToggleShowAllDepartments: () => void;
 }
 
 export default function Search({
   loggedIn,
+  showAllBusinesses,
+  showAllDepartments,
   query,
   searchResults,
   userInput,
   onUserInputChange,
   onEnter,
   onToggleWishList,
+  onToggleShowAllBusinesses,
+  onToggleShowAllDepartments,
 }: SearchProps) {
   const size = useWindowSize();
 
@@ -220,19 +228,23 @@ export default function Search({
           <Stack direction="column" rowAlign="flex-start" spacing={12}>
             <FacetList
               name="Departments"
+              showAll={showAllDepartments}
               facets={searchResults.facets.departments}
               selectedFacets={userInput.departments}
               onFacetClick={(value) => {
                 onUserInputChange.departments(value);
               }}
+              toggleShowAll={onToggleShowAllDepartments}
             />
             <FacetList
               name="Businesses"
+              showAll={showAllBusinesses}
               facets={searchResults.facets.company}
               selectedFacets={userInput.company}
               onFacetClick={(value) => {
                 onUserInputChange.company(value);
               }}
+              toggleShowAll={onToggleShowAllBusinesses}
             />
           </Stack>
           <Stack direction="column" rowAlign="center">

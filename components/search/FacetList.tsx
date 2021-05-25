@@ -7,20 +7,22 @@ import Stack from "../common/Stack";
 import styles from "./FacetList.module.css";
 
 export interface FacetListProps {
+  showAll: boolean;
   name: string;
   facets: Map<string, number>;
   selectedFacets: Set<string>;
   onFacetClick: (name: string) => void;
+  toggleShowAll: () => void;
 }
 
 export default function FacetList({
+  showAll,
   name,
   facets,
   selectedFacets,
   onFacetClick,
+  toggleShowAll,
 }: FacetListProps) {
-  const [showAll, setShowAll] = useState(false);
-
   const sortedFacets = Array.from(facets, ([name, value]) => ({
     name,
     value,
@@ -62,11 +64,11 @@ export default function FacetList({
             width={8}
           />
           {showAll ? (
-            <a className="" onClick={() => setShowAll(!showAll)}>
+            <a className="" onClick={() => toggleShowAll()}>
               Show Less
             </a>
           ) : (
-            <a className="" onClick={() => setShowAll(!showAll)}>
+            <a className="" onClick={() => toggleShowAll()}>
               Show All {sortedFacets.length} {name}
             </a>
           )}
