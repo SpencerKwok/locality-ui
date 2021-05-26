@@ -10,6 +10,18 @@
   ],
   "website": "https://mylocality.shop",
   "repository": "https://github.com/SpencerKwok/locality-ui",
+  "env": {
+    "TEST": {
+      "description": "Test environment variable",
+      "value": "Test"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "free"
+    }
+  },
   "addons": [
     {
       "plan": "heroku-redis:hobby-dev",
@@ -18,6 +30,12 @@
     {
       "plan": "heroku-postgresql:hobby-dev",
       "as": "DATABASE"
+    },
+    {
+      "plan": "algoliasearch:free"
+    },
+    {
+      "plan": "cloudinary:starter"
     }
   ],
   "buildpacks": [
