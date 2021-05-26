@@ -12,8 +12,12 @@
   "repository": "https://github.com/SpencerKwok/locality-ui",
   "addons": [
     {
-      "plan": "heroku-redis",
+      "plan": "heroku-redis:hobby-dev",
       "as": "REDIS"
+    },
+    {
+      "plan": "heroku-postgresql:hobby-dev",
+      "as": "DATABASE"
     }
   ],
   "buildpacks": [
