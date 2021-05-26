@@ -6,7 +6,7 @@ import { useWindowSize } from "../lib/common";
 
 import { helper } from "./api/businesses";
 
-import type { GetStaticProps } from "next";
+import type { GetServerSideProps } from "next";
 import type { BaseBusiness } from "../components/common/Schema";
 import type { Session } from "next-auth";
 
@@ -15,7 +15,7 @@ interface HomeProps {
   session: Session | null;
 }
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getServerSideProps: GetServerSideProps = async () => {
   const [rawBusinesses] = await helper();
   const businesses = rawBusinesses.businesses
     .map(({ id, logo, homepages, name }: BaseBusiness) => ({
@@ -28,7 +28,6 @@ export const getStaticProps: GetStaticProps = async () => {
   return {
     props: {
       businesses,
-      revalidate: 1,
     },
   };
 };
