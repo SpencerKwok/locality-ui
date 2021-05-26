@@ -1,3 +1,4 @@
+export { default as Arrow } from './Arrow'
 export { default as FacebookLogo } from './FacebookLogo'
 export { default as GoogleLogo } from './GoogleLogo'
 export { default as HeartFilled } from './HeartFilled'

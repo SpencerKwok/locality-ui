@@ -116,6 +116,8 @@ export default function Search({
   session,
 }: SearchProps) {
   const [data, setData] = useState(results);
+  const [showAllBusinesses, setShowAllBusinesses] = useState(false);
+  const [showAllDepartments, setShowAllDepartments] = useState(false);
   const [userInput, setUserInput] = useState(new UserInput(ip, query));
   const router = useRouter();
 
@@ -184,6 +186,8 @@ export default function Search({
         data.hits = newData.hits;
         data.nbHits = newData.nbHits;
         setData(newData);
+        setShowAllBusinesses(false);
+        setShowAllDepartments(false);
       })
       .catch((err) => {
         console.log(err);
@@ -234,6 +238,14 @@ export default function Search({
       });
   };
 
+  const onToggleShowAllBusinesses = () => {
+    setShowAllBusinesses(!showAllBusinesses);
+  };
+
+  const onToggleShowAllDepartments = () => {
+    setShowAllDepartments(!showAllDepartments);
+  };
+
   const company = new Map<string, number>();
   for (const name in data.facets.company) {
     company.set(name, data.facets.company[name]);
@@ -279,6 +291,8 @@ export default function Search({
       ) : (
         <SearchResultsDesktop
           loggedIn={loggedIn}
+          showAllBusinesses={showAllBusinesses}
+          showAllDepartments={showAllDepartments}
           query={userInput.query}
           searchResults={{
             hits: data.hits,
@@ -296,6 +310,8 @@ export default function Search({
           }}
           onEnter={onEnter}
           onToggleWishList={onToggleWishList}
+          onToggleShowAllBusinesses={onToggleShowAllBusinesses}
+          onToggleShowAllDepartments={onToggleShowAllDepartments}
         />
       )}
     </RootLayout>
