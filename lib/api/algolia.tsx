@@ -1,11 +1,17 @@
 import { camelCase, mapKeys } from "lodash";
 
 import AlgoliaSearch from "algoliasearch";
+import {
+  ALGOLIASEARCH_APPLICATION_ID,
+  ALGOLIASEARCH_API_KEY,
+  ALGOLIASEARCH_INDEX,
+} from "./env";
+
 const client = AlgoliaSearch(
-  process.env.ALGOLIASEARCH_APPLICATION_ID || "",
-  process.env.ALGOLIASEARCH_API_KEY || ""
+  ALGOLIASEARCH_APPLICATION_ID || "",
+  ALGOLIASEARCH_API_KEY || ""
 );
-const index = client.initIndex(process.env.ALGOLIASEARCH_INDEX || "");
+const index = client.initIndex(ALGOLIASEARCH_INDEX || "");
 
 const algoliaClient: { [key: string]: any } = {};
 
