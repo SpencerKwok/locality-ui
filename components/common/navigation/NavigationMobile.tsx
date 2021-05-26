@@ -2,7 +2,6 @@ import { Fragment, ReactNode } from "react";
 import Link from "next/link";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import { useRouter } from "next/router";
 import { signOut } from "next-auth/client";
 
 import FacebookLogo from "../images/FacebookLogo";
@@ -18,7 +17,7 @@ const NavigationLayout = ({ children }: NavigationLayoutProps) => (
   <Navbar className={styles.navbar} collapseOnSelect expand="lg" variant="dark">
     <span>
       <a
-        href="https://www.instagram.com/locality.info/"
+        href="https://www.instagram.com/mylocality.shop/"
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -40,8 +39,6 @@ const NavigationLayout = ({ children }: NavigationLayoutProps) => (
 );
 
 export default function Navigation({ type }: NavigationProps) {
-  const router = useRouter();
-
   return (
     <NavigationLayout>
       <Link href="/">
