@@ -10,6 +10,12 @@
   ],
   "website": "https://mylocality.shop",
   "repository": "https://github.com/SpencerKwok/locality-ui",
+  "addons": [
+    {
+      "plan": "heroku-redis",
+      "as": "REDIS"
+    }
+  ],
   "buildpacks": [
     {
       "url": "heroku/nodejs"
