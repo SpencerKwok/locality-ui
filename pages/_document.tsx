@@ -101,6 +101,14 @@ export default class MyDocument extends Document {
           {prod && <script src="/js/analytics.js" />}
         </Head>
         <body>
+          <noscript>
+            <iframe
+              src="https://www.googletagmanager.com/ns.html?id=GTM-WR9KB5K"
+              height="0"
+              width="0"
+              style={{ display: "none", visibility: "hidden" }}
+            ></iframe>
+          </noscript>
           <Main />
           <NextScript />
         </body>
