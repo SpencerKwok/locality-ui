@@ -1,6 +1,7 @@
+import { NEXTAUTH_URL } from "../../lib/env";
 import { PostMethods, GetMethods } from "./Schema";
 
-const baseUrl = typeof window === "undefined" ? process.env.NEXTAUTH_URL : "";
+const baseUrl = typeof window === "undefined" ? NEXTAUTH_URL : "";
 const endpoints = new Map<keyof PostMethods, string>([
   ["AddToWishList", "/api/wishlist/add"],
   ["BusinessSignUp", "/api/signup/business"],
