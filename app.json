@@ -1,0 +1,46 @@
+{
+  "name": "Locality",
+  "description": "Locality is an online marketplace that helps you find special and unique products from locally owned small businesses, making it easy to support and buy local.",
+  "keywords": [
+    "locality",
+    "mylocality",
+    "online marketplace",
+    "support local businesses",
+    "local businesses"
+  ],
+  "website": "https://mylocality.shop",
+  "repository": "https://github.com/SpencerKwok/locality-ui",
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "free"
+    }
+  },
+  "addons": [
+    {
+      "plan": "heroku-redis:hobby-dev",
+      "as": "REDIS"
+    },
+    {
+      "plan": "heroku-postgresql:hobby-dev",
+      "as": "DATABASE"
+    },
+    {
+      "plan": "algoliasearch:free"
+    },
+    {
+      "plan": "cloudinary:starter"
+    }
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    },
+    {
+      "url": "heroku/python"
+    },
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-nginx"
+    }
+  ]
+}

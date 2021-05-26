@@ -1,12 +1,18 @@
 import Md5 from "md5";
 const mailchimp = require("@mailchimp/mailchimp_marketing");
 
+import {
+  MAILCHIMP_API_KEY,
+  MAILCHIMP_SERVER,
+  MAILCHIMP_LOCALITY_ID,
+} from "../env";
+
 mailchimp.setConfig({
-  apiKey: process.env.MAILCHIMP_API_KEY,
-  server: process.env.MAILCHIMP_SERVER,
+  apiKey: MAILCHIMP_API_KEY,
+  server: MAILCHIMP_SERVER,
 });
 
-export const MainListId = process.env.MAILCHIMP_LOCALITY_ID || "";
+export const MainListId = MAILCHIMP_LOCALITY_ID || "";
 
 export interface Subscriber {
   firstName: string;

@@ -6,8 +6,11 @@ import { useWindowSize } from "../lib/common";
 
 import { helper } from "./api/businesses";
 
-import type { GetStaticProps } from "next";
-import type { BaseBusiness } from "../components/common/Schema";
+import type { GetServerSideProps } from "next";
+import type {
+  BaseBusiness,
+  BusinessesResponse,
+} from "../components/common/Schema";
 import type { Session } from "next-auth";
 
 interface HomeProps {
@@ -15,20 +18,27 @@ interface HomeProps {
   session: Session | null;
 }
 
-export const getStaticProps: GetStaticProps = async () => {
-  const [rawBusinesses] = await helper();
-  const businesses = rawBusinesses.businesses
-    .map(({ id, logo, homepages, name }: BaseBusiness) => ({
-      id,
-      logo,
-      homepages: { homepage: homepages.homepage },
-      name,
-    }))
-    .sort((a: { id: number }, b: { id: number }) => b.id - a.id);
+let cachedBusinesses: Array<{
+  id: number;
+  logo: string;
+  homepages: { homepage: string };
+  name: string;
+}> = [];
+export const getServerSideProps: GetServerSideProps = async () => {
+  helper().then((res: any) => {
+    const { businesses }: BusinessesResponse = res[0];
+    cachedBusinesses = businesses
+      .map(({ id, logo, homepages, name }) => ({
+        id,
+        logo,
+        homepages: { homepage: homepages.homepage },
+        name,
+      }))
+      .sort((a: { id: number }, b: { id: number }) => b.id - a.id);
+  });
   return {
     props: {
-      businesses,
-      revalidate: 60 * 60,
+      businesses: cachedBusinesses,
     },
   };
 };

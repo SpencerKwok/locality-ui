@@ -9,7 +9,6 @@ import FacebookLogo from "../images/FacebookLogo";
 import InstagramLogo from "../images/InstagramLogo";
 import NavigationProps from "./NavigationProps";
 import styles from "./Navigation.module.css";
-import { useRouter } from "next/router";
 
 interface NavigationLayoutProps {
   children?: ReactNode;
@@ -19,7 +18,7 @@ const NavigationLayout = ({ children }: NavigationLayoutProps) => (
   <Navbar className={styles.navbar} variant="dark">
     <span>
       <a
-        href="https://www.instagram.com/locality.info/"
+        href="https://www.instagram.com/mylocality.shop/"
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -38,8 +37,6 @@ const NavigationLayout = ({ children }: NavigationLayoutProps) => (
 );
 
 export default function Navigation({ type }: NavigationProps) {
-  const router = useRouter();
-
   return (
     <NavigationLayout>
       <Link href="/">

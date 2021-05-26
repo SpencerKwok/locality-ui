@@ -1,6 +1,7 @@
 import SqlString from "sqlstring";
 import Xss from "xss";
 
+import { ETSY_API_KEY } from "../../../../lib/env";
 import Psql from "../../../../lib/api/postgresql";
 import { productAdd, productDelete } from "../../../../lib/api/dashboard";
 import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
@@ -79,7 +80,7 @@ export default async function handler(req, res) {
     const products = [];
     while (!done) {
       await fetch(
-        `https://openapi.etsy.com/v2/shops/${shopId}/listings/active?api_key=${process.env.ETSY_API_KEY}&page=${page}&includes=MainImage`
+        `https://openapi.etsy.com/v2/shops/${shopId}/listings/active?api_key=${ETSY_API_KEY}&page=${page}&includes=MainImage`
       )
         .then((res) => res.json())
         .then(async (data) => {

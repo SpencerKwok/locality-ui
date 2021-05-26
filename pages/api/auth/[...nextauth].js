@@ -2,6 +2,15 @@ import NextAuth from "next-auth";
 import Providers from "next-auth/providers";
 import Bcrypt from "bcryptjs";
 
+import {
+  FACEBOOK_APP_ID,
+  FACEBOOK_APP_SECRET,
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  //JWT_SECRET,
+  JWT_SIGNING_KEY,
+  SESSION_SECRET,
+} from "../../../lib/env";
 import Psql from "../../../lib/api/postgresql";
 import SqlString from "sqlstring";
 
@@ -112,12 +121,12 @@ export default NextAuth({
       },
     }),
     Providers.Facebook({
-      clientId: process.env.FACEBOOK_APP_ID,
-      clientSecret: process.env.FACEBOOK_APP_SECRET,
+      clientId: FACEBOOK_APP_ID,
+      clientSecret: FACEBOOK_APP_SECRET,
     }),
     Providers.Google({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: GOOGLE_CLIENT_ID,
+      clientSecret: GOOGLE_CLIENT_SECRET,
     }),
   ],
 
@@ -126,10 +135,10 @@ export default NextAuth({
   // the performance trade off
   jwt: {
     //encryption: true,
-    //secret: process.env.JWT_SECRET,
-    signingKey: process.env.JWT_SIGNING_KEY,
+    //secret: JWT_SECRET,
+    signingKey: JWT_SIGNING_KEY,
   },
-  secret: process.env.SESSION_SECRET,
+  secret: SESSION_SECRET,
   session: {
     jwt: true,
     maxAge: 24 * 60 * 60, // 24 hrs

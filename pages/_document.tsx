@@ -8,7 +8,9 @@ import Document, {
 } from "next/document";
 import { ServerStyleSheet } from "styled-components";
 
-const prod = process.env.NODE_ENV === "production";
+import { NODE_ENV } from "../lib/env";
+
+const prod = NODE_ENV === "production";
 export default class MyDocument extends Document {
   static async getInitialProps(context: DocumentContext) {
     const sheet = new ServerStyleSheet();
