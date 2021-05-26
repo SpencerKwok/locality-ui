@@ -18,7 +18,7 @@
   "ga"
 );
 
-ga("create", "G-QQV4ZD62NY", {
+ga("create", "UA-198051005-1", {
   cookieFlags: "SameSite=Strict; Secure",
   allowLinker: true,
   legacyHistoryImport: false,
