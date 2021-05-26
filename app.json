@@ -42,12 +42,5 @@
     {
       "url": "https://github.com/heroku/heroku-buildpack-nginx"
     }
-  ],
-  "environments": {
-    "test": {
-      "scripts": {
-        "postdeploy": "./tests/run_tests.sh"
-      }
-    }
-  }
+  ]
 }
