@@ -18,7 +18,7 @@
   "ga"
 );
 
-ga("create", "G-E4NHV89WH8", {
+ga("create", "G-QQV4ZD62NY", {
   cookieFlags: "SameSite=Strict; Secure",
   allowLinker: true,
   legacyHistoryImport: false,
