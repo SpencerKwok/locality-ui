@@ -16,22 +16,6 @@
       "size": "free"
     }
   },
-  "addons": [
-    {
-      "plan": "heroku-redis:hobby-dev",
-      "as": "REDIS"
-    },
-    {
-      "plan": "heroku-postgresql:hobby-dev",
-      "as": "DATABASE"
-    },
-    {
-      "plan": "algoliasearch:free"
-    },
-    {
-      "plan": "cloudinary:starter"
-    }
-  ],
   "buildpacks": [
     {
       "url": "heroku/nodejs"
