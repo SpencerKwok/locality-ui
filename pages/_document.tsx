@@ -97,7 +97,8 @@ export default class MyDocument extends Document {
 
           <link rel="canonical" href="https://www.mylocality.shop" />
 
-          {prod && <script src={"/js/hotjar.js"}></script>}
+          {prod && <script src="/js/hotjar.js" />}
+          {prod && <script src="/js/analytics.js" />}
         </Head>
         <body>
           <Main />
