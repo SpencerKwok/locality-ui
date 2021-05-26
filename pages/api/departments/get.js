@@ -1,3 +1,5 @@
+import { ETSY_API_KEY } from "../../../lib/env";
+
 function helper(tree) {
   if (tree.length === 0) {
     return [];
@@ -14,7 +16,7 @@ function helper(tree) {
 
 async function init() {
   return await fetch(
-    `http://openapi.etsy.com/v2/taxonomy/seller/get?api_key=${process.env.ETSY_API_KEY}`
+    `http://openapi.etsy.com/v2/taxonomy/seller/get?api_key=${ETSY_API_KEY}`
   )
     .then((data) => data.json())
     .then((tree) => helper(tree.results));

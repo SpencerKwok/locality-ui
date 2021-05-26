@@ -5,7 +5,7 @@ import {
   ALGOLIASEARCH_APPLICATION_ID,
   ALGOLIASEARCH_API_KEY,
   ALGOLIASEARCH_INDEX,
-} from "./env";
+} from "../env";
 
 const client = AlgoliaSearch(
   ALGOLIASEARCH_APPLICATION_ID || "",

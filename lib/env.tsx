@@ -26,6 +26,7 @@ export const MAILCHIMP_API_KEY = process.env.MAILCHIMP_API_KEY;
 export const MAILCHIMP_LOCALITY_ID = process.env.MAILCHIMP_LOCALITY_ID;
 export const MAILCHIMP_SERVER = process.env.MAILCHIMP_SERVER;
 export const MAPQUEST_KEY = process.env.MAPQUEST_KEY;
+export const NEXTAUTH_URL = process.env.NEXTAUTH_URL;
 export const NEXT_TELEMETRY_DISABLED = process.env.NEXT_TELEMETRY_DISABLED;
 export const NODE_ENV = process.env.NODE_ENV;
 export const REDIS_TLS_URL = process.env.REDIS_TLS_URL;

@@ -3,6 +3,7 @@ import EmailValidator from "email-validator";
 import SqlString from "sqlstring";
 import Xss from "xss";
 
+import { MAPQUEST_KEY } from "../../../lib/env";
 import MailChimp, { MainListId } from "../../../lib/api/mailchimp";
 import Psql from "../../../lib/api/postgresql";
 
@@ -68,7 +69,7 @@ export default async function handler(req, res) {
 
   try {
     const latLng = await fetch(
-      `http://www.mapquestapi.com/geocoding/v1/address?key=${process.env.MAPQUEST_KEY}&maxResults=1&location=${address},${city},${province},${country}`
+      `http://www.mapquestapi.com/geocoding/v1/address?key=${MAPQUEST_KEY}&maxResults=1&location=${address},${city},${province},${country}`
     )
       .then((res) => res.json())
       .then(({ results }) => results[0].locations[0].latLng);
