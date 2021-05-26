@@ -10,12 +10,6 @@
   ],
   "website": "https://mylocality.shop",
   "repository": "https://github.com/SpencerKwok/locality-ui",
-  "env": {
-    "TEST": {
-      "description": "Test environment variable",
-      "value": "Test"
-    }
-  },
   "formation": {
     "web": {
       "quantity": 1,
