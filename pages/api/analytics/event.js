@@ -20,9 +20,6 @@ export default async function handler(req, res) {
     res.status(200).end();
   }
 
-  // Log analytic query
-  console.log(req.query);
-
   // If there are any issues with
   // the sent event, ignore it
   const name = Xss(decodeURIComponent(req.query["name"] || ""));
@@ -47,11 +44,7 @@ export default async function handler(req, res) {
         ],
       }),
     }
-  )
-    .then((res) => {
-      console.log(res);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  ).catch((err) => {
+    console.log(err);
+  });
 }
