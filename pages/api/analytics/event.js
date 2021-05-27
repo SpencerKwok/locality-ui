@@ -33,8 +33,6 @@ export default async function handler(req, res) {
   // Don't send name and redirect url to Google analytics
   req.query["name"] = undefined;
   req.query["redirect_url"] = undefined;
-
-  const params = req.query.map((value) => Xss(decodeURIComponent(value || "")));
   fetch(
     `https://www.google-analytics.com/mp/collect?measurement_id=${GOOGLE_MEASUREMENT_ID}&api_secret=${GOOGLE_ANALYTICS_API_SECRET}`,
     {
@@ -44,7 +42,7 @@ export default async function handler(req, res) {
         events: [
           {
             name,
-            params,
+            params: req.query,
           },
         ],
       }),
