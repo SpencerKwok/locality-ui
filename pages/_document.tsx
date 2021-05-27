@@ -97,9 +97,18 @@ export default class MyDocument extends Document {
 
           <link rel="canonical" href="https://www.mylocality.shop" />
 
-          {prod && <script src={"/js/hotjar.js"}></script>}
+          {prod && <script src="/js/hotjar.js" />}
+          {prod && <script src="/js/gtag.js" />}
         </Head>
         <body>
+          <noscript>
+            <iframe
+              src="https://www.googletagmanager.com/ns.html?id=GTM-WR9KB5K"
+              height="0"
+              width="0"
+              style={{ display: "none", visibility: "hidden" }}
+            ></iframe>
+          </noscript>
           <Main />
           <NextScript />
         </body>

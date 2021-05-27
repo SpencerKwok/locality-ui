@@ -18,8 +18,11 @@ export const EMAIL_USER = process.env.EMAIL_USER;
 export const ETSY_API_KEY = process.env.ETSY_API_KEY;
 export const FACEBOOK_APP_ID = process.env.FACEBOOK_APP_ID;
 export const FACEBOOK_APP_SECRET = process.env.FACEBOOK_APP_SECRET;
+export const GOOGLE_ANALYTICS_API_SECRET =
+  process.env.GOOGLE_ANALYTICS_API_SECRET;
 export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+export const GOOGLE_MEASUREMENT_ID = process.env.GOOGLE_MEASUREMENT_ID;
 export const JWT_SECRET = process.env.JWT_SECRET;
 export const JWT_SIGNING_KEY = process.env.JWT_SIGNING_KEY;
 export const MAILCHIMP_API_KEY = process.env.MAILCHIMP_API_KEY;
