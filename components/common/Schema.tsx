@@ -179,7 +179,7 @@ export interface BaseProduct {
 export interface Product extends BaseProduct {
   business: string;
   departments: Array<string>;
-  description: Array<string>;
+  description: string;
   link: string;
   priceRange: Array<number>;
   tags: Array<string>;
@@ -194,7 +194,7 @@ export const EmptyProduct: Product = {
   preview: "",
   business: "",
   departments: [],
-  description: [],
+  description: "",
   link: "",
   priceRange: [-1, -1],
   tags: [],
@@ -203,17 +203,17 @@ export const EmptyProduct: Product = {
 };
 
 export interface ProductUpdateRequest {
-  businessId: number;
+  id: number;
   product: {
     name: string;
     id: number;
-    primaryKeywords: Array<string>;
     departments: Array<string>;
     description: string;
-    image: string;
     link: string;
-    price: number;
     priceRange: Array<number>;
+    tags: Array<string>;
+    variantImages: Array<string>;
+    variantTags: Array<string>;
   };
 }
 
@@ -222,16 +222,16 @@ export interface ProductUpdateResponse extends BaseResponse {
 }
 
 export interface ProductAddRequest {
-  businessId: number;
+  id: number;
   product: {
     name: string;
-    primaryKeywords: Array<string>;
     departments: Array<string>;
     description: string;
-    image: string;
     link: string;
-    price: number;
     priceRange: Array<number>;
+    tags: Array<string>;
+    variantImages: Array<string>;
+    variantTags: Array<string>;
   };
 }
 
@@ -240,7 +240,7 @@ export interface ProductAddResponse extends BaseResponse {
 }
 
 export interface ProductDeleteRequest {
-  businessId: number;
+  id: number;
   product: {
     id: number;
   };
@@ -256,7 +256,7 @@ export interface PasswordUpdateRequest {
 export interface PasswordUpdateResponse extends BaseResponse {}
 
 export interface ProductUploadRequest {
-  businessId: number;
+  id: number;
 }
 
 export interface ProductUploadResponse extends BaseResponse {}
@@ -277,7 +277,7 @@ export interface UserSignUpRequest {
 export interface UserSignUpResponse extends SignUpResponse {}
 
 export interface UploadSettingsUpdateRequest extends BaseResponse {
-  businessId: number;
+  id: number;
   Etsy?: UploadTypeSettings;
   Shopify?: UploadTypeSettings;
 }

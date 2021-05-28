@@ -1,10 +1,17 @@
 import SqlString from "sqlstring";
-import Xss from "xss";
 
 import Algolia from "../../../../lib/api/algolia";
 import Cloudinary from "../../../../lib/api/cloudinary";
 import Psql from "../../../../lib/api/postgresql";
+import { addHttpsProtocol } from "../../../../lib/api/dashboard";
 import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
+import {
+  cleanseString,
+  cleanseStringArray,
+  isObject,
+  isString,
+  isStringArray,
+} from "../../../../lib/api/common";
 
 export const config = {
   api: {
@@ -22,69 +29,10 @@ export default async function handler(req, res) {
     return;
   }
 
-  const f = async (product) => {
-    const {
-      businessId,
-      departments,
-      description,
-      image,
-      link,
-      name,
-      price,
-      priceRange,
-      primaryKeywords,
-      productId,
-    } = product;
-
-    const [url, cloudinaryError] = await Cloudinary.upload(image, {
-      exif: false,
-      format: "webp",
-      public_id: `${businessId}/${productId}`,
-      unique_filename: false,
-      overwrite: true,
-    });
-    if (cloudinaryError) {
-      res.status(500).json({ error: cloudinaryError });
-      return;
-    }
-
-    const algoliaError = await Algolia.partialUpdateObject(
-      {
-        objectID: `${businessId}_${productId}`,
-        name: name,
-        primary_keywords: primaryKeywords,
-        departments: departments,
-        description: description,
-        price: price,
-        price_range: priceRange,
-        link: link,
-        image: url,
-      },
-      { createIfNotExists: false }
-    );
-    if (algoliaError) {
-      res.status(500).json({ error: algoliaError });
-      return;
-    }
-
-    const query = SqlString.format(
-      `UPDATE products SET name=E?, image=? WHERE business_id=? AND id=?`,
-      [name, url, businessId, productId]
-    );
-    const [, psqlError] = await Psql.query(query);
-    if (psqlError) {
-      res.status(500).json({ error: psqlError });
-      return;
-    }
-
-    res.status(200).json({
-      product: {
-        objectId: `${businessId}_${productId}`,
-        name: name,
-        image: url,
-      },
-    });
-  };
+  if (!isObject(req.body.product)) {
+    res.status(400).json({ error: "Invalid product" });
+    return;
+  }
 
   const productId = req.body.product.id;
   if (!Number.isInteger(productId)) {
@@ -92,54 +40,32 @@ export default async function handler(req, res) {
     return;
   }
 
-  const image = Xss(req.body.product.image || "");
-  if (image === "") {
-    res.status(400).json({ error: "Invalid product image" });
-    return;
-  }
-
-  const name = Xss(req.body.product.name || "");
-  if (name === "") {
+  if (!req.body.product.name || !isString(req.body.product.name)) {
     res.status(400).json({ error: "Invalid product name" });
     return;
   }
+  const name = cleanseString(req.body.product.name);
 
-  let primaryKeywords = req.body.product.primaryKeywords;
-  if (!Array.isArray(primaryKeywords)) {
-    res.status(400).json({ error: "Invalid primary keywords" });
+  if (
+    !req.body.product.departments ||
+    !isStringArray(req.body.product.departments)
+  ) {
+    res.status(400).json({ error: "Invalid product departments" });
     return;
   }
-  try {
-    primaryKeywords = primaryKeywords
-      .map((keyword) => Xss(keyword))
-      .filter(Boolean);
-  } catch {
-    res.status(400).json({ error: "Invalid primary keywords" });
-    return;
-  }
+  const departments = cleanseStringArray(req.body.product.departments);
 
-  let departments = req.body.product.departments;
-  if (!Array.isArray(departments)) {
-    res.status(400).json({ error: "Invalid departments" });
+  if (req.body.product.description && !isString(req.body.product.description)) {
+    res.status(400).json({ error: "Invalid product description" });
     return;
   }
-  try {
-    departments = departments
-      .map((department) => Xss(department.trim()))
-      .filter(Boolean);
-  } catch (err) {
-    res.status(400).json({ error: "Invalid departments" });
-    return;
-  }
+  const description = cleanseString(req.body.product.description);
 
-  const description = Xss(req.body.product.description || "");
-
-  let price = req.body.product.price;
-  if (typeof price !== "number") {
-    res.status(400).json({ error: "Invalid price" });
+  if (!req.body.product.link || !isString(req.body.product.link)) {
+    res.status(400).json({ error: "Invalid product link" });
     return;
   }
-  price = parseFloat(price.toFixed(2));
+  const link = addHttpsProtocol(cleanseString(req.body.product.link));
 
   let priceRange = req.body.product.priceRange;
   if (!Array.isArray(priceRange) || priceRange.length !== 2) {
@@ -154,56 +80,86 @@ export default async function handler(req, res) {
     return;
   }
 
-  let link = Xss(req.body.product.link || "");
-  if (link === "") {
-    res.status(400).json({ error: "Invalid product link" });
+  if (!req.body.product.tags || !isStringArray(req.body.product.tags)) {
+    res.status(400).json({ error: "Invalid product tags" });
     return;
   }
-  // Add "https://www" to link URL if not included
-  if (!link.match(/^https:\/\/www\..*$/)) {
-    if (link.match(/^https:\/\/(?!www.).*$/)) {
-      link = `https://www.${link.slice(8)}`;
-    } else if (link.match(/^http:\/\/(?!www.).*$/)) {
-      link = `https://www.${link.slice(7)}`;
-    } else if (link.match(/^http:\/\/www\..*$/)) {
-      link = `https://www.${link.slice(11)}`;
-    } else if (link.match(/^www\..*$/)) {
-      link = `https://${link}`;
-    } else {
-      link = `https://www.${link}`;
-    }
+  const tags = cleanseStringArray(req.body.product.tags);
+
+  if (
+    !req.body.product.variantImages ||
+    !isStringArray(req.body.product.variantImages)
+  ) {
+    res.status(400).json({ error: "Invalid product variant images" });
+    return;
   }
+  const variantImages = cleanseStringArray(req.body.product.variantImages);
+
+  if (
+    !req.body.product.variantTags ||
+    !isStringArray(req.body.product.variantTags)
+  ) {
+    res.status(400).json({ error: "Invalid product variant tags" });
+    return;
+  }
+  const variantTags = cleanseStringArray(req.body.product.variantTags);
 
   const { id } = req.locals.user;
-  if (id === 0) {
-    if (Number.isInteger(req.body.businessId)) {
-      await f({
-        businessId: req.body.businessId,
-        departments,
-        description,
-        image,
-        link,
-        name,
-        price,
-        priceRange,
-        primaryKeywords,
-        productId,
-      });
-    } else {
-      res.status(400).json({ error: "Invalid business id" });
-    }
-  } else {
-    await f({
-      businessId: id,
-      departments,
-      description,
-      image,
-      link,
-      name,
-      price,
-      priceRange,
-      primaryKeywords,
-      productId,
-    });
+  const businessId = id === 0 ? req.body.id : id;
+  if (!Number.isInteger(businessId)) {
+    res.status(400).json({ error: "Invalid business id" });
+    return;
   }
+
+  const [url, cloudinaryError] = await Cloudinary.upload(variantImages[0], {
+    exif: false,
+    format: "webp",
+    public_id: `${businessId}/${productId}`,
+    unique_filename: false,
+    overwrite: true,
+  });
+  if (cloudinaryError) {
+    res.status(500).json({ error: cloudinaryError });
+    return;
+  }
+  variantImages[0] = url;
+
+  const algoliaError = await Algolia.partialUpdateObject(
+    {
+      objectID: `${businessId}_${productId}`,
+      name: name,
+      description: description,
+      description_length: description.replace(/\s+/g, "").replace(/\n+/g, "")
+        .length,
+      departments: departments,
+      link: link,
+      price_range: priceRange,
+      tags: tags,
+      tags_length: tags.join("").replace(/\s+/g, "").length,
+      variant_images: variantImages,
+      variant_tags: variantTags,
+    },
+    { createIfNotExists: false }
+  );
+  if (algoliaError) {
+    throw algoliaError;
+  }
+
+  const query = SqlString.format(
+    `UPDATE products SET name=E?, preview=E? WHERE business_id=? AND id=?`,
+    [name, variantImages[0], businessId, productId]
+  );
+  const [, psqlError] = await Psql.query(query);
+  if (psqlError) {
+    res.status(500).json({ error: psqlError });
+    return;
+  }
+
+  res.status(200).json({
+    product: {
+      objectId: `${businessId}_${productId}`,
+      name: name,
+      preview: variantImages[0],
+    },
+  });
 }

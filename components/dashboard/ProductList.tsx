@@ -38,7 +38,7 @@ export default function ProductList(props: ProductListProps) {
         >
           <DescriptionImage
             direction="row"
-            src={props.products[index].image.replace(
+            src={props.products[index].preview.replace(
               "/upload",
               "/upload/w_128"
             )}

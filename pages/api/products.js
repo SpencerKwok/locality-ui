@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   const f = async (businessId) => {
     const [products, error] = await Psql.query(
       SqlString.format(
-        "SELECT CONCAT(business_id, '_', id) AS object_id, name, image FROM products WHERE business_id=? ORDER BY name",
+        "SELECT CONCAT(business_id, '_', id) AS object_id, name, preview FROM products WHERE business_id=? ORDER BY name",
         [businessId]
       )
     );
@@ -22,10 +22,10 @@ export default async function handler(req, res) {
     }
 
     res.status(200).json({
-      products: products.rows.map(({ object_id, name, image }) => ({
+      products: products.rows.map(({ object_id, name, preview }) => ({
         objectId: object_id,
         name,
-        image,
+        preview,
       })),
     });
   };

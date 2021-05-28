@@ -76,15 +76,12 @@ for hit in res:
         hit.pop("primary_keywords")
 
     # Convert description to array
-    if "description" not in hit:
-        print(hit["objectID"])
-
-    if isinstance(hit["description"], str):
-        hit["description"] = [re.sub('\n\s', '\n', re.sub('\s+', " ", hit["description"].strip()))]
+    if "description" in hit:
+        hit["description"] = re.sub("\n\s", "\n", re.sub("\s+", " ", hit["description"].strip()))
 
     # Add document length vectorization for tags and description
     hit["tags_length"] = len("".join(hit["tags"]))
-    hit["description_length"] = len("".join(hit["description"][0]))
+    hit["description_length"] = len(re.sub("\s", "", re.sub("\n", "", "".join(hit["description"]))))
 
     # Remove price
     if "price" in hit:

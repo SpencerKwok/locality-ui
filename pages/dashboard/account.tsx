@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 
 import AccountPage from "../../components/dashboard/Account";
 import { PostRpcClient } from "../../components/common/RpcClient";
+import DashboardLayout from "../../components/dashboard/Layout";
 import RootLayout from "../../components/common/RootLayout";
 
 import type { GetServerSideProps } from "next";
@@ -72,13 +73,15 @@ export default function Account({ cookie, session }: AccountProps) {
   const lastName: string = user.lastName;
   return (
     <RootLayout session={session}>
-      <AccountPage
-        error={updatePasswordStatus.error}
-        updatedPassword={updatePasswordStatus.updatedPassword}
-        firstName={firstName}
-        lastName={lastName}
-        onSubmitPassword={onSubmitPassword}
-      />
+      <DashboardLayout tab="account">
+        <AccountPage
+          error={updatePasswordStatus.error}
+          updatedPassword={updatePasswordStatus.updatedPassword}
+          firstName={firstName}
+          lastName={lastName}
+          onSubmitPassword={onSubmitPassword}
+        />
+      </DashboardLayout>
     </RootLayout>
   );
 }

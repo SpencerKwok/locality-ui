@@ -4,9 +4,10 @@ import { useRouter } from "next/router";
 import { encode } from "html-entities";
 
 import { EmptyProduct } from "../../components/common/Schema";
+import DashboardLayout from "../../components/dashboard/Layout";
 import InventoryPage from "../../components/dashboard/Inventory";
-import { GetRpcClient, PostRpcClient } from "../../components/common/RpcClient";
 import RootLayout from "../../components/common/RootLayout";
+import { GetRpcClient, PostRpcClient } from "../../components/common/RpcClient";
 import { useWindowSize } from "../../lib/common";
 
 import type { BaseBusiness, BaseProduct } from "../../components/common/Schema";
@@ -118,6 +119,7 @@ export default function Inventory({
   const onAddProduct = () => {
     setIsNewItem(true);
     setProduct(EmptyProduct);
+    setProductStatus({ error: "", success: "" });
   };
 
   const onBusinessClick = async (index: number) => {
@@ -181,7 +183,7 @@ export default function Inventory({
       .call(
         methodName,
         {
-          businessId: businesses[businessIndex].id,
+          id: businesses[businessIndex].id,
           csv: file,
         },
         cookie
@@ -233,7 +235,7 @@ export default function Inventory({
 
   const onSubmit = async ({
     name,
-    primaryKeywords,
+    tags,
     departments,
     description,
     isRange,
@@ -250,21 +252,21 @@ export default function Inventory({
           .call(
             "ProductAdd",
             {
-              businessId: businesses[businessIndex].id,
+              id: businesses[businessIndex].id,
               product: {
                 name: encode(name),
-                primaryKeywords: primaryKeywords
-                  .split(",")
-                  .map((value) => encode(value.trim()))
-                  .filter(Boolean),
                 departments: departments.map((value) => encode(value.trim())),
                 description: encode(description),
-                image: image,
                 link: link,
-                price: isRange ? parseFloat(priceLow) : parseFloat(price),
                 priceRange: isRange
                   ? [parseFloat(priceLow), parseFloat(priceHigh)]
                   : [parseFloat(price), parseFloat(price)],
+                tags: tags
+                  .split(",")
+                  .map((value) => encode(value.trim()))
+                  .filter(Boolean),
+                variantImages: [image],
+                variantTags: [],
               },
             },
             cookie
@@ -275,12 +277,9 @@ export default function Inventory({
               return;
             }
 
-            setProduct(EmptyProduct);
-            setProducts(
-              [...products, product].sort((a, b) =>
-                a.name.localeCompare(b.name)
-              )
-            );
+            setIsNewItem(false);
+            setProducts([...products, product]);
+            setProductIndex(products.length);
             setProductStatus({
               error: "",
               success: "Successfully added the product!",
@@ -295,7 +294,7 @@ export default function Inventory({
           .call(
             "ProductDelete",
             {
-              businessId: businesses[businessIndex].id,
+              id: businesses[businessIndex].id,
               product: {
                 id: parseInt(products[productIndex].objectId.split("_")[1]),
               },
@@ -328,22 +327,22 @@ export default function Inventory({
           .call(
             "ProductUpdate",
             {
-              businessId: businesses[businessIndex].id,
+              id: businesses[businessIndex].id,
               product: {
                 name: encode(name),
                 id: parseInt(products[productIndex].objectId.split("_")[1]),
-                primaryKeywords: primaryKeywords
-                  .split(",")
-                  .map((value) => encode(value.trim()))
-                  .filter(Boolean),
                 departments: departments.map((value) => encode(value.trim())),
                 description: encode(description),
-                image: image,
                 link: link,
-                price: isRange ? parseFloat(priceLow) : parseFloat(price),
                 priceRange: isRange
                   ? [parseFloat(priceLow), parseFloat(priceHigh)]
                   : [parseFloat(price), parseFloat(price)],
+                tags: tags
+                  .split(",")
+                  .map((value) => encode(value.trim()))
+                  .filter(Boolean),
+                variantImages: [image],
+                variantTags: [],
               },
             },
             cookie
@@ -376,34 +375,40 @@ export default function Inventory({
   }
 
   if (!size.height) {
-    return <RootLayout session={session} />;
+    return (
+      <RootLayout session={session}>
+        <DashboardLayout tab="inventory" />
+      </RootLayout>
+    );
   }
 
   return (
     <RootLayout session={session}>
-      <InventoryPage
-        isNewItem={isNewItem}
-        businesses={businesses}
-        businessIndex={businessIndex}
-        departments={departments}
-        products={products}
-        productIndex={productIndex}
-        product={product}
-        uploadType={uploadStatus.uploadType}
-        uploadError={uploadStatus.error}
-        uploadOpen={uploadStatus.open}
-        uploadLoading={uploadStatus.loading}
-        uploadSuccessful={uploadStatus.successful}
-        error={productStatus.error}
-        success={productStatus.success}
-        height={size.height}
-        onAddProduct={onAddProduct}
-        onBusinessClick={onBusinessClick}
-        onProductClick={onProductClick}
-        onUpload={onUpload}
-        onUploadTypeChange={onUploadTypeChange}
-        onSubmit={onSubmit}
-      />
+      <DashboardLayout tab="inventory">
+        <InventoryPage
+          isNewItem={isNewItem}
+          businesses={businesses}
+          businessIndex={businessIndex}
+          departments={departments}
+          products={products}
+          productIndex={productIndex}
+          product={product}
+          uploadType={uploadStatus.uploadType}
+          uploadError={uploadStatus.error}
+          uploadOpen={uploadStatus.open}
+          uploadLoading={uploadStatus.loading}
+          uploadSuccessful={uploadStatus.successful}
+          error={productStatus.error}
+          success={productStatus.success}
+          height={size.height}
+          onAddProduct={onAddProduct}
+          onBusinessClick={onBusinessClick}
+          onProductClick={onProductClick}
+          onUpload={onUpload}
+          onUploadTypeChange={onUploadTypeChange}
+          onSubmit={onSubmit}
+        />
+      </DashboardLayout>
     </RootLayout>
   );
 }

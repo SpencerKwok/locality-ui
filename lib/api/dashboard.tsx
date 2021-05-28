@@ -3,6 +3,8 @@ import Cloudinary from "./cloudinary";
 import Psql from "./postgresql";
 import SqlString from "sqlstring";
 
+import type { BaseProduct, Product } from "../../components/common/Schema";
+
 const mapLimit = async <P extends any, R extends any>(
   arr: Array<P>,
   limit: number,
@@ -20,22 +22,7 @@ const mapLimit = async <P extends any, R extends any>(
   return results;
 };
 
-export interface BaseProduct {
-  objectId: string;
-  name: string;
-  image: string;
-}
-
-export interface Product {
-  businessId: number;
-  departments: string[];
-  description: string;
-  image: string;
-  link: string;
-  price: number;
-  priceRange: [number, number];
-  primaryKeywords: string[];
-  productName: string;
+export interface DatabaseProduct extends Product {
   nextProductId?: number;
 }
 
@@ -76,20 +63,20 @@ export async function productAdd(
     .map((value: string) => value.trim());
 
   try {
-    const baseProducts = await mapLimit<Product, BaseProduct>(
+    const baseProducts = await mapLimit<DatabaseProduct, BaseProduct>(
       products,
       5,
       async ({
+        nextProductId,
+        name,
         departments,
         description,
-        image,
         link,
-        nextProductId,
-        price,
         priceRange,
-        primaryKeywords,
-        productName,
-      }: Product) => {
+        tags,
+        variantImages,
+        variantTags,
+      }: DatabaseProduct) => {
         // TODO: This only works if we are adding 1 item
         // without a nextProductId. Should keep track of the
         // nextProductId as items are uploaded instead of
@@ -107,10 +94,9 @@ export async function productAdd(
           }
         }
 
-        let url = image;
         if (addToCloudinary) {
           const [cloudinaryUrl, cloudinaryError] = await Cloudinary.upload(
-            image,
+            variantImages[0],
             {
               exif: false,
               format: "webp",
@@ -122,7 +108,7 @@ export async function productAdd(
           if (cloudinaryError) {
             throw cloudinaryError;
           }
-          url = cloudinaryUrl;
+          variantImages[0] = cloudinaryUrl;
         }
 
         const geolocation = [];
@@ -137,16 +123,19 @@ export async function productAdd(
           {
             objectID: `${businessId}_${nextProductId}`,
             _geoloc: geolocation,
-            name: productName,
-            company: businessName,
+            name: name,
             business: businessName,
-            primary_keywords: primaryKeywords,
-            departments,
             description: description,
-            price: price,
-            price_range: priceRange,
+            description_length: description
+              .replace(/\s+/g, "")
+              .replace(/\n+/g, "").length,
+            departments: departments,
             link: link,
-            image: url,
+            price_range: priceRange,
+            tags: tags,
+            tags_length: tags.join("").replace(/\s+/g, "").length,
+            variant_images: variantImages,
+            variant_tags: variantTags,
           },
           { autoGenerateObjectIDIfNotExist: false }
         );
@@ -156,8 +145,8 @@ export async function productAdd(
 
         const [, psqlErrorAddProduct] = await Psql.query(
           SqlString.format(
-            "INSERT INTO products (business_id, id, name, image) VALUES (?, ?, E?, ?)",
-            [businessId, nextProductId, productName, url]
+            "INSERT INTO products (business_id, id, name, preview) VALUES (?, ?, E?, E?)",
+            [businessId, nextProductId, name, variantImages[0]]
           )
         );
         if (psqlErrorAddProduct) {
@@ -166,8 +155,8 @@ export async function productAdd(
 
         return {
           objectId: `${businessId}_${nextProductId}`,
-          name: productName,
-          image: url,
+          name: name,
+          preview: variantImages[0],
         };
       }
     );

@@ -1,7 +1,12 @@
-import Xss from "xss";
-
-import { productAdd } from "../../../../lib/api/dashboard";
+import { addHttpsProtocol, productAdd } from "../../../../lib/api/dashboard";
 import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
+import {
+  cleanseString,
+  cleanseStringArray,
+  isObject,
+  isString,
+  isStringArray,
+} from "../../../../lib/api/common";
 
 export const config = {
   api: {
@@ -19,54 +24,37 @@ export default async function handler(req, res) {
     return;
   }
 
-  const productName = Xss(req.body.product.name || "");
-  if (productName === "") {
+  if (!isObject(req.body.product)) {
+    res.status(400).json({ error: "Invalid product" });
+    return;
+  }
+
+  if (!req.body.product.name || !isString(req.body.product.name)) {
     res.status(400).json({ error: "Invalid product name" });
     return;
   }
+  const name = cleanseString(req.body.product.name);
 
-  const image = Xss(req.body.product.image || "");
-  if (image === "") {
-    res.status(400).json({ error: "Invalid product image" });
+  if (
+    !req.body.product.departments ||
+    !isStringArray(req.body.product.departments)
+  ) {
+    res.status(400).json({ error: "Invalid product departments" });
     return;
   }
+  const departments = cleanseStringArray(req.body.product.departments);
 
-  let primaryKeywords = req.body.product.primaryKeywords;
-  if (!Array.isArray(primaryKeywords)) {
-    res.status(400).json({ error: "Invalid primary keywords" });
+  if (req.body.product.description && !isString(req.body.product.description)) {
+    res.status(400).json({ error: "Invalid product description" });
     return;
   }
-  try {
-    primaryKeywords = primaryKeywords
-      .map((keyword) => Xss(keyword))
-      .filter(Boolean);
-  } catch {
-    res.status(400).json({ error: "Invalid primary keywords" });
-    return;
-  }
+  const description = cleanseString(req.body.product.description);
 
-  let departments = req.body.product.departments;
-  if (!Array.isArray(departments)) {
-    res.status(400).json({ error: "Invalid departments" });
+  if (!req.body.product.link || !isString(req.body.product.link)) {
+    res.status(400).json({ error: "Invalid product link" });
     return;
   }
-  try {
-    departments = departments
-      .map((department) => Xss(department.trim()))
-      .filter(Boolean);
-  } catch (err) {
-    res.status(400).json({ error: "Invalid departments" });
-    return;
-  }
-
-  const description = Xss(req.body.product.description || "");
-
-  let price = req.body.product.price;
-  if (typeof price !== "number") {
-    res.status(400).json({ error: "Invalid price" });
-    return;
-  }
-  price = parseFloat(price.toFixed(2));
+  const link = addHttpsProtocol(cleanseString(req.body.product.link));
 
   let priceRange = req.body.product.priceRange;
   if (!Array.isArray(priceRange) || priceRange.length !== 2) {
@@ -81,66 +69,53 @@ export default async function handler(req, res) {
     return;
   }
 
-  let link = Xss(req.body.product.link || "");
-  if (link === "") {
-    res.status(400).json({ error: "Invalid product link" });
+  if (!req.body.product.tags || !isStringArray(req.body.product.tags)) {
+    res.status(400).json({ error: "Invalid product tags" });
     return;
   }
-  // Add "https://www" to link URL if not included
-  if (!link.match(/^https:\/\/www\..*$/)) {
-    if (link.match(/^https:\/\/(?!www.).*$/)) {
-      link = `https://www.${link.slice(8)}`;
-    } else if (link.match(/^http:\/\/(?!www.).*$/)) {
-      link = `https://www.${link.slice(7)}`;
-    } else if (link.match(/^http:\/\/www\..*$/)) {
-      link = `https://www.${link.slice(11)}`;
-    } else if (link.match(/^www\..*$/)) {
-      link = `https://${link}`;
-    } else {
-      link = `https://www.${link}`;
-    }
+  const tags = cleanseStringArray(req.body.product.tags);
+
+  if (
+    !req.body.product.variantImages ||
+    !isStringArray(req.body.product.variantImages)
+  ) {
+    res.status(400).json({ error: "Invalid product variant images" });
+    return;
   }
+  const variantImages = cleanseStringArray(req.body.product.variantImages);
+
+  if (
+    !req.body.product.variantTags ||
+    !isStringArray(req.body.product.variantTags)
+  ) {
+    res.status(400).json({ error: "Invalid product variant tags" });
+    return;
+  }
+  const variantTags = cleanseStringArray(req.body.product.variantTags);
 
   const { id } = req.locals.user;
-  if (id === 0) {
-    if (Number.isInteger(req.body.businessId)) {
-      const [products, error] = await productAdd(req.body.businessId, [
-        {
-          departments,
-          description,
-          image,
-          link,
-          price,
-          priceRange,
-          primaryKeywords,
-          productName,
-        },
-      ]);
-      if (error) {
-        res.status(500).json({ error: error });
-        return;
-      }
-      res.status(200).json({ product: products[0] });
-    } else {
-      res.status(400).json({ error: "Invalid business id" });
-    }
-  } else {
-    const [products, error] = await productAdd(id, [
-      {
-        departments,
-        description,
-        image,
-        link,
-        price,
-        priceRange,
-        primaryKeywords,
-        productName,
-      },
-    ]);
-    if (error) {
-      res.status(500).json({ error: error });
-      return;
-    }
-    res.status(200).json({ product: products[0] });
+  const businessId = id === 0 ? req.body.id : id;
+  if (!Number.isInteger(businessId)) {
+    res.status(400).json({ error: "Invalid business id" });
+    return;
   }
+
+  const [products, error] = await productAdd(businessId, [
+    {
+      name,
+      departments,
+      description,
+      link,
+      priceRange,
+      tags,
+      variantImages,
+      variantTags,
+    },
+  ]);
+  if (error) {
+    res.status(500).json({ error: error });
+    return;
+  }
+
+  res.status(200).json({ product: products[0] });
 }
