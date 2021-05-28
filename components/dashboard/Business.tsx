@@ -2,6 +2,7 @@ import { createRef } from "react";
 import dynamic from "next/dynamic";
 import * as yup from "yup";
 import { Formik } from "formik";
+import { decode } from "html-entities";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 import Tab from "react-bootstrap/Tab";
@@ -148,8 +149,8 @@ export default function Business({
     const excludeTags = uploadTypeSettings.excludeTags || [];
     const initialValues: UpdateUploadSettingsRequest = {};
     initialValues[uploadType] = {
-      includeTags: includeTags.filter(Boolean).join(", "),
-      excludeTags: excludeTags.filter(Boolean).join(", "),
+      includeTags: decode(includeTags.filter(Boolean).join(", ")),
+      excludeTags: decode(excludeTags.filter(Boolean).join(", ")),
     };
 
     return (
@@ -265,7 +266,7 @@ export default function Business({
                 <div>
                   <h1 className={styles.label}>Name</h1>
                   <h1 className={styles.value}>
-                    {businesses[businessIndex].name}
+                    {decode(businesses[businessIndex].name)}
                   </h1>
                 </div>
                 <div style={{ width: 300 }}>
@@ -276,6 +277,7 @@ export default function Business({
                       {
                         departments: businesses[businessIndex].departments
                           .split(":")
+                          .map((department) => decode(department))
                           .filter(Boolean),
                       } as UpdateDepartmentsRequest
                     }

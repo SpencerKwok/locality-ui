@@ -1,6 +1,7 @@
 import { createRef, Fragment } from "react";
 import dynamic from "next/dynamic";
 import * as yup from "yup";
+import { decode } from "html-entities";
 import { Formik, FormikConfig } from "formik";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -192,9 +193,11 @@ export default function Inventory({
                 initialValues={
                   {
                     name: product.name,
-                    primaryKeywords: product.primaryKeywords.join(", "),
-                    departments: product.departments.filter(Boolean),
-                    description: product.description,
+                    primaryKeywords: decode(product.primaryKeywords.join(", ")),
+                    departments: product.departments
+                      .map((department) => decode(department))
+                      .filter(Boolean),
+                    description: decode(product.description),
                     isRange: product.price !== product.priceRange[1],
                     price: isNewItem ? "" : product.price.toFixed(2),
                     priceLow: isNewItem ? "" : product.priceRange[0].toFixed(2),

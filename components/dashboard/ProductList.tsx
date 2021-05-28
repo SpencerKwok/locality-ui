@@ -17,7 +17,7 @@ export interface ProductListProps {
   style?: CSSProperties;
 }
 
-export default function BusinessList(props: ProductListProps) {
+export default function ProductList(props: ProductListProps) {
   const productRowRenderer = ({
     index,
     key,
