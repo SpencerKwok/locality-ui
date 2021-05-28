@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getSession } from "next-auth/client";
 import { useRouter } from "next/router";
+import { encode } from "html-entities";
 
 import { EmptyProduct } from "../../components/common/Schema";
 import InventoryPage from "../../components/dashboard/Inventory";
@@ -251,13 +252,13 @@ export default function Inventory({
             {
               businessId: businesses[businessIndex].id,
               product: {
-                name: name,
+                name: encode(name),
                 primaryKeywords: primaryKeywords
                   .split(",")
-                  .map((value) => value.trim())
+                  .map((value) => encode(value.trim()))
                   .filter(Boolean),
-                departments: departments,
-                description: description,
+                departments: departments.map((value) => encode(value.trim())),
+                description: encode(description),
                 image: image,
                 link: link,
                 price: isRange ? parseFloat(priceLow) : parseFloat(price),
@@ -329,14 +330,14 @@ export default function Inventory({
             {
               businessId: businesses[businessIndex].id,
               product: {
-                name: name,
+                name: encode(name),
                 id: parseInt(products[productIndex].objectId.split("_")[1]),
                 primaryKeywords: primaryKeywords
                   .split(",")
-                  .map((value) => value.trim())
+                  .map((value) => encode(value.trim()))
                   .filter(Boolean),
-                departments: departments,
-                description: description,
+                departments: departments.map((value) => encode(value.trim())),
+                description: encode(description),
                 image: image,
                 link: link,
                 price: isRange ? parseFloat(priceLow) : parseFloat(price),

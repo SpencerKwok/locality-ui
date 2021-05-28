@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getSession } from "next-auth/client";
 import { useRouter } from "next/router";
+import { encode } from "html-entities";
 
 import BusinessPage from "../../components/dashboard/Business";
 import { GetRpcClient, PostRpcClient } from "../../components/common/RpcClient";
@@ -115,7 +116,7 @@ export default function Business({
         "DepartmentsUpdate",
         {
           id: businesses[businessIndex].id,
-          departments,
+          departments: departments.map((value) => encode(value.trim())),
         },
         cookie
       )
@@ -199,13 +200,13 @@ export default function Business({
         includeTags: Etsy.includeTags
           ? Etsy.includeTags
               .split(",")
-              .map((x) => x.trim())
+              .map((x) => encode(x.trim()))
               .filter(Boolean)
           : undefined,
         excludeTags: Etsy.excludeTags
           ? Etsy.excludeTags
               .split(",")
-              .map((x) => x.trim())
+              .map((x) => encode(x.trim()))
               .filter(Boolean)
           : undefined,
       },
@@ -213,13 +214,13 @@ export default function Business({
         includeTags: Shopify.includeTags
           ? Shopify.includeTags
               .split(",")
-              .map((x) => x.trim())
+              .map((x) => encode(x.trim()))
               .filter(Boolean)
           : undefined,
         excludeTags: Shopify.excludeTags
           ? Shopify.excludeTags
               .split(",")
-              .map((x) => x.trim())
+              .map((x) => encode(x.trim()))
               .filter(Boolean)
           : undefined,
       },
