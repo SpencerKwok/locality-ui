@@ -9,7 +9,7 @@ import styles from "./ProductImage.module.css";
 const WishlistToolTip = dynamic(() => import("./WishlistToolTip"));
 
 export interface ProductImageProps extends React.HTMLProps<HTMLDivElement> {
-  company: string;
+  business: string;
   link: string;
   name: string;
   objectId: string;
@@ -23,7 +23,7 @@ export interface ProductImageProps extends React.HTMLProps<HTMLDivElement> {
 }
 
 function ProductImage({
-  company,
+  business,
   link,
   name,
   objectId,
@@ -112,7 +112,7 @@ function ProductImage({
               width={175}
             />
           </picture>
-          <h6 className={styles.h6}>{company}</h6>
+          <h6 className={styles.h6}>{business}</h6>
           <h4 className={styles.h4}>{name}</h4>
           {priceRange[0] === priceRange[1] ? (
             <h5 className={styles.h5}>${priceRange[0].toFixed(2)} CAD</h5>

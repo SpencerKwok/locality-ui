@@ -34,20 +34,20 @@ class UserInput {
   public ip: string;
   public query: string;
   public page: number;
-  public company: Set<string>;
+  public business: Set<string>;
   public departments: Set<string>;
 
   constructor(
     ip: string,
     query: string,
     page: number = 0,
-    company: Set<string> = new Set<string>(),
+    business: Set<string> = new Set<string>(),
     departments: Set<string> = new Set<string>()
   ) {
     this.ip = ip;
     this.query = query;
     this.page = page;
-    this.company = company;
+    this.business = business;
     this.departments = departments;
   }
 
@@ -56,7 +56,7 @@ class UserInput {
       this.ip,
       this.query,
       this.page,
-      this.company,
+      this.business,
       this.departments
     );
   }
@@ -69,13 +69,13 @@ class UserInput {
     if (this.ip !== "") {
       params += `&ip=${this.ip}`;
     }
-    const companyFilters = Array.from(this.company).map(
-      (name) => `company:"${name}"`
+    const businessFilters = Array.from(this.business).map(
+      (name) => `business:"${name}"`
     );
     const departmentsFilters = Array.from(this.departments).map(
       (name) => `departments:"${name}"`
     );
-    const filters = [...companyFilters, ...departmentsFilters].join(" OR ");
+    const filters = [...businessFilters, ...departmentsFilters].join(" OR ");
     if (filters.length > 0) {
       params += `&filters=${encodeURIComponent(filters)}`;
     }
@@ -127,7 +127,7 @@ export default function Search({
 
     userInput.query = urlParams.get("q") || "";
     userInput.page = 0;
-    userInput.company = new Set<string>();
+    userInput.business = new Set<string>();
     userInput.departments = new Set<string>();
     setUserInput(userInput.clone());
 
@@ -157,7 +157,7 @@ export default function Search({
       });
   };
 
-  const createOnFacetClick = (name: "company" | "departments") => {
+  const createOnFacetClick = (name: "business" | "departments") => {
     return (value: string) => {
       userInput.page = 0;
       if (userInput[name].has(value)) {
@@ -177,7 +177,7 @@ export default function Search({
   const onEnter = async (query: string) => {
     userInput.query = query;
     userInput.page = 0;
-    userInput.company = new Set<string>();
+    userInput.business = new Set<string>();
     userInput.departments = new Set<string>();
     setUserInput(userInput.clone());
     fetcher(`/api/search?${userInput.toString()}`, cookie)
@@ -246,9 +246,9 @@ export default function Search({
     setShowAllDepartments(!showAllDepartments);
   };
 
-  const company = new Map<string, number>();
-  for (const name in data.facets.company) {
-    company.set(name, data.facets.company[name]);
+  const business = new Map<string, number>();
+  for (const name in data.facets.business) {
+    business.set(name, data.facets.business[name]);
   }
   const departments = new Map<string, number>();
   for (const name in data.facets.departments) {
@@ -280,7 +280,7 @@ export default function Search({
             hits: data.hits,
             nbHits: data.nbHits,
             facets: {
-              company,
+              business,
               departments,
             },
           }}
@@ -298,13 +298,13 @@ export default function Search({
             hits: data.hits,
             nbHits: data.nbHits,
             facets: {
-              company,
+              business,
               departments,
             },
           }}
           userInput={userInput}
           onUserInputChange={{
-            company: createOnFacetClick("company"),
+            business: createOnFacetClick("business"),
             departments: createOnFacetClick("departments"),
             page: onPageClick,
           }}

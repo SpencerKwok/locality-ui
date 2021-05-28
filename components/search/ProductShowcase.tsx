@@ -43,9 +43,9 @@ export default function ProductShowcase({
 
   const sortedHits = hits.map((a) => ({ ...a }));
   if (sortFilter === "Price: Low to High") {
-    sortedHits.sort((a, b) => a.price - b.price);
+    sortedHits.sort((a, b) => a.priceRange[0] - b.priceRange[0]);
   } else if (sortFilter === "Price: High to Low") {
-    sortedHits.sort((a, b) => b.price - a.price);
+    sortedHits.sort((a, b) => b.priceRange[1] - a.priceRange[1]);
   } else if (sortFilter === "Alphabetical: A-Z") {
     sortedHits.sort((a, b) => a.name.localeCompare(b.name));
   } else if (sortFilter === "Alphabetical: Z-A") {
@@ -97,13 +97,13 @@ export default function ProductShowcase({
             initialWishList={hit.wishlist}
             loading={index < numEagerLoad ? "eager" : "lazy"}
             key={hit.objectId}
-            company={hit.company}
+            business={hit.business}
             link={hit.link}
             name={hit.name}
             objectId={hit.objectId}
             onToggleWishList={onToggleWishList}
             priceRange={hit.priceRange}
-            src={hit.image}
+            src={hit.variantImages[0]}
             style={{
               maxWidth: 175,
               marginBottom: 12,

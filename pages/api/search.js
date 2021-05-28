@@ -25,14 +25,13 @@ export default async function handler(req, res) {
     }
   }
 
-  const facets = ["company", "departments"];
+  const facets = ["business", "departments"];
   const attributesToRetrieve = [
     "objectId",
-    "company",
-    "image",
+    "business",
+    "variant_images",
     "link",
     "name",
-    "price",
     "price_range",
   ];
   const attributesToHighlight = [];

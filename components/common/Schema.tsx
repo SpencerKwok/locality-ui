@@ -173,31 +173,33 @@ export interface LogoUpdateResponse extends BaseResponse {
 export interface BaseProduct {
   objectId: string;
   name: string;
-  image: string;
+  preview: string;
 }
 
 export interface Product extends BaseProduct {
-  company: string;
-  primaryKeywords: Array<string>;
+  business: string;
   departments: Array<string>;
-  description: string;
+  description: Array<string>;
   link: string;
-  price: number;
   priceRange: Array<number>;
+  tags: Array<string>;
+  variantImages: Array<string>;
+  variantTags: Array<string>;
   wishlist?: boolean;
 }
 
 export const EmptyProduct: Product = {
   objectId: "",
   name: "",
-  image: "",
-  company: "",
+  preview: "",
+  business: "",
   departments: [],
-  primaryKeywords: [],
-  description: "",
+  description: [],
   link: "",
-  price: -1,
   priceRange: [-1, -1],
+  tags: [],
+  variantImages: [],
+  variantTags: [],
 };
 
 export interface ProductUpdateRequest {
@@ -326,7 +328,7 @@ export interface SearchRequest {
 
 export interface SearchResponse {
   facets: {
-    company: { [key: string]: number };
+    business: { [key: string]: number };
     departments: { [key: string]: number };
   };
   hits: Array<Product>;
@@ -335,7 +337,7 @@ export interface SearchResponse {
 
 export const EmptySearchResponse: SearchResponse = {
   facets: {
-    company: {},
+    business: {},
     departments: {},
   },
   hits: [],
