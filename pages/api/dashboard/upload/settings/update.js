@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   }
 
   const { id } = req.locals.user;
-  const businessId = id === 0 ? req.body.businessId : id;
+  const businessId = id === 0 ? req.body.id : id;
   if (!Number.isInteger(businessId)) {
     res.status(400).json({ error: "Invalid business id" });
     return;

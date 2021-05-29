@@ -1,6 +1,6 @@
 import SqlString from "sqlstring";
 import Xss from "xss";
-import { encode } from "html-entities";
+import { decode, encode } from "html-entities";
 
 import { ETSY_API_KEY } from "../../../../lib/env";
 import Psql from "../../../../lib/api/postgresql";
@@ -133,11 +133,9 @@ export default async function handler(req, res) {
                 .filter(Boolean);
               const description = encode(
                 Xss(
-                  product.description
+                  decode(product.body_html)
+                    .replace(/<br>/g, "\n")
                     .replace(/<[^>]*>/g, "")
-                    .replace(/\s+/g, " ")
-                    .replace(/\n+/g, "\n")
-                    .replace(/\n\s+/g, "\n")
                 )
               );
               const departments = product.taxonomy_path

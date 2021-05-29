@@ -130,9 +130,7 @@ export default async function handler(req, res) {
       objectID: `${businessId}_${productId}`,
       name: name,
       description: description,
-      description_length: decode(
-        description.replace(/\s+/g, "").replace(/\n+/g, "")
-      ).length,
+      description_length: decode(description.replace(/\s+/g, "")).length,
       departments: departments,
       link: link,
       price_range: priceRange,
