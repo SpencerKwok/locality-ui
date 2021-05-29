@@ -1,7 +1,8 @@
 import Xss from "xss";
+import { encode } from "html-entities";
 
 export function cleanseString(value: string) {
-  return Xss(value || "");
+  return encode(Xss(value || ""));
 }
 
 export function cleanseStringArray(value: Array<string>) {

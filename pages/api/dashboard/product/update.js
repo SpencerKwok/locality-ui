@@ -1,4 +1,5 @@
 import SqlString from "sqlstring";
+import { decode } from "html-entities";
 
 import Algolia from "../../../../lib/api/algolia";
 import Cloudinary from "../../../../lib/api/cloudinary";
@@ -129,13 +130,14 @@ export default async function handler(req, res) {
       objectID: `${businessId}_${productId}`,
       name: name,
       description: description,
-      description_length: description.replace(/\s+/g, "").replace(/\n+/g, "")
-        .length,
+      description_length: decode(
+        description.replace(/\s+/g, "").replace(/\n+/g, "")
+      ).length,
       departments: departments,
       link: link,
       price_range: priceRange,
       tags: tags,
-      tags_length: tags.join("").replace(/\s+/g, "").length,
+      tags_length: decode(tags.join("").replace(/\s+/g, "")).length,
       variant_images: variantImages,
       variant_tags: variantTags,
     },

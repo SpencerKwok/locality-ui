@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { getSession } from "next-auth/client";
 import { useRouter } from "next/router";
-import { encode } from "html-entities";
 
 import { EmptyProduct } from "../../components/common/Schema";
 import DashboardLayout from "../../components/dashboard/Layout";
@@ -254,16 +253,16 @@ export default function Inventory({
             {
               id: businesses[businessIndex].id,
               product: {
-                name: encode(name),
-                departments: departments.map((value) => encode(value.trim())),
-                description: encode(description),
+                name: name,
+                departments: departments.map((value) => value.trim()),
+                description: description,
                 link: link,
                 priceRange: isRange
                   ? [parseFloat(priceLow), parseFloat(priceHigh)]
                   : [parseFloat(price), parseFloat(price)],
                 tags: tags
                   .split(",")
-                  .map((value) => encode(value.trim()))
+                  .map((value) => value.trim())
                   .filter(Boolean),
                 variantImages: [image],
                 variantTags: [],
@@ -329,17 +328,17 @@ export default function Inventory({
             {
               id: businesses[businessIndex].id,
               product: {
-                name: encode(name),
+                name: name,
                 id: parseInt(products[productIndex].objectId.split("_")[1]),
-                departments: departments.map((value) => encode(value.trim())),
-                description: encode(description),
+                departments: departments.map((value) => value.trim()),
+                description: description,
                 link: link,
                 priceRange: isRange
                   ? [parseFloat(priceLow), parseFloat(priceHigh)]
                   : [parseFloat(price), parseFloat(price)],
                 tags: tags
                   .split(",")
-                  .map((value) => encode(value.trim()))
+                  .map((value) => value.trim())
                   .filter(Boolean),
                 variantImages: [image],
                 variantTags: [],
