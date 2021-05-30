@@ -119,6 +119,7 @@ export default async function handler(req, res) {
   // if the upload will actually succeed
   res.status(200).json({});
 
+  let visible = false;
   const products = [];
   csv.data.slice(1).forEach((value) => {
     // Data should already be encoded from Square export file
@@ -140,7 +141,6 @@ export default async function handler(req, res) {
     const hostedImageUrls = (value[headerMap.get("hosted image urls")[0]] || "")
       .split(",")
       .map((x) => Xss(x));
-    const visible = Xss(value[headerMap.get("visible")[0]] || "");
 
     try {
       parseFloat(price);
@@ -150,6 +150,11 @@ export default async function handler(req, res) {
     }
 
     if (productUrl) {
+      visible = value[headerMap.get("visible")[0]].toLowerCase() !== "no";
+      if (!visible) {
+        return;
+      }
+
       const name = title;
       const link = `${squareHomepage}/${productPage}/${productUrl}`
         .replace(/\/\/+/g, "/")
@@ -174,7 +179,9 @@ export default async function handler(req, res) {
         variantImages,
         variantTags,
       });
-    } else if (optionValue) {
+
+      nextProductId += 1;
+    } else if (optionValue && visible) {
       const variantTag = optionValue.join(" ");
       if (variantTag.length > 0) {
         const prevProduct = products[products.length - 1];
@@ -184,8 +191,6 @@ export default async function handler(req, res) {
         products[products.length - 1].variantTags.push(variantTag);
       }
     }
-
-    nextProductId += 1;
   });
 
   const [, psqlErrorUpdateNextId] = await Psql.query(
