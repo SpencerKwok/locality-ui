@@ -1,4 +1,5 @@
 import React from "react";
+import { decode } from "html-entities";
 
 import Stack from "../Stack";
 import styles from "./BusinessImage.module.css";
@@ -35,7 +36,7 @@ export default function BusinessImage({
           />
         </picture>
       </Stack>
-      <h4 className={styles.h4}>{name}</h4>
+      <h4 className={styles.h4}>{decode(name)}</h4>
     </Stack>
   );
 }

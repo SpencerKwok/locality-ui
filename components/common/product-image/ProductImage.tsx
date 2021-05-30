@@ -1,5 +1,6 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
+import { decode } from "html-entities";
 
 import Heart from "../images/Heart";
 import HeartFilled from "../images/HeartFilled";
@@ -112,8 +113,8 @@ function ProductImage({
               width={175}
             />
           </picture>
-          <h6 className={styles.h6}>{business}</h6>
-          <h4 className={styles.h4}>{name}</h4>
+          <h6 className={styles.h6}>{decode(business)}</h6>
+          <h4 className={styles.h4}>{decode(name)}</h4>
           {priceRange[0] === priceRange[1] ? (
             <h5 className={styles.h5}>${priceRange[0].toFixed(2)} CAD</h5>
           ) : (

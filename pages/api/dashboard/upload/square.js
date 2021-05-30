@@ -16,7 +16,7 @@ export default async function handler(req, res) {
   }
 
   const { id } = req.locals.user;
-  const businessId = id === 0 ? req.body.businessId : id;
+  const businessId = id === 0 ? req.body.id : id;
   if (!Number.isInteger(businessId)) {
     res.status(400).json({ error: "Invalid business id" });
     return;
@@ -71,6 +71,37 @@ export default async function handler(req, res) {
     return;
   }
 
+  const headerMap = new Map();
+  csv.data[0].forEach((header, index) => {
+    header = header
+      .replace("[Non Editable]", "")
+      .replace(/[0-9]/g, "")
+      .trim()
+      .toLowerCase();
+    if (headerMap.has(header)) {
+      headerMap.set(header, [...headerMap.get(header), index]);
+    } else {
+      headerMap.set(header, [index]);
+    }
+  });
+
+  if (
+    !headerMap.has("product page") ||
+    !headerMap.has("title") ||
+    !headerMap.has("description") ||
+    !headerMap.has("option value") ||
+    !headerMap.has("price") ||
+    !headerMap.has("categories") ||
+    !headerMap.has("tags") ||
+    !headerMap.has("hosted image urls")
+  ) {
+    res.status(400).json({
+      error:
+        "Invalid CSV. Please contact us at locality.info@yahoo.com for assistance.",
+    });
+    return;
+  }
+
   if (currentUploadsRunning.has(businessId)) {
     res.status(400).json({
       error:
@@ -90,65 +121,69 @@ export default async function handler(req, res) {
 
   const products = [];
   csv.data.slice(1).forEach((value) => {
-    const [
-      productPage,
-      productUrl,
-      title,
-      description,
-      price,
-      categories,
-      tags,
-      hostedImageUrls,
-    ] = value;
-    if (
-      hostedImageUrls === "" ||
-      productUrl === "" ||
-      price === "" ||
-      title == ""
-    ) {
-      return;
-    }
+    // Data should already be encoded from Square export file
+    const productPage = Xss(value[headerMap.get("product page")[0]] || "");
+    const productUrl = Xss(value[headerMap.get("product url")[0]] || "");
+    const title = Xss(value[headerMap.get("title")[0]] || "");
+    const description = Xss(
+      (value[headerMap.get("description")[0]] || "")
+        .replace(/<br>/g, "\n")
+        .replace(/<[^>]*>/g, "")
+    );
+    const optionValue = headerMap
+      .get("option value")
+      .map((x) => Xss(value[x] || ""))
+      .filter(Boolean);
+    const price = Xss(value[headerMap.get("price")[0]] || "");
+    const categories = Xss(value[headerMap.get("categories")[0]] || "");
+    const tags = Xss(value[headerMap.get("tags")[0]] || "");
+    const hostedImageUrls = (value[headerMap.get("hosted image urls")[0]] || "")
+      .split(",")
+      .map((x) => Xss(x));
+    const visible = Xss(value[headerMap.get("visible")[0]] || "");
 
-    // If there is something wrong with
-    // with the price, skip the product
     try {
       parseFloat(price);
     } catch {
+      console.log(`Product: ${title} has an invalid price`);
       return;
     }
 
-    const productName = Xss(title);
-    const image = Xss(hostedImageUrls.split(",")[0]);
-    const primaryKeywords = [
-      ...new Set([
-        ...categories
-          .split(",")
-          .map((x) => Xss(x))
-          .filter(Boolean),
-        ...tags
-          .split(",")
-          .map((x) => Xss(x))
-          .filter(Boolean),
-      ]),
-    ];
-    const cleansedDescription = Xss(description.replace(/<[^>]*>/g, ""));
-    const link = Xss(`${squareHomepage}/${productPage}/${productUrl}`)
-      .replace(/\/\/+/g, "/")
-      .replace("https:/", "https://");
-    const cleansedPrice = parseFloat(price);
-    const priceRange = [cleansedPrice, cleansedPrice];
-
-    products.push({
-      departments,
-      description: cleansedDescription,
-      image,
-      link,
-      nextProductId,
-      price: cleansedPrice,
-      priceRange,
-      primaryKeywords,
-      productName,
-    });
+    if (productUrl) {
+      const name = title;
+      const link = `${squareHomepage}/${productPage}/${productUrl}`
+        .replace(/\/\/+/g, "/")
+        .replace("https:/", "https://");
+      const priceRange = [parseFloat(price), parseFloat(price)];
+      const allTags = [
+        ...new Set([
+          ...categories.split(",").filter(Boolean),
+          ...tags.split(",").filter(Boolean),
+        ]),
+      ];
+      const variantImages = [hostedImageUrls[0]];
+      const variantTags = [optionValue.join(" ")];
+      products.push({
+        nextProductId,
+        name,
+        departments,
+        description,
+        link,
+        priceRange,
+        tags: allTags,
+        variantImages,
+        variantTags,
+      });
+    } else if (optionValue) {
+      const variantTag = optionValue.join(" ");
+      if (variantTag.length > 0) {
+        const prevProduct = products[products.length - 1];
+        const prevImage =
+          prevProduct.variantImages[prevProduct.variantImages.length - 1];
+        products[products.length - 1].variantImages.push(prevImage);
+        products[products.length - 1].variantTags.push(variantTag);
+      }
+    }
 
     nextProductId += 1;
   });

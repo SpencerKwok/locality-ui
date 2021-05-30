@@ -1,7 +1,6 @@
 import Dns from "dns";
 import SqlString from "sqlstring";
 import Xss from "xss";
-import { decode, encode } from "html-entities";
 
 import Psql from "../../../../lib/api/postgresql";
 import { productAdd, productDelete } from "../../../../lib/api/dashboard";
@@ -176,24 +175,20 @@ export default async function handler(req, res) {
             return;
           }
 
-          const name = encode(Xss(product.title));
+          // Data should already be encoded from Shopify
+          const name = Xss(product.title);
           const tags = [
             ...new Set([
               ...product.product_type
                 .split(",")
-                .map((x) => encode(Xss(x.trim())))
+                .map((x) => Xss(x.trim()))
                 .filter(Boolean),
-              ...product.tags.map((x) => encode(Xss(x.trim()))).filter(Boolean),
+              ...product.tags.map((x) => Xss(x.trim())).filter(Boolean),
             ]),
           ];
-          const description = encode(
-            Xss(
-              decode(product.body_html)
-                .replace(/<br>/g, "\n")
-                .replace(/<[^>]*>/g, "")
-            )
+          const description = Xss(
+            product.body_html.replace(/<br>/g, "\n").replace(/<[^>]*>/g, "")
           );
-
           const link = Xss(`${shopifyHomepage}/products/${product.handle}`)
             .replace(/\/\/+/g, "/")
             .replace("https:/", "https://");
@@ -207,7 +202,7 @@ export default async function handler(req, res) {
             product.images[0].src
           );
           const variantTags = product.variants.map(({ title }) =>
-            encode(Xss(title.trim()))
+            Xss(title.trim())
           );
 
           products.push({

@@ -39,10 +39,10 @@ export default async function handler(req, res) {
   const uploadSettings =
     JSON.parse(businessResponse.rows[0].upload_settings).Etsy || {};
   const includeTags = new Set(
-    (uploadSettings.includeTags || []).map((x) => x.toLowerCase())
+    (uploadSettings.includeTags || []).map((x) => encode(x).toLowerCase())
   );
   const excludeTags = new Set(
-    (uploadSettings.excludeTags || []).map((x) => x.toLowerCase())
+    (uploadSettings.excludeTags || []).map((x) => encode(x).toLowerCase())
   );
 
   const etsyHomepage = homepages.etsyHomepage || "";
@@ -126,28 +126,25 @@ export default async function handler(req, res) {
           )
             .then((res) => res.json())
             .then(async (data) => {
+              // Data should be encoded from Etsy
               const product = data.results[0];
-              const name = encode(Xss(product.title));
-              const tags = product.tags
-                .map((x) => encode(Xss(x)))
-                .filter(Boolean);
-              const description = encode(
-                Xss(
-                  decode(product.body_html)
-                    .replace(/<br>/g, "\n")
-                    .replace(/<[^>]*>/g, "")
-                )
+              const name = Xss(product.title);
+              const tags = product.tags.map((x) => Xss(x)).filter(Boolean);
+              const description = Xss(
+                decode(product.body_html)
+                  .replace(/<br>/g, "\n")
+                  .replace(/<[^>]*>/g, "")
               );
               const departments = product.taxonomy_path
-                .map((x) => encode(Xss(x)))
+                .map((x) => Xss(x))
                 .filter(Boolean);
               const link = Xss(product.url);
               const price = parseFloat(product.price);
               const priceRange = [price, price];
-              const variantTags = [];
+              const variantTags = [""];
               product.Variations.forEach((variation) => {
                 variation.options.forEach(({ formatted_value }) => {
-                  variantTags.push(encode(Xss(formatted_value)));
+                  variantTags.push(Xss(formatted_value));
                 });
               });
               const variantImages = Array(variantTags.length).fill(

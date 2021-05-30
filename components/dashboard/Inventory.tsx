@@ -190,7 +190,7 @@ export default function Inventory({
               enableReinitialize
               initialValues={
                 {
-                  name: product.name,
+                  name: decode(product.name),
                   tags: decode(product.tags.join(", ")),
                   departments: product.departments
                     .map((department) => decode(department))
@@ -201,7 +201,7 @@ export default function Inventory({
                   priceLow: isNewItem ? "" : product.priceRange[0].toFixed(2),
                   priceHigh: isNewItem ? "" : product.priceRange[1].toFixed(2),
                   image: product.variantImages[0],
-                  link: product.link,
+                  link: decode(product.link),
                   option: isNewItem ? "add" : "update",
                 } as ProductRequest
               }

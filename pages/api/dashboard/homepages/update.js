@@ -57,7 +57,7 @@ export default async function handler(req, res) {
     }
   }
 
-  let squareHomepage = Xss(req.body.squareHomepage || "");
+  let squareHomepage = Xss(req.body.homepages.squareHomepage || "");
   if (squareHomepage !== "") {
     try {
       squareHomepage = addHttpsProtocol(squareHomepage);
