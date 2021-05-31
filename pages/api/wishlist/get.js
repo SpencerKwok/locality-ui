@@ -24,11 +24,10 @@ export default async function handler(req, res) {
 
   const attributesToRetrieve = [
     "objectId",
-    "company",
-    "image",
+    "business",
+    "variant_images",
     "link",
     "name",
-    "price",
     "price_range",
   ];
 
