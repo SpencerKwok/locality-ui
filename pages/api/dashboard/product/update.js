@@ -104,6 +104,9 @@ export default async function handler(req, res) {
     return;
   }
   const variantTags = cleanseStringArray(req.body.product.variantTags);
+  if (variantTags.length <= 0) {
+    variantTags.push("");
+  }
 
   const { id } = req.locals.user;
   const businessId = id === 0 ? req.body.id : id;
