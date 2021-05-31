@@ -115,7 +115,7 @@ export default async function handler(req, res) {
   const [url, cloudinaryError] = await Cloudinary.upload(variantImages[0], {
     exif: false,
     format: "webp",
-    public_id: `${businessId}/${productId}`,
+    public_id: `${businessId}/${productId}/0`,
     unique_filename: false,
     overwrite: true,
   });
