@@ -66,7 +66,7 @@ for hit in res:
         hit.pop("image")
 
     # Add variant tags
-    hit["variant_tags"] = []
+    hit["variant_tags"] = [""]
 
     # Rname primary_keywords as tags
     if "tags" not in hit:

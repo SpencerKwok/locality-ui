@@ -33,12 +33,20 @@ cloudinaryClient.deleteFolder = async (path: string, options = {}) => {
     .then(async ({ resources }) => {
       const publicIds = resources.map(({ public_id }: any) => public_id);
       if (publicIds.length > 0) {
-        const error = await cloudinaryClient.deleteResources(publicIds);
-        if (error) {
-          throw error;
+        const deleteResources = await cloudinaryClient.deleteResources(
+          publicIds
+        );
+        // Don't throw error on failed deletes,
+        // deleting resources doesn't affect
+        // the client
+        if (deleteResources.error) {
+          console.log(deleteResources.error);
+        }
+        const deleteFolder = await Cloudinary.api.delete_folder(path, options);
+        if (deleteFolder) {
+          console.log(deleteFolder.error);
         }
       }
-      await Cloudinary.api.delete_folder(path, options);
     })
     .catch((err) => {
       console.log(err);
