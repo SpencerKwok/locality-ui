@@ -203,6 +203,10 @@ export async function productDelete(businessId: number, productIds: string[]) {
       }
     );
 
+    /*
+    Don't delete from Cloudinary for now..
+    We are close to max monthly limit...
+
     for (let i = 0; i < productIds.length; ++i) {
       const cloudinaryError = await Cloudinary.deleteFolder(
         `${businessId}/${productIds[i]}`
@@ -211,6 +215,7 @@ export async function productDelete(businessId: number, productIds: string[]) {
         throw cloudinaryError;
       }
     }
+    */
 
     for (let i = 0; i < productIdsSegments.length; ++i) {
       const productIdsSegment = productIdsSegments[i];
