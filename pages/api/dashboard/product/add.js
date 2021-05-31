@@ -83,6 +83,10 @@ export default async function handler(req, res) {
     return;
   }
   const variantImages = cleanseStringArray(req.body.product.variantImages);
+  if (variantImages.length <= 0) {
+    res.status(400).json({ error: "Invalid product variant images" });
+    return;
+  }
 
   if (
     !req.body.product.variantTags ||
@@ -92,6 +96,9 @@ export default async function handler(req, res) {
     return;
   }
   const variantTags = cleanseStringArray(req.body.product.variantTags);
+  if (variantTags.length <= 0) {
+    variantTags.push("");
+  }
 
   const { id } = req.locals.user;
   const businessId = id === 0 ? req.body.id : id;

@@ -11,7 +11,10 @@ import { useWindowSize } from "../../lib/common";
 
 import type { BaseBusiness, BaseProduct } from "../../components/common/Schema";
 import type { GetServerSideProps } from "next";
-import type { ProductRequest } from "../../components/dashboard/Inventory";
+import type {
+  ProductRequest,
+  VariantRequest,
+} from "../../components/dashboard/Inventory";
 import type { Session } from "next-auth";
 import type { UploadType } from "../../components/dashboard/AddProduct";
 
@@ -89,10 +92,11 @@ export default function Inventory({
   const [isNewItem, setIsNewItem] = useState(false);
   const [businessIndex, setBusinessIndex] = useState(0);
   const [departments, setDepartments] = useState<Array<string>>([]);
+  const [tab, setTab] = useState("0");
   const [products, setProducts] = useState<Array<BaseProduct>>(initialProducts);
   const [productIndex, setProductIndex] = useState(-1);
   const [product, setProduct] = useState(EmptyProduct);
-  const [productStatus, setProductStatus] = useState({
+  const [requestStatus, setRequestStatus] = useState({
     error: "",
     success: "",
   });
@@ -118,7 +122,8 @@ export default function Inventory({
   const onAddProduct = () => {
     setIsNewItem(true);
     setProduct(EmptyProduct);
-    setProductStatus({ error: "", success: "" });
+    setRequestStatus({ error: "", success: "" });
+    setTab("0");
   };
 
   const onBusinessClick = async (index: number) => {
@@ -131,7 +136,7 @@ export default function Inventory({
     setProductIndex(-1);
     setProduct(EmptyProduct);
     setIsNewItem(false);
-    setProductStatus({ error: "", success: "" });
+    setRequestStatus({ error: "", success: "" });
   };
 
   const onProductClick = async (index: number) => {
@@ -140,9 +145,10 @@ export default function Inventory({
         ({ product }) => product
       )
     );
-    setProductIndex(index);
+    setTab("0");
     setIsNewItem(false);
-    setProductStatus({ error: "", success: "" });
+    setRequestStatus({ error: "", success: "" });
+    setProductIndex(index);
   };
 
   const onUploadTypeChange = (uploadType: UploadType) => {
@@ -232,7 +238,7 @@ export default function Inventory({
       });
   };
 
-  const onSubmit = async ({
+  const onProductSubmit = async ({
     name,
     tags,
     departments,
@@ -244,6 +250,7 @@ export default function Inventory({
     image,
     link,
     option,
+    variantTag,
   }: ProductRequest) => {
     switch (option) {
       case "add":
@@ -265,27 +272,35 @@ export default function Inventory({
                   .map((value) => value.trim())
                   .filter(Boolean),
                 variantImages: [image],
-                variantTags: [],
+                variantTags: [variantTag],
               },
             },
             cookie
           )
-          .then(({ product, error }) => {
+          .then(async ({ product, error }) => {
             if (error) {
-              setProductStatus({ error: error, success: "" });
+              setRequestStatus({ error: error, success: "" });
               return;
             }
 
+            // Wait for product to be uploaded to Algolia
+            await new Promise((resolve) => setTimeout(resolve, 3000));
+
+            setProduct(
+              await getProduct(`/api/product?id=${product.objectId}`).then(
+                ({ product }) => product
+              )
+            );
             setIsNewItem(false);
             setProducts([...products, product]);
             setProductIndex(products.length);
-            setProductStatus({
+            setRequestStatus({
               error: "",
               success: "Successfully added the product!",
             });
           })
           .catch((error) => {
-            setProductStatus({ error: error.message, success: "" });
+            setRequestStatus({ error: error.message, success: "" });
           });
         break;
       case "delete":
@@ -302,7 +317,7 @@ export default function Inventory({
           )
           .then(({ error }) => {
             if (error) {
-              setProductStatus({ error: error, success: "" });
+              setRequestStatus({ error: error, success: "" });
               return;
             }
 
@@ -312,13 +327,13 @@ export default function Inventory({
               ...products.slice(0, productIndex),
               ...products.slice(productIndex + 1),
             ]);
-            setProductStatus({
+            setRequestStatus({
               error: "",
-              success: "Successfully deleted the product!",
+              success: "",
             });
           })
           .catch((error) => {
-            setProductStatus({ error: error.message, success: "" });
+            setRequestStatus({ error: error.message, success: "" });
           });
         break;
       case "update":
@@ -340,15 +355,15 @@ export default function Inventory({
                   .split(",")
                   .map((value) => value.trim())
                   .filter(Boolean),
-                variantImages: [image],
-                variantTags: [],
+                variantImages: [image, ...product.variantImages.slice(1)],
+                variantTags: [variantTag, ...product.variantTags.slice(1)],
               },
             },
             cookie
           )
           .then(({ product, error }) => {
             if (error) {
-              setProductStatus({ error: error, success: "" });
+              setRequestStatus({ error: error, success: "" });
               return;
             }
 
@@ -357,13 +372,125 @@ export default function Inventory({
               product,
               ...products.slice(productIndex + 1),
             ]);
-            setProductStatus({
+            setRequestStatus({
               error: "",
               success: "Successfully updated the product!",
             });
           })
           .catch((error) => {
-            setProductStatus({ error: error.message, success: "" });
+            setRequestStatus({ error: error.message, success: "" });
+          });
+        break;
+    }
+  };
+
+  const onVariantSubmit = async ({
+    index,
+    variantTag,
+    image,
+    option,
+  }: VariantRequest) => {
+    switch (option) {
+      case "add":
+        await PostRpcClient.getInstance()
+          .call("VariantAdd", {
+            id: businesses[businessIndex].id,
+            product: {
+              id: parseInt(products[productIndex].objectId.split("_")[1]),
+              variantImage: image,
+              variantTag,
+            },
+          })
+          .then(({ error, variantImage, variantTag }) => {
+            if (error) {
+              setRequestStatus({ error: error, success: "" });
+              return;
+            }
+            setProduct({
+              ...product,
+              variantImages: [...product.variantImages, variantImage],
+              variantTags: [...product.variantTags, variantTag],
+            });
+            setRequestStatus({
+              error: "",
+              success: "Successfully added the variant!",
+            });
+          })
+          .catch((error) => {
+            setRequestStatus({ error: error.message, success: "" });
+          });
+        break;
+      case "delete":
+        await PostRpcClient.getInstance()
+          .call("VariantDelete", {
+            id: businesses[businessIndex].id,
+            product: {
+              id: parseInt(products[productIndex].objectId.split("_")[1]),
+              index: index,
+            },
+          })
+          .then(({ error }) => {
+            if (error) {
+              setRequestStatus({ error: error, success: "" });
+              return;
+            }
+            setTab("0");
+            setProduct({
+              ...product,
+              variantImages: [
+                ...product.variantImages.slice(0, index),
+                ...product.variantImages.slice(index + 1),
+              ],
+              variantTags: [
+                ...product.variantTags.slice(0, index),
+                ...product.variantTags.slice(index + 1),
+              ],
+            });
+            setRequestStatus({
+              error: "",
+              success: "",
+            });
+          })
+          .catch((error) => {
+            setRequestStatus({ error: error.message, success: "" });
+          });
+        break;
+      case "update":
+        await PostRpcClient.getInstance()
+          .call("VariantUpdate", {
+            id: businesses[businessIndex].id,
+            product: {
+              id: parseInt(products[productIndex].objectId.split("_")[1]),
+              index: index,
+              variantImage: image,
+              variantTag,
+            },
+          })
+          .then(({ error, variantImage, variantTag }) => {
+            if (error) {
+              setRequestStatus({ error: error, success: "" });
+              return;
+            }
+            setProduct({
+              ...product,
+              variantImages: [
+                ...product.variantImages.slice(0, index),
+                variantImage,
+                ...product.variantImages.slice(index + 1),
+              ],
+              variantTags: [
+                ...product.variantTags.slice(0, index),
+                variantTag,
+                ...product.variantTags.slice(index + 1),
+              ],
+            });
+            setRequestStatus({
+              error: "",
+              success: "Successfully updated the variant!",
+            });
+          })
+          .catch((error) => {
+            setRequestStatus({ error: error.message, success: "" });
           });
         break;
     }
@@ -392,20 +519,25 @@ export default function Inventory({
           products={products}
           productIndex={productIndex}
           product={product}
+          requestStatus={requestStatus}
+          tab={tab}
           uploadType={uploadStatus.uploadType}
           uploadError={uploadStatus.error}
           uploadOpen={uploadStatus.open}
           uploadLoading={uploadStatus.loading}
           uploadSuccessful={uploadStatus.successful}
-          error={productStatus.error}
-          success={productStatus.success}
           height={size.height}
           onAddProduct={onAddProduct}
           onBusinessClick={onBusinessClick}
           onProductClick={onProductClick}
+          onTabClick={(key) => {
+            setRequestStatus({ error: "", success: "" });
+            setTab(key);
+          }}
           onUpload={onUpload}
           onUploadTypeChange={onUploadTypeChange}
-          onSubmit={onSubmit}
+          onProductSubmit={onProductSubmit}
+          onVariantSubmit={onVariantSubmit}
         />
       </DashboardLayout>
     </RootLayout>

@@ -23,4 +23,28 @@ cloudinaryClient.deleteResources = async (public_ids: string[]) => {
   return error;
 };
 
+cloudinaryClient.deleteFolder = async (path: string, options = {}) => {
+  let error = null;
+  await Cloudinary.api
+    .resources({
+      type: "upload",
+      prefix: path,
+    })
+    .then(async ({ resources }) => {
+      const publicIds = resources.map(({ public_id }: any) => public_id);
+      if (publicIds.length > 0) {
+        const error = await cloudinaryClient.deleteResources(publicIds);
+        if (error) {
+          throw error;
+        }
+      }
+      await Cloudinary.api.delete_folder(path, options);
+    })
+    .catch((err) => {
+      console.log(err);
+      error = err.message;
+    });
+  return error;
+};
+
 export default cloudinaryClient;

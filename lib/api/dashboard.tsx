@@ -95,20 +95,30 @@ export async function productAdd(
         }
 
         if (addToCloudinary) {
-          const [cloudinaryUrl, cloudinaryError] = await Cloudinary.upload(
-            variantImages[0],
-            {
-              exif: false,
-              format: "webp",
-              public_id: `${businessId}/${nextProductId}`,
-              unique_filename: false,
-              overwrite: true,
+          const variantMap = new Map<string, string>();
+          for (let i = 0; i < variantImages.length; ++i) {
+            const variantImage = variantImages[i];
+            if (variantMap.has(variantImage)) {
+              variantImages[i] = variantMap.get(variantImage) || "";
+              continue;
             }
-          );
-          if (cloudinaryError) {
-            throw cloudinaryError;
+
+            const [url, cloudinaryError] = await Cloudinary.upload(
+              variantImage,
+              {
+                exif: false,
+                format: "webp",
+                public_id: `${businessId}/${nextProductId}/${i}`,
+                unique_filename: false,
+                overwrite: true,
+              }
+            );
+            if (cloudinaryError) {
+              throw cloudinaryError;
+            }
+            variantImages[i] = url;
+            variantMap.set(variantImage, url);
           }
-          variantImages[0] = cloudinaryUrl;
         }
 
         const geolocation = [];
@@ -193,24 +203,32 @@ export async function productDelete(businessId: number, productIds: string[]) {
       }
     );
 
-    for (let i = 0; i < productIdsSegments.length; ++i) {
-      const productIdsSegment = productIdsSegments[i];
-      const cloudinaryObjectIds = productIdsSegment.map(
-        (productId) => `${businessId}/${productId}`
-      );
-      const cloudinaryError = await Cloudinary.deleteResources(
-        cloudinaryObjectIds
+    for (let i = 0; i < productIds.length; ++i) {
+      const cloudinaryError = await Cloudinary.deleteFolder(
+        `${businessId}/${productIds[i]}`
       );
       if (cloudinaryError) {
         throw cloudinaryError;
       }
     }
 
-    const [, psqlError] = await Psql.query(
-      SqlString.format(`DELETE FROM products WHERE business_id=?`, [businessId])
-    );
-    if (psqlError) {
-      throw psqlError;
+    for (let i = 0; i < productIdsSegments.length; ++i) {
+      const productIdsSegment = productIdsSegments[i];
+      const psqlObjectIds = productIdsSegment.map(
+        (productId) => `id=${productId}`
+      );
+
+      const [, psqlError] = await Psql.query(
+        SqlString.format(
+          `DELETE FROM products WHERE business_id=? AND (${psqlObjectIds.join(
+            " OR "
+          )})`,
+          [businessId]
+        )
+      );
+      if (psqlError) {
+        throw psqlError;
+      }
     }
 
     return null;

@@ -63,6 +63,18 @@ export interface PostMethods {
     request: UploadSettingsUpdateRequest;
     response: UploadSettingsUpdateResponse;
   };
+  VariantAdd: {
+    request: VariantAddRequest;
+    response: VariantAddResponse;
+  };
+  VariantUpdate: {
+    request: VariantUpdateRequest;
+    response: VariantUpdateResponse;
+  };
+  VariantDelete: {
+    request: VariantDeleteRequest;
+    response: VariantDeleteResponse;
+  };
 }
 
 export interface BaseResponse {
@@ -197,9 +209,9 @@ export const EmptyProduct: Product = {
   description: "",
   link: "",
   priceRange: [-1, -1],
-  tags: [],
-  variantImages: [],
-  variantTags: [],
+  tags: [""],
+  variantImages: [""],
+  variantTags: [""],
 };
 
 export interface ProductUpdateRequest {
@@ -286,6 +298,45 @@ export interface UploadSettingsUpdateResponse extends BaseResponse {
   Etsy?: UploadTypeSettings;
   Shopify?: UploadTypeSettings;
 }
+
+export interface VariantAddRequest {
+  id: number;
+  product: {
+    id: number;
+    variantImage: string;
+    variantTag: string;
+  };
+}
+
+export interface VariantAddResponse extends BaseResponse {
+  variantImage: string;
+  variantTag: string;
+}
+
+export interface VariantUpdateRequest {
+  id: number;
+  product: {
+    id: number;
+    index: number;
+    variantImage: string;
+    variantTag: string;
+  };
+}
+
+export interface VariantUpdateResponse extends BaseResponse {
+  variantImage: string;
+  variantTag: string;
+}
+
+export interface VariantDeleteRequest {
+  id: number;
+  product: {
+    id: number;
+    index: number;
+  };
+}
+
+export interface VariantDeleteResponse extends BaseResponse {}
 
 export interface GetMethods {
   Business: BusinessResponse;

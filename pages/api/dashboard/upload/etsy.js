@@ -131,7 +131,7 @@ export default async function handler(req, res) {
               const name = Xss(product.title);
               const tags = product.tags.map((x) => Xss(x)).filter(Boolean);
               const description = Xss(
-                decode(product.body_html)
+                decode(product.description)
                   .replace(/<br>/g, "\n")
                   .replace(/<[^>]*>/g, "")
               );
@@ -141,12 +141,15 @@ export default async function handler(req, res) {
               const link = Xss(product.url);
               const price = parseFloat(product.price);
               const priceRange = [price, price];
-              const variantTags = [""];
+              const variantTags = [];
               product.Variations.forEach((variation) => {
                 variation.options.forEach(({ formatted_value }) => {
                   variantTags.push(Xss(formatted_value));
                 });
               });
+              if (variantTags.length === 0) {
+                variantTags.push("");
+              }
               const variantImages = Array(variantTags.length).fill(
                 Xss(
                   product.MainImage.url_570xN || product.MainImage.url_fullxfull

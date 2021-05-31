@@ -19,6 +19,9 @@ const endpoints = new Map<keyof PostMethods, string>([
   ["SquareProductUpload", "/api/dashboard/upload/square"],
   ["UploadSettingsUpdate", "/api/dashboard/upload/settings/update"],
   ["UserSignUp", "/api/signup/user"],
+  ["VariantAdd", "/api/dashboard/variant/add"],
+  ["VariantDelete", "/api/dashboard/variant/delete"],
+  ["VariantUpdate", "/api/dashboard/variant/update"],
 ]);
 
 let postRpcClient: PostRpcClient;
