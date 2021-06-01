@@ -63,6 +63,18 @@ export interface PostMethods {
     request: UploadSettingsUpdateRequest;
     response: UploadSettingsUpdateResponse;
   };
+  VariantAdd: {
+    request: VariantAddRequest;
+    response: VariantAddResponse;
+  };
+  VariantUpdate: {
+    request: VariantUpdateRequest;
+    response: VariantUpdateResponse;
+  };
+  VariantDelete: {
+    request: VariantDeleteRequest;
+    response: VariantDeleteResponse;
+  };
 }
 
 export interface BaseResponse {
@@ -173,45 +185,47 @@ export interface LogoUpdateResponse extends BaseResponse {
 export interface BaseProduct {
   objectId: string;
   name: string;
-  image: string;
+  preview: string;
 }
 
 export interface Product extends BaseProduct {
-  company: string;
-  primaryKeywords: Array<string>;
+  business: string;
   departments: Array<string>;
   description: string;
   link: string;
-  price: number;
   priceRange: Array<number>;
+  tags: Array<string>;
+  variantImages: Array<string>;
+  variantTags: Array<string>;
   wishlist?: boolean;
 }
 
 export const EmptyProduct: Product = {
   objectId: "",
   name: "",
-  image: "",
-  company: "",
+  preview: "",
+  business: "",
   departments: [],
-  primaryKeywords: [],
   description: "",
   link: "",
-  price: -1,
   priceRange: [-1, -1],
+  tags: [""],
+  variantImages: [""],
+  variantTags: [""],
 };
 
 export interface ProductUpdateRequest {
-  businessId: number;
+  id: number;
   product: {
     name: string;
     id: number;
-    primaryKeywords: Array<string>;
     departments: Array<string>;
     description: string;
-    image: string;
     link: string;
-    price: number;
     priceRange: Array<number>;
+    tags: Array<string>;
+    variantImages: Array<string>;
+    variantTags: Array<string>;
   };
 }
 
@@ -220,16 +234,16 @@ export interface ProductUpdateResponse extends BaseResponse {
 }
 
 export interface ProductAddRequest {
-  businessId: number;
+  id: number;
   product: {
     name: string;
-    primaryKeywords: Array<string>;
     departments: Array<string>;
     description: string;
-    image: string;
     link: string;
-    price: number;
     priceRange: Array<number>;
+    tags: Array<string>;
+    variantImages: Array<string>;
+    variantTags: Array<string>;
   };
 }
 
@@ -238,7 +252,7 @@ export interface ProductAddResponse extends BaseResponse {
 }
 
 export interface ProductDeleteRequest {
-  businessId: number;
+  id: number;
   product: {
     id: number;
   };
@@ -254,7 +268,7 @@ export interface PasswordUpdateRequest {
 export interface PasswordUpdateResponse extends BaseResponse {}
 
 export interface ProductUploadRequest {
-  businessId: number;
+  id: number;
 }
 
 export interface ProductUploadResponse extends BaseResponse {}
@@ -275,7 +289,7 @@ export interface UserSignUpRequest {
 export interface UserSignUpResponse extends SignUpResponse {}
 
 export interface UploadSettingsUpdateRequest extends BaseResponse {
-  businessId: number;
+  id: number;
   Etsy?: UploadTypeSettings;
   Shopify?: UploadTypeSettings;
 }
@@ -284,6 +298,45 @@ export interface UploadSettingsUpdateResponse extends BaseResponse {
   Etsy?: UploadTypeSettings;
   Shopify?: UploadTypeSettings;
 }
+
+export interface VariantAddRequest {
+  id: number;
+  product: {
+    id: number;
+    variantImage: string;
+    variantTag: string;
+  };
+}
+
+export interface VariantAddResponse extends BaseResponse {
+  variantImage: string;
+  variantTag: string;
+}
+
+export interface VariantUpdateRequest {
+  id: number;
+  product: {
+    id: number;
+    index: number;
+    variantImage: string;
+    variantTag: string;
+  };
+}
+
+export interface VariantUpdateResponse extends BaseResponse {
+  variantImage: string;
+  variantTag: string;
+}
+
+export interface VariantDeleteRequest {
+  id: number;
+  product: {
+    id: number;
+    index: number;
+  };
+}
+
+export interface VariantDeleteResponse extends BaseResponse {}
 
 export interface GetMethods {
   Business: BusinessResponse;
@@ -326,7 +379,7 @@ export interface SearchRequest {
 
 export interface SearchResponse {
   facets: {
-    company: { [key: string]: number };
+    business: { [key: string]: number };
     departments: { [key: string]: number };
   };
   hits: Array<Product>;
@@ -335,7 +388,7 @@ export interface SearchResponse {
 
 export const EmptySearchResponse: SearchResponse = {
   facets: {
-    company: {},
+    business: {},
     departments: {},
   },
   hits: [],

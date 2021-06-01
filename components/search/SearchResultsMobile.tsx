@@ -9,7 +9,7 @@ import LocalityLogo from "../common/images/LocalityLogo";
 
 export interface SearchResults {
   facets: {
-    company: Map<string, number>;
+    business: Map<string, number>;
     departments: Map<string, number>;
   };
   hits: Array<Product>;

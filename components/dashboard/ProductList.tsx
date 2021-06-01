@@ -17,7 +17,7 @@ export interface ProductListProps {
   style?: CSSProperties;
 }
 
-export default function BusinessList(props: ProductListProps) {
+export default function ProductList(props: ProductListProps) {
   const productRowRenderer = ({
     index,
     key,
@@ -38,7 +38,7 @@ export default function BusinessList(props: ProductListProps) {
         >
           <DescriptionImage
             direction="row"
-            src={props.products[index].image.replace(
+            src={props.products[index].preview.replace(
               "/upload",
               "/upload/w_128"
             )}

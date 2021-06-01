@@ -20,19 +20,19 @@ const PaginationEllipsis = dynamic(() =>
 
 export type UserInputChange = {
   page: (value: number) => void;
-  company: (value: string) => void;
+  business: (value: string) => void;
   departments: (value: string) => void;
 };
 
 export interface UserInput {
   page: number;
-  company: Set<string>;
+  business: Set<string>;
   departments: Set<string>;
 }
 
 export interface SearchResults {
   facets: {
-    company: Map<string, number>;
+    business: Map<string, number>;
     departments: Map<string, number>;
   };
   hits: Array<Product>;
@@ -239,10 +239,10 @@ export default function Search({
             <FacetList
               name="Businesses"
               showAll={showAllBusinesses}
-              facets={searchResults.facets.company}
-              selectedFacets={userInput.company}
+              facets={searchResults.facets.business}
+              selectedFacets={userInput.business}
               onFacetClick={(value) => {
-                onUserInputChange.company(value);
+                onUserInputChange.business(value);
               }}
               toggleShowAll={onToggleShowAllBusinesses}
             />

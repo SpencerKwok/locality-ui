@@ -26,13 +26,13 @@ export default function WishList({
               initialWishList
               loggedIn
               key={product.objectId}
-              company={product.company}
+              business={product.business}
               link={product.link}
               name={product.name}
               objectId={product.objectId}
               onToggleWishList={onToggleWishList}
               priceRange={product.priceRange}
-              src={product.image}
+              src={product.variantImages[0]}
               style={{
                 maxWidth: 175,
                 marginBottom: 12,

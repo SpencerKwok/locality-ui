@@ -3,18 +3,7 @@ import Xss from "xss";
 
 import Psql from "../../../../../lib/api/postgresql";
 import { runMiddlewareBusiness } from "../../../../../lib/api/middleware";
-
-function isStringArray(value) {
-  if (!Array.isArray(value)) {
-    return false;
-  }
-  for (let i = 0; i < value.length; ++i) {
-    if (typeof value[i] !== "string") {
-      return false;
-    }
-  }
-  return true;
-}
+import { isStringArray } from "../../../../../lib/api/common";
 
 export default async function handler(req, res) {
   await runMiddlewareBusiness(req, res);
@@ -25,7 +14,7 @@ export default async function handler(req, res) {
   }
 
   const { id } = req.locals.user;
-  const businessId = id === 0 ? req.body.businessId : id;
+  const businessId = id === 0 ? req.body.id : id;
   if (!Number.isInteger(businessId)) {
     res.status(400).json({ error: "Invalid business id" });
     return;

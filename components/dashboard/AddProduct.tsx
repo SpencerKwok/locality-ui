@@ -36,40 +36,13 @@ async function parseCsv(file: File) {
   return new Promise((resolve, reject) => {
     Papa.parse<Array<string>>(file, {
       complete: (results) => {
-        const headers = results.data[0];
-        results.data = [
-          [
-            ...headers.slice(3, 7),
-            headers[headers.length - 12],
-            headers[headers.length - 8],
-            headers[headers.length - 7],
-            headers[headers.length - 1],
-          ],
-          ...results.data
-            .slice(1)
-            .map((value) => {
-              if ((value[value.length - 2] || "").toLowerCase() === "no") {
-                return [];
-              }
-
-              return [
-                ...value.slice(3, 7),
-                value[value.length - 12],
-                value[value.length - 8],
-                value[value.length - 7],
-                value[value.length - 1],
-              ].map((value) => {
-                let ret = value || "";
-                if (ret.includes(",")) {
-                  ret = `"${ret}"`;
-                }
-                return ret;
-              });
-            })
-            .filter((x) => x.length === 8),
-        ];
-
-        resolve(results.data.map((value) => value.join(",")).join("\n"));
+        resolve(
+          results.data
+            .map((value) =>
+              value.map((x) => (x.includes(",") ? `"${x}"` : x)).join(",")
+            )
+            .join("\n")
+        );
       },
       error: (error) => {
         reject(error);

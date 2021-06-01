@@ -3,8 +3,9 @@ import { getSession } from "next-auth/client";
 import { useRouter } from "next/router";
 
 import BusinessPage from "../../components/dashboard/Business";
-import { GetRpcClient, PostRpcClient } from "../../components/common/RpcClient";
+import DashboardLayout from "../../components/dashboard/Layout";
 import RootLayout from "../../components/common/RootLayout";
+import { GetRpcClient, PostRpcClient } from "../../components/common/RpcClient";
 import { useWindowSize } from "../../lib/common";
 
 import type { GetServerSideProps } from "next";
@@ -115,7 +116,7 @@ export default function Business({
         "DepartmentsUpdate",
         {
           id: businesses[businessIndex].id,
-          departments,
+          departments: departments.map((value) => value.trim()),
         },
         cookie
       )
@@ -194,7 +195,7 @@ export default function Business({
     Shopify,
   }: UpdateUploadSettingsRequest) => {
     const req = {
-      businessId: businesses[businessIndex].id,
+      id: businesses[businessIndex].id,
       Etsy: Etsy && {
         includeTags: Etsy.includeTags
           ? Etsy.includeTags
@@ -272,27 +273,33 @@ export default function Business({
   }
 
   if (!size.height) {
-    return <RootLayout session={session} />;
+    return (
+      <RootLayout session={session}>
+        <DashboardLayout tab="business" />
+      </RootLayout>
+    );
   }
 
   return (
     <RootLayout session={session}>
-      <BusinessPage
-        isNewBusiness={isNewBusiness}
-        businesses={businesses}
-        businessIndex={businessIndex}
-        departments={departments}
-        updateDepartmentsStatus={updateDepartmentsStatus}
-        updateHomepagesStatus={updateHomepagesStatus}
-        updateLogoStatus={updateLogoStatus}
-        updateUploadSettingsStatus={updateUploadSettingsStatus}
-        height={size.height}
-        onBusinessClick={onBusinessClick}
-        onSubmitDepartments={onSubmitDepartments}
-        onSubmitLogo={onSubmitLogo}
-        onSubmitHomepages={onSubmitHomepages}
-        onSubmitUploadSettings={onSubmitUploadSettings}
-      />
+      <DashboardLayout tab="business">
+        <BusinessPage
+          isNewBusiness={isNewBusiness}
+          businesses={businesses}
+          businessIndex={businessIndex}
+          departments={departments}
+          updateDepartmentsStatus={updateDepartmentsStatus}
+          updateHomepagesStatus={updateHomepagesStatus}
+          updateLogoStatus={updateLogoStatus}
+          updateUploadSettingsStatus={updateUploadSettingsStatus}
+          height={size.height}
+          onBusinessClick={onBusinessClick}
+          onSubmitDepartments={onSubmitDepartments}
+          onSubmitLogo={onSubmitLogo}
+          onSubmitHomepages={onSubmitHomepages}
+          onSubmitUploadSettings={onSubmitUploadSettings}
+        />
+      </DashboardLayout>
     </RootLayout>
   );
 }

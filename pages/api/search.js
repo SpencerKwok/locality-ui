@@ -1,9 +1,56 @@
+import { distance } from "fastest-levenshtein";
 import SqlString from "sqlstring";
 import Xss from "xss";
 import { getSession } from "next-auth/client";
 
 import Algolia from "../../lib/api/algolia";
 import Psql from "../../lib/api/postgresql";
+
+import DoubleMetaphone from "doublemetaphone";
+const encoder = new DoubleMetaphone();
+
+/*
+  Pick best variant from the hit to showcase.
+  We do so by running double metaphone and
+  using Levenshtein distancing algorithm
+  on the resulting phonetics. We do not use
+  Metaphone 3 (although better) due to
+  licensing + it's $240 USD for source code.
+*/
+const getBestVariant = (query, hit) => {
+  const { variantImages, variantTags } = hit;
+  const uniqueTags = new Map();
+  const uniqueImages = new Set(variantImages);
+  variantTags.forEach((tag, index) => {
+    if (uniqueTags.has(tag)) {
+      return;
+    }
+    uniqueTags.set(tag, index);
+  });
+  if (uniqueImages.size <= 1 || uniqueTags.size <= 1) {
+    hit.variantImages = variantImages.slice(0, 1);
+    hit.variantTags = variantTags.slice(0, 1);
+  } else {
+    const queryPhonetic = encoder.doubleMetaphone(query);
+    const queryPhoneticString = `${queryPhonetic.primary}${queryPhonetic.alternate}`;
+    const firstTagPhonetic = encoder.doubleMetaphone(variantTags[0]);
+    const firstTagPhoneticString = `${firstTagPhonetic.primary}${firstTagPhonetic.alternate}`;
+    let bestIndex = 0;
+    let bestScore = distance(firstTagPhoneticString, queryPhoneticString);
+    uniqueTags.forEach((index, tag) => {
+      const phonetic = encoder.doubleMetaphone(tag);
+      const phoneticString = `${phonetic.primary}${phonetic.alternate}`;
+      const score = distance(phoneticString, queryPhoneticString);
+      if (score < bestScore) {
+        bestScore = score;
+        bestIndex = index;
+      }
+    });
+    hit.variantImages = [variantImages[bestIndex]];
+    hit.variantTags = [variantTags[bestIndex]];
+  }
+  return hit;
+};
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
@@ -25,14 +72,14 @@ export default async function handler(req, res) {
     }
   }
 
-  const facets = ["company", "departments"];
+  const facets = ["business", "departments"];
   const attributesToRetrieve = [
     "objectId",
-    "company",
-    "image",
+    "business",
+    "variant_images",
+    "variant_tags",
     "link",
     "name",
-    "price",
     "price_range",
   ];
   const attributesToHighlight = [];
@@ -78,6 +125,7 @@ export default async function handler(req, res) {
       });
     }
 
+    results.hits = results.hits.map((hit) => getBestVariant(q, hit));
     res.status(200).json(results);
   } else {
     const [results, error] = await Algolia.search(q, {
@@ -101,6 +149,7 @@ export default async function handler(req, res) {
       });
     }
 
+    results.hits = results.hits.map((hit) => getBestVariant(q, hit));
     res.status(200).json(results);
   }
 }
