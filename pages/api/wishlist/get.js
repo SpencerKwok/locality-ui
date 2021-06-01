@@ -31,18 +31,35 @@ export default async function handler(req, res) {
     "price_range",
   ];
 
-  const wishlist = productIDs.rows[0].wishlist.split(",").filter(Boolean);
-  const [products, productsError] = await Algolia.getObjects(wishlist, {
-    attributesToRetrieve,
-  });
+  const wishlist = productIDs.rows[0].wishlist
+    .split(",")
+    .filter(Boolean)
+    .map((id) => ({
+      objectId: id.split("_").slice(0, 2).join("_"),
+      variantIndex: id.split("_")[2],
+    }));
+  const [products, productsError] = await Algolia.getObjects(
+    wishlist.map(({ objectId }) => objectId),
+    {
+      attributesToRetrieve,
+    }
+  );
   if (productsError) {
     res.status(500).json({ error: productsError });
     return;
   }
 
-  res.status(200).json({
-    products: products.filter(Boolean).map((product) => ({
-      ...mapKeys(product, (v, k) => camelCase(k)),
-    })),
-  });
+  const results = [];
+  for (let i = 0; i < wishlist.length; ++i) {
+    if (!products[i]) {
+      continue;
+    }
+
+    results.push({
+      ...mapKeys(products[i], (v, k) => camelCase(k)),
+      variantIndex: wishlist[i].variantIndex,
+    });
+  }
+
+  res.status(200).json({ products: results });
 }

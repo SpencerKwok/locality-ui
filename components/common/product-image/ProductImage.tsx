@@ -10,31 +10,33 @@ import styles from "./ProductImage.module.css";
 const WishlistToolTip = dynamic(() => import("./WishlistToolTip"));
 
 export interface ProductImageProps extends React.HTMLProps<HTMLDivElement> {
+  alwaysHover?: boolean;
   business: string;
+  initialWishList?: boolean;
   link: string;
+  loading?: "eager" | "lazy";
+  loggedIn?: boolean;
   name: string;
   objectId: string;
   priceRange: Array<number>;
-  src: string;
+  variantImages: Array<string>;
+  variantIndex: number;
   onToggleWishList: (id: string, value: boolean) => void;
-  alwaysHover?: boolean;
-  initialWishList?: boolean;
-  loading?: "eager" | "lazy";
-  loggedIn?: boolean;
 }
 
 function ProductImage({
+  alwaysHover,
   business,
+  initialWishList,
   link,
+  loggedIn,
+  loading,
   name,
   objectId,
-  priceRange,
-  src,
   onToggleWishList,
-  alwaysHover,
-  initialWishList,
-  loading,
-  loggedIn,
+  priceRange,
+  variantImages,
+  variantIndex,
   style,
 }: ProductImageProps) {
   const [hover, setHover] = useState(false);
@@ -65,7 +67,7 @@ function ProductImage({
                 setHover(true);
               }}
               onClick={() => {
-                onToggleWishList(objectId, true);
+                onToggleWishList(`${objectId}_${variantIndex}`, true);
                 setWishList(true);
               }}
             />
@@ -81,7 +83,7 @@ function ProductImage({
                 setHover(true);
               }}
               onClick={() => {
-                onToggleWishList(objectId, false);
+                onToggleWishList(`${objectId}_${variantIndex}`, false);
                 setWishList(false);
               }}
             />
@@ -109,7 +111,10 @@ function ProductImage({
             <img
               alt={name}
               loading={loading}
-              src={src.replace("/upload", "/upload/w_400")}
+              src={variantImages[variantIndex].replace(
+                "/upload",
+                "/upload/w_400"
+              )}
               width={175}
             />
           </picture>

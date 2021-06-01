@@ -197,6 +197,7 @@ export interface Product extends BaseProduct {
   tags: Array<string>;
   variantImages: Array<string>;
   variantTags: Array<string>;
+  variantIndex: number;
   wishlist?: boolean;
 }
 
@@ -212,6 +213,7 @@ export const EmptyProduct: Product = {
   tags: [""],
   variantImages: [""],
   variantTags: [""],
+  variantIndex: 0,
 };
 
 export interface ProductUpdateRequest {
