@@ -28,8 +28,7 @@ const getBestVariant = (query, hit) => {
     uniqueTags.set(tag, index);
   });
   if (uniqueImages.size <= 1 || uniqueTags.size <= 1) {
-    hit.variantImages = variantImages.slice(0, 1);
-    hit.variantTags = variantTags.slice(0, 1);
+    hit.variantIndex = 0;
   } else {
     const queryPhonetic = encoder.doubleMetaphone(query);
     const queryPhoneticString = `${queryPhonetic.primary}${queryPhonetic.alternate}`;
@@ -46,8 +45,7 @@ const getBestVariant = (query, hit) => {
         bestIndex = index;
       }
     });
-    hit.variantImages = [variantImages[bestIndex]];
-    hit.variantTags = [variantTags[bestIndex]];
+    hit.variantIndex = bestIndex;
   }
   return hit;
 };
@@ -116,16 +114,17 @@ export default async function handler(req, res) {
       return;
     }
 
+    results.hits = results.hits.map((hit) => getBestVariant(q, hit));
+
     if (wishlist.length > 0) {
       results.hits = results.hits.map((hit) => {
         return {
           ...hit,
-          wishlist: wishlist.includes(hit.objectId),
+          wishlist: wishlist.includes(`${hit.objectId}_${hit.variantIndex}`),
         };
       });
     }
 
-    results.hits = results.hits.map((hit) => getBestVariant(q, hit));
     res.status(200).json(results);
   } else {
     const [results, error] = await Algolia.search(q, {
@@ -140,16 +139,17 @@ export default async function handler(req, res) {
       return;
     }
 
+    results.hits = results.hits.map((hit) => getBestVariant(q, hit));
+
     if (wishlist.length > 0) {
       results.hits = results.hits.map((hit) => {
         return {
           ...hit,
-          wishlist: wishlist.includes(hit.objectId),
+          wishlist: wishlist.includes(`${hit.objectId}_${hit.variantIndex}`),
         };
       });
     }
 
-    results.hits = results.hits.map((hit) => getBestVariant(q, hit));
     res.status(200).json(results);
   }
 }

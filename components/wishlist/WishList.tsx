@@ -32,7 +32,8 @@ export default function WishList({
               objectId={product.objectId}
               onToggleWishList={onToggleWishList}
               priceRange={product.priceRange}
-              src={product.variantImages[0]}
+              variantImages={product.variantImages}
+              variantIndex={product.variantIndex}
               style={{
                 maxWidth: 175,
                 marginBottom: 12,

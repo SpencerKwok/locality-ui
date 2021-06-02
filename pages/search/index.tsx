@@ -96,7 +96,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const forwarded = (context.req.headers["x-forwarded-for"] || "") as string;
   const ip = forwarded.split(/,\s*/)[0];
   const query = context.query["q"] || "";
-  const results = await fetcher(`/api/search?q=${query}&ip=${ip}`);
+  const results = await fetcher(`/api/search?q=${query}&ip=${ip}`, cookie);
 
   return {
     props: {

@@ -91,19 +91,20 @@ export default function ProductShowcase({
         wrap="wrap"
         spacing={12}
       >
-        {hits.map((hit, index) => (
+        {sortedHits.map((hit, index) => (
           <ProductImage
-            loggedIn={loggedIn}
-            initialWishList={hit.wishlist}
-            loading={index < numEagerLoad ? "eager" : "lazy"}
-            key={hit.objectId}
             business={hit.business}
+            initialWishList={hit.wishlist}
+            key={hit.objectId}
             link={hit.link}
+            loggedIn={loggedIn}
+            loading={index < numEagerLoad ? "eager" : "lazy"}
             name={hit.name}
             objectId={hit.objectId}
             onToggleWishList={onToggleWishList}
             priceRange={hit.priceRange}
-            src={hit.variantImages[0]}
+            variantImages={hit.variantImages}
+            variantIndex={hit.variantIndex}
             style={{
               maxWidth: 175,
               marginBottom: 12,
