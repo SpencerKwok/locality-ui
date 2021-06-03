@@ -101,7 +101,7 @@ export default async function handler(req, res) {
   }
 
   if (ip !== "") {
-    const [results, error] = await Algolia.search(encodeURIComponent(q), {
+    const [results, error] = await Algolia.search(q, {
       aroundLatLngViaIP: true,
       facets,
       filters,
@@ -128,7 +128,7 @@ export default async function handler(req, res) {
 
     res.status(200).json(results);
   } else {
-    const [results, error] = await Algolia.search(encodeURIComponent(q), {
+    const [results, error] = await Algolia.search(q, {
       facets,
       filters,
       page,
