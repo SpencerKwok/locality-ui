@@ -48,7 +48,7 @@ export default function SearchBar({
           placeholder="Search for products"
           style={{ border: "none" }}
           type="text"
-          value={query}
+          value={decodeURIComponent(query)}
         />
         {query.length > 0 && (
           <InputGroup.Append>

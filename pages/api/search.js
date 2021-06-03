@@ -56,9 +56,13 @@ export default async function handler(req, res) {
     return;
   }
 
-  const q = Xss(req.query["q"] || "");
-  const ip_header = Xss(req.headers["x-forwarded-for"] || "");
-  const ip = Xss(req.query["ip"] || ip_header.split(/,\s*/)[0] || "");
+  const q = Xss(decodeURIComponent(req.query["q"] || ""));
+  const ip_header = Xss(
+    decodeURIComponent(req.headers["x-forwarded-for"] || "")
+  );
+  const ip = Xss(
+    decodeURIComponent(req.query["ip"] || ip_header.split(/,\s*/)[0] || "")
+  );
   const filters = Xss(decodeURIComponent(req.query["filters"] || ""));
 
   let page = 0;

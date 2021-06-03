@@ -62,7 +62,7 @@ class UserInput {
   }
 
   toString() {
-    let params = `q=${this.query}`;
+    let params = `q=${encodeURIComponent(this.query)}`;
     if (this.page > 0) {
       params += `&pg=${this.page}`;
     }
@@ -95,8 +95,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const cookie = context.req.headers.cookie;
   const forwarded = (context.req.headers["x-forwarded-for"] || "") as string;
   const ip = forwarded.split(/,\s*/)[0];
-  const query = context.query["q"] || "";
-  const results = await fetcher(`/api/search?q=${query}&ip=${ip}`, cookie);
+  const query = decodeURIComponent((context.query["q"] || "") as string);
+  const results = await fetcher(
+    `/api/search?q=${encodeURIComponent(query)}&ip=${ip}`,
+    cookie
+  );
 
   return {
     props: {
@@ -193,9 +196,13 @@ export default function Search({
         console.log(err);
       });
 
-    router.push({ pathname: "/search", query: { q: query } }, undefined, {
-      shallow: true,
-    });
+    router.push(
+      { pathname: "/search", query: { q: encodeURIComponent(query) } },
+      undefined,
+      {
+        shallow: true,
+      }
+    );
   };
 
   // HACK: this function only runs on
@@ -204,7 +211,7 @@ export default function Search({
   const onBottom = () => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const query = urlParams.get("q") || "";
+    const query = decodeURIComponent(urlParams.get("q") || "");
     if (userInput.query !== query) {
       userInput.query = query;
       userInput.page = 0;
