@@ -5,6 +5,7 @@ import { getSession } from "next-auth/client";
 
 import Algolia from "../../lib/api/algolia";
 import Psql from "../../lib/api/postgresql";
+import { cleanseString } from "../../lib/api/common";
 
 import DoubleMetaphone from "doublemetaphone";
 const encoder = new DoubleMetaphone();
@@ -56,14 +57,10 @@ export default async function handler(req, res) {
     return;
   }
 
-  const q = Xss(decodeURIComponent(req.query["q"] || ""));
-  const ip_header = Xss(
-    decodeURIComponent(req.headers["x-forwarded-for"] || "")
-  );
-  const ip = Xss(
-    decodeURIComponent(req.query["ip"] || ip_header.split(/,\s*/)[0] || "")
-  );
-  const filters = Xss(decodeURIComponent(req.query["filters"] || ""));
+  const q = cleanseString(req.query["q"] || "");
+  const ip_header = cleanseString(req.headers["x-forwarded-for"] || "");
+  const ip = cleanseString(req.query["ip"] || ip_header.split(/,\s*/)[0] || "");
+  const filters = cleanseString(req.query["filters"] || "");
 
   let page = 0;
   if (req.query["pg"]) {
@@ -104,7 +101,7 @@ export default async function handler(req, res) {
   }
 
   if (ip !== "") {
-    const [results, error] = await Algolia.search(q, {
+    const [results, error] = await Algolia.search(encodeURIComponent(q), {
       aroundLatLngViaIP: true,
       facets,
       filters,
@@ -131,7 +128,7 @@ export default async function handler(req, res) {
 
     res.status(200).json(results);
   } else {
-    const [results, error] = await Algolia.search(q, {
+    const [results, error] = await Algolia.search(encodeURIComponent(q), {
       facets,
       filters,
       page,
