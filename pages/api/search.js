@@ -57,7 +57,9 @@ export default async function handler(req, res) {
     return;
   }
 
-  const q = cleanseString(req.query["q"] || "");
+  // Decode the query since it messes with search to have
+  // symbols encoded... will add symbol synonyms at some point...
+  const q = decodeURIComponent(cleanseString(req.query["q"] || ""));
   const ip_header = cleanseString(req.headers["x-forwarded-for"] || "");
   const ip = cleanseString(req.query["ip"] || ip_header.split(/,\s*/)[0] || "");
   const filters = cleanseString(req.query["filters"] || "");
