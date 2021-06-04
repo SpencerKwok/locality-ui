@@ -32,7 +32,7 @@ print("ALGOLIASEARCH_INDEX={}".format(ALGOLIASEARCH_INDEX))
 # Connecting to index
 print("Connecting to Algolia index...")
 client = SearchClient.create(ALGOLIASEARCH_APPLICATION_ID, ALGOLIASEARCH_API_KEY)
-index = client.init_index(ALGOLIASEARCH_INDEX)
+index = client.init_index('dummy')#ALGOLIASEARCH_INDEX)
 print("Connected to Algolia index")
 
 # Make sure the index exists
