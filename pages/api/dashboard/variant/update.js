@@ -94,7 +94,7 @@ export default async function handler(req, res) {
   }
 
   object.variant_images[variantIndex] = variantImageUrl;
-  object.variant_tags[variantIndex] = variantTag;
+  object.variant_tags[variantIndex] = decode(variantTag);
 
   const uploadObjectError = await Algolia.partialUpdateObject(
     {

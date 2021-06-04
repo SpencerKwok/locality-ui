@@ -1,6 +1,5 @@
 import { distance } from "fastest-levenshtein";
 import SqlString from "sqlstring";
-import Xss from "xss";
 import { getSession } from "next-auth/client";
 
 import Algolia from "../../lib/api/algolia";
@@ -8,6 +7,7 @@ import Psql from "../../lib/api/postgresql";
 import { cleanseString } from "../../lib/api/common";
 
 import DoubleMetaphone from "doublemetaphone";
+import { decode } from "html-entities";
 const encoder = new DoubleMetaphone();
 
 /*
@@ -57,9 +57,7 @@ export default async function handler(req, res) {
     return;
   }
 
-  // Decode the query since it messes with search to have
-  // symbols encoded... will add symbol synonyms at some point...
-  const q = decodeURIComponent(cleanseString(req.query["q"] || ""));
+  const q = decode(cleanseString(req.query["q"] || ""));
   const ip_header = cleanseString(req.headers["x-forwarded-for"] || "");
   const ip = cleanseString(req.query["ip"] || ip_header.split(/,\s*/)[0] || "");
   const filters = cleanseString(req.query["filters"] || "");

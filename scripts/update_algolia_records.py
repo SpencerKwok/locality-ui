@@ -1,6 +1,7 @@
 import os
 import pprint
 import re
+import html
 from algoliasearch.search_client import SearchClient
 
 # Pretty Print
@@ -51,41 +52,12 @@ for hit in res:
     # Edit hit here
 
     ### ADD CODE HERE ###
-    # Convert company to business
-    if "business" not in hit:
-        hit["business"] = hit["company"]
-        hit.pop("company")
-    elif "company" in hit:
-        hit.pop("company")
-
-    # Rename image to array of variant images
-    if "variant_images" not in hit:
-        hit["variant_images"] = [hit["image"]]
-        hit.pop("image")
-    elif "image" in hit:
-        hit.pop("image")
-
-    # Add variant tags
-    hit["variant_tags"] = [""]
-
-    # Rname primary_keywords as tags
-    if "tags" not in hit:
-        hit["tags"] = hit["primary_keywords"]
-        hit.pop("primary_keywords")
-    elif "primary_keywords" in hit:
-        hit.pop("primary_keywords")
-
-    # Convert description to array
-    if "description" in hit:
-        hit["description"] = re.sub("\n\s", "\n", re.sub("\s+", " ", hit["description"].strip()))
-
-    # Add document length vectorization for tags and description
-    hit["tags_length"] = len("".join(hit["tags"]))
-    hit["description_length"] = len(re.sub("\s", "", re.sub("\n", "", "".join(hit["description"]))))
-
-    # Remove price
-    if "price" in hit:
-        hit.pop("price")
+    hit["name"] = html.unescape(hit["name"])
+    hit["business"] = html.unescape(hit["business"])
+    hit["description"] = html.unescape(hit["description"])
+    hit["departments"] = list(map(html.unescape, hit["departments"]))
+    hit["tags"] = list(map(html.unescape, hit["tags"]))
+    hit["variant_tags"] = list(map(html.unescape, hit["variant_tags"]))
     ### END CODE HERE ###
 
     hits.append(hit)
