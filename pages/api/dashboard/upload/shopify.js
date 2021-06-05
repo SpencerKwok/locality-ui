@@ -199,7 +199,7 @@ export default async function handler(req, res) {
             priceRange[1] = Math.max(priceRange[1], parseFloat(variant.price));
           });
           const variantImages = Array(product.variants.length).fill(
-            product.images[0].src
+            product.images[0].src.replace(".jpg", "_400x.jpg")
           );
           const variantTags = product.variants.map(({ title }) =>
             Xss(title.trim())

@@ -1,0 +1,28 @@
+.input-group {
+  border: 1px solid #ced4da;
+  border-radius: 0.3rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.input-group:focus-within {
+  border: 1px solid #449ed7 !important;
+}
+.input-group input:focus {
+  box-shadow: none;
+}
+
+.clear-button {
+  background-color: #ffffff !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #6c757d !important;
+  font-size: 20px !important;
+  padding: 0px;
+  outline: none !important;
+  width: 20px !important;
+}
+.clear-button:link,
+.clear-button:visited,
+.clear-button:hover,
+.clear-button:active {
+  color: #449ed7 !important;
+}

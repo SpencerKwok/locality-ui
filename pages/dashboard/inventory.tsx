@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getSession } from "next-auth/client";
 import { useRouter } from "next/router";
+import Fuse from "fuse.js";
 
 import { EmptyProduct } from "../../components/common/Schema";
 import DashboardLayout from "../../components/dashboard/Layout";
@@ -9,8 +10,10 @@ import RootLayout from "../../components/common/RootLayout";
 import { GetRpcClient, PostRpcClient } from "../../components/common/RpcClient";
 import { useWindowSize } from "../../lib/common";
 
+import type { ChangeEvent } from "react";
 import type { BaseBusiness, BaseProduct } from "../../components/common/Schema";
 import type { GetServerSideProps } from "next";
+import type { FuseBaseProduct } from "../../components/dashboard/ProductGrid";
 import type {
   ProductRequest,
   VariantRequest,
@@ -57,8 +60,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       businesses = await getBusiness(
         `/api/business?id=${user.id}`
       ).then(({ business }) => [business]);
-      initialProducts = await getProducts(`/api/products?id=${user.id}`).then(
-        ({ products }) => products
+      initialProducts = await getProducts(
+        `/api/products?id=${user.id}`
+      ).then(({ products }) =>
+        products.map((product, index) => ({ ...product, index }))
       );
     }
   }
@@ -75,7 +80,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 interface InventoryProps {
   businesses: Array<BaseBusiness>;
-  initialProducts: Array<BaseProduct>;
+  initialProducts: Array<FuseBaseProduct>;
   session: Session | null;
   cookie?: string;
 }
@@ -92,8 +97,17 @@ export default function Inventory({
   const [isNewItem, setIsNewItem] = useState(false);
   const [businessIndex, setBusinessIndex] = useState(0);
   const [departments, setDepartments] = useState<Array<string>>([]);
+  const [filter, setFilter] = useState("");
   const [tab, setTab] = useState("0");
-  const [products, setProducts] = useState<Array<BaseProduct>>(initialProducts);
+  const [products, setProducts] = useState<Array<FuseBaseProduct>>(
+    initialProducts.map((product, index) => ({ ...product, index }))
+  );
+  const [productSearch, setProductSearch] = useState<Fuse<FuseBaseProduct>>(
+    new Fuse(
+      initialProducts.map((product, index) => ({ ...product, index })),
+      { keys: ["name"], ignoreLocation: true, threshold: 0.3 }
+    )
+  );
   const [productIndex, setProductIndex] = useState(-1);
   const [product, setProduct] = useState(EmptyProduct);
   const [requestStatus, setRequestStatus] = useState({
@@ -127,16 +141,26 @@ export default function Inventory({
   };
 
   const onBusinessClick = async (index: number) => {
-    setProducts(
-      await getProducts(`/api/products?id=${businesses[index].id}`).then(
-        ({ products }) => products
-      )
-    );
+    setFilter("");
     setBusinessIndex(index);
     setProductIndex(-1);
     setProduct(EmptyProduct);
     setIsNewItem(false);
     setRequestStatus({ error: "", success: "" });
+
+    const products = await getProducts(
+      `/api/products?id=${businesses[index].id}`
+    ).then(({ products }) =>
+      products.map((product, index) => ({ ...product, index }))
+    );
+    setProducts(products);
+    setProductSearch(
+      new Fuse(products, {
+        keys: ["name"],
+        ignoreLocation: true,
+        threshold: 0.3,
+      })
+    );
   };
 
   const onProductClick = async (index: number) => {
@@ -149,6 +173,14 @@ export default function Inventory({
     setIsNewItem(false);
     setRequestStatus({ error: "", success: "" });
     setProductIndex(index);
+  };
+
+  const onFilterChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setFilter(event.target.value);
+  };
+
+  const onFilterClear = () => {
+    setFilter("");
   };
 
   const onUploadTypeChange = (uploadType: UploadType) => {
@@ -208,6 +240,13 @@ export default function Inventory({
         setProduct(EmptyProduct);
         setProductIndex(-1);
         setProducts([]);
+        setProductSearch(
+          new Fuse([], {
+            keys: ["name"],
+            ignoreLocation: true,
+            threshold: 0.3,
+          })
+        );
         setIsNewItem(false);
         setUploadStatus({
           uploadType,
@@ -292,7 +331,7 @@ export default function Inventory({
               )
             );
             setIsNewItem(false);
-            setProducts([...products, product]);
+            setProducts([...products, { ...product, index: products.length }]);
             setProductIndex(products.length);
             setRequestStatus({
               error: "",
@@ -369,7 +408,7 @@ export default function Inventory({
 
             setProducts([
               ...products.slice(0, productIndex),
-              product,
+              { ...product, index: productIndex },
               ...products.slice(productIndex + 1),
             ]);
             setRequestStatus({
@@ -516,7 +555,12 @@ export default function Inventory({
           businesses={businesses}
           businessIndex={businessIndex}
           departments={departments}
-          products={products}
+          filter={filter}
+          products={
+            filter
+              ? productSearch.search(filter).map(({ item }) => item)
+              : products
+          }
           productIndex={productIndex}
           product={product}
           requestStatus={requestStatus}
@@ -529,6 +573,8 @@ export default function Inventory({
           height={size.height}
           onAddProduct={onAddProduct}
           onBusinessClick={onBusinessClick}
+          onFilterChange={onFilterChange}
+          onFilterClear={onFilterClear}
           onProductClick={onProductClick}
           onTabClick={(key) => {
             setRequestStatus({ error: "", success: "" });

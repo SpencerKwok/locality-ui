@@ -11,12 +11,15 @@ import Tabs from "react-bootstrap/Tabs";
 
 import AddProduct, { UploadType } from "./AddProduct";
 import { Base64, fileToBase64 } from "./ImageHelpers";
-import { BaseBusiness, BaseProduct, Product } from "../common/Schema";
+import { BaseBusiness, Product } from "../common/Schema";
 import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
-import ProductList from "./ProductList";
+import ProductGrid from "./ProductGrid";
 import Stack from "../common/Stack";
 import Select from "../common/select/VirtualSelect";
 import styles from "./Inventory.module.css";
+
+import type { ChangeEvent } from "react";
+import type { FuseBaseProduct } from "./ProductGrid";
 
 const BusinessList = dynamic(() => import("./BusinessList"));
 
@@ -88,7 +91,8 @@ export interface InventoryProps {
   businesses: Array<BaseBusiness>;
   businessIndex: number;
   departments: Array<string>;
-  products: Array<BaseProduct>;
+  filter: string;
+  products: Array<FuseBaseProduct>;
   productIndex: number;
   product: Product;
   requestStatus: RequestStatus;
@@ -101,6 +105,8 @@ export interface InventoryProps {
   height: number;
   onAddProduct: () => void;
   onBusinessClick: (index: number) => void;
+  onFilterChange: (value: ChangeEvent<HTMLInputElement>) => void;
+  onFilterClear: () => void;
   onProductClick: (index: number) => void;
   onProductSubmit: FormikConfig<ProductRequest>["onSubmit"];
   onVariantSubmit: FormikConfig<VariantRequest>["onSubmit"];
@@ -136,6 +142,7 @@ export default function Inventory({
   businesses,
   businessIndex,
   departments,
+  filter,
   products,
   productIndex,
   product,
@@ -149,6 +156,8 @@ export default function Inventory({
   height,
   onAddProduct,
   onBusinessClick,
+  onFilterChange,
+  onFilterClear,
   onProductClick,
   onProductSubmit,
   onVariantSubmit,
@@ -188,9 +197,14 @@ export default function Inventory({
       )}
       <Stack direction="row" columnAlign="flex-start" spacing={24}>
         {businessIndex >= 0 && (
-          <ProductList
+          <ProductGrid
             label={
-              <div style={{ marginBottom: 12 }}>
+              <Stack
+                direction="row"
+                spacing={12}
+                priority={[0, 1]}
+                style={{ marginBottom: 4, width: 500 }}
+              >
                 <h1 className={styles.label}>Products</h1>
                 <AddProduct
                   error={uploadError}
@@ -198,18 +212,20 @@ export default function Inventory({
                   loading={uploadLoading}
                   successful={uploadSuccessful}
                   uploadType={uploadType}
-                  onUploadTypeChange={onUploadTypeChange}
                   onAddProduct={onAddProduct}
+                  onUploadTypeChange={onUploadTypeChange}
                   onUpload={onUpload}
-                  width={400}
                 />
-              </div>
+              </Stack>
             }
+            filter={filter}
+            onFilterChange={onFilterChange}
+            onFilterClear={onFilterClear}
             onProductClick={onProductClick}
             products={products}
-            height={height - 300}
+            height={height - 240}
             index={productIndex}
-            width={400}
+            width={500}
           />
         )}
         {(productIndex >= 0 || isNewItem) && (
@@ -218,7 +234,7 @@ export default function Inventory({
             rowAlign="flex-start"
             style={{ paddingRight: 24 }}
           >
-            <h1 className={styles.label}>
+            <h1 className={styles.label} style={{ marginBottom: 12 }}>
               {isNewItem ? "New Product" : "Product Details"}
             </h1>
             <Tabs

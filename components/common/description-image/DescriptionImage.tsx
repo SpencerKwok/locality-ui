@@ -15,6 +15,7 @@ export default function DescriptionImage(props: DescriptionImageProps) {
       rowAlign={props.rowAlign}
       spacing={props.spacing}
       style={props.style}
+      onClick={props.onClick}
     >
       <picture style={{ margin: 0 }}>
         <source
@@ -25,7 +26,7 @@ export default function DescriptionImage(props: DescriptionImageProps) {
           src={props.src.replace(".webp", ".jpg")}
           alt={props.alt}
           loading={props.loading}
-          width={props.width}
+          style={{ maxHeight: props.height, maxWidth: props.width }}
         />
       </picture>
       <Stack direction="column">{props.children}</Stack>
