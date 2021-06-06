@@ -46,7 +46,7 @@ export default async function handler(req, res) {
   );
 
   const etsyHomepage = homepages.etsyHomepage || "";
-  if (etsyHomepage === "") {
+  if (!etsyHomepage) {
     res.status(400).json({
       error:
         "It looks like you haven't set your business's Etsy storefront yet! Please go to the \"Business\" tab and add your Etsy storefront",
