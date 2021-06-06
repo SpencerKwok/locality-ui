@@ -3,7 +3,10 @@ import Xss from "xss";
 
 import Psql from "../../../../../lib/api/postgresql";
 import { runMiddlewareBusiness } from "../../../../../lib/api/middleware";
-import { isStringArray } from "../../../../../lib/api/common";
+import {
+  cleanseStringArray,
+  isStringArray,
+} from "../../../../../lib/api/common";
 
 export default async function handler(req, res) {
   await runMiddlewareBusiness(req, res);
@@ -48,10 +51,10 @@ export default async function handler(req, res) {
 
     uploadSettings.Etsy = {
       includeTags: etsy.includeTags
-        ? etsy.includeTags.map((x) => Xss(x))
+        ? cleanseStringArray(etsy.includeTags)
         : undefined,
       excludeTags: etsy.excludeTags
-        ? etsy.excludeTags.map((x) => Xss(x))
+        ? cleanseStringArray(etsy.excludeTags)
         : undefined,
     };
   }
@@ -67,10 +70,10 @@ export default async function handler(req, res) {
 
     uploadSettings.Shopify = {
       includeTags: shopify.includeTags
-        ? shopify.includeTags.map((x) => Xss(x))
+        ? cleanseStringArray(shopify.includeTags)
         : undefined,
       excludeTags: shopify.excludeTags
-        ? shopify.excludeTags.map((x) => Xss(x))
+        ? cleanseStringArray(shopify.excludeTags)
         : undefined,
     };
   }

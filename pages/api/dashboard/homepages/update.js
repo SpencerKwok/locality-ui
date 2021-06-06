@@ -83,15 +83,9 @@ export default async function handler(req, res) {
 
   const homepages = JSON.parse(prevHomepages.rows[0].homepages);
   homepages.homepage = homepage;
-  if (etsyHomepage !== "") {
-    homepages.etsyHomepage = etsyHomepage;
-  }
-  if (shopifyHomepage !== "") {
-    homepages.shopifyHomepage = shopifyHomepage;
-  }
-  if (squareHomepage !== "") {
-    homepages.squareHomepage = squareHomepage;
-  }
+  homepages.etsyHomepage = etsyHomepage ? etsyHomepage : "";
+  homepages.shopifyHomepage = shopifyHomepage ? shopifyHomepage : "";
+  homepages.squareHomepage = squareHomepage ? squareHomepage : "";
 
   const [, psqlError] = await Psql.query(
     SqlString.format("UPDATE businesses SET homepages=E? WHERE id=?", [

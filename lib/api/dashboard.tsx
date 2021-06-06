@@ -1,3 +1,5 @@
+import { decode } from "html-entities";
+
 import Algolia from "./algolia";
 import Cloudinary from "./cloudinary";
 import Psql from "./postgresql";
@@ -133,19 +135,19 @@ export async function productAdd(
           {
             objectID: `${businessId}_${nextProductId}`,
             _geoloc: geolocation,
-            name: name,
-            business: businessName,
-            description: description,
-            description_length: description
+            name: decode(name),
+            business: decode(businessName),
+            description: decode(description),
+            description_length: decode(description)
               .replace(/\s+/g, "")
               .replace(/\n+/g, "").length,
-            departments: departments,
+            departments: departments.map((department) => decode(department)),
             link: link,
             price_range: priceRange,
-            tags: tags,
-            tags_length: tags.join("").replace(/\s+/g, "").length,
+            tags: tags.map((tag) => decode(tag)),
+            tags_length: decode(tags.join("")).replace(/\s+/g, "").length,
             variant_images: variantImages,
-            variant_tags: variantTags,
+            variant_tags: variantTags.map((tag) => decode(tag)),
           },
           { autoGenerateObjectIDIfNotExist: false }
         );

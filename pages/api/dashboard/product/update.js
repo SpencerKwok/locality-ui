@@ -131,16 +131,16 @@ export default async function handler(req, res) {
   const algoliaError = await Algolia.partialUpdateObject(
     {
       objectID: `${businessId}_${productId}`,
-      name: name,
-      description: description,
+      name: decode(name),
+      description: decode(description),
       description_length: decode(description.replace(/\s+/g, "")).length,
-      departments: departments,
+      departments: departments.map((department) => decode(department)),
       link: link,
       price_range: priceRange,
-      tags: tags,
-      tags_length: decode(tags.join("").replace(/\s+/g, "")).length,
+      tags: tags.map((tag) => decode(tag)),
+      tags_length: decode(tags.join("")).replace(/\s+/g, "").length,
       variant_images: variantImages,
-      variant_tags: variantTags,
+      variant_tags: variantTags.map((tag) => decode(tag)),
     },
     { createIfNotExists: false }
   );

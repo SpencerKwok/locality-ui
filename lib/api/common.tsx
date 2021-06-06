@@ -2,7 +2,7 @@ import Xss from "xss";
 import { encode } from "html-entities";
 
 export function cleanseString(value: string) {
-  return encode(Xss(value || ""));
+  return encode(Xss((value || "").trim()));
 }
 
 export function cleanseStringArray(value: Array<string>) {

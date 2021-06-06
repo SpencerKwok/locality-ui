@@ -1,5 +1,6 @@
 .label {
   font-size: 24px;
+  margin-top: 4px;
 }
 
 .value {
@@ -10,4 +11,25 @@
 .picture {
   display: flex;
   overflow: hidden;
+}
+
+.button {
+  background-color: #449ed7;
+  border-color: #449ed7;
+}
+.button:link,
+.button:visited,
+.button:focus,
+.button:not(:disabled) {
+  background-color: #449ed7 !important;
+  border-color: #449ed7 !important;
+}
+.button:hover,
+.button:active {
+  background-color: #3880ae !important;
+  border-color: #3880ae !important;
+}
+.button:disabled {
+  background-color: #449ed7 !important;
+  border-color: #449ed7 !important;
 }

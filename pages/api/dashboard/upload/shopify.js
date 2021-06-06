@@ -66,9 +66,8 @@ export default async function handler(req, res) {
     (uploadSettings.excludeTags || []).map((x) => x.toLowerCase())
   );
   let shopifyHomepage = homepages.shopifyHomepage || "";
-  const domain = shopifyHomepage.match(/www\.[^\/]+/g)[0] || "";
 
-  if (shopifyHomepage === "") {
+  if (!shopifyHomepage) {
     res.status(400).json({
       error:
         "It looks like you haven't set your business's Shopify website yet! Please go to the \"Business\" tab and add your Shopify website",
@@ -76,6 +75,7 @@ export default async function handler(req, res) {
     return;
   }
 
+  const domain = shopifyHomepage.match(/www\.[^\/]+/g)[0] || "";
   const addresses = await Dns.promises.resolve4(domain).catch(() => {
     res.status(400).json({
       error:
@@ -199,7 +199,7 @@ export default async function handler(req, res) {
             priceRange[1] = Math.max(priceRange[1], parseFloat(variant.price));
           });
           const variantImages = Array(product.variants.length).fill(
-            product.images[0].src
+            product.images[0].src.replace(".jpg", "_400x.jpg")
           );
           const variantTags = product.variants.map(({ title }) =>
             Xss(title.trim())

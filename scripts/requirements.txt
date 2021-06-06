@@ -1,1 +1,2 @@
 algoliasearch==2.5.0
+html==1.13

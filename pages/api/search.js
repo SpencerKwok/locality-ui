@@ -1,12 +1,13 @@
 import { distance } from "fastest-levenshtein";
 import SqlString from "sqlstring";
-import Xss from "xss";
 import { getSession } from "next-auth/client";
 
 import Algolia from "../../lib/api/algolia";
 import Psql from "../../lib/api/postgresql";
+import { cleanseString } from "../../lib/api/common";
 
 import DoubleMetaphone from "doublemetaphone";
+import { decode } from "html-entities";
 const encoder = new DoubleMetaphone();
 
 /*
@@ -56,10 +57,10 @@ export default async function handler(req, res) {
     return;
   }
 
-  const q = Xss(req.query["q"] || "");
-  const ip_header = Xss(req.headers["x-forwarded-for"] || "");
-  const ip = Xss(req.query["ip"] || ip_header.split(/,\s*/)[0] || "");
-  const filters = Xss(decodeURIComponent(req.query["filters"] || ""));
+  const q = decode(cleanseString(req.query["q"] || ""));
+  const ip_header = cleanseString(req.headers["x-forwarded-for"] || "");
+  const ip = cleanseString(req.query["ip"] || ip_header.split(/,\s*/)[0] || "");
+  const filters = cleanseString(req.query["filters"] || "");
 
   let page = 0;
   if (req.query["pg"]) {

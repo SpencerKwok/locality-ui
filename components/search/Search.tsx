@@ -13,7 +13,10 @@ export default function Search({ width }: SearchProps) {
   const router = useRouter();
 
   const onEnter = (query: string) => {
-    router.push(`/search?q=${query}`);
+    router.push({
+      pathname: "/search",
+      query: { q: encodeURIComponent(query) },
+    });
   };
 
   return (

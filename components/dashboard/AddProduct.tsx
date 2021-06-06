@@ -57,43 +57,22 @@ function AddProduct({
   loading,
   successful,
   uploadType,
-  width,
   onUploadTypeChange,
   onAddProduct,
   onUpload,
 }: AddProductProps) {
   return (
-    <Stack direction="column" spacing={12}>
-      <Stack
-        direction="row"
-        columnAlign="flex-start"
-        priority={[2, 1]}
-        spacing={12}
-      >
-        <Dropdown>
-          <Dropdown.Toggle
-            className={styles.dropdown}
-            variant="primary"
-            style={{ width: "100%" }}
-          >
-            {uploadType === "" ? "Select Upload Type" : uploadType}
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
-            {(["Etsy", "Shopify", "Square"] as Array<UploadType>).map(
-              (value) => (
-                <Dropdown.Item
-                  key={value}
-                  className={styles["dropdown-item"]}
-                  onClick={() => {
-                    onUploadTypeChange(value);
-                  }}
-                >
-                  {value}
-                </Dropdown.Item>
-              )
-            )}
-          </Dropdown.Menu>
-        </Dropdown>
+    <Stack
+      direction="row"
+      columnAlign="flex-start"
+      priority={[0, 1, 0]}
+      spacing={24}
+    >
+      <Button className={styles.button} onClick={onAddProduct}>
+        Add +
+      </Button>
+      <div />
+      <Stack direction="row-reverse" columnAlign="flex-start" spacing={8}>
         <Popup
           modal
           closeOnDocumentClick={error !== "" || !loading}
@@ -231,14 +210,31 @@ function AddProduct({
             </Stack>
           )}
         </Popup>
+        <Dropdown>
+          <Dropdown.Toggle
+            className={styles.dropdown}
+            variant="primary"
+            style={{ width: "100%" }}
+          >
+            {uploadType === "" ? "Select Upload Type" : uploadType}
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            {(["Etsy", "Shopify", "Square"] as Array<UploadType>).map(
+              (value) => (
+                <Dropdown.Item
+                  key={value}
+                  className={styles["dropdown-item"]}
+                  onClick={() => {
+                    onUploadTypeChange(value);
+                  }}
+                >
+                  {value}
+                </Dropdown.Item>
+              )
+            )}
+          </Dropdown.Menu>
+        </Dropdown>
       </Stack>
-      <Button
-        className={styles.button}
-        onClick={onAddProduct}
-        style={{ width: width }}
-      >
-        Add Product
-      </Button>
     </Stack>
   );
 }

@@ -36,6 +36,7 @@
     "express-sslify": "^1.2.0",
     "fastest-levenshtein": "^1.0.12",
     "formik": "^2.2.6",
+    "fuse.js": "^6.4.6",
     "html-entities": "^2.3.2",
     "md5": "^2.3.0",
     "next": "^10.1.3",

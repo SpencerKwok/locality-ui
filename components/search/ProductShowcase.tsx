@@ -62,7 +62,9 @@ export default function ProductShowcase({
           priority={[0, 0]}
           wrap="wrap"
         >
-          <h4 style={{ paddingRight: 24 }}>Results for "{query}"</h4>
+          <h4 style={{ paddingRight: 24 }}>
+            Results for "{decodeURIComponent(query)}"
+          </h4>
           <Dropdown style={{ marginBottom: ".5rem", lineHeight: 1.2 }}>
             <Dropdown.Toggle
               className={styles["sort-filter"]}
