@@ -23,13 +23,13 @@ export default async function handler(req, res) {
   }
 
   const response = await signIn("credentials", {
-    email: values.email,
-    password: values.password,
+    email: email,
+    password: password,
     redirect: false,
   });
 
   console.log(response);
   console.log(req.headers);
 
-  res.status(200).end();
+  res.status(200).json(req.headers);
 }
