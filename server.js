@@ -35,6 +35,8 @@ app.prepare().then(() => {
     cors({
       origin: [
         "'self'",
+        "chrome-extension://cklipomamlgjpmihfhfdjmlhnbadnedl",
+        "chrome-extension://ebjlpijabgjciopejnjlcmadiifkackn",
         "https://www.etsy.com",
         "https://www.amazon.ca",
         "https://www.amazon.com",
