@@ -1,3 +1,4 @@
+import EmailValidator from "email-validator";
 import Xss from "xss";
 import { signIn } from "next-auth/client";
 
