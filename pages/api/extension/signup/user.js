@@ -90,7 +90,7 @@ export default async function handler(req, res) {
   const [, insertTokenError] = await Psql.query(
     SqlString.format("INSERT INTO tokens (token, id) VALUES (E?, ?)", [
       uid,
-      users.rows[0].id,
+      userId,
     ])
   );
   if (insertTokenError) {
@@ -102,5 +102,5 @@ export default async function handler(req, res) {
     return;
   }
 
-  res.status(200).json({ id: users.rows[0].id, token: uid });
+  res.status(200).json({ id: userId, token: uid });
 }

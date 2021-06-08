@@ -26,7 +26,7 @@ const SignUpSchema = yup.object().shape({
     .required("Required")
     .min(8, "Too short")
     .max(255, "Too long")
-    .oneOf([yup.ref("password1")], "New passwords do not match"),
+    .oneOf([yup.ref("password1")], "Passwords do not match"),
 });
 
 export interface SignUpRequest {
