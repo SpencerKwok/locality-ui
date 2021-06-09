@@ -1,7 +1,7 @@
 import SqlString from "sqlstring";
 
-import { runMiddlewareExtension } from "../../../../lib/api/middleware";
-import Psql from "../../../../lib/api/postgresql";
+import { runMiddlewareExtension } from "../../../lib/api/middleware";
+import Psql from "../../../lib/api/postgresql";
 
 export default async function handler(req, res) {
   await runMiddlewareExtension(req, res);
