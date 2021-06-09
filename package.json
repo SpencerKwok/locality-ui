@@ -29,7 +29,6 @@
     "bootstrap": "^4.6.0",
     "cloudinary": "^1.25.1",
     "core-js": "^3.6.5",
-    "cors": "^2.8.5",
     "doublemetaphone": "^0.1.2",
     "email-validator": "^2.0.4",
     "express": "^4.17.1",
