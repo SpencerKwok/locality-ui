@@ -27,9 +27,6 @@ export default async function handler(req, res) {
     return;
   }
 
-  console.log(name);
-  console.log(req.query);
-
   // Don't send name and redirect url to Google analytics
   req.query["name"] = undefined;
   req.query["redirect_url"] = undefined;
@@ -47,9 +44,7 @@ export default async function handler(req, res) {
         ],
       }),
     }
-  )
-    .then((value) => console.log(value))
-    .catch((err) => {
-      console.log(err);
-    });
+  ).catch((err) => {
+    console.log(err);
+  });
 }
