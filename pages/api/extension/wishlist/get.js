@@ -33,7 +33,13 @@ export default async function handler(req, res) {
   const [products, productsError] = await Algolia.getObjects(
     wishlist.map(({ objectId }) => objectId),
     {
-      attributesToRetrieve: ["name", "business", "link", "variant_images"],
+      attributesToRetrieve: [
+        "objectId",
+        "name",
+        "business",
+        "link",
+        "variant_images",
+      ],
     }
   );
   if (productsError) {
