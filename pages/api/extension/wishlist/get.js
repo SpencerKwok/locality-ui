@@ -27,7 +27,7 @@ export default async function handler(req, res) {
     .filter(Boolean)
     .map((id) => ({
       objectId: id.split("_").slice(0, 2).join("_"),
-      variantIndex: id.split("_")[2],
+      variantIndex: parseInt(id.split("_")[2]),
     }));
 
   const [products, productsError] = await Algolia.getObjects(
