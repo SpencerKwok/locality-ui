@@ -38,6 +38,7 @@ export default async function handler(req, res) {
         "name",
         "business",
         "link",
+        "price_range",
         "variant_images",
       ],
     }
