@@ -24,11 +24,15 @@ const CommaListValidator = yup
   .max(255, "Too long")
   .matches(/^\s*[^,]+\s*(,(\s*[^,\s]\s*)+)*\s*$/g, "Must be a comma list");
 const UpdateUploadSettingsSchema = yup.object().shape({
+  Etsy: yup.object().optional().shape({
+    includeTags: CommaListValidator,
+    excludeTags: CommaListValidator,
+  }),
   Shopify: yup.object().optional().shape({
     includeTags: CommaListValidator,
     excludeTags: CommaListValidator,
   }),
-  Etsy: yup.object().optional().shape({
+  Square: yup.object().optional().shape({
     includeTags: CommaListValidator,
     excludeTags: CommaListValidator,
   }),
@@ -45,6 +49,10 @@ export interface UpdateUploadSettingsRequest {
     excludeTags?: string;
   };
   Shopify?: {
+    includeTags?: string;
+    excludeTags?: string;
+  };
+  Square?: {
     includeTags?: string;
     excludeTags?: string;
   };
@@ -70,7 +78,7 @@ const Settings: FC<SettingsProps> = ({
   const UpdateUploadSettings = ({
     uploadType,
   }: {
-    uploadType: "Shopify" | "Etsy";
+    uploadType: "Shopify" | "Etsy" | "Square";
   }) => {
     const uploadSettings = businesses[businessIndex].uploadSettings;
     const uploadTypeSettings: UploadTypeSettings =
@@ -189,13 +197,16 @@ const Settings: FC<SettingsProps> = ({
       )}
       <Stack direction="column" rowAlign="flex-start" spacing={32}>
         <div style={{ width: 300 }}>
-          <h1 className={styles.label}>Upload Settings</h1>
+          <h1 className={styles.label}>Upload</h1>
           <Tabs defaultActiveKey="Shopify">
             <Tab eventKey="Shopify" title="Shopify">
               <UpdateUploadSettings uploadType="Shopify" />
             </Tab>
             <Tab eventKey="Etsy" title="Etsy">
               <UpdateUploadSettings uploadType="Etsy" />
+            </Tab>
+            <Tab eventKey="Square" title="Square">
+              <UpdateUploadSettings uploadType="Square" />
             </Tab>
           </Tabs>
         </div>

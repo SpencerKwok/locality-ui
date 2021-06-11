@@ -82,6 +82,7 @@ export default function Account({
   const onSubmitUploadSettings = async ({
     Etsy,
     Shopify,
+    Square,
   }: UpdateUploadSettingsRequest) => {
     const req = {
       id: businesses[businessIndex].id,
@@ -113,11 +114,25 @@ export default function Account({
               .filter(Boolean)
           : undefined,
       },
+      Square: Square && {
+        includeTags: Square.includeTags
+          ? Square.includeTags
+              .split(",")
+              .map((x) => x.trim())
+              .filter(Boolean)
+          : undefined,
+        excludeTags: Square.excludeTags
+          ? Square.excludeTags
+              .split(",")
+              .map((x) => x.trim())
+              .filter(Boolean)
+          : undefined,
+      },
     } as UploadSettingsUpdateRequest;
 
     await PostRpcClient.getInstance()
       .call("UploadSettingsUpdate", req, cookie)
-      .then(({ error, Etsy, Shopify }) => {
+      .then(({ error, Etsy, Shopify, Square }) => {
         if (error) {
           setUpdateUploadSettingsStatus({
             error: error,
@@ -129,6 +144,7 @@ export default function Account({
         businesses[businessIndex].uploadSettings = {
           Etsy,
           Shopify,
+          Square,
         };
         setUpdateUploadSettingsStatus({
           error: "",
