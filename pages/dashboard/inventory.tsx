@@ -539,52 +539,46 @@ export default function Inventory({
     return null;
   }
 
-  if (!size.height) {
-    return (
-      <RootLayout session={session}>
-        <DashboardLayout tab="inventory" />
-      </RootLayout>
-    );
-  }
-
   return (
     <RootLayout session={session}>
       <DashboardLayout tab="inventory">
-        <InventoryPage
-          isNewItem={isNewItem}
-          businesses={businesses}
-          businessIndex={businessIndex}
-          departments={departments}
-          filter={filter}
-          products={
-            filter
-              ? productSearch.search(filter).map(({ item }) => item)
-              : products
-          }
-          productIndex={productIndex}
-          product={product}
-          requestStatus={requestStatus}
-          tab={tab}
-          uploadType={uploadStatus.uploadType}
-          uploadError={uploadStatus.error}
-          uploadOpen={uploadStatus.open}
-          uploadLoading={uploadStatus.loading}
-          uploadSuccessful={uploadStatus.successful}
-          height={size.height}
-          onAddProduct={onAddProduct}
-          onBusinessClick={onBusinessClick}
-          onFilterChange={onFilterChange}
-          onFilterClear={onFilterClear}
-          onProductClick={onProductClick}
-          onTabClick={(key) => {
-            setRequestStatus({ error: "", success: "" });
-            setTab(key);
-          }}
-          onUpload={onUpload}
-          onUploadTypeChange={onUploadTypeChange}
-          onProductSubmit={onProductSubmit}
-          onVariantSubmit={onVariantSubmit}
-        />
+        {size.height && (
+          <InventoryPage
+            isNewItem={isNewItem}
+            businesses={businesses}
+            businessIndex={businessIndex}
+            departments={departments}
+            filter={filter}
+            products={
+              filter
+                ? productSearch.search(filter).map(({ item }) => item)
+                : products
+            }
+            productIndex={productIndex}
+            product={product}
+            requestStatus={requestStatus}
+            tab={tab}
+            uploadType={uploadStatus.uploadType}
+            uploadError={uploadStatus.error}
+            uploadOpen={uploadStatus.open}
+            uploadLoading={uploadStatus.loading}
+            uploadSuccessful={uploadStatus.successful}
+            height={size.height}
+            onAddProduct={onAddProduct}
+            onBusinessClick={onBusinessClick}
+            onFilterChange={onFilterChange}
+            onFilterClear={onFilterClear}
+            onProductClick={onProductClick}
+            onTabClick={(key) => {
+              setRequestStatus({ error: "", success: "" });
+              setTab(key);
+            }}
+            onUpload={onUpload}
+            onUploadTypeChange={onUploadTypeChange}
+            onProductSubmit={onProductSubmit}
+            onVariantSubmit={onVariantSubmit}
+          />
+        )}
       </DashboardLayout>
     </RootLayout>
   );

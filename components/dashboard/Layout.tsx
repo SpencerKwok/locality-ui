@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 
 export interface DashboardLayoutProps {
   children?: ReactNode;
-  tab: "account" | "business" | "inventory";
+  tab: "account" | "business" | "inventory" | "settings";
 }
 
 export default function DashboardLayout({
@@ -28,6 +28,12 @@ export default function DashboardLayout({
       </Tab>
       <Tab eventKey="business" title="Business">
         {tab === "business" &&
+          Children.map(children, (child) => (
+            <div style={{ marginLeft: 12 }}>{child}</div>
+          ))}
+      </Tab>
+      <Tab eventKey="settings" title="Settings">
+        {tab === "settings" &&
           Children.map(children, (child) => (
             <div style={{ marginLeft: 12 }}>{child}</div>
           ))}
