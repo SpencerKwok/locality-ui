@@ -91,7 +91,6 @@ http {
             add_header Access-Control-Allow-Headers "Cache-Control, Content-Type, DNT, If-Modified-Since, Origin, User-Agent, X-Requested-With";
             add_header Access-Control-Allow-Methods "GET";
             add_header Access-Control-Max-Age "3600";
-            add_header Cache-Control "private, no-store, no-cache, max-age=0, must-revalidate";
             add_header Content-Security-Policy "upgrade-insecure-requests;child-src 'self';connect-src 'self' https://ipv4.icanhazip.com https://api.ipify.org https://api.cloudinary.com http://*.hotjar.com:* https://*.hotjar.com:* http://*.hotjar.io https://*.hotjar.io wss://*.hotjar.com https://*.googletagmanager.com https://*.google-analytics.com;default-src 'self';font-src 'self' http://*.hotjar.com https://*.hotjar.com http://*.hotjar.io https://*.hotjar.io;frame-src 'self' https://*.hotjar.com http://*.hotjar.io https://*.hotjar.io;img-src * data:;manifest-src 'self';media-src 'self' https://res.cloudinary.com;prefetch-src 'self';object-src 'self';script-src 'self' https://ajax.cloudflare.com/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js http://*.hotjar.com https://*.hotjar.com http://*.hotjar.io https://*.hotjar.io https://*.googletagmanager.com;script-src-elem 'self' https://ajax.cloudflare.com/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js http://*.hotjar.com https://*.hotjar.com http://*.hotjar.io https://*.hotjar.io https://*.googletagmanager.com;script-src-attr 'self';style-src 'self' 'unsafe-inline';style-src-elem 'self' 'unsafe-inline';style-src-attr 'self' 'unsafe-inline';worker-src 'self'";
             add_header Expect-Ct "max-age=3600, enforce";
             add_header Origin-Agent-Cluster "?1";
@@ -112,6 +111,8 @@ http {
             proxy_cache_revalidate on;
             proxy_cache_use_stale updating timeout;
             proxy_cache_valid 200 1h;
+            proxy_hide_header "Cache-Control";
+            add_header Cache-Control "private, no-store, no-cache, max-age=0, must-revalidate";
             proxy_hide_header X-Powered-By;
             proxy_hide_header X-Protected-By;
 
@@ -134,7 +135,6 @@ http {
             add_header Access-Control-Allow-Headers "Cache-Control, Content-Type, DNT, If-Modified-Since, Origin, User-Agent, X-Requested-With";
             add_header Access-Control-Allow-Methods "GET";
             add_header Access-Control-Max-Age "3600";
-            add_header Cache-Control "public, max-age=3600, must-revalidate";
             add_header Content-Security-Policy "upgrade-insecure-requests;child-src 'self';connect-src 'self' https://ipv4.icanhazip.com https://api.ipify.org https://api.cloudinary.com http://*.hotjar.com:* https://*.hotjar.com:* http://*.hotjar.io https://*.hotjar.io wss://*.hotjar.com https://*.googletagmanager.com https://*.google-analytics.com;default-src 'self';font-src 'self' http://*.hotjar.com https://*.hotjar.com http://*.hotjar.io https://*.hotjar.io;frame-src 'self' https://*.hotjar.com http://*.hotjar.io https://*.hotjar.io;img-src 'self' https://res.cloudinary.com https://i.etsystatic.com https://images.squarespace-cdn.com https://cdn.shopify.com http://*.hotjar.com https://*.hotjar.com http://*.hotjar.io https://*.hotjar.io;manifest-src 'self';media-src 'self' https://res.cloudinary.com;prefetch-src 'self';object-src 'self';script-src 'self' https://ajax.cloudflare.com/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js http://*.hotjar.com https://*.hotjar.com http://*.hotjar.io https://*.hotjar.io https://*.googletagmanager.com;script-src-elem 'self' https://ajax.cloudflare.com/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js http://*.hotjar.com https://*.hotjar.com http://*.hotjar.io https://*.hotjar.io https://*.googletagmanager.com;script-src-attr 'self';style-src 'self' 'unsafe-inline';style-src-elem 'self' 'unsafe-inline';style-src-attr 'self' 'unsafe-inline';worker-src 'self'";
             add_header Expect-Ct "max-age=3600, enforce";
             add_header Origin-Agent-Cluster "?1";
@@ -155,6 +155,8 @@ http {
             proxy_cache_revalidate on;
             proxy_cache_use_stale error updating timeout http_500 http_502 http_503 http_504;
             proxy_cache_valid 200 1h;
+            proxy_hide_header "Cache-Control";
+            add_header Cache-Control "public, max-age=3600, must-revalidate";
             proxy_hide_header X-Powered-By;
             proxy_hide_header X-Protected-By;
 
