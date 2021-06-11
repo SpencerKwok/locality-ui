@@ -26,6 +26,19 @@ module.exports = withPWA({
     dynamicStartUrl: false,
   },
   reactStrictMode: true,
+  headers: async () => {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=3600, must-revalidate",
+          },
+        ],
+      },
+    ];
+  },
   redirects: async () => {
     return [
       {
