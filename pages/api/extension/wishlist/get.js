@@ -1,12 +1,12 @@
 import { camelCase, mapKeys } from "lodash";
 import SqlString from "sqlstring";
 
-import Algolia from "../../../lib/api/algolia";
-import Psql from "../../../lib/api/postgresql";
-import { runMiddlewareUser } from "../../../lib/api/middleware";
+import Algolia from "../../../../lib/api/algolia";
+import Psql from "../../../../lib/api/postgresql";
+import { runMiddlewareExtension } from "../../../../lib/api/middleware";
 
 export default async function handler(req, res) {
-  await runMiddlewareUser(req, res);
+  await runMiddlewareExtension(req, res);
 
   if (req.method !== "GET") {
     res.status(400).json({ error: "Must be GET method" });
@@ -22,15 +22,6 @@ export default async function handler(req, res) {
     return;
   }
 
-  const attributesToRetrieve = [
-    "objectId",
-    "business",
-    "variant_images",
-    "link",
-    "name",
-    "price_range",
-  ];
-
   const wishlist = productIDs.rows[0].wishlist
     .split(",")
     .filter(Boolean)
@@ -38,10 +29,18 @@ export default async function handler(req, res) {
       objectId: id.split("_").slice(0, 2).join("_"),
       variantIndex: parseInt(id.split("_")[2]),
     }));
+
   const [products, productsError] = await Algolia.getObjects(
     wishlist.map(({ objectId }) => objectId),
     {
-      attributesToRetrieve,
+      attributesToRetrieve: [
+        "objectId",
+        "name",
+        "business",
+        "link",
+        "price_range",
+        "variant_images",
+      ],
     }
   );
   if (productsError) {
@@ -54,7 +53,6 @@ export default async function handler(req, res) {
     if (!products[i]) {
       continue;
     }
-
     results.push({
       ...mapKeys(products[i], (v, k) => camelCase(k)),
       variantIndex: wishlist[i].variantIndex,

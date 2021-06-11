@@ -8,7 +8,6 @@ between the user and Next application
 const prod = process.env.NODE_ENV === "production";
 prod && require("sqreen");
 
-const cors = require("cors");
 const express = require("express");
 const fs = require("fs");
 const next = require("next");
@@ -18,6 +17,16 @@ const shrinkRay = require("shrink-ray-current");
 
 const app = next({ dev: !prod });
 const handle = app.getRequestHandler();
+
+const extensionOrigins = new Set([
+  "chrome-extension://cklipomamlgjpmihfhfdjmlhnbadnedl",
+  "chrome-extension://ebjlpijabgjciopejnjlcmadiifkackn",
+  "https://www.etsy.com",
+  "https://www.amazon.ca",
+  "https://www.amazon.com",
+  "https://www.walmart.ca",
+  "https://www.walmart.com",
+]);
 
 app.prepare().then(() => {
   const server = express();
@@ -31,18 +40,17 @@ app.prepare().then(() => {
     })
   );
 
-  server.use(
-    cors({
-      origin: [
-        "'self'",
-        "https://www.etsy.com",
-        "https://www.amazon.ca",
-        "https://www.amazon.com",
-        "https://www.walmart.ca",
-        "https://www.walmart.com",
-      ],
-    })
-  );
+  server.use((req, res, next) => {
+    if (req.path.match(/\/api\/extension\/.*/g)) {
+      res.setHeader(
+        "Access-Control-Allow-Origin",
+        extensionOrigins.has(req.headers.origin) ? req.headers.origin : false
+      );
+    }
+    const vary = res.headers ? res.headers["vary"] || [] : [];
+    res.setHeader("Vary", [...vary, "Origin"]);
+    next();
+  });
 
   server.get("*", (req, res) => {
     const url = parse(req.url, true);

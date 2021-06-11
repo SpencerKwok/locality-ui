@@ -3,7 +3,7 @@ import Xss from "xss";
 import {
   GOOGLE_ANALYTICS_API_SECRET,
   GOOGLE_MEASUREMENT_ID,
-} from "../../../lib/env";
+} from "../../../../lib/env";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
