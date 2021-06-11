@@ -31,7 +31,7 @@ module.exports = withPWA({
       {
         source: "/dashboard",
         destination: "/dashboard/inventory",
-        permanent: true,
+        permanent: false,
       },
     ];
   },
