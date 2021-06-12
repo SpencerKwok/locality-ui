@@ -25,16 +25,23 @@ let cachedBusinesses: Array<{
   name: string;
 }> = [];
 export const getServerSideProps: GetServerSideProps = async () => {
-  helper().then((res: any) => {
-    const { businesses }: BusinessesResponse = res[0];
-    cachedBusinesses = businesses
-      .map(({ id, logo, homepages, name }) => ({
-        id,
-        logo,
-        homepages: { homepage: homepages.homepage },
-        name,
-      }))
-      .sort((a: { id: number }, b: { id: number }) => b.id - a.id);
+  await new Promise((resolve) => {
+    helper().then((res: any) => {
+      const { businesses }: BusinessesResponse = res[0];
+      cachedBusinesses = businesses
+        .map(({ id, logo, homepages, name }) => ({
+          id,
+          logo,
+          homepages: { homepage: homepages.homepage },
+          name,
+        }))
+        .sort((a: { id: number }, b: { id: number }) => b.id - a.id);
+      resolve(true);
+    });
+
+    if (cachedBusinesses.length > 0) {
+      resolve(true);
+    }
   });
   return {
     props: {
