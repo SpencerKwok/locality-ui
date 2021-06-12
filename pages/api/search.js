@@ -60,7 +60,7 @@ export default async function handler(req, res) {
   const q = decode(cleanseString(req.query["q"] || ""));
   const ip_header = cleanseString(req.headers["x-forwarded-for"] || "");
   const ip = cleanseString(req.query["ip"] || ip_header.split(/,\s*/)[0] || "");
-  const filters = cleanseString(req.query["filters"] || "");
+  const filters = decode(cleanseString(req.query["filters"] || ""));
 
   let page = 0;
   if (req.query["pg"]) {
