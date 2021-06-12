@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { getSession, signIn } from "next-auth/client";
-import { useRouter } from "next/router";
 
 import { PostRpcClient } from "../../components/common/RpcClient";
 import RootLayout from "../../components/common/RootLayout";
@@ -18,7 +17,6 @@ export interface BusinessSignUpProps {
 export default function BusinessSignUp({ session }: BusinessSignUpProps) {
   const [error, setError] = useState("");
   const isNarrow = useMediaQuery(38, "width");
-  const router = useRouter();
 
   const onSubmit = async (values: SignUpRequest) => {
     await PostRpcClient.getInstance()
@@ -52,7 +50,9 @@ export default function BusinessSignUp({ session }: BusinessSignUpProps) {
           );
           return;
         }
-        router.push("/dashboard/business?newBusiness=true");
+
+        // Need to refresh CSP
+        window.location.pathname = "/dashboard/business?newBusiness=true";
       })
       .catch((error) => {
         setError(error);
@@ -61,7 +61,9 @@ export default function BusinessSignUp({ session }: BusinessSignUpProps) {
 
   if (session && session.user) {
     const user: any = session.user;
-    router.push(user.isBusiness ? "/dashboard" : "/");
+
+    // Need to refresh CSP
+    window.location.pathname = user.isBusiness ? "/dashboard" : "/";
     return null;
   }
 

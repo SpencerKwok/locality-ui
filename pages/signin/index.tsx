@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { getSession, signIn } from "next-auth/client";
-import { useRouter } from "next/router";
 
 import SigninPage from "../../components/signin/Signin";
 import RootLayout from "../../components/common/RootLayout";
@@ -14,7 +13,6 @@ export interface SignUpProps {
 
 export default function Signin({ session }: SignUpProps) {
   const [error, setError] = useState("");
-  const router = useRouter();
 
   const onSubmit = async (values: SignInRequest) => {
     await signIn("credentials", {
@@ -31,7 +29,9 @@ export default function Signin({ session }: SignUpProps) {
       return;
     }
     const user: any = newSession.user;
-    router.push(user.isBusiness ? "/dashboard" : "/");
+
+    // Need to refresh CSP
+    window.location.pathname = user.isBusiness ? "/dashboard" : "/";
   };
 
   const onProviderSignIn = (provider: string) => {
@@ -40,7 +40,9 @@ export default function Signin({ session }: SignUpProps) {
 
   if (session && session.user) {
     const user: any = session.user;
-    router.push(user.isBusiness ? "/dashboard" : "/");
+
+    // Need to refresh CSP
+    window.location.pathname = user.isBusiness ? "/dashboard" : "/";
     return null;
   }
 
