@@ -53,6 +53,14 @@ export default async function handler(req, res) {
   const departments = businessResponse.rows[0].departments
     .split(":")
     .filter(Boolean);
+  const uploadSettings =
+    JSON.parse(businessResponse.rows[0].upload_settings).Square || {};
+  const includeTags = new Set(
+    (uploadSettings.includeTags || []).map((x) => x.toLowerCase())
+  );
+  const excludeTags = new Set(
+    (uploadSettings.excludeTags || []).map((x) => x.toLowerCase())
+  );
   const homepages = JSON.parse(businessResponse.rows[0].homepages);
   const squareHomepage = homepages.squareHomepage || "";
   if (squareHomepage === "") {
@@ -168,6 +176,32 @@ export default async function handler(req, res) {
       ];
       const variantImages = [hostedImageUrls[0]];
       const variantTags = [optionValue.join(" ")];
+
+      let shouldInclude = true;
+      let shouldExclude = false;
+      if (includeTags.size > 0) {
+        shouldInclude = false;
+        for (let i = 0; i < allTags.length; i++) {
+          if (includeTags.has(allTags[i].toLowerCase())) {
+            shouldInclude = true;
+            break;
+          }
+        }
+      }
+      if (excludeTags.size > 0) {
+        for (let i = 0; i < allTags.length; i++) {
+          if (excludeTags.has(allTags[i].toLowerCase())) {
+            shouldExclude = true;
+            break;
+          }
+        }
+      }
+
+      if (shouldExclude || !shouldInclude) {
+        visible = false;
+        return;
+      }
+
       products.push({
         nextProductId,
         name,

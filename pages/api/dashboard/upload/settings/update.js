@@ -39,6 +39,7 @@ export default async function handler(req, res) {
   const uploadSettings = JSON.parse(prevUploadSettings.rows[0].upload_settings);
   const etsy = req.body.Etsy;
   const shopify = req.body.Shopify;
+  const square = req.body.Square;
   if (etsy) {
     if (etsy.includeTags && !isStringArray(etsy.includeTags)) {
       res.status(400).json({ error: "Invalid Etsy Include Tags" });
@@ -77,6 +78,25 @@ export default async function handler(req, res) {
         : undefined,
     };
   }
+  if (square) {
+    if (square.includeTags && !isStringArray(square.includeTags)) {
+      res.status(400).json({ error: "Invalid Square Include Tags" });
+      return;
+    }
+    if (square.excludeTags && !isStringArray(square.excludeTags)) {
+      res.status(400).json({ error: "Invalid Square exclude Tags" });
+      return;
+    }
+
+    uploadSettings.Square = {
+      includeTags: square.includeTags
+        ? cleanseStringArray(square.includeTags)
+        : undefined,
+      excludeTags: square.excludeTags
+        ? cleanseStringArray(square.excludeTags)
+        : undefined,
+    };
+  }
 
   const [, psqlSetUploadSettingsError] = await Psql.query(
     SqlString.format("UPDATE businesses SET upload_settings=E? WHERE id=?", [
@@ -88,7 +108,6 @@ export default async function handler(req, res) {
     res.status(500).json({ error: psqlSetUploadSettingsError });
     return;
   }
-  res
-    .status(200)
-    .json({ Etsy: uploadSettings.Etsy, Shopify: uploadSettings.Shopify });
+
+  res.status(200).json({ ...uploadSettings });
 }

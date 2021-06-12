@@ -9,16 +9,12 @@ import { GetRpcClient, PostRpcClient } from "../../components/common/RpcClient";
 import { useWindowSize } from "../../lib/common";
 
 import type { GetServerSideProps } from "next";
-import type {
-  BaseBusiness,
-  UploadSettingsUpdateRequest,
-} from "../../components/common/Schema";
+import type { BaseBusiness } from "../../components/common/Schema";
 import type { Session } from "next-auth";
 import type {
   UpdateDepartmentsRequest,
   UpdateHomepagesRequest,
   UpdateLogoRequest,
-  UpdateUploadSettingsRequest,
 } from "../../components/dashboard/Business";
 
 function getDepartments(url: string) {
@@ -89,10 +85,6 @@ export default function Business({
     successful: false,
   });
   const [updateLogoStatus, setUpdateLogoStatus] = useState({
-    error: "",
-    successful: false,
-  });
-  const [updateUploadSettingsStatus, setUpdateUploadSettingsStatus] = useState({
     error: "",
     successful: false,
   });
@@ -190,64 +182,6 @@ export default function Business({
       });
   };
 
-  const onSubmitUploadSettings = async ({
-    Etsy,
-    Shopify,
-  }: UpdateUploadSettingsRequest) => {
-    const req = {
-      id: businesses[businessIndex].id,
-      Etsy: Etsy && {
-        includeTags: Etsy.includeTags
-          ? Etsy.includeTags
-              .split(",")
-              .map((x) => x.trim())
-              .filter(Boolean)
-          : undefined,
-        excludeTags: Etsy.excludeTags
-          ? Etsy.excludeTags
-              .split(",")
-              .map((x) => x.trim())
-              .filter(Boolean)
-          : undefined,
-      },
-      Shopify: Shopify && {
-        includeTags: Shopify.includeTags
-          ? Shopify.includeTags
-              .split(",")
-              .map((x) => x.trim())
-              .filter(Boolean)
-          : undefined,
-        excludeTags: Shopify.excludeTags
-          ? Shopify.excludeTags
-              .split(",")
-              .map((x) => x.trim())
-              .filter(Boolean)
-          : undefined,
-      },
-    } as UploadSettingsUpdateRequest;
-
-    await PostRpcClient.getInstance()
-      .call("UploadSettingsUpdate", req)
-      .then(({ error, Etsy, Shopify }) => {
-        if (error) {
-          setUpdateUploadSettingsStatus({
-            error: error,
-            successful: false,
-          });
-          return;
-        }
-
-        businesses[businessIndex].uploadSettings = {
-          Etsy,
-          Shopify,
-        };
-        setUpdateUploadSettingsStatus({
-          error: "",
-          successful: true,
-        });
-      });
-  };
-
   const onBusinessClick = (index: number) => {
     setBusinessIndex(index);
     setUpdateDepartmentsStatus({
@@ -262,43 +196,31 @@ export default function Business({
       error: "",
       successful: false,
     });
-    setUpdateUploadSettingsStatus({
-      error: "",
-      successful: false,
-    });
   };
 
   if (!session || !session.user) {
     return null;
   }
 
-  if (!size.height) {
-    return (
-      <RootLayout session={session}>
-        <DashboardLayout tab="business" />
-      </RootLayout>
-    );
-  }
-
   return (
     <RootLayout session={session}>
       <DashboardLayout tab="business">
-        <BusinessPage
-          isNewBusiness={isNewBusiness}
-          businesses={businesses}
-          businessIndex={businessIndex}
-          departments={departments}
-          updateDepartmentsStatus={updateDepartmentsStatus}
-          updateHomepagesStatus={updateHomepagesStatus}
-          updateLogoStatus={updateLogoStatus}
-          updateUploadSettingsStatus={updateUploadSettingsStatus}
-          height={size.height}
-          onBusinessClick={onBusinessClick}
-          onSubmitDepartments={onSubmitDepartments}
-          onSubmitLogo={onSubmitLogo}
-          onSubmitHomepages={onSubmitHomepages}
-          onSubmitUploadSettings={onSubmitUploadSettings}
-        />
+        {size.height && (
+          <BusinessPage
+            isNewBusiness={isNewBusiness}
+            businesses={businesses}
+            businessIndex={businessIndex}
+            departments={departments}
+            updateDepartmentsStatus={updateDepartmentsStatus}
+            updateHomepagesStatus={updateHomepagesStatus}
+            updateLogoStatus={updateLogoStatus}
+            height={size.height}
+            onBusinessClick={onBusinessClick}
+            onSubmitDepartments={onSubmitDepartments}
+            onSubmitLogo={onSubmitLogo}
+            onSubmitHomepages={onSubmitHomepages}
+          />
+        )}
       </DashboardLayout>
     </RootLayout>
   );

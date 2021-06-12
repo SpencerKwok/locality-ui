@@ -128,6 +128,7 @@ export interface BaseBusiness {
   uploadSettings: {
     Etsy?: UploadTypeSettings;
     Shopify?: UploadTypeSettings;
+    Square?: UploadTypeSettings;
   };
 }
 
@@ -294,11 +295,13 @@ export interface UploadSettingsUpdateRequest extends BaseResponse {
   id: number;
   Etsy?: UploadTypeSettings;
   Shopify?: UploadTypeSettings;
+  Square?: UploadTypeSettings;
 }
 
 export interface UploadSettingsUpdateResponse extends BaseResponse {
   Etsy?: UploadTypeSettings;
   Shopify?: UploadTypeSettings;
+  Square?: UploadTypeSettings;
 }
 
 export interface VariantAddRequest {
