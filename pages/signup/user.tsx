@@ -55,7 +55,7 @@ export default function UserSignUp({ session }: UserSignUpProps) {
     const user: any = session.user;
 
     // Need to refresh CSP
-    window.location.pathname = user.isBusiness ? "/dashboard" : "/";
+    window.location.assign(user.isBusiness ? "/dashboard" : "/");
     return null;
   }
 

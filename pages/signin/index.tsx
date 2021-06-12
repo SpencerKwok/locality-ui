@@ -31,7 +31,7 @@ export default function Signin({ session }: SignUpProps) {
     const user: any = newSession.user;
 
     // Need to refresh CSP
-    window.location.pathname = user.isBusiness ? "/dashboard" : "/";
+    window.location.assign(user.isBusiness ? "/dashboard" : "/");
   };
 
   const onProviderSignIn = (provider: string) => {
@@ -42,7 +42,7 @@ export default function Signin({ session }: SignUpProps) {
     const user: any = session.user;
 
     // Need to refresh CSP
-    window.location.pathname = user.isBusiness ? "/dashboard" : "/";
+    window.location.assign(user.isBusiness ? "/dashboard" : "/");
     return null;
   }
 
