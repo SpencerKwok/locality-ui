@@ -111,8 +111,6 @@ http {
             proxy_cache_revalidate on;
             proxy_cache_use_stale updating timeout;
             proxy_cache_valid 200 1h;
-            proxy_hide_header "Cache-Control";
-            add_header Cache-Control "private, no-store, no-cache, max-age=0, must-revalidate";
             proxy_hide_header X-Powered-By;
             proxy_hide_header X-Protected-By;
 
@@ -155,8 +153,6 @@ http {
             proxy_cache_revalidate on;
             proxy_cache_use_stale error updating timeout http_500 http_502 http_503 http_504;
             proxy_cache_valid 200 1h;
-            proxy_hide_header "Cache-Control";
-            add_header Cache-Control "public, max-age=3600, must-revalidate";
             proxy_hide_header X-Powered-By;
             proxy_hide_header X-Protected-By;
 
