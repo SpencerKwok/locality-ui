@@ -138,9 +138,9 @@ export interface BaseBusiness {
     squareHomepage?: string;
   };
   uploadSettings: {
-    Etsy?: BaseUploadTypeSettings;
-    Shopify?: UploadTypeSettings;
-    Square?: UploadTypeSettings;
+    etsy?: BaseUploadTypeSettings;
+    shopify?: UploadTypeSettings;
+    square?: UploadTypeSettings;
   };
 }
 
@@ -305,29 +305,29 @@ export interface UserSignUpResponse extends SignUpResponse {}
 
 export interface EtsyUploadSettingsUpdateRequest {
   id: number;
-  Etsy?: UploadTypeSettings;
+  etsy?: UploadTypeSettings;
 }
 
 export interface EtsyUploadSettingsUpdateResponse extends BaseResponse {
-  Etsy?: UploadTypeSettings;
+  etsy?: UploadTypeSettings;
 }
 
 export interface ShopifyUploadSettingsUpdateRequest {
   id: number;
-  Shopify?: UploadTypeSettings;
+  shopify?: UploadTypeSettings;
 }
 
 export interface ShopifyUploadSettingsUpdateResponse extends BaseResponse {
-  Shopify?: UploadTypeSettings;
+  shopify?: UploadTypeSettings;
 }
 
 export interface SquareUploadSettingsUpdateRequest {
   id: number;
-  Square?: UploadTypeSettings;
+  square?: UploadTypeSettings;
 }
 
 export interface SquareUploadSettingsUpdateResponse extends BaseResponse {
-  Square?: UploadTypeSettings;
+  square?: UploadTypeSettings;
 }
 
 export interface VariantAddRequest {

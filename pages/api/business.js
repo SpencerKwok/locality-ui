@@ -4,6 +4,23 @@ import Psql from "../../lib/api/postgresql";
 import SqlString from "sqlstring";
 import Xss from "xss";
 
+const deepMapKeys = (obj, fn) => {
+  const isArray = Array.isArray(obj);
+  const newObj = isArray ? [] : {};
+  for (const k in obj) {
+    if (!obj.hasOwnProperty(k)) {
+      continue;
+    }
+    if (typeof obj[k] === "object") {
+      const v = deepMapKeys(obj[k], fn);
+      newObj[fn(v, k)] = v;
+    } else {
+      newObj[fn(obj[k], k)] = obj[k];
+    }
+  }
+  return newObj;
+};
+
 export default async function handler(req, res) {
   if (req.method !== "GET") {
     res.status(400).json({ error: "Must be GET method" });
@@ -28,7 +45,10 @@ export default async function handler(req, res) {
       business: {
         ...mapKeys(businesses.rows[0], (v, k) => camelCase(k)),
         homepages: JSON.parse(businesses.rows[0].homepages),
-        uploadSettings: JSON.parse(businesses.rows[0].upload_settings),
+        uploadSettings: deepMapKeys(
+          JSON.parse(businesses.rows[0].upload_settings),
+          (v, k) => camelCase(k)
+        ),
       },
     });
   };

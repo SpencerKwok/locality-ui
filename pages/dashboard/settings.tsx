@@ -94,7 +94,7 @@ export default function Account({
   }: EtsyUpdateUploadSettingsRequest) => {
     const req = {
       id: businesses[businessIndex].id,
-      Etsy: {
+      etsy: {
         includeTags: (includeTags || "")
           .split(",")
           .map((x) => x.trim())
@@ -108,7 +108,7 @@ export default function Account({
 
     await PostRpcClient.getInstance()
       .call("EtsyUploadSettingsUpdate", req, cookie)
-      .then(({ error, Etsy }) => {
+      .then(({ error, etsy }) => {
         if (error) {
           setUpdateUploadSettingsStatus({
             error: error,
@@ -119,7 +119,7 @@ export default function Account({
 
         businesses[businessIndex].uploadSettings = {
           ...businesses[businessIndex].uploadSettings,
-          Etsy,
+          etsy,
         };
         setUpdateUploadSettingsStatus({
           error: "",
@@ -135,7 +135,7 @@ export default function Account({
   }: ShopifyUpdateUploadSettingsRequest) => {
     const req = {
       id: businesses[businessIndex].id,
-      Shopify: {
+      shopify: {
         includeTags: (includeTags || "")
           .split(",")
           .map((x) => x.trim())
@@ -159,7 +159,7 @@ export default function Account({
 
     await PostRpcClient.getInstance()
       .call("ShopifyUploadSettingsUpdate", req, cookie)
-      .then(({ error, Shopify }) => {
+      .then(({ error, shopify }) => {
         if (error) {
           setUpdateUploadSettingsStatus({
             error: error,
@@ -170,7 +170,7 @@ export default function Account({
 
         businesses[businessIndex].uploadSettings = {
           ...businesses[businessIndex].uploadSettings,
-          Shopify,
+          shopify,
         };
         setUpdateUploadSettingsStatus({
           error: "",
@@ -186,7 +186,7 @@ export default function Account({
   }: SquareUpdateUploadSettingsRequest) => {
     const req = {
       id: businesses[businessIndex].id,
-      Square: {
+      square: {
         includeTags: (includeTags || "")
           .split(",")
           .map((x) => x.trim())
@@ -210,7 +210,7 @@ export default function Account({
 
     await PostRpcClient.getInstance()
       .call("SquareUploadSettingsUpdate", req, cookie)
-      .then(({ error, Square }) => {
+      .then(({ error, square }) => {
         if (error) {
           setUpdateUploadSettingsStatus({
             error: error,
@@ -221,7 +221,7 @@ export default function Account({
 
         businesses[businessIndex].uploadSettings = {
           ...businesses[businessIndex].uploadSettings,
-          Square,
+          square,
         };
         setUpdateUploadSettingsStatus({
           error: "",

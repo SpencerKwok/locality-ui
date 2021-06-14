@@ -160,13 +160,13 @@ const Settings: FC<SettingsProps> = ({
                 initialValues={
                   {
                     includeTags: (
-                      uploadSettings.Shopify?.includeTags || []
+                      uploadSettings.shopify?.includeTags || []
                     ).join(", "),
                     excludeTags: (
-                      uploadSettings.Shopify?.excludeTags || []
+                      uploadSettings.shopify?.excludeTags || []
                     ).join(", "),
                     departmentMapping:
-                      uploadSettings.Shopify?.departmentMapping || [],
+                      uploadSettings.shopify?.departmentMapping || [],
                   } as ShopifyUpdateUploadSettingsRequest
                 }
                 onSubmit={onSubmitShopifyUploadSettings}
@@ -272,7 +272,7 @@ const Settings: FC<SettingsProps> = ({
                           { key: "", departments: [] },
                         ].map((value, index) => {
                           return (
-                            <Stack direction="column">
+                            <Stack direction="column" key={index}>
                               <Stack
                                 direction="row"
                                 rowAlign="flex-end"
@@ -407,10 +407,10 @@ const Settings: FC<SettingsProps> = ({
                 enableReinitialize
                 initialValues={
                   {
-                    includeTags: (uploadSettings.Etsy?.includeTags || []).join(
+                    includeTags: (uploadSettings.etsy?.includeTags || []).join(
                       ", "
                     ),
-                    excludeTags: (uploadSettings.Etsy?.excludeTags || []).join(
+                    excludeTags: (uploadSettings.etsy?.excludeTags || []).join(
                       ", "
                     ),
                   } as EtsyUpdateUploadSettingsRequest
@@ -511,13 +511,13 @@ const Settings: FC<SettingsProps> = ({
                 initialValues={
                   {
                     includeTags: (
-                      uploadSettings.Square?.includeTags || []
+                      uploadSettings.square?.includeTags || []
                     ).join(", "),
                     excludeTags: (
-                      uploadSettings.Square?.excludeTags || []
+                      uploadSettings.square?.excludeTags || []
                     ).join(", "),
                     departmentMapping:
-                      uploadSettings.Square?.departmentMapping || [],
+                      uploadSettings.square?.departmentMapping || [],
                   } as SquareUpdateUploadSettingsRequest
                 }
                 onSubmit={onSubmitSquareUploadSettings}
@@ -623,7 +623,7 @@ const Settings: FC<SettingsProps> = ({
                           { key: "", departments: [] },
                         ].map((value, index) => {
                           return (
-                            <Stack direction="column">
+                            <Stack direction="column" key={index}>
                               <Stack
                                 direction="row"
                                 rowAlign="flex-end"

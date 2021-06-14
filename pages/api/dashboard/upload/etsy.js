@@ -37,12 +37,12 @@ export default async function handler(req, res) {
   let nextProductId = businessResponse.rows[0].next_product_id;
   const homepages = JSON.parse(businessResponse.rows[0].homepages);
   const uploadSettings =
-    JSON.parse(businessResponse.rows[0].upload_settings).Etsy || {};
+    JSON.parse(businessResponse.rows[0].upload_settings).etsy || {};
   const includeTags = new Set(
-    (uploadSettings.includeTags || []).map((x) => encode(x).toLowerCase())
+    (uploadSettings.include_tags || []).map((x) => encode(x).toLowerCase())
   );
   const excludeTags = new Set(
-    (uploadSettings.excludeTags || []).map((x) => encode(x).toLowerCase())
+    (uploadSettings.exclude_tags || []).map((x) => encode(x).toLowerCase())
   );
 
   const etsyHomepage = homepages.etsyHomepage || "";
