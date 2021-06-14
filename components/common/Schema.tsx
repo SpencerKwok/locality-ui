@@ -23,6 +23,10 @@ export interface PostMethods {
     request: ProductUploadRequest;
     response: ProductUploadResponse;
   };
+  EtsyUploadSettingsUpdate: {
+    request: EtsyUploadSettingsUpdateRequest;
+    response: EtsyUploadSettingsUpdateResponse;
+  };
   HomepagesUpdate: {
     request: HomepagesUpdateRequest;
     response: HomepagesUpdateResponse;
@@ -51,17 +55,21 @@ export interface PostMethods {
     request: ProductUploadRequest;
     response: ProductUploadResponse;
   };
+  ShopifyUploadSettingsUpdate: {
+    request: ShopifyUploadSettingsUpdateRequest;
+    response: ShopifyUploadSettingsUpdateResponse;
+  };
   SquareProductUpload: {
     request: SquareProductUploadRequest;
     response: SquareProductUploadResponse;
   };
+  SquareUploadSettingsUpdate: {
+    request: SquareUploadSettingsUpdateRequest;
+    response: SquareUploadSettingsUpdateResponse;
+  };
   UserSignUp: {
     request: UserSignUpRequest;
     response: UserSignUpResponse;
-  };
-  UploadSettingsUpdate: {
-    request: UploadSettingsUpdateRequest;
-    response: UploadSettingsUpdateResponse;
   };
   VariantAdd: {
     request: VariantAddRequest;
@@ -103,9 +111,13 @@ export interface BusinessSignUpRequest extends UserSignUpRequest {
 
 export interface BusinessSignUpResponse extends SignUpResponse {}
 
-export interface UploadTypeSettings {
+export interface BaseUploadTypeSettings {
   includeTags?: Array<string>;
   excludeTags?: Array<string>;
+}
+
+export interface UploadTypeSettings extends BaseUploadTypeSettings {
+  departmentMapping?: Array<{ key: string; departments: Array<string> }>;
 }
 
 export interface BaseBusiness {
@@ -126,7 +138,7 @@ export interface BaseBusiness {
     squareHomepage?: string;
   };
   uploadSettings: {
-    Etsy?: UploadTypeSettings;
+    Etsy?: BaseUploadTypeSettings;
     Shopify?: UploadTypeSettings;
     Square?: UploadTypeSettings;
   };
@@ -291,16 +303,30 @@ export interface UserSignUpRequest {
 
 export interface UserSignUpResponse extends SignUpResponse {}
 
-export interface UploadSettingsUpdateRequest extends BaseResponse {
+export interface EtsyUploadSettingsUpdateRequest {
   id: number;
   Etsy?: UploadTypeSettings;
+}
+
+export interface EtsyUploadSettingsUpdateResponse extends BaseResponse {
+  Etsy?: UploadTypeSettings;
+}
+
+export interface ShopifyUploadSettingsUpdateRequest {
+  id: number;
   Shopify?: UploadTypeSettings;
+}
+
+export interface ShopifyUploadSettingsUpdateResponse extends BaseResponse {
+  Shopify?: UploadTypeSettings;
+}
+
+export interface SquareUploadSettingsUpdateRequest {
+  id: number;
   Square?: UploadTypeSettings;
 }
 
-export interface UploadSettingsUpdateResponse extends BaseResponse {
-  Etsy?: UploadTypeSettings;
-  Shopify?: UploadTypeSettings;
+export interface SquareUploadSettingsUpdateResponse extends BaseResponse {
   Square?: UploadTypeSettings;
 }
 

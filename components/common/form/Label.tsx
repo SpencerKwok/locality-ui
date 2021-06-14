@@ -14,6 +14,7 @@ export interface FormLabelProps extends React.HTMLAttributes<HTMLLabelElement> {
 
 export default function FormLabel({
   required,
+  className,
   description,
   ...rest
 }: FormLabelProps) {
@@ -31,10 +32,12 @@ export default function FormLabel({
     </Popup>
   );
 
-  const className = required ? styles.label : "";
+  const finalClassName = required
+    ? `${className || ""} ${styles.label}`
+    : `${className || ""}`;
   return (
     <Stack direction="row" columnAlign="flex-start" spacing={8}>
-      <Form.Label className={className} {...rest}></Form.Label>
+      <Form.Label className={finalClassName} {...rest}></Form.Label>
       {description && createTooltip(description)}
     </Stack>
   );

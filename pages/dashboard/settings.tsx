@@ -8,13 +8,18 @@ import DashboardLayout from "../../components/dashboard/Layout";
 import RootLayout from "../../components/common/RootLayout";
 import { useWindowSize } from "../../lib/common";
 
-import type {
-  BaseBusiness,
-  UploadSettingsUpdateRequest,
-} from "../../components/common/Schema";
+import type { BaseBusiness } from "../../components/common/Schema";
 import type { GetServerSideProps } from "next";
 import type { Session } from "next-auth";
-import type { UpdateUploadSettingsRequest } from "../../components/dashboard/Settings";
+import type {
+  EtsyUpdateUploadSettingsRequest,
+  ShopifyUpdateUploadSettingsRequest,
+  SquareUpdateUploadSettingsRequest,
+} from "../../components/dashboard/Settings";
+
+function getDepartments(url: string) {
+  return GetRpcClient.getInstance().call("Departments", url);
+}
 
 function getBusiness(url: string) {
   return GetRpcClient.getInstance().call("Business", url);
@@ -66,12 +71,16 @@ export default function Account({
   const size = useWindowSize();
 
   const [businessIndex, setBusinessIndex] = useState(0);
+  const [departments, setDepartments] = useState<Array<string>>([]);
   const [updateUploadSettingsStatus, setUpdateUploadSettingsStatus] = useState({
     error: "",
     successful: false,
   });
 
   useEffect(() => {
+    getDepartments("/api/departments/get").then(({ departments }) => {
+      setDepartments(departments);
+    });
     getSession().then((value) => {
       if (!value || !value.user) {
         router.push("/");
@@ -79,60 +88,27 @@ export default function Account({
     });
   }, []);
 
-  const onSubmitUploadSettings = async ({
-    Etsy,
-    Shopify,
-    Square,
-  }: UpdateUploadSettingsRequest) => {
+  const onSubmitEtsyUploadSettings = async ({
+    includeTags,
+    excludeTags,
+  }: EtsyUpdateUploadSettingsRequest) => {
     const req = {
       id: businesses[businessIndex].id,
-      Etsy: Etsy && {
-        includeTags: Etsy.includeTags
-          ? Etsy.includeTags
-              .split(",")
-              .map((x) => x.trim())
-              .filter(Boolean)
-          : undefined,
-        excludeTags: Etsy.excludeTags
-          ? Etsy.excludeTags
-              .split(",")
-              .map((x) => x.trim())
-              .filter(Boolean)
-          : undefined,
+      Etsy: {
+        includeTags: (includeTags || "")
+          .split(",")
+          .map((x) => x.trim())
+          .filter(Boolean),
+        excludeTags: (excludeTags || "")
+          .split(",")
+          .map((x) => x.trim())
+          .filter(Boolean),
       },
-      Shopify: Shopify && {
-        includeTags: Shopify.includeTags
-          ? Shopify.includeTags
-              .split(",")
-              .map((x) => x.trim())
-              .filter(Boolean)
-          : undefined,
-        excludeTags: Shopify.excludeTags
-          ? Shopify.excludeTags
-              .split(",")
-              .map((x) => x.trim())
-              .filter(Boolean)
-          : undefined,
-      },
-      Square: Square && {
-        includeTags: Square.includeTags
-          ? Square.includeTags
-              .split(",")
-              .map((x) => x.trim())
-              .filter(Boolean)
-          : undefined,
-        excludeTags: Square.excludeTags
-          ? Square.excludeTags
-              .split(",")
-              .map((x) => x.trim())
-              .filter(Boolean)
-          : undefined,
-      },
-    } as UploadSettingsUpdateRequest;
+    };
 
     await PostRpcClient.getInstance()
-      .call("UploadSettingsUpdate", req, cookie)
-      .then(({ error, Etsy, Shopify, Square }) => {
+      .call("EtsyUploadSettingsUpdate", req, cookie)
+      .then(({ error, Etsy }) => {
         if (error) {
           setUpdateUploadSettingsStatus({
             error: error,
@@ -142,8 +118,109 @@ export default function Account({
         }
 
         businesses[businessIndex].uploadSettings = {
+          ...businesses[businessIndex].uploadSettings,
           Etsy,
+        };
+        setUpdateUploadSettingsStatus({
+          error: "",
+          successful: true,
+        });
+      });
+  };
+
+  const onSubmitShopifyUploadSettings = async ({
+    includeTags,
+    excludeTags,
+    departmentMapping,
+  }: ShopifyUpdateUploadSettingsRequest) => {
+    const req = {
+      id: businesses[businessIndex].id,
+      Shopify: {
+        includeTags: (includeTags || "")
+          .split(",")
+          .map((x) => x.trim())
+          .filter(Boolean),
+        excludeTags: (excludeTags || "")
+          .split(",")
+          .map((x) => x.trim())
+          .filter(Boolean),
+        departmentMapping: (departmentMapping || [])
+          .map(({ key, departments }) => ({
+            key: key.trim(),
+            departments: (departments || []).map((department) =>
+              department.trim()
+            ),
+          }))
+          .filter(
+            ({ key, departments }) => key !== "" && departments.length !== 0
+          ),
+      },
+    };
+
+    await PostRpcClient.getInstance()
+      .call("ShopifyUploadSettingsUpdate", req, cookie)
+      .then(({ error, Shopify }) => {
+        if (error) {
+          setUpdateUploadSettingsStatus({
+            error: error,
+            successful: false,
+          });
+          return;
+        }
+
+        businesses[businessIndex].uploadSettings = {
+          ...businesses[businessIndex].uploadSettings,
           Shopify,
+        };
+        setUpdateUploadSettingsStatus({
+          error: "",
+          successful: true,
+        });
+      });
+  };
+
+  const onSubmitSquareUploadSettings = async ({
+    includeTags,
+    excludeTags,
+    departmentMapping,
+  }: SquareUpdateUploadSettingsRequest) => {
+    const req = {
+      id: businesses[businessIndex].id,
+      Square: {
+        includeTags: (includeTags || "")
+          .split(",")
+          .map((x) => x.trim())
+          .filter(Boolean),
+        excludeTags: (excludeTags || "")
+          .split(",")
+          .map((x) => x.trim())
+          .filter(Boolean),
+        departmentMapping: (departmentMapping || [])
+          .map(({ key, departments }) => ({
+            key: key.trim(),
+            departments: (departments || []).map((department) =>
+              department.trim()
+            ),
+          }))
+          .filter(
+            ({ key, departments }) => key !== "" && departments.length !== 0
+          ),
+      },
+    };
+
+    await PostRpcClient.getInstance()
+      .call("SquareUploadSettingsUpdate", req, cookie)
+      .then(({ error, Square }) => {
+        if (error) {
+          setUpdateUploadSettingsStatus({
+            error: error,
+            successful: false,
+          });
+          return;
+        }
+
+        businesses[businessIndex].uploadSettings = {
+          ...businesses[businessIndex].uploadSettings,
           Square,
         };
         setUpdateUploadSettingsStatus({
@@ -172,10 +249,13 @@ export default function Account({
           <SettingsPage
             businesses={businesses}
             businessIndex={businessIndex}
+            departments={departments}
             updateUploadSettingsStatus={updateUploadSettingsStatus}
             height={size.height}
             onBusinessClick={onBusinessClick}
-            onSubmitUploadSettings={onSubmitUploadSettings}
+            onSubmitEtsyUploadSettings={onSubmitEtsyUploadSettings}
+            onSubmitShopifyUploadSettings={onSubmitShopifyUploadSettings}
+            onSubmitSquareUploadSettings={onSubmitSquareUploadSettings}
           />
         )}
       </DashboardLayout>
