@@ -272,7 +272,7 @@ const Settings: FC<SettingsProps> = ({
                           { key: "", departments: [] },
                         ].map((value, index) => {
                           return (
-                            <Stack direction="column">
+                            <Stack direction="column" key={index}>
                               <Stack
                                 direction="row"
                                 rowAlign="flex-end"
@@ -623,7 +623,7 @@ const Settings: FC<SettingsProps> = ({
                           { key: "", departments: [] },
                         ].map((value, index) => {
                           return (
-                            <Stack direction="column">
+                            <Stack direction="column" key={index}>
                               <Stack
                                 direction="row"
                                 rowAlign="flex-end"
