@@ -53,17 +53,20 @@ export default async function handler(req, res) {
   }
 
   let nextProductId = businessResponse.rows[0].next_product_id;
-  const departments = businessResponse.rows[0].departments
-    .split(":")
-    .filter(Boolean);
   const homepages = JSON.parse(businessResponse.rows[0].homepages);
   const uploadSettings =
-    JSON.parse(businessResponse.rows[0].upload_settings).Shopify || {};
+    JSON.parse(businessResponse.rows[0].upload_settings).shopify || {};
   const includeTags = new Set(
-    (uploadSettings.includeTags || []).map((x) => x.toLowerCase())
+    (uploadSettings.include_tags || []).map((x) => x.toLowerCase())
   );
   const excludeTags = new Set(
-    (uploadSettings.excludeTags || []).map((x) => x.toLowerCase())
+    (uploadSettings.exclude_tags || []).map((x) => x.toLowerCase())
+  );
+  const departmentMapping = new Map(
+    uploadSettings.department_mapping.map(({ key, departments }) => [
+      key.toLowerCase(),
+      departments,
+    ])
   );
   let shopifyHomepage = homepages.shopifyHomepage || "";
 
@@ -175,14 +178,22 @@ export default async function handler(req, res) {
             return;
           }
 
+          const productTypes = product.product_type
+            .split(",")
+            .map((x) => Xss(x.trim()))
+            .filter(Boolean);
+          const departments = [];
+          productTypes.forEach((value) => {
+            if (departmentMapping.has(value.toLowerCase())) {
+              departments.push(...departmentMapping.get(value.toLowerCase()));
+            }
+          });
+
           // Data should already be encoded from Shopify
           const name = Xss(product.title);
           const tags = [
             ...new Set([
-              ...product.product_type
-                .split(",")
-                .map((x) => Xss(x.trim()))
-                .filter(Boolean),
+              ...productTypes,
               ...product.tags.map((x) => Xss(x.trim())).filter(Boolean),
             ]),
           ];

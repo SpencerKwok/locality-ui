@@ -1,3 +1,4 @@
+import { camelCase, mapKeys } from "lodash";
 import SqlString from "sqlstring";
 import Xss from "xss";
 
@@ -7,6 +8,23 @@ import {
   cleanseStringArray,
   isStringArray,
 } from "../../../../../lib/api/common";
+
+const deepMapKeys = (obj, fn) => {
+  const isArray = Array.isArray(obj);
+  const newObj = isArray ? [] : {};
+  for (const k in obj) {
+    if (!obj.hasOwnProperty(k)) {
+      continue;
+    }
+    if (typeof obj[k] === "object") {
+      const v = deepMapKeys(obj[k], fn);
+      newObj[fn(v, k)] = v;
+    } else {
+      newObj[fn(obj[k], k)] = obj[k];
+    }
+  }
+  return newObj;
+};
 
 export default async function handler(req, res) {
   await runMiddlewareBusiness(req, res);
@@ -37,9 +55,9 @@ export default async function handler(req, res) {
   }
 
   const uploadSettings = JSON.parse(prevUploadSettings.rows[0].upload_settings);
-  const etsy = req.body.Etsy;
-  const shopify = req.body.Shopify;
-  const square = req.body.Square;
+  const etsy = req.body.etsy;
+  const shopify = req.body.shopify;
+  const square = req.body.square;
   if (etsy) {
     if (etsy.includeTags && !isStringArray(etsy.includeTags)) {
       res.status(400).json({ error: "Invalid Etsy Include Tags" });
@@ -50,11 +68,11 @@ export default async function handler(req, res) {
       return;
     }
 
-    uploadSettings.Etsy = {
-      includeTags: etsy.includeTags
+    uploadSettings.etsy = {
+      include_tags: etsy.includeTags
         ? cleanseStringArray(etsy.includeTags)
         : undefined,
-      excludeTags: etsy.excludeTags
+      exclude_tags: etsy.excludeTags
         ? cleanseStringArray(etsy.excludeTags)
         : undefined,
     };
@@ -103,14 +121,14 @@ export default async function handler(req, res) {
       }
     }
 
-    uploadSettings.Shopify = {
-      includeTags: shopify.includeTags
+    uploadSettings.shopify = {
+      include_tags: shopify.includeTags
         ? cleanseStringArray(shopify.includeTags)
         : undefined,
-      excludeTags: shopify.excludeTags
+      exclude_tags: shopify.excludeTags
         ? cleanseStringArray(shopify.excludeTags)
         : undefined,
-      departmentMapping: shopify.departmentMapping
+      department_mapping: shopify.departmentMapping
         ? shopify.departmentMapping.map(({ key, departments }) => ({
             key: Xss(key),
             departments: departments.map((department) => Xss(department)),
@@ -162,14 +180,14 @@ export default async function handler(req, res) {
       }
     }
 
-    uploadSettings.Square = {
-      includeTags: square.includeTags
+    uploadSettings.square = {
+      include_tags: square.includeTags
         ? cleanseStringArray(square.includeTags)
         : undefined,
-      excludeTags: square.excludeTags
+      exclude_tags: square.excludeTags
         ? cleanseStringArray(square.excludeTags)
         : undefined,
-      departmentMapping: square.departmentMapping
+      department_mapping: square.departmentMapping
         ? square.departmentMapping.map(({ key, departments }) => ({
             key: Xss(key),
             departments: departments.map((department) => Xss(department)),
@@ -189,5 +207,5 @@ export default async function handler(req, res) {
     return;
   }
 
-  res.status(200).json({ ...uploadSettings });
+  res.status(200).json(deepMapKeys(uploadSettings, (v, k) => camelCase(k)));
 }

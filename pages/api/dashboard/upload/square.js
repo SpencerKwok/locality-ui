@@ -50,16 +50,19 @@ export default async function handler(req, res) {
   }
 
   let nextProductId = businessResponse.rows[0].next_product_id;
-  const departments = businessResponse.rows[0].departments
-    .split(":")
-    .filter(Boolean);
   const uploadSettings =
-    JSON.parse(businessResponse.rows[0].upload_settings).Square || {};
+    JSON.parse(businessResponse.rows[0].upload_settings).square || {};
   const includeTags = new Set(
-    (uploadSettings.includeTags || []).map((x) => x.toLowerCase())
+    (uploadSettings.include_tags || []).map((x) => x.toLowerCase())
   );
   const excludeTags = new Set(
-    (uploadSettings.excludeTags || []).map((x) => x.toLowerCase())
+    (uploadSettings.exclude_tags || []).map((x) => x.toLowerCase())
+  );
+  const departmentMapping = new Map(
+    uploadSettings.department_mapping.map(({ key, departments }) => [
+      key.toLowerCase(),
+      departments,
+    ])
   );
   const homepages = JSON.parse(businessResponse.rows[0].homepages);
   const squareHomepage = homepages.squareHomepage || "";
@@ -163,16 +166,24 @@ export default async function handler(req, res) {
         return;
       }
 
+      const categoryArray = categories
+        .split(",")
+        .map((x) => Xss(x.trim()))
+        .filter(Boolean);
+      const departments = [];
+      categoryArray.forEach((value) => {
+        if (departmentMapping.has(value.toLowerCase())) {
+          departments.push(...departmentMapping.get(value.toLowerCase()));
+        }
+      });
+
       const name = title;
       const link = `${squareHomepage}/${productPage}/${productUrl}`
         .replace(/\/\/+/g, "/")
         .replace("https:/", "https://");
       const priceRange = [parseFloat(price), parseFloat(price)];
       const allTags = [
-        ...new Set([
-          ...categories.split(",").filter(Boolean),
-          ...tags.split(",").filter(Boolean),
-        ]),
+        ...new Set([...categoryArray, ...tags.split(",").filter(Boolean)]),
       ];
       const variantImages = [hostedImageUrls[0]];
       const variantTags = [optionValue.join(" ")];
