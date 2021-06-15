@@ -1,7 +1,7 @@
 import React, { CSSProperties } from "react";
 import { decode } from "html-entities";
 
-import { BaseBusiness } from "../common/Schema";
+import { BaseBusiness } from "../../common/Schema";
 import VirtualList from "../common/list/VirtualList";
 import VirtualListItem from "../common/list/VirtualListItem";
 import Stack from "../common/Stack";

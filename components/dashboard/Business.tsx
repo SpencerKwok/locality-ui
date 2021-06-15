@@ -14,7 +14,7 @@ import Stack from "../common/Stack";
 import Select from "../common/select/VirtualSelect";
 import styles from "./Business.module.css";
 
-import type { BaseBusiness, UploadTypeSettings } from "../common/Schema";
+import type { BaseBusiness, UploadTypeSettings } from "../../common/Schema";
 import type { FormikConfig } from "formik";
 
 const BusinessList = dynamic(() => import("./BusinessList"));

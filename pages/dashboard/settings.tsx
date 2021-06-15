@@ -8,7 +8,7 @@ import DashboardLayout from "../../components/dashboard/Layout";
 import RootLayout from "../../components/common/RootLayout";
 import { useWindowSize } from "../../lib/common";
 
-import type { BaseBusiness } from "../../components/common/Schema";
+import type { BaseBusiness } from "../../common/Schema";
 import type { GetServerSideProps } from "next";
 import type { Session } from "next-auth";
 import type {

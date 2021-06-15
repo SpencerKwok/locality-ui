@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Dropdown from "react-bootstrap/Dropdown";
 
-import { Product } from "../common/Schema";
+import { Product } from "../../common/Schema";
 import ProductImage from "../common/product-image/ProductImage";
 import Stack, { StackAlignment } from "../common/Stack";
 import styles from "./ProductShowcase.module.css";

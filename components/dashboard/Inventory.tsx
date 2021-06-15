@@ -11,7 +11,7 @@ import Tabs from "react-bootstrap/Tabs";
 
 import AddProduct, { UploadType } from "./AddProduct";
 import { Base64, fileToBase64 } from "./ImageHelpers";
-import { BaseBusiness, Product } from "../common/Schema";
+import { BaseBusiness, Product } from "../../common/Schema";
 import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
 import ProductGrid from "./ProductGrid";
 import Stack from "../common/Stack";

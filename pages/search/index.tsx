@@ -9,7 +9,7 @@ import { useMediaQuery } from "../../lib/common";
 
 import type { GetServerSideProps } from "next";
 import type { Session } from "next-auth";
-import type { SearchResponse } from "../../components/common/Schema";
+import type { SearchResponse } from "../../common/Schema";
 
 function onToggleWishList(objectId: string, value: boolean, cookie?: string) {
   if (value) {

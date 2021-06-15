@@ -1,6 +1,6 @@
 import React from "react";
 
-import { BaseBusiness } from "../common/Schema";
+import { BaseBusiness } from "../../common/Schema";
 import BusinessImage from "../common/business-image/BusinessImage";
 import Stack from "../common/Stack";
 

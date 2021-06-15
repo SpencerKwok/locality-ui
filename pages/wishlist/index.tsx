@@ -4,7 +4,7 @@ import { Session } from "next-auth";
 import { useRouter } from "next/router";
 
 import { GetRpcClient, PostRpcClient } from "../../components/common/RpcClient";
-import { WishListResponse } from "../../components/common/Schema";
+import { WishListResponse } from "../../common/Schema";
 import WishlistPage from "../../components/wishlist/WishList";
 import RootLayout from "../../components/common/RootLayout";
 

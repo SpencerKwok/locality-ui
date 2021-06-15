@@ -3,7 +3,7 @@ import { getSession } from "next-auth/client";
 import { useRouter } from "next/router";
 import Fuse from "fuse.js";
 
-import { EmptyProduct } from "../../components/common/Schema";
+import { EmptyProduct } from "../../common/Schema";
 import DashboardLayout from "../../components/dashboard/Layout";
 import InventoryPage from "../../components/dashboard/Inventory";
 import RootLayout from "../../components/common/RootLayout";
@@ -11,7 +11,7 @@ import { GetRpcClient, PostRpcClient } from "../../components/common/RpcClient";
 import { useWindowSize } from "../../lib/common";
 
 import type { ChangeEvent } from "react";
-import type { BaseBusiness, BaseProduct } from "../../components/common/Schema";
+import type { BaseBusiness, BaseProduct } from "../../common/Schema";
 import type { GetServerSideProps } from "next";
 import type { FuseBaseProduct } from "../../components/dashboard/ProductGrid";
 import type {

@@ -1,23 +1,23 @@
 import Xss from "xss";
 import { encode } from "html-entities";
 
-export function cleanseString(value: string) {
+export const cleanseString = (value: string) => {
   return encode(Xss((value || "").trim()));
-}
+};
 
-export function cleanseStringArray(value: Array<string>) {
+export const cleanseStringArray = (value: Array<string>) => {
   return value.map((x) => cleanseString(x)).filter(Boolean);
-}
+};
 
-export function isObject(value: any) {
+export const isObject = (value: any) => {
   return typeof value === "object" && value !== null;
-}
+};
 
-export function isString(value: any) {
+export const isString = (value: any) => {
   return typeof value === "string";
-}
+};
 
-export function isStringArray(value: any) {
+export const isStringArray = (value: any) => {
   if (!Array.isArray(value)) {
     return false;
   }
@@ -27,4 +27,24 @@ export function isStringArray(value: any) {
     }
   }
   return true;
-}
+};
+
+export const deepMapKeys = (
+  obj: { [key: string]: any },
+  fn: (v: any, k: string) => string
+) => {
+  const isArray = Array.isArray(obj);
+  const newObj: any = isArray ? [] : {};
+  for (const k in obj) {
+    if (!obj.hasOwnProperty(k)) {
+      continue;
+    }
+    if (typeof obj[k] === "object") {
+      const v = deepMapKeys(obj[k], fn);
+      newObj[fn(v, k)] = v;
+    } else {
+      newObj[fn(obj[k], k)] = obj[k];
+    }
+  }
+  return newObj;
+};

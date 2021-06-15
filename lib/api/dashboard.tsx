@@ -5,7 +5,7 @@ import Cloudinary from "./cloudinary";
 import Psql from "./postgresql";
 import SqlString from "sqlstring";
 
-import type { BaseProduct, Product } from "../../components/common/Schema";
+import type { BaseProduct, Product } from "../../common/Schema";
 
 const mapLimit = async <P extends any, R extends any>(
   arr: Array<P>,

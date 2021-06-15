@@ -38,3 +38,4 @@ export const SALT = process.env.SALT;
 export const SESSION_SECRET = process.env.SESSION_SECRET;
 export const SQREEN_APP_NAME = process.env.SQREEN_APP_NAME;
 export const SQREEN_TOKEN = process.env.SQREEN_TOKEN;
+export const SUMOLOGIC_URL = process.env.SUMOLOGIC_URL;

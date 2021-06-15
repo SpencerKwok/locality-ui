@@ -10,7 +10,7 @@ import LocalityLogo from "../common/images/LocalityLogo";
 import { useWindowSize } from "../../lib/common";
 
 import type { Ellipsis } from "react-bootstrap/PageItem";
-import type { Product } from "../common/Schema";
+import type { Product } from "../../common/Schema";
 
 const Pagination = dynamic(() => import("react-bootstrap/Pagination"));
 const PaginationItem = dynamic(() => import("react-bootstrap/PageItem"));

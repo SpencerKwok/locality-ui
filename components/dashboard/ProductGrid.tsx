@@ -5,7 +5,7 @@ import { Grid } from "react-virtualized";
 import { CSSProperties, ReactNode } from "react";
 import { decode } from "html-entities";
 
-import { BaseProduct } from "../common/Schema";
+import { BaseProduct } from "../../common/Schema";
 import DescriptionImage from "../common/description-image/DescriptionImage";
 import Stack from "../common/Stack";
 import styles from "./ProductGrid.module.css";

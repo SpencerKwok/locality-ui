@@ -5,7 +5,7 @@ import BusinessShowcase from "./BusinessShowcase";
 import Search from "../search/Search";
 import Stack from "../common/Stack";
 
-import type { BaseBusiness } from "../common/Schema";
+import type { BaseBusiness } from "../../common/Schema";
 
 const NewUser = dynamic(() => import("../common/popups/NewUser"));
 

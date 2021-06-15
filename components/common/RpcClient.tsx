@@ -1,5 +1,5 @@
 import { NEXTAUTH_URL } from "../../lib/env";
-import { PostMethods, GetMethods } from "./Schema";
+import { PostMethods, GetMethods } from "../../common/Schema";
 
 const baseUrl = typeof window === "undefined" ? NEXTAUTH_URL : "";
 const endpoints = new Map<keyof PostMethods, string>([
@@ -64,6 +64,10 @@ export class PostRpcClient {
     }
 
     let response: PostMethods[methodName]["response"];
+    if (rawResponse.status === 204) {
+      return {};
+    }
+
     try {
       response = await rawResponse.json();
     } catch (err) {

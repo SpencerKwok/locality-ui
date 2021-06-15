@@ -127,8 +127,6 @@ export interface BaseBusiness {
   city: string;
   province: string;
   country: string;
-  latitude: string;
-  longitude: string;
   logo: string;
   departments: string;
   homepages: {

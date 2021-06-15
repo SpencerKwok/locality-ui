@@ -9,7 +9,7 @@ import { GetRpcClient, PostRpcClient } from "../../components/common/RpcClient";
 import { useWindowSize } from "../../lib/common";
 
 import type { GetServerSideProps } from "next";
-import type { BaseBusiness } from "../../components/common/Schema";
+import type { BaseBusiness } from "../../common/Schema";
 import type { Session } from "next-auth";
 import type {
   UpdateDepartmentsRequest,

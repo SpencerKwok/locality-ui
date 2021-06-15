@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/client";
 
 import SqlString from "sqlstring";
-import UIDGenerator from "uid-generator";
 import Psql from "./postgresql";
 
 function runMiddlewareHelper(
