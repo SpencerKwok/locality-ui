@@ -6,15 +6,15 @@ import Select, {
 } from "react-select";
 import { FixedSizeList } from "react-window";
 
-interface MenuListProps<isMulti extends boolean>
-  extends MenuListComponentProps<{}, isMulti> {}
+interface MenuListProps<T extends {}, isMulti extends boolean>
+  extends MenuListComponentProps<T, isMulti> {}
 
-function MenuList<isMulti extends boolean>({
+function MenuList<T extends {}, isMulti extends boolean>({
   options,
   children,
   maxHeight,
   getValue,
-}: MenuListProps<isMulti>) {
+}: MenuListProps<T, isMulti>) {
   const [value] = getValue();
   const height = 35;
   const initialOffset = options.indexOf(value) * height;
@@ -33,11 +33,11 @@ function MenuList<isMulti extends boolean>({
   );
 }
 
-export interface VirtualSelectProps<isMulti extends boolean>
-  extends Props<{}, isMulti> {}
+export interface VirtualSelectProps<T extends {}, isMulti extends boolean>
+  extends Props<T, isMulti> {}
 
-export default function VirtualSelect<isMulti extends boolean>(
-  props: VirtualSelectProps<isMulti>
+export default function VirtualSelect<T extends {}, isMulti extends boolean>(
+  props: VirtualSelectProps<T, isMulti>
 ) {
   return (
     <Select

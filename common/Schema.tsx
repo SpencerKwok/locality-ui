@@ -128,7 +128,7 @@ export interface BaseBusiness {
   province: string;
   country: string;
   logo: string;
-  departments: string;
+  departments: Array<string>;
   homepages: {
     homepage: string;
     etsyHomepage?: string;

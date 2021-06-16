@@ -1,4 +1,5 @@
 import Pg from "pg";
+import { decode, encode } from "html-entities";
 import SqlString from "sqlstring";
 
 import { DATABASE_URL } from "../env";
@@ -24,7 +25,9 @@ client.connect().catch((err) => {
 
 const psql: {
   insert: (params: Insert) => Promise<Error | null>;
-  select: <T extends {} = never>(params: Select) => Promise<T | null>;
+  select: <T extends {} = never>(
+    params: Select
+  ) => Promise<Pg.QueryResult<T> | null>;
   update: (params: Update) => Promise<Error | null>;
 } = {
   insert: async (params: Insert) => {
@@ -53,7 +56,22 @@ const psql: {
               }
             })
             .join(", ")}`,
-          values.map(({ value }) => value)
+          values.map(({ value }) => {
+            switch (typeof value) {
+              case "string":
+                return encode(value);
+              case "number":
+                return value;
+              default:
+                SumoLogic.log({
+                  level: "error",
+                  message:
+                    "Failed to UPDATE from Heroku PSQL: Unhandled value type",
+                  params,
+                });
+                return value;
+            }
+          })
         )})`
       )
       .catch((err: Error) => {
@@ -68,7 +86,7 @@ const psql: {
   },
   select: async <T extends {} = never>(params: Select) => {
     const { conditions, limit, table, orderBy, values } = params;
-    let response: T | null = null;
+    let response: Pg.QueryResult<T> | null = null;
     await client
       .query(
         `SELECT ${values.join(", ")} FROM ${table} ${
@@ -77,8 +95,26 @@ const psql: {
           limit ? `LIMIT ${limit}` : ""
         }`
       )
-      .then((res: any) => (response = res))
+      .then((res: Pg.QueryResult<T>) => {
+        response = {
+          ...res,
+          rows: res.rows.map((row) => {
+            for (const key in row) {
+              if (!row.hasOwnProperty(key)) {
+                continue;
+              }
+              const value = row[key];
+              if (typeof value === "string") {
+                //@ts-ignore
+                row[key] = decode(value);
+              }
+            }
+            return row;
+          }),
+        };
+      })
       .catch((err: Error) => {
+        console.log(err);
         SumoLogic.log({
           level: "error",
           message: `Failed to SELECT from Heroku PSQL: ${err.message}`,
@@ -95,7 +131,7 @@ const psql: {
       .map(({ key, value }) => {
         switch (typeof value) {
           case "string":
-            return SqlString.format(`${key}=E?`, [value]);
+            return SqlString.format(`${key}=E?`, [encode(value)]);
           case "number":
             return SqlString.format(`${key}=?`, [value]);
           default:

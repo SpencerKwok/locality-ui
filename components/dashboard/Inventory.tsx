@@ -337,14 +337,45 @@ export default function Inventory({
                                     isSearchable
                                     searchable
                                     clearable
-                                    onChange={(newValues) => {
-                                      setFieldValue(
-                                        "departments",
-                                        newValues.map(
-                                          (value: any) => value.label
-                                        ),
-                                        true
-                                      );
+                                    onChange={(_, action) => {
+                                      switch (action.action) {
+                                        case "select-option":
+                                          if (action.option) {
+                                            const label = action.option.label;
+                                            if (
+                                              !values.departments.includes(
+                                                label
+                                              )
+                                            )
+                                              setFieldValue(
+                                                "departments",
+                                                [...values.departments, label],
+                                                false
+                                              );
+                                          }
+                                          break;
+                                        case "remove-value":
+                                          if (action.removedValue) {
+                                            const label =
+                                              action.removedValue.label;
+                                            setFieldValue(
+                                              "departments",
+                                              values.departments.filter(
+                                                (department) =>
+                                                  department !== label
+                                              ),
+                                              false
+                                            );
+                                          }
+                                          break;
+                                        case "clear":
+                                          setFieldValue(
+                                            "departments",
+                                            [],
+                                            false
+                                          );
+                                          break;
+                                      }
                                     }}
                                     options={departmentsWithIds}
                                     value={values.departments.map(

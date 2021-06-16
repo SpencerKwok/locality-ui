@@ -44,7 +44,7 @@ export default async function handler(
   const password = body.password1;
 
   const user = await Psql.select<{
-    rows: Array<{ id: number }>;
+    id: number;
   }>({
     table: "users",
     values: ["id"],

@@ -5,17 +5,17 @@ import { Formik } from "formik";
 import { decode } from "html-entities";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
-import Tab from "react-bootstrap/Tab";
-import Tabs from "react-bootstrap/Tabs";
 
-import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
 import { Base64, fileToBase64 } from "./ImageHelpers";
+import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
+import { UpdateDepartmentsSchema } from "../../common/ValidationSchema";
 import Stack from "../common/Stack";
 import Select from "../common/select/VirtualSelect";
 import styles from "./Business.module.css";
 
-import type { BaseBusiness, UploadTypeSettings } from "../../common/Schema";
+import type { BaseBusiness } from "../../common/Schema";
 import type { FormikConfig } from "formik";
+import type { ActionMeta, OptionsType } from "react-select";
 
 const BusinessList = dynamic(() => import("./BusinessList"));
 const NewBusiness = dynamic(() => import("../common/popups/NewBusiness"));
@@ -80,10 +80,6 @@ const UpdateHomepagesSchema = yup.object().shape({
   squareHomepage: yup.string().optional().max(255, "Too long"),
 });
 
-const UpdateDepartmentsSchema = yup.object().shape({
-  departments: yup.array().of(yup.string()).optional(),
-});
-
 export default function Business({
   isNewBusiness,
   businesses,
@@ -135,10 +131,7 @@ export default function Business({
                     enableReinitialize
                     initialValues={
                       {
-                        departments: businesses[businessIndex].departments
-                          .split(":")
-                          .map((department) => decode(department))
-                          .filter(Boolean),
+                        departments: businesses[businessIndex].departments,
                       } as UpdateDepartmentsRequest
                     }
                     onSubmit={onSubmitDepartments}
@@ -159,12 +152,35 @@ export default function Business({
                               isSearchable
                               searchable
                               clearable
-                              onChange={(newValues) => {
-                                setFieldValue(
-                                  "departments",
-                                  newValues.map((value: any) => value.label),
-                                  true
-                                );
+                              onChange={(_, action) => {
+                                switch (action.action) {
+                                  case "select-option":
+                                    if (action.option) {
+                                      const label = action.option.label;
+                                      if (!values.departments.includes(label))
+                                        setFieldValue(
+                                          "departments",
+                                          [...values.departments, label],
+                                          false
+                                        );
+                                    }
+                                    break;
+                                  case "remove-value":
+                                    if (action.removedValue) {
+                                      const label = action.removedValue.label;
+                                      setFieldValue(
+                                        "departments",
+                                        values.departments.filter(
+                                          (department) => department !== label
+                                        ),
+                                        false
+                                      );
+                                    }
+                                    break;
+                                  case "clear":
+                                    setFieldValue("departments", [], false);
+                                    break;
+                                }
                               }}
                               options={departmentsWithIds}
                               value={values.departments.map((department) => ({

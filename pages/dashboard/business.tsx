@@ -118,7 +118,7 @@ export default function Business({
           return;
         }
 
-        businesses[businessIndex].departments = departments.join(":");
+        businesses[businessIndex].departments = departments;
         setUpdateDepartmentsStatus({ error: "", successful: true });
       })
       .catch((error) => {

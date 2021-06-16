@@ -80,7 +80,7 @@ export default async function handler(
   if (session && session.user) {
     const user = session.user as { id: number };
     const productIDs = await Psql.select<{
-      rows: Array<{ wishlist: string }>;
+      wishlist: string;
     }>({
       table: "users",
       values: ["wishlist"],

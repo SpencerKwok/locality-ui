@@ -56,3 +56,7 @@ export const BusinessSignUpSchema = yup.object().shape({
     .max(255, "Too long")
     .oneOf([yup.ref("password1")], "New passwords do not match"),
 });
+
+export const UpdateDepartmentsSchema = yup.object().shape({
+  departments: yup.array().of(yup.string().required()).optional(),
+});

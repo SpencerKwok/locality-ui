@@ -1,3 +1,4 @@
+import { decode } from "html-entities";
 import { camelCase } from "lodash";
 import { deepMapKeys } from "../../lib/api/common";
 
@@ -5,17 +6,20 @@ import Psql from "../../lib/api/postgresql";
 import SumoLogic from "../../lib/api/sumologic";
 
 import type { NextApiRequest, NextApiResponse } from "next";
-import type { BaseBusiness, BusinessesResponse } from "../../common/Schema";
+import type { BusinessesResponse } from "../../common/Schema";
 
 export async function helper(): Promise<BusinessesResponse | null> {
   const businesses = await Psql.select<{
-    rowCount: number;
-    rows: Array<
-      BaseBusiness & {
-        homepages: string;
-        upload_settings: string;
-      }
-    >;
+    id: number;
+    name: string;
+    address: string;
+    city: string;
+    province: string;
+    country: string;
+    logo: string;
+    departments: string;
+    homepages: string;
+    upload_settings: string;
   }>({
     table: "businesses",
     values: ["*"],
@@ -35,7 +39,7 @@ export async function helper(): Promise<BusinessesResponse | null> {
       province: business.province,
       country: business.country,
       logo: business.logo,
-      departments: business.departments,
+      departments: JSON.parse(business.departments),
       homepages: JSON.parse(business.homepages),
       uploadSettings: deepMapKeys(
         JSON.parse(business.upload_settings),

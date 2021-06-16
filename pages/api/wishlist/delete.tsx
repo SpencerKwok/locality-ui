@@ -44,7 +44,7 @@ export default async function handler(
 
   const { id } = req.locals.user;
   const productIDs = await Psql.select<{
-    rows: Array<{ wishlist: string }>;
+    wishlist: string;
   }>({
     table: "users",
     values: ["wishlist"],

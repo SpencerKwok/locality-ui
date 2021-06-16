@@ -55,7 +55,7 @@ export default async function handler(
       .then((res) => res.json())
       .then(({ results }) => results[0].locations[0].latLng);
 
-    const user = await Psql.select<{ rows: Array<{ id: number }> }>({
+    const user = await Psql.select<{ id: number }>({
       table: "users",
       values: ["id"],
       orderBy: "id DESC",

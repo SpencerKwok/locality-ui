@@ -6,7 +6,7 @@ import Psql from "../../lib/api/postgresql";
 import SumoLogic from "../../lib/api/sumologic";
 
 import type { NextApiRequest, NextApiResponse } from "next";
-import type { BaseBusiness, BusinessResponse } from "../../common/Schema";
+import type { BusinessResponse } from "../../common/Schema";
 
 export default async function handler(
   req: NextApiRequest,
@@ -37,13 +37,16 @@ export default async function handler(
 
   const businessId = parseInt(id);
   const businesses = await Psql.select<{
-    rowCount: number;
-    rows: Array<
-      BaseBusiness & {
-        homepages: string;
-        upload_settings: string;
-      }
-    >;
+    id: number;
+    name: string;
+    address: string;
+    city: string;
+    province: string;
+    country: string;
+    logo: string;
+    departments: string;
+    homepages: string;
+    upload_settings: string;
   }>({
     table: "businesses",
     values: ["*"],
@@ -79,7 +82,7 @@ export default async function handler(
       province: business.province,
       country: business.country,
       logo: business.logo,
-      departments: business.departments,
+      departments: JSON.parse(business.departments),
       homepages: JSON.parse(business.homepages),
       uploadSettings: deepMapKeys(
         JSON.parse(business.upload_settings),
