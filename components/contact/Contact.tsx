@@ -1,8 +1,8 @@
-import * as yup from "yup";
 import { Formik, FormikConfig } from "formik";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 
+import { ContactSchema } from "../../common/ValidationSchema";
 import { SubmitButton, ErrorMessage, InputGroup, Label } from "../common/form";
 import Stack from "../common/Stack";
 
@@ -11,16 +11,6 @@ export interface ContactRequest {
   name: string;
   message: string;
 }
-
-const ContactSchema = yup.object().shape({
-  email: yup
-    .string()
-    .email("Invalid email address")
-    .required("Required")
-    .max(255, "Too long"),
-  name: yup.string().required("Required").max(255, "Too long"),
-  message: yup.string().required("Required").max(500, "Too long"),
-});
 
 export interface ContactProps {
   error: string;

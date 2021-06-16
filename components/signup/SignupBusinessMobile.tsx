@@ -3,7 +3,7 @@ import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 
 import LocalityLogo from "../../components/common/images/LocalityLogo";
-import { SignUpRequest, SignUpSchema } from "./SignupBusinessForm";
+import { SignUpRequest, BusinessSignUpSchema } from "./SignupBusinessForm";
 import Stack from "../common/Stack";
 import { SubmitButton, ErrorMessage, InputGroup, Label } from "../common/form";
 
@@ -39,7 +39,7 @@ export default function SignupBusiness({
             } as SignUpRequest
           }
           onSubmit={onSubmit}
-          validationSchema={SignUpSchema}
+          validationSchema={BusinessSignUpSchema}
         >
           {({
             isSubmitting,

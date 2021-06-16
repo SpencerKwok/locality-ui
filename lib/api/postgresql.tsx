@@ -23,17 +23,59 @@ client.connect().catch((err) => {
 });
 
 const psql: {
+  insert: (params: Insert) => Promise<Error | null>;
   select: <T extends {} = never>(params: Select) => Promise<T | null>;
   update: (params: Update) => Promise<Error | null>;
 } = {
+  insert: async (params: Insert) => {
+    const { table, values } = params;
+    let error: Error | null = null;
+    await client
+      .query(
+        `INSERT INTO ${table} (${values
+          .map(({ key }) => key)
+          .join(", ")}) VALUES (${SqlString.format(
+          `${values
+            .map(({ value }) => {
+              switch (typeof value) {
+                case "string":
+                  return "E?";
+                case "number":
+                  return "?";
+                default:
+                  SumoLogic.log({
+                    level: "error",
+                    message:
+                      "Failed to UPDATE from Heroku PSQL: Unhandled value type",
+                    params,
+                  });
+                  return "E?";
+              }
+            })
+            .join(", ")}`,
+          values.map(({ value }) => value)
+        )})`
+      )
+      .catch((err: Error) => {
+        SumoLogic.log({
+          level: "error",
+          message: `Failed to SELECT from Heroku PSQL: ${err.message}`,
+          params,
+        });
+        error = err;
+      });
+    return error;
+  },
   select: async <T extends {} = never>(params: Select) => {
-    const { conditions, table, orderBy, values } = params;
+    const { conditions, limit, table, orderBy, values } = params;
     let response: T | null = null;
     await client
       .query(
         `SELECT ${values.join(", ")} FROM ${table} ${
           conditions ? `WHERE ${conditions}` : ""
-        } ${orderBy ? `ORDER BY ${orderBy}` : ""}`
+        } ${orderBy ? `ORDER BY ${orderBy}` : ""} ${
+          limit ? `LIMIT ${limit}` : ""
+        }`
       )
       .then((res: any) => (response = res))
       .catch((err: Error) => {
@@ -87,11 +129,17 @@ const psql: {
   },
 };
 
+export interface Insert {
+  table: "businesses" | "products" | "tokens" | "users";
+  values: NonEmptyArray<{ key: string; value: string | number }>;
+}
+
 export interface Select {
   table: "businesses" | "products" | "tokens" | "users";
   values: Array<string>;
   conditions?: string;
   orderBy?: string;
+  limit?: number;
 }
 
 export interface Update {

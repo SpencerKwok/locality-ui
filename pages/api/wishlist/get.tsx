@@ -1,4 +1,3 @@
-import { camelCase, mapKeys } from "lodash";
 import SqlString from "sqlstring";
 
 import Algolia from "../../../lib/api/algolia";
@@ -8,6 +7,7 @@ import { runMiddlewareUser } from "../../../lib/api/middleware";
 
 import type { NextApiResponse } from "next";
 import type { NextApiRequestWithLocals } from "../../../lib/api/middleware";
+import type { WishListResponse } from "../../../common/Schema";
 
 export default async function handler(
   req: NextApiRequestWithLocals,
@@ -83,10 +83,14 @@ export default async function handler(
       continue;
     }
     results.push({
-      ...mapKeys(products[i], (v, k) => camelCase(k)),
+      ...products[i],
       variantIndex: wishlist[i].variantIndex,
     });
   }
 
-  res.status(200).json({ products: results });
+  const body: WishListResponse = {
+    products: results,
+  };
+
+  res.status(200).json(body);
 }

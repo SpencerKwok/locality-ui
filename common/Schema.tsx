@@ -296,7 +296,8 @@ export interface UserSignUpRequest {
   firstName: string;
   lastName: string;
   email: string;
-  password: string;
+  password1: string;
+  password2: string;
 }
 
 export interface UserSignUpResponse extends SignUpResponse {}

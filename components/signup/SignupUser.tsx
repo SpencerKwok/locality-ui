@@ -6,28 +6,8 @@ import FormControl from "react-bootstrap/FormControl";
 import LocalityLogo from "../../components/common/images/LocalityLogo";
 import Stack from "../common/Stack";
 import { SubmitButton, ErrorMessage, InputGroup, Label } from "../common/form";
+import { UserSignUpSchema } from "../../common/ValidationSchema";
 import styles from "./Signup.module.css";
-
-const SignUpSchema = yup.object().shape({
-  firstName: yup.string().required("Required").max(255, "Too long"),
-  lastName: yup.string().required("Required").max(255, "Too long"),
-  email: yup
-    .string()
-    .email("Invalid email address")
-    .required("Required")
-    .max(255, "Too long"),
-  password1: yup
-    .string()
-    .required("Required")
-    .min(8, "Too short")
-    .max(255, "Too long"),
-  password2: yup
-    .string()
-    .required("Required")
-    .min(8, "Too short")
-    .max(255, "Too long")
-    .oneOf([yup.ref("password1")], "Passwords do not match"),
-});
 
 export interface SignUpRequest {
   firstName: string;
@@ -58,7 +38,7 @@ export default function Customer({ error, onSubmit }: SignInProps) {
             } as SignUpRequest
           }
           onSubmit={onSubmit}
-          validationSchema={SignUpSchema}
+          validationSchema={UserSignUpSchema}
         >
           {({
             isSubmitting,

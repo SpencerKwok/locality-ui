@@ -1,7 +1,7 @@
-import EmailValidator from "email-validator";
 import NodeMailer from "nodemailer";
 import Xss from "xss";
 
+import { ContactSchema } from "../../common/ValidationSchema";
 import { EMAIL_SERVICE, EMAIL_USER, EMAIL_PASSWORD } from "../../lib/env";
 import SumoLogic from "../../lib/api/sumologic";
 
@@ -31,46 +31,16 @@ export default async function handler(
   }
 
   const body: ContactRequest = req.body;
-  if (!EmailValidator.validate(body.email)) {
+  try {
+    await ContactSchema.validate(body, { abortEarly: false });
+  } catch (err) {
     SumoLogic.log({
       level: "warning",
       method: "contact",
-      message: "Incorrect email",
-      params: body,
+      message: `Invalid payload: ${err.inner}`,
+      params: { body, err },
     });
-    res.status(400).json({
-      error: "Invalid payload",
-    });
-    return;
-  }
-
-  if (!body.name || typeof body.name !== "string" || body.name.length > 255) {
-    SumoLogic.log({
-      level: "warning",
-      method: "contact",
-      message: "Invalid name",
-      params: body,
-    });
-    res.status(400).json({
-      error: "Invalid payload",
-    });
-    return;
-  }
-
-  if (
-    !body.message ||
-    typeof body.message !== "string" ||
-    body.message.length > 500
-  ) {
-    SumoLogic.log({
-      level: "warning",
-      method: "contact",
-      message: "Invalid message",
-      params: body,
-    });
-    res.status(400).json({
-      error: "Invalid payload",
-    });
+    res.status(400).json({ error: "Invalid payload" });
     return;
   }
 
