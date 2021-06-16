@@ -1,5 +1,6 @@
 import Xss from "xss";
 import { encode } from "html-entities";
+import { mapKeys as lodashMapKeys } from "lodash";
 
 export const cleanseString = (value: string) => {
   return encode(Xss((value || "").trim()));
@@ -29,10 +30,17 @@ export const isStringArray = (value: any) => {
   return true;
 };
 
-export const deepMapKeys = (
+export const mapKeys = <T extends {} = never>(
+  data: any,
+  fn: (v: any, k: string) => string
+): T => {
+  return { ...lodashMapKeys(data, fn) } as T;
+};
+
+export const deepMapKeys = <T extends {} = never>(
   obj: { [key: string]: any },
   fn: (v: any, k: string) => string
-) => {
+): T => {
   const isArray = Array.isArray(obj);
   const newObj: any = isArray ? [] : {};
   for (const k in obj) {

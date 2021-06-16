@@ -1,8 +1,11 @@
+import { camelCase } from "lodash";
+
 import Algolia from "../../lib/api/algolia";
 import SumoLogic from "../../lib/api/sumologic";
+import { mapKeys } from "../../lib/api/common";
 
 import type { NextApiRequest, NextApiResponse } from "next";
-import type { ProductResponse } from "../../common/Schema";
+import type { Product, ProductResponse } from "../../common/Schema";
 
 export default async function handler(
   req: NextApiRequest,
@@ -20,6 +23,7 @@ export default async function handler(
 
   const query: { id?: string } = req.query;
   const { id } = query;
+
   if (!id || typeof id !== "string" || !id.match(/^\d+_\d+$/g)) {
     SumoLogic.log({
       level: "warning",
@@ -44,7 +48,9 @@ export default async function handler(
   }
 
   const body: ProductResponse = {
-    product: object,
+    product: {
+      ...mapKeys<Product>(object, (v, k) => camelCase(k)),
+    },
   };
 
   res.status(200).json(body);

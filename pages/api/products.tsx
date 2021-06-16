@@ -1,10 +1,12 @@
+import { camelCase } from "lodash";
 import SqlString from "sqlstring";
 
 import Psql from "../../lib/api/postgresql";
 import SumoLogic from "../../lib/api/sumologic";
+import { mapKeys } from "../../lib/api/common";
 
 import type { NextApiRequest, NextApiResponse } from "next";
-import type { ProductsResponse } from "../../common/Schema";
+import type { BaseProduct, ProductsResponse } from "../../common/Schema";
 
 export default async function handler(
   req: NextApiRequest,
@@ -36,13 +38,13 @@ export default async function handler(
   const businessId = parseInt(id);
   const products = await Psql.select<{
     rows: Array<{
-      objectId: string;
+      object_id: string;
       name: string;
       preview: string;
     }>;
   }>({
     table: "products",
-    values: ["CONCAT(business_id, '_', id) AS objectId", "name", "preview"],
+    values: ["CONCAT(business_id, '_', id) AS object_id", "name", "preview"],
     conditions: SqlString.format("business_id=?", [businessId]),
     orderBy: "name",
   });
@@ -59,7 +61,9 @@ export default async function handler(
   }
 
   const body: ProductsResponse = {
-    products: products.rows,
+    products: products.rows.map((product) => ({
+      ...mapKeys<BaseProduct>(product, (v, k) => camelCase(k)),
+    })),
   };
 
   res.status(200).json(body);
