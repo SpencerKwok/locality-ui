@@ -1,3 +1,13 @@
+// Adding missing modules for back-end
+declare module "doublemetaphone" {
+  class DoubleMetaphone {
+    constructor();
+
+    doubleMetaphone(str: string): { primary: string; alternate: string };
+  }
+  export = DoubleMetaphone;
+}
+
 // Adding module css since it isn't declared in next.js
 declare module "*.module.css";
 
@@ -17,3 +27,7 @@ type FixedLengthArray<T extends any[]> = Pick<
   T,
   Exclude<keyof T, ArrayLengthMutationKeys>
 > & { [Symbol.iterator]: () => IterableIterator<ArrayItems<T>> };
+
+// Adding non-empty array type as seen here:
+// https://stackoverflow.com/questions/56006111/is-it-possible-to-define-a-non-empty-array-type-in-typescript
+type NonEmptyArray<T> = [T, ...T[]];

@@ -3,22 +3,44 @@ import SqlString from "sqlstring";
 
 import Algolia from "../../../lib/api/algolia";
 import Psql from "../../../lib/api/postgresql";
+import SumoLogic from "../../../lib/api/sumologic";
 import { runMiddlewareUser } from "../../../lib/api/middleware";
 
-export default async function handler(req, res) {
+import type { NextApiResponse } from "next";
+import type { NextApiRequestWithLocals } from "../../../lib/api/middleware";
+
+export default async function handler(
+  req: NextApiRequestWithLocals,
+  res: NextApiResponse
+) {
   await runMiddlewareUser(req, res);
 
   if (req.method !== "GET") {
+    SumoLogic.log({
+      level: "info",
+      method: "wishlist/get",
+      message: "Incorrect method",
+    });
     res.status(400).json({ error: "Must be GET method" });
     return;
   }
 
   const { id } = req.locals.user;
-  const [productIDs, productIDsError] = await Psql.query(
-    SqlString.format("SELECT wishlist FROM users WHERE id=?", [id])
-  );
-  if (productIDsError) {
-    res.status(500).json({ error: productIDsError });
+  const productIDs = await Psql.select<{
+    rows: Array<{ wishlist: string }>;
+  }>({
+    table: "users",
+    values: ["wishlist"],
+    conditions: SqlString.format("id=?", [id]),
+  });
+  if (!productIDs) {
+    SumoLogic.log({
+      level: "error",
+      method: "wishlist/get",
+      message: "Failed to SELECT from Heroku PSQL: Empty response",
+      params: { req },
+    });
+    res.status(500).json({ error: "Internal server error" });
     return;
   }
 
@@ -38,14 +60,20 @@ export default async function handler(req, res) {
       objectId: id.split("_").slice(0, 2).join("_"),
       variantIndex: parseInt(id.split("_")[2]),
     }));
-  const [products, productsError] = await Algolia.getObjects(
+  const products = await Algolia.getObjects(
     wishlist.map(({ objectId }) => objectId),
     {
       attributesToRetrieve,
     }
   );
-  if (productsError) {
-    res.status(500).json({ error: productsError });
+  if (!products) {
+    SumoLogic.log({
+      level: "error",
+      method: "wishlist/delete",
+      message: `Failed to get objects from Algolia Missing response`,
+      params: { req },
+    });
+    res.status(500).json({ error: "Internal server error" });
     return;
   }
 
@@ -54,7 +82,6 @@ export default async function handler(req, res) {
     if (!products[i]) {
       continue;
     }
-
     results.push({
       ...mapKeys(products[i], (v, k) => camelCase(k)),
       variantIndex: wishlist[i].variantIndex,

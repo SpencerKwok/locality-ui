@@ -13,7 +13,6 @@
         "bootstrap": "^4.6.0",
         "cloudinary": "^1.25.1",
         "core-js": "^3.6.5",
-        "doublemetaphone": "^0.1.2",
         "email-validator": "^2.0.4",
         "express": "^4.17.1",
         "express-sslify": "^1.2.0",
@@ -46,6 +45,7 @@
       },
       "devDependencies": {
         "@svgr/cli": "^5.5.0",
+        "@types/bcryptjs": "^2.4.2",
         "@types/md5": "^2.3.0",
         "@types/nodemailer": "^6.4.2",
         "@types/papaparse": "^5.2.5",
@@ -57,6 +57,7 @@
         "@types/sqlstring": "^2.3.0",
         "@types/styled-components": "^5.1.9",
         "@types/uid-generator": "^2.0.2",
+        "doublemetaphone": "^0.1.2",
         "typescript": "^4.2.4"
       },
       "engines": {
@@ -2369,6 +2370,12 @@
       "dependencies": {
         "anymatch": "*"
       }
+    },
+    "node_modules/@types/bcryptjs": {
+      "version": "2.4.2",
+      "resolved": "https://registry.npmjs.org/@types/bcryptjs/-/bcryptjs-2.4.2.tgz",
+      "integrity": "sha512-LiMQ6EOPob/4yUL66SZzu6Yh77cbzJFYll+ZfaPiPPFswtIlA/Fs1MzdKYA7JApHU49zQTbJGX3PDmCpIdDBRQ==",
+      "dev": true
     },
     "node_modules/@types/body-parser": {
       "version": "1.19.0",
@@ -4881,6 +4888,7 @@
       "version": "0.1.2",
       "resolved": "https://registry.npmjs.org/doublemetaphone/-/doublemetaphone-0.1.2.tgz",
       "integrity": "sha1-oXULyGlKZPEgIztXiDL+bpgJWC8=",
+      "dev": true,
       "engines": {
         "node": ">=0.4.12"
       }
@@ -13172,6 +13180,12 @@
         "anymatch": "*"
       }
     },
+    "@types/bcryptjs": {
+      "version": "2.4.2",
+      "resolved": "https://registry.npmjs.org/@types/bcryptjs/-/bcryptjs-2.4.2.tgz",
+      "integrity": "sha512-LiMQ6EOPob/4yUL66SZzu6Yh77cbzJFYll+ZfaPiPPFswtIlA/Fs1MzdKYA7JApHU49zQTbJGX3PDmCpIdDBRQ==",
+      "dev": true
+    },
     "@types/body-parser": {
       "version": "1.19.0",
       "resolved": "https://registry.npmjs.org/@types/body-parser/-/body-parser-1.19.0.tgz",
@@ -15285,7 +15299,8 @@
     "doublemetaphone": {
       "version": "0.1.2",
       "resolved": "https://registry.npmjs.org/doublemetaphone/-/doublemetaphone-0.1.2.tgz",
-      "integrity": "sha1-oXULyGlKZPEgIztXiDL+bpgJWC8="
+      "integrity": "sha1-oXULyGlKZPEgIztXiDL+bpgJWC8=",
+      "dev": true
     },
     "duplexer2": {
       "version": "0.1.4",

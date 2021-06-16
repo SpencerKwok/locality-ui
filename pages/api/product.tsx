@@ -31,17 +31,8 @@ export default async function handler(
     return;
   }
 
-  const [object, error] = await Algolia.getObject(id);
-  if (error) {
-    SumoLogic.log({
-      level: "error",
-      method: "product",
-      message: "Failed to get object from Algolia",
-      params: query,
-    });
-    res.status(500).json({ error: "Internal server error" });
-    return;
-  } else if (!object) {
+  const object = await Algolia.getObject(id);
+  if (!object) {
     SumoLogic.log({
       level: "error",
       method: "product",

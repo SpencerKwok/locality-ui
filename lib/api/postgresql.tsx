@@ -1,4 +1,5 @@
 import Pg from "pg";
+import SqlString from "sqlstring";
 
 import { DATABASE_URL } from "../env";
 import SumoLogic from "./sumologic";
@@ -22,14 +23,12 @@ client.connect().catch((err) => {
 });
 
 const psql: {
-  select: <T extends {}>(
-    params: Select
-  ) => Promise<FixedLengthArray<[T, null] | [null, Error]>>;
+  select: <T extends {} = never>(params: Select) => Promise<T | null>;
+  update: (params: Update) => Promise<Error | null>;
 } = {
-  select: async <T extends {}>(params: Select) => {
+  select: async <T extends {} = never>(params: Select) => {
     const { conditions, table, orderBy, values } = params;
     let response: T | null = null;
-    let error: Error | null = null;
     await client
       .query(
         `SELECT ${values.join(", ")} FROM ${table} ${
@@ -43,21 +42,48 @@ const psql: {
           message: `Failed to SELECT from Heroku PSQL: ${err.message}`,
           params,
         });
+      });
+    return response;
+  },
+  update: async (params: Update) => {
+    const { conditions, table, values } = params;
+    let error: Error | null = null;
+
+    const setValues = values
+      .map(({ key, value }) => {
+        switch (typeof value) {
+          case "string":
+            return SqlString.format(`${key}=E?`, [value]);
+          case "number":
+            return SqlString.format(`${key}=?`, [value]);
+          default:
+            SumoLogic.log({
+              level: "error",
+              message:
+                "Failed to UPDATE from Heroku PSQL: Unhandled value type",
+              params,
+            });
+            return "";
+        }
+      })
+      .join(", ");
+
+    await client
+      .query(
+        `UPDATE ${table} SET ${setValues} ${
+          conditions ? `WHERE ${conditions}` : ""
+        }`
+      )
+      .catch((err: Error) => {
+        SumoLogic.log({
+          level: "error",
+          message: `Failed to UPDATE from Heroku PSQL: ${err.message}`,
+          params,
+        });
         error = err;
       });
-    if (error) {
-      return [null, error];
-    } else if (response) {
-      return [response, null];
-    }
 
-    SumoLogic.log({
-      level: "error",
-      message: `Failed to SELECT from Heroku PSQL: Reached code that shouldn't be reachable`,
-      params,
-    });
-
-    return [null, new Error("Reached code that shouldn't be reachable")];
+    return error;
   },
 };
 
@@ -66,6 +92,12 @@ export interface Select {
   values: Array<string>;
   conditions?: string;
   orderBy?: string;
+}
+
+export interface Update {
+  table: "businesses" | "products" | "tokens" | "users";
+  values: NonEmptyArray<{ key: string; value: string | number }>;
+  conditions?: string;
 }
 
 export default psql;

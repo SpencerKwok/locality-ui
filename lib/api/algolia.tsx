@@ -10,14 +10,14 @@ import {
 } from "../env";
 
 import type {
+  ChunkOptions,
   GetObjectOptions,
-  Hit,
-  ObjectWithObjectID,
   PartialUpdateObjectsOptions,
   SaveObjectsOptions,
   SearchOptions,
   SearchResponse,
 } from "@algolia/client-search";
+import type { RequestOptions } from "@algolia/transporter";
 import type { Product } from "../../common/Schema";
 
 const client = AlgoliaSearch(
@@ -30,26 +30,28 @@ const algoliaClient: {
   deleteObjects: (objectIDs: readonly string[]) => Promise<Error | null>;
   getObject: (
     objectID: string,
-    options?: GetObjectOptions
-  ) => Promise<FixedLengthArray<[Product, null] | [null, Error]>>;
+    options?: RequestOptions & GetObjectOptions
+  ) => Promise<Product | null>;
+  getObjects: (
+    objectIDs: Array<string>,
+    options?: RequestOptions & GetObjectOptions
+  ) => Promise<Array<Product> | null>;
   partialUpdateObject: (
     object: Readonly<Record<string, any>>,
-    options?: PartialUpdateObjectsOptions
+    options?: RequestOptions & ChunkOptions & PartialUpdateObjectsOptions
   ) => Promise<Error | null>;
   saveObject: (
     object: Readonly<Record<string, any>>,
-    options?: SaveObjectsOptions
+    options?: RequestOptions & ChunkOptions & SaveObjectsOptions
   ) => Promise<Error | null>;
   saveObjects: (
     object: Readonly<Record<string, any>>[],
-    options?: SaveObjectsOptions
+    options?: RequestOptions & ChunkOptions & SaveObjectsOptions
   ) => Promise<Error | null>;
   search: (
     query: string,
-    options?: SearchOptions
-  ) => Promise<
-    FixedLengthArray<[SearchResponse<Product>, null] | [null, Error]>
-  >;
+    options?: RequestOptions & SearchOptions
+  ) => Promise<SearchResponse<Product> | null>;
 } = {
   deleteObjects: async (objectIDs) => {
     let error: Error | null = null;
@@ -65,14 +67,15 @@ const algoliaClient: {
   },
   getObject: async (objectID, options) => {
     let object: Product | null = null;
-    let error: Error | null = null;
     await index
       .getObject(objectID, options)
       .then((res) => {
-        //@ts-ignore
-        object = {
-          ...mapKeys(res, (v, k) => camelCase(k)),
-        };
+        if (res) {
+          //@ts-ignore
+          object = {
+            ...mapKeys(res, (v, k) => camelCase(k)),
+          };
+        }
       })
       .catch((err) => {
         SumoLogic.log({
@@ -80,22 +83,27 @@ const algoliaClient: {
           message: `Failed to get object from Algolia: ${err.message}`,
           params: { objectID, options },
         });
-        error = err;
       });
-
-    if (error) {
-      return [null, error];
-    } else if (object) {
-      return [object, null];
-    }
-
-    SumoLogic.log({
-      level: "error",
-      message: `Failed to get object from Algolia: Reached code that shouldn't be reachable`,
-      params: { objectID, options },
-    });
-
-    return [null, new Error("Reached code that shouldn't be reachable")];
+    return object;
+  },
+  getObjects: async (objectIDs, options) => {
+    let objects: Array<Product> | null = null;
+    await index
+      .getObjects(objectIDs, options)
+      .then((res) => {
+        //@ts-ignore
+        objects = res.results.filter(Boolean).map((product) => ({
+          ...mapKeys(product, (v, k) => camelCase(k)),
+        }));
+      })
+      .catch((err) => {
+        SumoLogic.log({
+          level: "error",
+          message: `Failed to get objects from Algolia: ${err.message}`,
+          params: { objectIDs, options },
+        });
+      });
+    return objects;
   },
   partialUpdateObject: async (object, options) => {
     let error: Error | null = null;
@@ -134,7 +142,6 @@ const algoliaClient: {
     return error;
   },
   search: async (query, options) => {
-    let error: Error | null = null;
     let results: SearchResponse<Product> | null = null;
     await index
       .search(query, options)
@@ -148,23 +155,13 @@ const algoliaClient: {
         };
       })
       .catch((err) => {
-        console.log(err);
-        error = err.message;
+        SumoLogic.log({
+          level: "error",
+          message: `Failed to save objects from Algolia: ${err.message}`,
+          params: { query, options },
+        });
       });
-
-    if (error) {
-      return [null, error];
-    } else if (results) {
-      return [results, null];
-    }
-
-    SumoLogic.log({
-      level: "error",
-      message: `Failed to search from Algolia: Reached code that shouldn't be reachable`,
-      params: { query, options },
-    });
-
-    return [null, new Error("Reached code that shouldn't be reachable")];
+    return results;
   },
 };
 
