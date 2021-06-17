@@ -5,7 +5,7 @@ import Psql from "../../../../lib/api/postgresql";
 import SumoLogic from "../../../../lib/api/sumologic";
 import { addHttpsProtocol } from "../../../../lib/api/dashboard";
 import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
-import { UpdateHomepagesSchema } from "../../../../common/ValidationSchema";
+import { HomepagesUpdateSchema } from "../../../../common/ValidationSchema";
 
 import type {
   HomepagesUpdateRequest,

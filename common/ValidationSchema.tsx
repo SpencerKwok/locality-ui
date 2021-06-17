@@ -57,11 +57,11 @@ export const BusinessSignUpSchema = yup.object().shape({
     .oneOf([yup.ref("password1")], "New passwords do not match"),
 });
 
-export const UpdateDepartmentsSchema = yup.object().shape({
+export const DepartmentsUpdateSchema = yup.object().shape({
   departments: yup.array().of(yup.string().required()).optional(),
 });
 
-export const UpdateHomepagesSchema = yup.object().shape({
+export const HomepagesUpdateSchema = yup.object().shape({
   homepage: yup.string().required("Required").max(255, "Too long"),
   etsyHomepage: yup
     .string()
@@ -80,4 +80,8 @@ export const UpdateHomepagesSchema = yup.object().shape({
     .max(255, "Too long"),
   shopifyHomepage: yup.string().optional().max(255, "Too long"),
   squareHomepage: yup.string().optional().max(255, "Too long"),
+});
+
+export const LogoUpdateSchema = yup.object().shape({
+  logo: yup.string().required("Invalid image url or image file"),
 });

@@ -9,8 +9,9 @@ import FormControl from "react-bootstrap/FormControl";
 import { Base64, fileToBase64 } from "./ImageHelpers";
 import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
 import {
-  UpdateDepartmentsSchema,
-  UpdateHomepagesSchema,
+  DepartmentsUpdateSchema,
+  HomepagesUpdateSchema,
+  LogoUpdateSchema,
 } from "../../common/ValidationSchema";
 import Stack from "../common/Stack";
 import Select from "../common/select/VirtualSelect";
@@ -56,10 +57,6 @@ export interface BusinessProps {
   onSubmitLogo: FormikConfig<UpdateLogoRequest>["onSubmit"];
   onSubmitHomepages: FormikConfig<UpdateHomepagesRequest>["onSubmit"];
 }
-
-const UpdateLogoSchema = yup.object().shape({
-  logo: yup.string().required("Invalid image url or image file"),
-});
 
 export default function Business({
   isNewBusiness,
@@ -116,7 +113,7 @@ export default function Business({
                       } as UpdateDepartmentsRequest
                     }
                     onSubmit={onSubmitDepartments}
-                    validationSchema={UpdateDepartmentsSchema}
+                    validationSchema={DepartmentsUpdateSchema}
                   >
                     {({
                       isSubmitting,
@@ -206,7 +203,7 @@ export default function Business({
                     } as UpdateLogoRequest
                   }
                   onSubmit={onSubmitLogo}
-                  validationSchema={UpdateLogoSchema}
+                  validationSchema={LogoUpdateSchema}
                 >
                   {({
                     isSubmitting,
@@ -331,7 +328,7 @@ export default function Business({
                       } as UpdateHomepagesRequest
                     }
                     onSubmit={onSubmitHomepages}
-                    validationSchema={UpdateHomepagesSchema}
+                    validationSchema={HomepagesUpdateSchema}
                   >
                     {({
                       isSubmitting,

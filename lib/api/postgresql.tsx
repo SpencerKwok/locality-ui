@@ -24,13 +24,31 @@ client.connect().catch((err) => {
 });
 
 const psql: {
+  delete: (params: Delete) => Promise<Error | null>;
   insert: (params: Insert) => Promise<Error | null>;
   select: <T extends {} = never>(
     params: Select
   ) => Promise<Pg.QueryResult<T> | null>;
   update: (params: Update) => Promise<Error | null>;
 } = {
-  insert: async (params: Insert) => {
+  delete: async (params) => {
+    const { conditions, table } = params;
+    let error: Error | null = null;
+
+    await client
+      .query(`DELETE FROM ${table} WHERE ${conditions}`)
+      .catch((err: Error) => {
+        SumoLogic.log({
+          level: "error",
+          message: `Failed to UPDATE from Heroku PSQL: ${err.message}`,
+          params,
+        });
+        error = err;
+      });
+
+    return error;
+  },
+  insert: async (params) => {
     const { table, values } = params;
     let error: Error | null = null;
     await client
@@ -123,7 +141,7 @@ const psql: {
       });
     return response;
   },
-  update: async (params: Update) => {
+  update: async (params) => {
     const { conditions, table, values } = params;
     let error: Error | null = null;
 
@@ -165,13 +183,20 @@ const psql: {
   },
 };
 
+export type Tables = "businesses" | "products" | "tokens" | "users";
+
+export interface Delete {
+  table: Tables;
+  conditions: string;
+}
+
 export interface Insert {
-  table: "businesses" | "products" | "tokens" | "users";
+  table: Tables;
   values: NonEmptyArray<{ key: string; value: string | number }>;
 }
 
 export interface Select {
-  table: "businesses" | "products" | "tokens" | "users";
+  table: Tables;
   values: Array<string>;
   conditions?: string;
   orderBy?: string;
@@ -179,7 +204,7 @@ export interface Select {
 }
 
 export interface Update {
-  table: "businesses" | "products" | "tokens" | "users";
+  table: Tables;
   values: NonEmptyArray<{ key: string; value: string | number }>;
   conditions: string;
 }

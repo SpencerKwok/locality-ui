@@ -119,11 +119,9 @@ export async function runMiddlewareExtension(
       }
 
       const id = parseInt(req.headers["id"]);
-      const token = await Psql.select<{
-        rows: Array<{ count: number }>;
-      }>({
+      const token = await Psql.select<never>({
         table: "tokens",
-        values: ["COUNT(*)"],
+        values: ["*"],
         conditions: SqlString.format("token=E? AND id=?", [
           req.headers["token"],
           id,
@@ -138,7 +136,7 @@ export async function runMiddlewareExtension(
         res.status(403).json({ error: "Invalid credentials" });
         return;
       }
-      if (token.rows[0].count <= 0) {
+      if (token.rowCount <= 0) {
         SumoLogic.log({
           level: "warning",
           message: "Attempted extension user request with invalid credentials",

@@ -1,17 +1,26 @@
 import SqlString from "sqlstring";
 import Xss from "xss";
 
-import Psql from "../../../../lib/api/postgresql";
+import Cloudinary from "../../../../lib/api/cloudinary";
 import SumoLogic from "../../../../lib/api/sumologic";
+import Psql from "../../../../lib/api/postgresql";
 import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
-import { DepartmentsUpdateSchema } from "../../../../common/ValidationSchema";
+import { LogoUpdateSchema } from "../../../../common/ValidationSchema";
 
 import type {
-  DepartmentsUpdateRequest,
-  DepartmentsUpdateResponse,
+  LogoUpdateRequest,
+  LogoUpdateResponse,
 } from "../../../../common/Schema";
 import type { NextApiResponse } from "next";
 import type { NextApiRequestWithLocals } from "../../../../lib/api/middleware";
+
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: "5mb",
+    },
+  },
+};
 
 export default async function handler(
   req: NextApiRequestWithLocals,
@@ -22,7 +31,7 @@ export default async function handler(
   if (req.method !== "POST") {
     SumoLogic.log({
       level: "info",
-      method: "dashboard/departments/update",
+      method: "dashboard/logo/update",
       message: "Incorrect method",
     });
     res.status(400).json({ error: "Must be POST method" });
@@ -34,7 +43,7 @@ export default async function handler(
   if (!Number.isInteger(businessId)) {
     SumoLogic.log({
       level: "error",
-      method: "dashboard/departments/update",
+      method: "dashboard/logo/update",
       message: "Invalid id",
       params: { body: req.body },
     });
@@ -42,13 +51,13 @@ export default async function handler(
     return;
   }
 
-  const reqBody: DepartmentsUpdateRequest = req.body;
+  const reqBody: LogoUpdateRequest = req.body;
   try {
-    await DepartmentsUpdateSchema.validate(reqBody, { abortEarly: false });
+    await LogoUpdateSchema.validate(reqBody, { abortEarly: false });
   } catch (err) {
     SumoLogic.log({
       level: "warning",
-      method: "dashboard/departments/update",
+      method: "dashboard/logo/update",
       message: "Invalid payload",
       params: { body: reqBody, err },
     });
@@ -56,27 +65,44 @@ export default async function handler(
     return;
   }
 
-  const departments = reqBody.departments
-    .map((department) => Xss(department))
-    .filter(Boolean);
-  const psqlDepartmentsError = await Psql.update({
-    table: "businesses",
-    values: [{ key: "departments", value: JSON.stringify(departments) }],
-    conditions: SqlString.format("id=?", [businessId]),
+  const logo = Xss(reqBody.logo);
+
+  const url = await Cloudinary.upload(logo, {
+    exif: false,
+    format: "webp",
+    public_id: `logo/${businessId}`,
+    unique_filename: false,
+    overwrite: true,
   });
-  if (psqlDepartmentsError) {
+  if (!url) {
     SumoLogic.log({
       level: "error",
-      method: "dashboard/departments/update",
-      message: `Failed to UPDATE Heroku PSQL: ${psqlDepartmentsError.message}`,
-      params: { body: reqBody },
+      method: "dashboard/logo/update",
+      message: "Failed to upload logo to Cloudinary: Missing response",
+      params: { body: req.body },
     });
     res.status(500).json({ error: "Internal server error" });
     return;
   }
 
-  const body: DepartmentsUpdateResponse = {
-    departments,
+  const psqlError = await Psql.update({
+    table: "businesses",
+    values: [{ key: "logo", value: url }],
+    conditions: SqlString.format("id=?", [businessId]),
+  });
+  if (psqlError) {
+    SumoLogic.log({
+      level: "error",
+      method: "dashboard/logo/update",
+      message: `Failed to UPDATE Heroku PSQL: ${psqlError.message}`,
+      params: { body: req.body },
+    });
+    res.status(500).json({ error: "Internal server error" });
+    return;
+  }
+
+  const body: LogoUpdateResponse = {
+    logo: url,
   };
 
   res.status(200).json(body);
