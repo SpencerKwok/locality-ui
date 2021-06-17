@@ -60,3 +60,24 @@ export const BusinessSignUpSchema = yup.object().shape({
 export const UpdateDepartmentsSchema = yup.object().shape({
   departments: yup.array().of(yup.string().required()).optional(),
 });
+
+export const UpdateHomepagesSchema = yup.object().shape({
+  homepage: yup.string().required("Required").max(255, "Too long"),
+  etsyHomepage: yup
+    .string()
+    .optional()
+    .test(
+      "EtsyFormat",
+      "Must have the following format: etsy.com/shop/[SHOP_ID]",
+      (page) => {
+        return (!page ||
+          page.length === 0 ||
+          page.match(
+            /^(http(s?):\/\/)?(www\.)?etsy\.com\/([^\/]+\/)*shop\/[a-zA-Z0-9_\-]+(\/?)$/g
+          )) as boolean;
+      }
+    )
+    .max(255, "Too long"),
+  shopifyHomepage: yup.string().optional().max(255, "Too long"),
+  squareHomepage: yup.string().optional().max(255, "Too long"),
+});

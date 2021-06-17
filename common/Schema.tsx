@@ -167,21 +167,17 @@ export interface DeleteFromWishListResponse extends BaseResponse {}
 
 export interface HomepagesUpdateRequest {
   id: number;
-  homepages: {
-    homepage: string;
-    etsyHomepage?: string;
-    shopifyHomepage?: string;
-    squareHomepage?: string;
-  };
+  homepage: string;
+  etsyHomepage?: string;
+  shopifyHomepage?: string;
+  squareHomepage?: string;
 }
 
 export interface HomepagesUpdateResponse extends BaseResponse {
-  homepages: {
-    homepage: string;
-    etsyHomepage?: string;
-    shopifyHomepage?: string;
-    squareHomepage?: string;
-  };
+  homepage: string;
+  etsyHomepage?: string;
+  shopifyHomepage?: string;
+  squareHomepage?: string;
 }
 
 export interface LogoUpdateRequest {

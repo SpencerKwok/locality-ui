@@ -181,7 +181,7 @@ export interface Select {
 export interface Update {
   table: "businesses" | "products" | "tokens" | "users";
   values: NonEmptyArray<{ key: string; value: string | number }>;
-  conditions?: string;
+  conditions: string;
 }
 
 export default psql;

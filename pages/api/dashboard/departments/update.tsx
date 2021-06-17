@@ -56,7 +56,9 @@ export default async function handler(
     return;
   }
 
-  const departments = reqBody.departments.filter(Boolean);
+  const departments = reqBody.departments
+    .map((department) => Xss(department))
+    .filter(Boolean);
   const psqlDepartmentsError = await Psql.update({
     table: "businesses",
     values: [{ key: "departments", value: JSON.stringify(departments) }],
@@ -64,7 +66,7 @@ export default async function handler(
   });
   if (psqlDepartmentsError) {
     SumoLogic.log({
-      level: "warning",
+      level: "error",
       method: "dashboard/departments/update",
       message: `Failed to UPDATE Heroku PSQL: ${psqlDepartmentsError.message}`,
       params: { body: reqBody },

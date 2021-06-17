@@ -137,21 +137,19 @@ export default function Business({
         "HomepagesUpdate",
         {
           id: businesses[businessIndex].id,
-          homepages: {
-            homepage,
-            etsyHomepage,
-            shopifyHomepage,
-            squareHomepage,
-          },
+          homepage,
+          etsyHomepage,
+          shopifyHomepage,
+          squareHomepage,
         },
         cookie
       )
-      .then(({ homepages, error }) => {
-        if (error) {
-          setUpdateHomepageStatus({ error, successful: false });
+      .then((res) => {
+        if (res.error) {
+          setUpdateHomepageStatus({ error: res.error, successful: false });
           return;
         }
-        businesses[businessIndex].homepages = homepages;
+        businesses[businessIndex].homepages = res;
         setUpdateHomepageStatus({ error: "", successful: true });
       })
       .catch((error) => {

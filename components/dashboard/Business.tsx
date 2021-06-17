@@ -8,14 +8,16 @@ import FormControl from "react-bootstrap/FormControl";
 
 import { Base64, fileToBase64 } from "./ImageHelpers";
 import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
-import { UpdateDepartmentsSchema } from "../../common/ValidationSchema";
+import {
+  UpdateDepartmentsSchema,
+  UpdateHomepagesSchema,
+} from "../../common/ValidationSchema";
 import Stack from "../common/Stack";
 import Select from "../common/select/VirtualSelect";
 import styles from "./Business.module.css";
 
 import type { BaseBusiness } from "../../common/Schema";
 import type { FormikConfig } from "formik";
-import type { ActionMeta, OptionsType } from "react-select";
 
 const BusinessList = dynamic(() => import("./BusinessList"));
 const NewBusiness = dynamic(() => import("../common/popups/NewBusiness"));
@@ -57,27 +59,6 @@ export interface BusinessProps {
 
 const UpdateLogoSchema = yup.object().shape({
   logo: yup.string().required("Invalid image url or image file"),
-});
-
-const UpdateHomepagesSchema = yup.object().shape({
-  homepage: yup.string().required("Required").max(255, "Too long"),
-  etsyHomepage: yup
-    .string()
-    .optional()
-    .test(
-      "EtsyFormat",
-      "Must have the following format: etsy.com/shop/[SHOP_ID]",
-      (page) => {
-        return (!page ||
-          page.length === 0 ||
-          page.match(
-            /^(http(s?):\/\/)?(www\.)?etsy\.com\/([^\/]+\/)*shop\/[a-zA-Z0-9_\-]+(\/?)$/g
-          )) as boolean;
-      }
-    )
-    .max(255, "Too long"),
-  shopifyHomepage: yup.string().optional().max(255, "Too long"),
-  squareHomepage: yup.string().optional().max(255, "Too long"),
 });
 
 export default function Business({

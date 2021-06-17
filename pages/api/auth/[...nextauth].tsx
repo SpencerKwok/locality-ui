@@ -48,8 +48,9 @@ export default NextAuth({
     jwt: async (token, user) => {
       const createUser = async (email: string) => {
         const userData = await Psql.select<{
-          rowCount: number;
-          rows: Array<{ first_name: string; last_name: string; id: number }>;
+          first_name: string;
+          last_name: string;
+          id: number;
         }>({
           table: "users",
           values: ["first_name", "last_name", "id"],
@@ -75,8 +76,7 @@ export default NextAuth({
         }
 
         const businessData = await Psql.select<{
-          rowCount: number;
-          rows: Array<{ id: number }>;
+          id: number;
         }>({
           table: "businesses",
           values: ["id"],
@@ -137,8 +137,8 @@ export default NextAuth({
         password: string;
       }) => {
         const users = await Psql.select<{
-          rowCount: number;
-          rows: Array<{ email: string; password: string }>;
+          email: string;
+          password: string;
         }>({
           table: "users",
           values: ["email", "password"],
