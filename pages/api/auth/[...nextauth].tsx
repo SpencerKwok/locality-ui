@@ -103,6 +103,7 @@ export default NextAuth({
         } else {
           return {
             id: userData.rows[0].id,
+            email: email,
             isBusiness: false,
           };
         }

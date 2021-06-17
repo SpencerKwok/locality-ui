@@ -271,7 +271,8 @@ export interface ProductDeleteResponse extends BaseResponse {}
 
 export interface PasswordUpdateRequest {
   currentPassword: string;
-  newPassword: string;
+  newPassword1: string;
+  newPassword2: string;
 }
 
 export interface PasswordUpdateResponse extends BaseResponse {}

@@ -85,3 +85,18 @@ export const HomepagesUpdateSchema = yup.object().shape({
 export const LogoUpdateSchema = yup.object().shape({
   logo: yup.string().required("Invalid image url or image file"),
 });
+
+export const PasswordUpdateSchema = yup.object().shape({
+  currentPassword: yup.string().required("Required"),
+  newPassword1: yup
+    .string()
+    .required("Required")
+    .min(8, "Too short")
+    .max(255, "Too long"),
+  newPassword2: yup
+    .string()
+    .required("Required")
+    .min(8, "Too short")
+    .max(255, "Too long")
+    .oneOf([yup.ref("newPassword1")], "New passwords do not match"),
+});
