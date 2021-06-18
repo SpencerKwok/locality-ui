@@ -38,7 +38,7 @@ export default async function handler(
       level: "warning",
       method: "contact",
       message: `Invalid payload: ${err.inner}`,
-      params: { body, err },
+      params: { body, error: err },
     });
     res.status(400).json({ error: "Invalid payload" });
     return;

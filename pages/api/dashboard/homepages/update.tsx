@@ -45,13 +45,13 @@ export default async function handler(
 
   const reqBody: HomepagesUpdateRequest = req.body;
   try {
-    await UpdateHomepagesSchema.validate(reqBody, { abortEarly: false });
+    await HomepagesUpdateSchema.validate(reqBody, { abortEarly: false });
   } catch (err) {
     SumoLogic.log({
       level: "warning",
       method: "dashboard/homepages/update",
-      message: "Invalid payload",
-      params: { body: reqBody, err },
+      message: `Invalid payload: ${err.inner}`,
+      params: { body: reqBody, error: err },
     });
     res.status(400).json({ error: "Invalid payload" });
     return;

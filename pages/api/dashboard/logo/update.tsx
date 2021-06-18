@@ -58,8 +58,8 @@ export default async function handler(
     SumoLogic.log({
       level: "warning",
       method: "dashboard/logo/update",
-      message: "Invalid payload",
-      params: { body: reqBody, err },
+      message: `Invalid payload: ${err.inner}`,
+      params: { body: reqBody, error: err },
     });
     res.status(400).json({ error: "Invalid payload" });
     return;

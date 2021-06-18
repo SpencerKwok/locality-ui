@@ -195,12 +195,24 @@ export interface BaseProduct {
   preview: string;
 }
 
+export interface DatabaseProduct {
+  name: string;
+  departments: Array<string>;
+  description: string;
+  link: string;
+  priceRange: FixedLengthArray<[number, number]>;
+  tags: Array<string>;
+  variantImages: Array<string>;
+  variantTags: Array<string>;
+  nextProductId?: number;
+}
+
 export interface Product extends BaseProduct {
   business: string;
   departments: Array<string>;
   description: string;
   link: string;
-  priceRange: Array<number>;
+  priceRange: FixedLengthArray<[number, number]>;
   tags: Array<string>;
   variantImages: Array<string>;
   variantTags: Array<string>;
@@ -223,15 +235,15 @@ export const EmptyProduct: Product = {
   variantIndex: 0,
 };
 
-export interface ProductUpdateRequest {
+export interface ProductUpdateRequest extends ProductAddRequest {
   id: number;
   product: {
-    name: string;
     id: number;
+    name: string;
     departments: Array<string>;
     description: string;
     link: string;
-    priceRange: Array<number>;
+    priceRange: FixedLengthArray<[number, number]>;
     tags: Array<string>;
     variantImages: Array<string>;
     variantTags: Array<string>;
@@ -249,7 +261,7 @@ export interface ProductAddRequest {
     departments: Array<string>;
     description: string;
     link: string;
-    priceRange: Array<number>;
+    priceRange: FixedLengthArray<[number, number]>;
     tags: Array<string>;
     variantImages: Array<string>;
     variantTags: Array<string>;

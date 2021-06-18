@@ -100,3 +100,147 @@ export const PasswordUpdateSchema = yup.object().shape({
     .max(255, "Too long")
     .oneOf([yup.ref("newPassword1")], "New passwords do not match"),
 });
+
+export const ProductAddSchema = yup.object().shape({
+  id: yup
+    .number()
+    .required("Required")
+    .integer("Must be integer")
+    .min(0, "Must be non-negative"),
+  product: yup
+    .object()
+    .required()
+    .shape({
+      name: yup.string().required("Required").max(255, "Too long"),
+      departments: yup.array().of(yup.string().required()).required("Required"),
+      description: yup.string().optional().max(2048, "Too long"),
+      link: yup.string().required("Required").max(255, "Too long"),
+      priceRange: yup
+        .array()
+        .of(yup.number().required("Required").min(0, "Must be non-negative"))
+        .length(2, "Invalid range"),
+      tags: yup
+        .array()
+        .of(yup.string().required("Required"))
+        .required("Required"),
+      variantImages: yup
+        .array()
+        .of(yup.string().required("Required"))
+        .required("Required")
+        .min(1, "Must contain at least 1 image"),
+      variantTags: yup
+        .array()
+        .of(yup.string().required("Required"))
+        .required("Required"),
+    }),
+});
+
+export const ProductDeleteSchema = yup.object().shape({
+  id: yup
+    .number()
+    .required("Required")
+    .integer("Must be integer")
+    .min(0, "Must be non-negative"),
+  product: yup
+    .object()
+    .required()
+    .shape({
+      id: yup
+        .number()
+        .required("Required")
+        .integer("Must be integer")
+        .min(0, "Must be non-negative"),
+    }),
+});
+
+export const ProductUpdateSchema = yup.object().shape({
+  id: yup
+    .number()
+    .required("Required")
+    .integer("Must be integer")
+    .min(0, "Must be non-negative"),
+  product: yup
+    .object()
+    .required()
+    .shape({
+      id: yup
+        .number()
+        .required("Required")
+        .integer("Must be integer")
+        .min(0, "Must be non-negative"),
+      name: yup.string().required("Required").max(255, "Too long"),
+      departments: yup.array().of(yup.string().required()).required("Required"),
+      description: yup.string().optional().max(2048, "Too long"),
+      link: yup.string().required("Required").max(255, "Too long"),
+      priceRange: yup
+        .array()
+        .of(yup.number().required("Required").min(0, "Must be non-negative"))
+        .length(2, "Invalid range"),
+      tags: yup
+        .array()
+        .of(yup.string().required("Required"))
+        .required("Required"),
+      variantImages: yup
+        .array()
+        .of(yup.string().required("Required"))
+        .required("Required")
+        .min(1, "Must contain at least 1 image"),
+      variantTags: yup
+        .array()
+        .of(yup.string().required("Required"))
+        .required("Required"),
+    }),
+});
+
+export const ProductFormSchema = yup.object().shape({
+  name: yup.string().required("Required").max(255, "Too long"),
+  tags: yup
+    .string()
+    .optional()
+    .max(255, "Too long")
+    .matches(/^\s*[^,]+\s*(,(\s*[^,\s]\s*)+)*\s*$/g, "Must be a comma list"),
+  variantTag: yup.string().optional().max(255, "Too long"),
+  departments: yup.array().of(yup.string()).required("Required"),
+  description: yup.string().optional().max(2048, "Too long"),
+  price: yup.mixed().when("isRange", {
+    is: false,
+    then: yup
+      .string()
+      .required("Required")
+      .max(255, "Too long")
+      .matches(/^\s*[0-9]+(\.[0-9][0-9])?\s*$/g, "Invalid price"),
+  }),
+  priceLow: yup.mixed().when("isRange", {
+    is: true,
+    then: yup
+      .string()
+      .required("Required")
+      .max(255, "Too long")
+      .matches(/^\s*[0-9]+(\.[0-9][0-9])?\s*$/g, "Invalid price")
+      .test(
+        "Price Low Test",
+        "Must be lower than the upper price range",
+        (lowPrice, { parent }) => {
+          try {
+            const p1 = parseFloat(lowPrice || "");
+            const p2 = parseFloat(parent.priceHigh);
+            return p1 < p2;
+          } catch {
+            // Error is not a price range
+            // error, so we return true
+            return true;
+          }
+        }
+      ),
+  }),
+  priceHigh: yup.mixed().when("isRange", {
+    is: true,
+    then: yup
+      .string()
+      .required("Required")
+      .max(255, "Too long")
+      .matches(/^\s*[0-9]+(\.[0-9][0-9])?\s*$/g, "Invalid price"),
+  }),
+  image: yup.string().required("Invalid image url or image file"),
+  link: yup.string().required("Required").max(255, "Too long"),
+});

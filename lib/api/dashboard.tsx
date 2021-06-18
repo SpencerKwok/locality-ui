@@ -6,7 +6,7 @@ import Psql from "./postgresql";
 import SqlString from "sqlstring";
 import SumoLogic from "./sumologic";
 
-import type { BaseProduct, Product } from "../../common/Schema";
+import type { BaseProduct, DatabaseProduct } from "../../common/Schema";
 
 const mapLimit = async <P extends any, R extends any>(
   arr: Array<P>,
@@ -25,10 +25,6 @@ const mapLimit = async <P extends any, R extends any>(
   return results;
 };
 
-export interface DatabaseProduct extends Product {
-  nextProductId?: number;
-}
-
 export function addHttpsProtocol(url: string) {
   if (url.match(/^http:\/\/.+/g)) {
     url = `https://${url.slice(7)}`;
@@ -40,7 +36,7 @@ export function addHttpsProtocol(url: string) {
 
 export async function productAdd(
   businessId: number,
-  products: Array<Product>,
+  products: Array<DatabaseProduct>,
   addToCloudinary = true
 ): Promise<Array<BaseProduct> | null> {
   if (products.length === 0) {
@@ -191,12 +187,15 @@ export async function productAdd(
   }
 }
 
-export async function productDelete(businessId: number, productIds: string[]) {
+export async function productDelete(
+  businessId: number,
+  productIds: number[]
+): Promise<Error | null> {
   if (productIds.length === 0) {
     return null;
   }
 
-  const productIdsSegments = Array<Array<string>>();
+  const productIdsSegments = Array<Array<number>>();
   for (let i = 0; i < productIds.length; i += 100) {
     productIdsSegments.push(
       productIds.slice(i, Math.min(i + 100, productIds.length))
@@ -207,7 +206,7 @@ export async function productDelete(businessId: number, productIds: string[]) {
     await mapLimit(
       productIdsSegments,
       5,
-      async (productIdsSegment: Array<string>) => {
+      async (productIdsSegment: Array<number>) => {
         const algoliaObjectIds = productIdsSegment.map(
           (productId) => `${businessId}_${productId}`
         );

@@ -13,6 +13,7 @@ import AddProduct, { UploadType } from "./AddProduct";
 import { Base64, fileToBase64 } from "./ImageHelpers";
 import { BaseBusiness, Product } from "../../common/Schema";
 import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
+import { ProductFormSchema } from "../../common/ValidationSchema";
 import ProductGrid from "./ProductGrid";
 import Stack from "../common/Stack";
 import Select from "../common/select/VirtualSelect";
@@ -22,59 +23,6 @@ import type { ChangeEvent } from "react";
 import type { FuseBaseProduct } from "./ProductGrid";
 
 const BusinessList = dynamic(() => import("./BusinessList"));
-
-const ProductSchema = yup.object().shape({
-  name: yup.string().required("Required").max(255, "Too long"),
-  tags: yup
-    .string()
-    .optional()
-    .max(255, "Too long")
-    .matches(/^\s*[^,]+\s*(,(\s*[^,\s]\s*)+)*\s*$/g, "Must be a comma list"),
-  variantTag: yup.string().optional().max(255, "Too long"),
-  departments: yup.array().of(yup.string()).required("Required"),
-  description: yup.string().optional().max(2048, "Too long"),
-  price: yup.mixed().when("isRange", {
-    is: false,
-    then: yup
-      .string()
-      .required("Required")
-      .max(255, "Too long")
-      .matches(/^\s*[0-9]+(\.[0-9][0-9])?\s*$/g, "Invalid price"),
-  }),
-  priceLow: yup.mixed().when("isRange", {
-    is: true,
-    then: yup
-      .string()
-      .required("Required")
-      .max(255, "Too long")
-      .matches(/^\s*[0-9]+(\.[0-9][0-9])?\s*$/g, "Invalid price")
-      .test(
-        "Price Low Test",
-        "Must be lower than the upper price range",
-        (lowPrice, { parent }) => {
-          try {
-            const p1 = parseFloat(lowPrice || "");
-            const p2 = parseFloat(parent.priceHigh);
-            return p1 < p2;
-          } catch {
-            // Error is not a price range
-            // error, so we return true
-            return true;
-          }
-        }
-      ),
-  }),
-  priceHigh: yup.mixed().when("isRange", {
-    is: true,
-    then: yup
-      .string()
-      .required("Required")
-      .max(255, "Too long")
-      .matches(/^\s*[0-9]+(\.[0-9][0-9])?\s*$/g, "Invalid price"),
-  }),
-  image: yup.string().required("Invalid image url or image file"),
-  link: yup.string().required("Required").max(255, "Too long"),
-});
 
 const VariantSchema = yup.object().shape({
   variantTag: yup.string().required().max(255, "Too long"),
@@ -283,7 +231,7 @@ export default function Inventory({
                       } as ProductRequest
                     }
                     onSubmit={onProductSubmit}
-                    validationSchema={ProductSchema}
+                    validationSchema={ProductFormSchema}
                   >
                     {({
                       isSubmitting,

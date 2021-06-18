@@ -7,10 +7,7 @@ import SumoLogic from "../../../../lib/api/sumologic";
 import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
 import { PasswordUpdateSchema } from "../../../../common/ValidationSchema";
 
-import type {
-  PasswordUpdateRequest,
-  PasswordUpdateResponse,
-} from "../../../../common/Schema";
+import type { PasswordUpdateRequest } from "../../../../common/Schema";
 import type { NextApiResponse } from "next";
 import type { NextApiRequestWithLocals } from "../../../../lib/api/middleware";
 
@@ -37,8 +34,8 @@ export default async function handler(
     SumoLogic.log({
       level: "warning",
       method: "dashboard/password/update",
-      message: "Invalid payload",
-      params: { body: reqBody, err },
+      message: `Invalid payload: ${err.inner}`,
+      params: { body: reqBody, error: err },
     });
     res.status(400).json({ error: "Invalid payload" });
     return;
@@ -58,6 +55,15 @@ export default async function handler(
       level: "error",
       method: "dashboard/password/update",
       message: "Failed to SELECT from Heroku PSQL: Missing response",
+      params: { body: reqBody },
+    });
+    res.status(500).json({ error: "Internal server error" });
+    return;
+  } else if (user.rowCount !== 1) {
+    SumoLogic.log({
+      level: "error",
+      method: "dashboard/password/update",
+      message: "Failed to SELECT from Heroku PSQL: User does not exist",
       params: { body: reqBody },
     });
     res.status(500).json({ error: "Internal server error" });
