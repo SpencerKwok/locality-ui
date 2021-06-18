@@ -13,7 +13,10 @@ import AddProduct, { UploadType } from "./AddProduct";
 import { Base64, fileToBase64 } from "./ImageHelpers";
 import { BaseBusiness, Product } from "../../common/Schema";
 import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
-import { ProductFormSchema } from "../../common/ValidationSchema";
+import {
+  ProductFormSchema,
+  VariantFormSchema,
+} from "../../common/ValidationSchema";
 import ProductGrid from "./ProductGrid";
 import Stack from "../common/Stack";
 import Select from "../common/select/VirtualSelect";
@@ -23,11 +26,6 @@ import type { ChangeEvent } from "react";
 import type { FuseBaseProduct } from "./ProductGrid";
 
 const BusinessList = dynamic(() => import("./BusinessList"));
-
-const VariantSchema = yup.object().shape({
-  variantTag: yup.string().required().max(255, "Too long"),
-  image: yup.string().required("Invalid image url or image file"),
-});
 
 export interface RequestStatus {
   error: string;
@@ -724,7 +722,7 @@ export default function Inventory({
                         } as VariantRequest
                       }
                       onSubmit={onVariantSubmit}
-                      validationSchema={VariantSchema}
+                      validationSchema={VariantFormSchema}
                     >
                       {({
                         isSubmitting,
@@ -926,7 +924,7 @@ export default function Inventory({
                       enableReinitialize
                       initialValues={newVariant}
                       onSubmit={onVariantSubmit}
-                      validationSchema={VariantSchema}
+                      validationSchema={VariantFormSchema}
                     >
                       {({
                         isSubmitting,

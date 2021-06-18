@@ -244,3 +244,67 @@ export const ProductFormSchema = yup.object().shape({
   image: yup.string().required("Invalid image url or image file"),
   link: yup.string().required("Required").max(255, "Too long"),
 });
+
+export const VariantAddSchema = yup.object().shape({
+  id: yup
+    .number()
+    .required("Required")
+    .integer("Must be integer")
+    .min(0, "Must be non-negative"),
+  product: yup.object().shape({
+    id: yup
+      .number()
+      .required("Required")
+      .integer("Must be integer")
+      .min(0, "Must be non-negative"),
+    variantImage: yup.string().required("Invalid image url or image file"),
+    variantTag: yup.string().required().max(255, "Too long"),
+  }),
+});
+
+export const VariantDeleteSchema = yup.object().shape({
+  id: yup
+    .number()
+    .required("Required")
+    .integer("Must be integer")
+    .min(0, "Must be non-negative"),
+  product: yup.object().shape({
+    id: yup
+      .number()
+      .required("Required")
+      .integer("Must be integer")
+      .min(0, "Must be non-negative"),
+    index: yup
+      .number()
+      .required("Required")
+      .integer("Must be integer")
+      .min(0, "Must be non-negative"),
+  }),
+});
+
+export const VariantUpdateSchema = yup.object().shape({
+  id: yup
+    .number()
+    .required("Required")
+    .integer("Must be integer")
+    .min(0, "Must be non-negative"),
+  product: yup.object().shape({
+    id: yup
+      .number()
+      .required("Required")
+      .integer("Must be integer")
+      .min(0, "Must be non-negative"),
+    index: yup
+      .number()
+      .required("Required")
+      .integer("Must be integer")
+      .min(0, "Must be non-negative"),
+    variantImage: yup.string().required("Invalid image url or image file"),
+    variantTag: yup.string().required().max(255, "Too long"),
+  }),
+});
+
+export const VariantFormSchema = yup.object().shape({
+  variantTag: yup.string().required().max(255, "Too long"),
+  image: yup.string().required("Invalid image url or image file"),
+});
