@@ -1,5 +1,13 @@
 import * as yup from "yup";
 
+const CommaListValidator = yup
+  .string()
+  .optional()
+  .max(255, "Too long")
+  .matches(/^\s*[^,]*\s*(,(\s*[^,\s]\s*)+)*\s*$/g, "Must be a comma list");
+
+const StringArrayValidator = yup.array().of(yup.string().required("Required"));
+
 export const ContactSchema = yup.object().shape({
   email: yup
     .string()
@@ -58,7 +66,7 @@ export const BusinessSignUpSchema = yup.object().shape({
 });
 
 export const DepartmentsUpdateSchema = yup.object().shape({
-  departments: yup.array().of(yup.string().required()).optional(),
+  departments: StringArrayValidator.optional(),
 });
 
 export const HomepagesUpdateSchema = yup.object().shape({
@@ -73,7 +81,7 @@ export const HomepagesUpdateSchema = yup.object().shape({
         return (!page ||
           page.length === 0 ||
           page.match(
-            /^(http(s?):\/\/)?(www\.)?etsy\.com\/([^\/]+\/)*shop\/[a-zA-Z0-9_\-]+(\/?)$/g
+            /^(http(s?):\/\/)?(www\.)?etsy\.com\/([^\/]+\/)*shop\/[a-zA-Z0-9_\-]+(\/?)(\?.*)*$/g
           )) as boolean;
       }
     )
@@ -112,26 +120,19 @@ export const ProductAddSchema = yup.object().shape({
     .required()
     .shape({
       name: yup.string().required("Required").max(255, "Too long"),
-      departments: yup.array().of(yup.string().required()).required("Required"),
+      departments: StringArrayValidator.required("Required"),
       description: yup.string().optional().max(2048, "Too long"),
       link: yup.string().required("Required").max(255, "Too long"),
       priceRange: yup
         .array()
         .of(yup.number().required("Required").min(0, "Must be non-negative"))
         .length(2, "Invalid range"),
-      tags: yup
-        .array()
-        .of(yup.string().required("Required"))
-        .required("Required"),
-      variantImages: yup
-        .array()
-        .of(yup.string().required("Required"))
-        .required("Required")
-        .min(1, "Must contain at least 1 image"),
-      variantTags: yup
-        .array()
-        .of(yup.string().required("Required"))
-        .required("Required"),
+      tags: StringArrayValidator.required("Required"),
+      variantImages: StringArrayValidator.required("Required").min(
+        1,
+        "Must contain at least 1 image"
+      ),
+      variantTags: StringArrayValidator.required("Required"),
     }),
 });
 
@@ -169,26 +170,19 @@ export const ProductUpdateSchema = yup.object().shape({
         .integer("Must be integer")
         .min(0, "Must be non-negative"),
       name: yup.string().required("Required").max(255, "Too long"),
-      departments: yup.array().of(yup.string().required()).required("Required"),
+      departments: StringArrayValidator.required("Required"),
       description: yup.string().optional().max(2048, "Too long"),
       link: yup.string().required("Required").max(255, "Too long"),
       priceRange: yup
         .array()
         .of(yup.number().required("Required").min(0, "Must be non-negative"))
         .length(2, "Invalid range"),
-      tags: yup
-        .array()
-        .of(yup.string().required("Required"))
-        .required("Required"),
-      variantImages: yup
-        .array()
-        .of(yup.string().required("Required"))
-        .required("Required")
-        .min(1, "Must contain at least 1 image"),
-      variantTags: yup
-        .array()
-        .of(yup.string().required("Required"))
-        .required("Required"),
+      tags: StringArrayValidator.required("Required"),
+      variantImages: StringArrayValidator.required("Required").min(
+        1,
+        "Must contain at least 1 image"
+      ),
+      variantTags: StringArrayValidator.required("Required"),
     }),
 });
 
@@ -200,7 +194,7 @@ export const ProductFormSchema = yup.object().shape({
     .max(255, "Too long")
     .matches(/^\s*[^,]+\s*(,(\s*[^,\s]\s*)+)*\s*$/g, "Must be a comma list"),
   variantTag: yup.string().optional().max(255, "Too long"),
-  departments: yup.array().of(yup.string()).required("Required"),
+  departments: StringArrayValidator.required("Required"),
   description: yup.string().optional().max(2048, "Too long"),
   price: yup.mixed().when("isRange", {
     is: false,
@@ -304,7 +298,65 @@ export const VariantUpdateSchema = yup.object().shape({
   }),
 });
 
+const departmentMappingSchema = yup
+  .array()
+  .max(50, "Too many mappings")
+  .optional()
+  .of(
+    yup.object().shape({
+      key: yup.string().required(),
+      departments: yup
+        .array()
+        .required()
+        .of(yup.string().required("Required").min(1, "Cannot be empty string"))
+        .length(1, "Cannot be empty array"),
+    })
+  );
+
 export const VariantFormSchema = yup.object().shape({
   variantTag: yup.string().required().max(255, "Too long"),
   image: yup.string().required("Invalid image url or image file"),
+});
+
+export const EtsyUpdateUploadSettingsSchema = yup.object().shape({
+  includeTags: CommaListValidator,
+  excludeTags: CommaListValidator,
+});
+
+export const ShopifyUpdateUploadSettingsSchema = yup.object().shape({
+  includeTags: CommaListValidator,
+  excludeTags: CommaListValidator,
+  departmentMapping: departmentMappingSchema,
+});
+
+export const SquareUpdateUploadSettingsSchema = yup.object().shape({
+  includeTags: CommaListValidator,
+  excludeTags: CommaListValidator,
+  departmentMapping: departmentMappingSchema,
+});
+
+export const UpdateUploadSettingsSchema = yup.object().shape({
+  id: yup
+    .number()
+    .required("Required")
+    .integer("Must be integer")
+    .min(0, "Must be non-negative"),
+  etsy: yup.object().optional().shape({
+    includeTags: StringArrayValidator.optional(),
+    excludeTags: StringArrayValidator.optional(),
+  }),
+  shopify: yup.object().optional().shape({
+    includeTags: StringArrayValidator.optional(),
+    excludeTags: StringArrayValidator.optional(),
+    departmentMapping: departmentMappingSchema.optional(),
+  }),
+  square: yup.object().optional().shape({
+    includeTags: StringArrayValidator.optional(),
+    excludeTags: StringArrayValidator.optional(),
+    departmentMapping: departmentMappingSchema.optional(),
+  }),
+});
+
+export const UploadSquareProductsSchema = yup.object().shape({
+  csv: yup.string().max(1000000, "File too large").required("Required"),
 });

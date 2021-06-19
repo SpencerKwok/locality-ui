@@ -313,11 +313,11 @@ export interface UserSignUpResponse extends SignUpResponse {}
 
 export interface EtsyUploadSettingsUpdateRequest {
   id: number;
-  etsy?: UploadTypeSettings;
+  etsy?: BaseUploadTypeSettings;
 }
 
 export interface EtsyUploadSettingsUpdateResponse extends BaseResponse {
-  etsy?: UploadTypeSettings;
+  etsy?: BaseUploadTypeSettings;
 }
 
 export interface ShopifyUploadSettingsUpdateRequest {

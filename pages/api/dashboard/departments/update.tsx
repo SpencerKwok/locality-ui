@@ -29,19 +29,6 @@ export default async function handler(
     return;
   }
 
-  const { id } = req.locals.user;
-  const businessId = id === 0 ? req.body.id : id;
-  if (!Number.isInteger(businessId)) {
-    SumoLogic.log({
-      level: "error",
-      method: "dashboard/departments/update",
-      message: "Invalid id",
-      params: { body: req.body },
-    });
-    res.status(400).json({ error: "Invalid payload" });
-    return;
-  }
-
   const reqBody: DepartmentsUpdateRequest = req.body;
   try {
     await DepartmentsUpdateSchema.validate(reqBody, { abortEarly: false });
@@ -51,6 +38,19 @@ export default async function handler(
       method: "dashboard/departments/update",
       message: `Invalid payload: ${err.inner}`,
       params: { body: reqBody, error: err },
+    });
+    res.status(400).json({ error: "Invalid payload" });
+    return;
+  }
+
+  const { id } = req.locals.user;
+  const businessId: number = id === 0 ? reqBody.id : id;
+  if (!Number.isInteger(businessId)) {
+    SumoLogic.log({
+      level: "error",
+      method: "dashboard/departments/update",
+      message: "Invalid id",
+      params: { body: req.body },
     });
     res.status(400).json({ error: "Invalid payload" });
     return;

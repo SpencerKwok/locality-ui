@@ -30,19 +30,6 @@ export default async function handler(
     return;
   }
 
-  const { id } = req.locals.user;
-  const businessId = id === 0 ? req.body.id : id;
-  if (!Number.isInteger(businessId)) {
-    SumoLogic.log({
-      level: "error",
-      method: "dashboard/homepages/update",
-      message: "Invalid id",
-      params: { body: req.body },
-    });
-    res.status(400).json({ error: "Invalid payload" });
-    return;
-  }
-
   const reqBody: HomepagesUpdateRequest = req.body;
   try {
     await HomepagesUpdateSchema.validate(reqBody, { abortEarly: false });
@@ -57,9 +44,22 @@ export default async function handler(
     return;
   }
 
+  const { id } = req.locals.user;
+  const businessId: number = id === 0 ? reqBody.id : id;
+  if (!Number.isInteger(businessId)) {
+    SumoLogic.log({
+      level: "error",
+      method: "dashboard/homepages/update",
+      message: "Invalid id",
+      params: { body: req.body },
+    });
+    res.status(400).json({ error: "Invalid payload" });
+    return;
+  }
+
   const homepage = addHttpsProtocol(Xss(reqBody.homepage));
   const etsyHomepage = reqBody.etsyHomepage
-    ? addHttpsProtocol(Xss(reqBody.etsyHomepage))
+    ? addHttpsProtocol(Xss(reqBody.etsyHomepage.replace(/\?.*$/g, "")))
     : "";
   const shopifyHomepage = reqBody.shopifyHomepage
     ? addHttpsProtocol(Xss(reqBody.shopifyHomepage))

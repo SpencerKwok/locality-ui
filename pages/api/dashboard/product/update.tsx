@@ -57,20 +57,25 @@ export default async function handler(
 
   // Already checked to be valid in ProductUpdateSchema and runMiddlewareBusiness
   const { id } = req.locals.user;
-  const businessId = id === 0 ? reqBody.id : id;
-  const productId = reqBody.product.id;
-  const name = Xss(reqBody.product.name);
-  const departments = reqBody.product.departments.map((department) =>
-    Xss(department.trim())
+  const businessId: number = id === 0 ? reqBody.id : id;
+  const productId: number = reqBody.product.id;
+  const name: string = Xss(reqBody.product.name.trim());
+  const departments: Array<string> = reqBody.product.departments.map(
+    (department) => Xss(department.trim())
   );
-  const description = Xss(reqBody.product.description);
-  const link = addHttpsProtocol(Xss(reqBody.product.link));
-  const priceRange = reqBody.product.priceRange;
-  const tags = reqBody.product.tags.map((tag) => Xss(tag.trim()));
-  const variantImages = reqBody.product.variantImages.map((img) =>
-    Xss(img.trim())
+  const description: string = Xss(reqBody.product.description.trim());
+  const link: string = addHttpsProtocol(Xss(reqBody.product.link.trim()));
+  const priceRange: FixedLengthArray<[number, number]> =
+    reqBody.product.priceRange;
+  const tags: Array<string> = reqBody.product.tags.map((tag) =>
+    Xss(tag.trim())
   );
-  const variantTags = reqBody.product.variantTags.map((tag) => Xss(tag.trim()));
+  const variantImages: Array<string> = reqBody.product.variantImages.map(
+    (img) => Xss(img.trim())
+  );
+  const variantTags: Array<string> = reqBody.product.variantTags.map((tag) =>
+    Xss(tag.trim())
+  );
   if (variantTags.length <= 0) {
     variantTags.push("");
   }

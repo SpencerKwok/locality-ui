@@ -41,8 +41,8 @@ export default async function handler(
 
   // Already checked to be valid in ProductDeleteSchema and runMiddlewareBusiness
   const { id } = req.locals.user;
-  const businessId = id === 0 ? reqBody.id : id;
-  const productId = reqBody.product.id;
+  const businessId: number = id === 0 ? reqBody.id : id;
+  const productId: number = reqBody.product.id;
 
   const error = await productDelete(businessId, [productId]);
   if (error) {

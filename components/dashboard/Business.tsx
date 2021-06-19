@@ -1,6 +1,5 @@
 import { createRef, Fragment } from "react";
 import dynamic from "next/dynamic";
-import * as yup from "yup";
 import { Formik } from "formik";
 import { decode } from "html-entities";
 import Form from "react-bootstrap/Form";

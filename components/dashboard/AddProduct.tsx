@@ -8,12 +8,9 @@ import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 
 import { InputGroup, SubmitButton, ErrorMessage } from "../common/form";
+import { UploadSquareProductsSchema } from "../../common/ValidationSchema";
 import Stack from "../common/Stack";
 import styles from "./AddProduct.module.css";
-
-const UploadSquareProductsSchema = yup.object().shape({
-  csv: yup.string().max(1000000, "File too large").required("Required"),
-});
 
 export type UploadType = "" | "Etsy" | "Shopify" | "Square";
 
