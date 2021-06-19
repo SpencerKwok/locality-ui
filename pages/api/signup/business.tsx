@@ -1,4 +1,5 @@
 import Bcrypt from "bcryptjs";
+import SqlString from "sqlstring";
 import Xss from "xss";
 
 import { BusinessSignUpSchema } from "../../../common/ValidationSchema";
@@ -72,6 +73,34 @@ export default async function handler(
       return;
     }
 
+    const existingUser = await Psql.select<{
+      id: number;
+    }>({
+      table: "users",
+      values: ["id"],
+      conditions: SqlString.format("email=E?", [email]),
+    });
+    if (!existingUser) {
+      SumoLogic.log({
+        level: "error",
+        method: "signup/business",
+        message: "Failed to SELECT from Heroku PSQL: Missing response",
+        params: { body },
+      });
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    } else if (existingUser.rowCount > 0) {
+      SumoLogic.log({
+        level: "warning",
+        method: "signup/business",
+        message:
+          "User attempted to sign up with an email that has already been used",
+        params: { body },
+      });
+      res.status(500).json({ error: "Account already exists" });
+      return;
+    }
+
     const userId = (user.rows[0] || { id: 0 }).id + 1;
     const psqlErrorAddBusiness = await Psql.insert({
       table: "businesses",
@@ -132,7 +161,7 @@ export default async function handler(
     if (mailchimpError) {
       SumoLogic.log({
         level: "error",
-        method: "signup/user",
+        method: "signup/business",
         message: `Failed to add subscriber to Mail Chimp: ${mailchimpError.message}`,
         params: user,
       });

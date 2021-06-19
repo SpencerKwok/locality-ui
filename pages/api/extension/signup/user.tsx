@@ -1,4 +1,5 @@
 import Bcrypt from "bcryptjs";
+import SqlString from "sqlstring";
 import UIDGenerator from "uid-generator";
 import Xss from "xss";
 
@@ -60,6 +61,34 @@ export default async function handler(
       message: "Failed to SELECT from Heroku PSQL: Missing response",
     });
     res.status(500).json({ error: "Internal server error" });
+    return;
+  }
+
+  const existingUser = await Psql.select<{
+    id: number;
+  }>({
+    table: "users",
+    values: ["id"],
+    conditions: SqlString.format("email=E?", [email]),
+  });
+  if (!existingUser) {
+    SumoLogic.log({
+      level: "error",
+      method: "extension/signup/user",
+      message: "Failed to SELECT from Heroku PSQL: Missing response",
+      params: { body: reqBody },
+    });
+    res.status(500).json({ error: "Internal server error" });
+    return;
+  } else if (existingUser.rowCount > 0) {
+    SumoLogic.log({
+      level: "warning",
+      method: "extension/signup/user",
+      message:
+        "User attempted to sign up with an email that has already been used",
+      params: { body: reqBody },
+    });
+    res.status(500).json({ error: "Account already exists" });
     return;
   }
 
