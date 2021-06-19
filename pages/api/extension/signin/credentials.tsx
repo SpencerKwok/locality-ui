@@ -48,7 +48,7 @@ export default async function handler(
     password: string;
   }>({
     table: "users",
-    values: ["email", "password"],
+    values: ["email", "id", "password"],
     conditions: SqlString.format("email=E?", [email]),
   });
   if (!user) {
