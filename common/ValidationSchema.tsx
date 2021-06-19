@@ -360,3 +360,12 @@ export const UpdateUploadSettingsSchema = yup.object().shape({
 export const UploadSquareProductsSchema = yup.object().shape({
   csv: yup.string().max(1000000, "File too large").required("Required"),
 });
+
+export const SignInSchema = yup.object().shape({
+  email: yup
+    .string()
+    .email("Invalid email")
+    .required("Required")
+    .max(255, "Too long"),
+  password: yup.string().required("Required").max(255, "Too long"),
+});

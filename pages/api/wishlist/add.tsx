@@ -60,10 +60,10 @@ export default async function handler(
     return;
   }
 
-  const wishlist = productIDs.rows[0].wishlist.split(",").filter(Boolean);
+  const wishlist = JSON.parse(productIDs.rows[0].wishlist);
   wishlist.push(objectId);
 
-  const updatedWishlist = wishlist.join(",");
+  const updatedWishlist = JSON.stringify(wishlist);
   const addProductIdError = await Psql.update({
     table: "users",
     values: [{ key: "wishlist", value: updatedWishlist }],

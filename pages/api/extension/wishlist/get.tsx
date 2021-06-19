@@ -1,24 +1,24 @@
 import SqlString from "sqlstring";
 
-import Algolia from "../../../lib/api/algolia";
-import Psql from "../../../lib/api/postgresql";
-import SumoLogic from "../../../lib/api/sumologic";
-import { runMiddlewareUser } from "../../../lib/api/middleware";
+import Algolia from "../../../../lib/api/algolia";
+import Psql from "../../../../lib/api/postgresql";
+import SumoLogic from "../../../../lib/api/sumologic";
+import { runMiddlewareExtension } from "../../../../lib/api/middleware";
 
 import type { NextApiResponse } from "next";
-import type { NextApiRequestWithLocals } from "../../../lib/api/middleware";
-import type { WishListResponse } from "../../../common/Schema";
+import type { NextApiRequestWithLocals } from "../../../../lib/api/middleware";
+import type { WishListResponse } from "../../../../common/Schema";
 
 export default async function handler(
   req: NextApiRequestWithLocals,
   res: NextApiResponse
 ) {
-  await runMiddlewareUser(req, res);
+  await runMiddlewareExtension(req, res);
 
   if (req.method !== "GET") {
     SumoLogic.log({
       level: "info",
-      method: "wishlist/get",
+      method: "extension/wishlist/get",
       message: "Incorrect method",
     });
     res.status(400).json({ error: "Must be GET method" });
@@ -36,7 +36,7 @@ export default async function handler(
   if (!productIDs) {
     SumoLogic.log({
       level: "error",
-      method: "wishlist/get",
+      method: "extension/wishlist/get",
       message: "Failed to SELECT from Heroku PSQL: Empty response",
       params: { req },
     });
@@ -69,7 +69,7 @@ export default async function handler(
   if (!products) {
     SumoLogic.log({
       level: "error",
-      method: "wishlist/delete",
+      method: "extension/wishlist/get",
       message: `Failed to get objects from Algolia Missing response`,
       params: { req },
     });

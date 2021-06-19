@@ -437,3 +437,14 @@ export const EmptySearchResponse: SearchResponse = {
 export interface WishListResponse extends BaseResponse {
   products: Array<Product>;
 }
+
+/// Extension Interfaces
+export interface SignInRequest {
+  email: string;
+  password: string;
+}
+
+export interface SignInResponse extends BaseResponse {
+  id: number;
+  token: string;
+}

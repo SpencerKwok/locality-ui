@@ -1,15 +1,14 @@
 import { decode } from "html-entities";
 import SqlString from "sqlstring";
 import Xss from "xss";
-import { getSession } from "next-auth/client";
 
-import Algolia from "../../lib/api/algolia";
-import Psql from "../../lib/api/postgresql";
-import SumoLogic from "../../lib/api/sumologic";
-import { getBestVariant } from "../../lib/api/search";
+import Algolia from "../../../lib/api/algolia";
+import Psql from "../../../lib/api/postgresql";
+import SumoLogic from "../../../lib/api/sumologic";
+import { getBestVariant } from "../../../lib/api/search";
 
-import type { NextApiRequest, NextApiResponse } from "next";
 import type { IncomingHttpHeaders } from "http";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
   req: NextApiRequest,
@@ -18,7 +17,7 @@ export default async function handler(
   if (req.method !== "GET") {
     SumoLogic.log({
       level: "info",
-      method: "search",
+      method: "extension/search",
       message: "Incorrect method",
     });
     res.status(400).json({ error: "Must be GET method" });
@@ -34,7 +33,7 @@ export default async function handler(
   if (!query.q || typeof query.q !== "string") {
     SumoLogic.log({
       level: "warning",
-      method: "search",
+      method: "extension/search",
       message: "Invalid query",
       params: query,
     });
@@ -76,21 +75,43 @@ export default async function handler(
   ];
 
   let wishlist: Set<string> | null = null;
-  const session = await getSession({ req });
-  if (session && session.user) {
-    const user = session.user as { id: number };
-    const productIDs = await Psql.select<{
-      wishlist: string;
-    }>({
-      table: "users",
-      values: ["wishlist"],
-      conditions: SqlString.format("id=?", [user.id]),
-    });
+  const id: string = (req.headers["id"] || "") as string;
+  const token: string = (req.headers["token"] || "") as string;
+  if (id && token) {
+    try {
+      const user = await Psql.select<{}>({
+        table: "tokens",
+        values: ["*"],
+        conditions: SqlString.format("token=E? AND id=?", [
+          token,
+          parseInt(id),
+        ]),
+      });
+      if (!user) {
+        throw new Error("Missing response from tokens table");
+      }
 
-    // Don't error out if the
-    // wishlist cannot be retrieved
-    if (productIDs) {
-      wishlist = new Set(JSON.parse(productIDs.rows[0].wishlist));
+      if (user.rowCount > 0) {
+        const productIDs = await Psql.select<{ wishlist: string }>({
+          table: "users",
+          values: ["wishlist"],
+          conditions: SqlString.format("id=?", [parseInt(id)]),
+        });
+        if (!productIDs) {
+          throw new Error("Missing response from users table");
+        }
+
+        wishlist = new Set(JSON.parse(productIDs.rows[0].wishlist));
+      }
+    } catch (error) {
+      // Don't error out because we failed
+      // to retrieve the wishlist
+      SumoLogic.log({
+        level: "warning",
+        method: "extension/search",
+        message: `Failed to retrieve wishlist: ${error.message}`,
+        params: query,
+      });
     }
   }
 
@@ -106,7 +127,7 @@ export default async function handler(
     if (!results) {
       SumoLogic.log({
         level: "error",
-        method: "search",
+        method: "extension/search",
         message: `Failed to search for product from Algolia: Missing response`,
         params: query,
       });
@@ -135,7 +156,7 @@ export default async function handler(
     if (!results) {
       SumoLogic.log({
         level: "error",
-        method: "search",
+        method: "extension/search",
         message: `Failed to search for product from Algolia: Missing response`,
         params: query,
       });
