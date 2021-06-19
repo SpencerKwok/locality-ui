@@ -17,7 +17,7 @@ export default async function handler(
   if (req.method !== "POST") {
     SumoLogic.log({
       level: "info",
-      method: "wishlist/add",
+      method: "extension/wishlist/add",
       message: "Incorrect method",
     });
     res.status(400).json({ error: "Must be POST method" });
@@ -32,7 +32,7 @@ export default async function handler(
   ) {
     SumoLogic.log({
       level: "error",
-      method: "wishlist/add",
+      method: "extension/wishlist/add",
       message: "Invalid id",
       params: body,
     });
@@ -52,7 +52,7 @@ export default async function handler(
   if (!productIDs) {
     SumoLogic.log({
       level: "error",
-      method: "wishlist/add",
+      method: "extension/wishlist/add",
       message: "Failed to SELECT from Heroku PSQL: Empty response",
       params: body,
     });
@@ -72,7 +72,7 @@ export default async function handler(
   if (addProductIdError) {
     SumoLogic.log({
       level: "error",
-      method: "wishlist/add",
+      method: "extension/wishlist/add",
       message: `Failed to UPDATE from Heroku PSQL: ${addProductIdError.message}`,
       params: body,
     });
