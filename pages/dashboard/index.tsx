@@ -1,25 +1,41 @@
 import { useEffect, useState } from "react";
+import Fuse from "fuse.js";
 import { getSession } from "next-auth/client";
 import { useRouter } from "next/router";
-import Fuse from "fuse.js";
+import Tab from "react-bootstrap/Tab";
+import Tabs from "react-bootstrap/Tabs";
 
-import { EmptyProduct } from "../../common/Schema";
-import DashboardLayout from "../../components/dashboard/Layout";
+import AccountPage from "../../components/dashboard/Account";
+import BusinessPage from "../../components/dashboard/Business";
 import InventoryPage from "../../components/dashboard/Inventory";
-import RootLayout from "../../components/common/RootLayout";
+import SettingsPage from "../../components/dashboard/Settings";
 import { GetRpcClient, PostRpcClient } from "../../components/common/RpcClient";
+import RootLayout from "../../components/common/RootLayout";
+import { EmptyProduct } from "../../common/Schema";
 import { useWindowSize } from "../../lib/common";
+import styles from "../../components/dashboard/Dashboard.module.css";
 
 import type { ChangeEvent } from "react";
-import type { BaseBusiness, BaseProduct } from "../../common/Schema";
 import type { GetServerSideProps } from "next";
 import type { FuseBaseProduct } from "../../components/dashboard/ProductGrid";
+import type { Session } from "next-auth";
+import type { PasswordUpdateRequest } from "../../components/dashboard/Account";
+import type { UploadType } from "../../components/dashboard/AddProduct";
+import type { BaseBusiness, BaseProduct } from "../../common/Schema";
+import type {
+  UpdateDepartmentsRequest,
+  UpdateHomepagesRequest,
+  UpdateLogoRequest,
+} from "../../components/dashboard/Business";
 import type {
   ProductRequest,
   VariantRequest,
 } from "../../components/dashboard/Inventory";
-import type { Session } from "next-auth";
-import type { UploadType } from "../../components/dashboard/AddProduct";
+import type {
+  EtsyUpdateUploadSettingsRequest,
+  ShopifyUpdateUploadSettingsRequest,
+  SquareUpdateUploadSettingsRequest,
+} from "../../components/dashboard/Settings";
 
 function getDepartments(url: string) {
   return GetRpcClient.getInstance().call("Departments", url);
@@ -43,9 +59,13 @@ function getBusinesses(url: string) {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
+  const isNewBusiness = context.query.newBusiness === "true";
+  const initialTab = decodeURIComponent(
+    (context.query["tab"] || "inventory") as string
+  );
+
   let businesses = Array<BaseBusiness>();
   let initialProducts = Array<BaseProduct>();
-
   if (session && session.user) {
     const user: any = session.user;
     if (user.id === 0) {
@@ -69,24 +89,30 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
-      session,
       businesses,
+      isNewBusiness,
+      session,
       initialProducts,
+      initialTab,
     },
   };
 };
 
-interface InventoryProps {
+interface DashboardProps {
   businesses: Array<BaseBusiness>;
-  initialProducts: Array<FuseBaseProduct>;
+  isNewBusiness: boolean;
   session: Session | null;
+  initialProducts: Array<BaseProduct>;
+  initialTab: string;
 }
 
-export default function Inventory({
+export default function Dashboard({
   businesses,
-  initialProducts,
+  isNewBusiness,
   session,
-}: InventoryProps) {
+  initialProducts,
+  initialTab,
+}: DashboardProps) {
   const router = useRouter();
   const size = useWindowSize();
 
@@ -94,7 +120,10 @@ export default function Inventory({
   const [businessIndex, setBusinessIndex] = useState(0);
   const [departments, setDepartments] = useState<Array<string>>([]);
   const [filter, setFilter] = useState("");
-  const [tab, setTab] = useState("0");
+  const [productIndex, setProductIndex] = useState(-1);
+  const [product, setProduct] = useState(EmptyProduct);
+  const [tab, setTab] = useState(initialTab);
+  const [variantTab, setVariantTab] = useState("0");
   const [products, setProducts] = useState<Array<FuseBaseProduct>>(
     initialProducts.map((product, index) => ({ ...product, index }))
   );
@@ -104,11 +133,29 @@ export default function Inventory({
       { keys: ["name"], ignoreLocation: true, threshold: 0.3 }
     )
   );
-  const [productIndex, setProductIndex] = useState(-1);
-  const [product, setProduct] = useState(EmptyProduct);
   const [requestStatus, setRequestStatus] = useState({
     error: "",
     success: "",
+  });
+  const [updatePasswordStatus, setUpdatePasswordStatus] = useState({
+    error: "",
+    updatedPassword: false,
+  });
+  const [updateUploadSettingsStatus, setUpdateUploadSettingsStatus] = useState({
+    error: "",
+    successful: false,
+  });
+  const [updateDepartmentsStatus, setUpdateDepartmentsStatus] = useState({
+    error: "",
+    successful: false,
+  });
+  const [updateHomepagesStatus, setUpdateHomepageStatus] = useState({
+    error: "",
+    successful: false,
+  });
+  const [updateLogoStatus, setUpdateLogoStatus] = useState({
+    error: "",
+    successful: false,
   });
   const [uploadStatus, setUploadStatus] = useState({
     uploadType: "" as UploadType,
@@ -129,6 +176,7 @@ export default function Inventory({
     });
   }, []);
 
+  /// INVENTORY
   const onAddProduct = () => {
     setIsNewItem(true);
     setProduct(EmptyProduct);
@@ -136,7 +184,7 @@ export default function Inventory({
     setTab("0");
   };
 
-  const onBusinessClick = async (index: number) => {
+  const onInventoryBusinessClick = async (index: number) => {
     setFilter("");
     setBusinessIndex(index);
     setProductIndex(-1);
@@ -165,7 +213,7 @@ export default function Inventory({
         ({ product }) => product
       )
     );
-    setTab("0");
+    setVariantTab("0");
     setIsNewItem(false);
     setRequestStatus({ error: "", success: "" });
     setProductIndex(index);
@@ -517,51 +565,356 @@ export default function Inventory({
     }
   };
 
+  /// BUSINESS
+  const onBusinessBusinessClick = (index: number) => {
+    setBusinessIndex(index);
+    setUpdateDepartmentsStatus({
+      error: "",
+      successful: false,
+    });
+    setUpdateHomepageStatus({
+      error: "",
+      successful: false,
+    });
+    setUpdateLogoStatus({
+      error: "",
+      successful: false,
+    });
+  };
+
+  const onSubmitDepartments = async ({
+    departments,
+  }: UpdateDepartmentsRequest) => {
+    await PostRpcClient.getInstance()
+      .call("DepartmentsUpdate", {
+        id: businesses[businessIndex].id,
+        departments: departments.map((value) => value.trim()),
+      })
+      .then(({ departments, error }) => {
+        if (error) {
+          setUpdateDepartmentsStatus({ error, successful: false });
+          return;
+        }
+
+        businesses[businessIndex].departments = departments;
+        setUpdateDepartmentsStatus({ error: "", successful: true });
+      })
+      .catch((error) => {
+        setUpdateDepartmentsStatus({ error, successful: false });
+      });
+  };
+
+  const onSubmitHomepages = async ({
+    homepage,
+    etsyHomepage,
+    shopifyHomepage,
+    squareHomepage,
+  }: UpdateHomepagesRequest) => {
+    await PostRpcClient.getInstance()
+      .call("HomepagesUpdate", {
+        id: businesses[businessIndex].id,
+        homepage,
+        etsyHomepage,
+        shopifyHomepage,
+        squareHomepage,
+      })
+      .then((res) => {
+        if (res.error) {
+          setUpdateHomepageStatus({ error: res.error, successful: false });
+          return;
+        }
+        businesses[businessIndex].homepages = res;
+        setUpdateHomepageStatus({ error: "", successful: true });
+      })
+      .catch((error) => {
+        setUpdateHomepageStatus({ error, successful: false });
+      });
+  };
+
+  const onSubmitLogo = async ({ logo }: UpdateLogoRequest) => {
+    await PostRpcClient.getInstance()
+      .call("LogoUpdate", {
+        id: businesses[businessIndex].id,
+        logo,
+      })
+      .then(({ logo, error }) => {
+        if (error) {
+          setUpdateLogoStatus({ error, successful: false });
+          return;
+        }
+        businesses[businessIndex].logo = logo;
+        setUpdateLogoStatus({ error: "", successful: true });
+      })
+      .catch((error) => {
+        setUpdateLogoStatus({ error, successful: false });
+      });
+  };
+
+  /// SETTINGS
+  const onSubmitEtsyUploadSettings = async ({
+    includeTags,
+    excludeTags,
+  }: EtsyUpdateUploadSettingsRequest) => {
+    const req = {
+      id: businesses[businessIndex].id,
+      etsy: {
+        includeTags: (includeTags || "")
+          .split(",")
+          .map((x) => x.trim())
+          .filter(Boolean),
+        excludeTags: (excludeTags || "")
+          .split(",")
+          .map((x) => x.trim())
+          .filter(Boolean),
+      },
+    };
+
+    await PostRpcClient.getInstance()
+      .call("EtsyUploadSettingsUpdate", req)
+      .then(({ error, etsy }) => {
+        if (error) {
+          setUpdateUploadSettingsStatus({
+            error: error,
+            successful: false,
+          });
+          return;
+        }
+
+        businesses[businessIndex].uploadSettings = {
+          ...businesses[businessIndex].uploadSettings,
+          etsy,
+        };
+        setUpdateUploadSettingsStatus({
+          error: "",
+          successful: true,
+        });
+      });
+  };
+
+  const onSubmitShopifyUploadSettings = async ({
+    includeTags,
+    excludeTags,
+    departmentMapping,
+  }: ShopifyUpdateUploadSettingsRequest) => {
+    const req = {
+      id: businesses[businessIndex].id,
+      shopify: {
+        includeTags: (includeTags || "")
+          .split(",")
+          .map((x) => x.trim())
+          .filter(Boolean),
+        excludeTags: (excludeTags || "")
+          .split(",")
+          .map((x) => x.trim())
+          .filter(Boolean),
+        departmentMapping: (departmentMapping || [])
+          .map(({ key, departments }) => ({
+            key: key.trim(),
+            departments: (departments || []).map((department) =>
+              department.trim()
+            ),
+          }))
+          .filter(
+            ({ key, departments }) => key !== "" && departments.length !== 0
+          ),
+      },
+    };
+
+    await PostRpcClient.getInstance()
+      .call("ShopifyUploadSettingsUpdate", req)
+      .then(({ error, shopify }) => {
+        if (error) {
+          setUpdateUploadSettingsStatus({
+            error: error,
+            successful: false,
+          });
+          return;
+        }
+
+        businesses[businessIndex].uploadSettings = {
+          ...businesses[businessIndex].uploadSettings,
+          shopify,
+        };
+        setUpdateUploadSettingsStatus({
+          error: "",
+          successful: true,
+        });
+      });
+  };
+
+  const onSubmitSquareUploadSettings = async ({
+    includeTags,
+    excludeTags,
+    departmentMapping,
+  }: SquareUpdateUploadSettingsRequest) => {
+    const req = {
+      id: businesses[businessIndex].id,
+      square: {
+        includeTags: (includeTags || "")
+          .split(",")
+          .map((x) => x.trim())
+          .filter(Boolean),
+        excludeTags: (excludeTags || "")
+          .split(",")
+          .map((x) => x.trim())
+          .filter(Boolean),
+        departmentMapping: (departmentMapping || [])
+          .map(({ key, departments }) => ({
+            key: key.trim(),
+            departments: (departments || []).map((department) =>
+              department.trim()
+            ),
+          }))
+          .filter(
+            ({ key, departments }) => key !== "" && departments.length !== 0
+          ),
+      },
+    };
+
+    await PostRpcClient.getInstance()
+      .call("SquareUploadSettingsUpdate", req)
+      .then(({ error, square }) => {
+        if (error) {
+          setUpdateUploadSettingsStatus({
+            error: error,
+            successful: false,
+          });
+          return;
+        }
+
+        businesses[businessIndex].uploadSettings = {
+          ...businesses[businessIndex].uploadSettings,
+          square,
+        };
+        setUpdateUploadSettingsStatus({
+          error: "",
+          successful: true,
+        });
+      });
+  };
+
+  const onSettingsBusinessClick = (index: number) => {
+    setUpdateUploadSettingsStatus({
+      error: "",
+      successful: false,
+    });
+  };
+
+  /// ACCOUNT
+  const onSubmitPassword = async (values: PasswordUpdateRequest) => {
+    await PostRpcClient.getInstance()
+      .call("PasswordUpdate", values)
+      .then(({ error }) => {
+        if (error) {
+          setUpdatePasswordStatus({ error, updatedPassword: false });
+          return;
+        }
+        setUpdatePasswordStatus({ error: "", updatedPassword: true });
+      })
+      .catch((error) => {
+        setUpdatePasswordStatus({ error, updatedPassword: false });
+      });
+  };
+
   if (!session || !session.user) {
     return null;
   }
 
+  const user: any = session.user;
+  const firstName: string = user.firstName;
+  const lastName: string = user.lastName;
   return (
     <RootLayout session={session}>
-      <DashboardLayout tab="inventory">
-        {size.height && (
-          <InventoryPage
-            isNewItem={isNewItem}
-            businesses={businesses}
-            businessIndex={businessIndex}
-            departments={departments}
-            filter={filter}
-            products={
-              filter
-                ? productSearch.search(filter).map(({ item }) => item)
-                : products
-            }
-            productIndex={productIndex}
-            product={product}
-            requestStatus={requestStatus}
-            tab={tab}
-            uploadType={uploadStatus.uploadType}
-            uploadError={uploadStatus.error}
-            uploadOpen={uploadStatus.open}
-            uploadLoading={uploadStatus.loading}
-            uploadSuccessful={uploadStatus.successful}
-            height={size.height}
-            onAddProduct={onAddProduct}
-            onBusinessClick={onBusinessClick}
-            onFilterChange={onFilterChange}
-            onFilterClear={onFilterClear}
-            onProductClick={onProductClick}
-            onTabClick={(key) => {
-              setRequestStatus({ error: "", success: "" });
-              setTab(key);
-            }}
-            onUpload={onUpload}
-            onUploadTypeChange={onUploadTypeChange}
-            onProductSubmit={onProductSubmit}
-            onVariantSubmit={onVariantSubmit}
+      <Tabs
+        unmountOnExit
+        defaultActiveKey={tab}
+        onSelect={(key) => {
+          router.replace(`/dashboard?tab=${key}`);
+          setTab(key || "inventory");
+        }}
+      >
+        <Tab className={styles.tab} eventKey="inventory" title="Inventory">
+          {size.height && (
+            <InventoryPage
+              isNewItem={isNewItem}
+              businesses={businesses}
+              businessIndex={businessIndex}
+              departments={departments}
+              filter={filter}
+              products={
+                filter
+                  ? productSearch.search(filter).map(({ item }) => item)
+                  : products
+              }
+              productIndex={productIndex}
+              product={product}
+              requestStatus={requestStatus}
+              tab={variantTab}
+              uploadType={uploadStatus.uploadType}
+              uploadError={uploadStatus.error}
+              uploadOpen={uploadStatus.open}
+              uploadLoading={uploadStatus.loading}
+              uploadSuccessful={uploadStatus.successful}
+              height={size.height}
+              onAddProduct={onAddProduct}
+              onBusinessClick={onInventoryBusinessClick}
+              onFilterChange={onFilterChange}
+              onFilterClear={onFilterClear}
+              onProductClick={onProductClick}
+              onTabClick={(key) => {
+                setRequestStatus({ error: "", success: "" });
+                setVariantTab(key);
+              }}
+              onUpload={onUpload}
+              onUploadTypeChange={onUploadTypeChange}
+              onProductSubmit={onProductSubmit}
+              onVariantSubmit={onVariantSubmit}
+            />
+          )}
+        </Tab>
+        <Tab className={styles.tab} eventKey="business" title="Business">
+          {size.height && (
+            <BusinessPage
+              isNewBusiness={isNewBusiness}
+              businesses={businesses}
+              businessIndex={businessIndex}
+              departments={departments}
+              updateDepartmentsStatus={updateDepartmentsStatus}
+              updateHomepagesStatus={updateHomepagesStatus}
+              updateLogoStatus={updateLogoStatus}
+              height={size.height}
+              onBusinessClick={onBusinessBusinessClick}
+              onSubmitDepartments={onSubmitDepartments}
+              onSubmitLogo={onSubmitLogo}
+              onSubmitHomepages={onSubmitHomepages}
+            />
+          )}
+        </Tab>
+        <Tab className={styles.tab} eventKey="settings" title="Settings">
+          {size.height && (
+            <SettingsPage
+              businesses={businesses}
+              businessIndex={businessIndex}
+              departments={departments}
+              updateUploadSettingsStatus={updateUploadSettingsStatus}
+              height={size.height}
+              onBusinessClick={onSettingsBusinessClick}
+              onSubmitEtsyUploadSettings={onSubmitEtsyUploadSettings}
+              onSubmitShopifyUploadSettings={onSubmitShopifyUploadSettings}
+              onSubmitSquareUploadSettings={onSubmitSquareUploadSettings}
+            />
+          )}
+        </Tab>
+        <Tab className={styles.tab} eventKey="account" title="Account">
+          <AccountPage
+            error={updatePasswordStatus.error}
+            updatedPassword={updatePasswordStatus.updatedPassword}
+            firstName={firstName}
+            lastName={lastName}
+            onSubmitPassword={onSubmitPassword}
           />
-        )}
-      </DashboardLayout>
+        </Tab>
+      </Tabs>
     </RootLayout>
   );
 }

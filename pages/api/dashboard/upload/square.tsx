@@ -321,7 +321,9 @@ export default async function handler(
         parseFloat(price),
         parseFloat(price),
       ];
-      const allTags = Array.from(new Set([...categories, ...tags]));
+      const allTags = Array.from(
+        new Set([...categories, ...tags].filter(Boolean))
+      );
       const variantImages = [hostedImageUrls[0]];
       const variantTags = [optionValue.join(" ")].filter(Boolean);
 

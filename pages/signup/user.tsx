@@ -50,7 +50,7 @@ export default function UserSignUp({ session }: UserSignUpProps) {
     const user: any = session.user;
 
     // Need to refresh CSP
-    window.location.assign(user.isBusiness ? "/dashboard" : "/");
+    window.location.assign(user.isBusiness ? "/dashboard?tab=inventory" : "/");
     return null;
   }
 

@@ -93,13 +93,4 @@ module.exports = withPWA({
       },
     ];
   },
-  redirects: async () => {
-    return [
-      {
-        source: "/dashboard",
-        destination: "/dashboard/inventory",
-        permanent: false,
-      },
-    ];
-  },
 });
