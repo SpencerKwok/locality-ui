@@ -19,12 +19,7 @@ export default function UserSignUp({ session }: UserSignUpProps) {
 
   const onSubmit = async (values: SignUpRequest) => {
     await PostRpcClient.getInstance()
-      .call("UserSignUp", {
-        firstName: values.firstName,
-        lastName: values.lastName,
-        email: values.email,
-        password: values.password1,
-      })
+      .call("UserSignUp", values)
       .then(async ({ error }) => {
         if (error) {
           setError(error);

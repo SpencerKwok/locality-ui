@@ -7,6 +7,7 @@ import FacebookLogo from "../../components/common/images/FacebookLogo";
 import GoogleLogo from "../../components/common/images/GoogleLogo";
 import LocalityLogo from "../../components/common/images/LocalityLogo";
 import Stack from "../../components/common/Stack";
+import { SignInSchema } from "../../common/ValidationSchema";
 import {
   SubmitButton,
   ErrorMessage,
@@ -14,15 +15,6 @@ import {
   Label,
 } from "../../components/common/form";
 import styles from "./Signin.module.css";
-
-const SignInSchema = yup.object().shape({
-  email: yup
-    .string()
-    .email("Invalid email")
-    .required("Required")
-    .max(255, "Too long"),
-  password: yup.string().required("Required").max(255, "Too long"),
-});
 
 export interface SignInProps {
   onProviderSignIn: (provider: string) => void;

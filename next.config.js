@@ -69,7 +69,7 @@ module.exports = withPWA({
         headers: [
           {
             key: "Cache-Control",
-            value: "public, max-age=3600, must-revalidate",
+            value: "private, no-cache, no-store, max-age=0, must-revalidate",
           },
         ],
       },
@@ -78,7 +78,7 @@ module.exports = withPWA({
         headers: [
           {
             key: "Cache-Control",
-            value: "public, max-age=3600, must-revalidate",
+            value: "private, no-cache, no-store, max-age=0, must-revalidate",
           },
         ],
       },

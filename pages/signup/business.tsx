@@ -20,17 +20,7 @@ export default function BusinessSignUp({ session }: BusinessSignUpProps) {
 
   const onSubmit = async (values: SignUpRequest) => {
     await PostRpcClient.getInstance()
-      .call("BusinessSignUp", {
-        firstName: values.firstName,
-        lastName: values.lastName,
-        email: values.email,
-        businessName: values.businessName,
-        address: values.address,
-        city: values.city,
-        province: values.province,
-        country: values.country,
-        password: values.password1,
-      })
+      .call("BusinessSignUp", values)
       .then(async ({ error }) => {
         if (error) {
           setError(error);

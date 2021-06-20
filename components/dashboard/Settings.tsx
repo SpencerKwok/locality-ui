@@ -9,83 +9,20 @@ import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 
 import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
+import {
+  EtsyUpdateUploadSettingsSchema,
+  ShopifyUpdateUploadSettingsSchema,
+  SquareUpdateUploadSettingsSchema,
+} from "../../common/ValidationSchema";
 import Select from "../common/select/VirtualSelect";
 import Stack from "../common/Stack";
 import styles from "./Settings.module.css";
 
 import type { FC } from "react";
-import type { BaseBusiness, UploadTypeSettings } from "../common/Schema";
+import type { BaseBusiness } from "../../common/Schema";
 import type { FormikConfig } from "formik";
 
 const BusinessList = dynamic(() => import("./BusinessList"));
-
-const CommaListValidator = yup
-  .string()
-  .optional()
-  .max(255, "Too long")
-  .matches(/^\s*[^,]*\s*(,(\s*[^,\s]\s*)+)*\s*$/g, "Must be a comma list");
-const EtsyUpdateUploadSettingsSchema = yup.object().shape({
-  includeTags: CommaListValidator,
-  excludeTags: CommaListValidator,
-});
-const ShopifyUpdateUploadSettingsSchema = yup.object().shape({
-  includeTags: CommaListValidator,
-  excludeTags: CommaListValidator,
-  departmentMapping: yup
-    .array()
-    .optional()
-    .max(50, "Too many mappings")
-    .of(
-      yup.object().shape({
-        key: yup.string().required(),
-        departments: yup
-          .array()
-          .required()
-          .test({
-            test: (values) => {
-              if (!values || values.length <= 0) {
-                return false;
-              }
-              for (let i = 0; i < values.length; ++i) {
-                if (!values[i]) {
-                  return false;
-                }
-              }
-              return true;
-            },
-          }),
-      })
-    ),
-});
-const SquareUpdateUploadSettingsSchema = yup.object().shape({
-  includeTags: CommaListValidator,
-  excludeTags: CommaListValidator,
-  departmentMapping: yup
-    .array()
-    .max(50, "Too many mappings")
-    .optional()
-    .of(
-      yup.object().shape({
-        key: yup.string().required(),
-        departments: yup
-          .array()
-          .required()
-          .test({
-            test: (values) => {
-              if (!values || values.length <= 0) {
-                return false;
-              }
-              for (let i = 0; i < values.length; ++i) {
-                if (!values[i]) {
-                  return false;
-                }
-              }
-              return true;
-            },
-          }),
-      })
-    ),
-});
 
 export interface UpdateStatus {
   error: string;

@@ -4,7 +4,7 @@ import Link from "next/link";
 import ProductShowcase from "./ProductShowcase";
 import SearchBar from "./SearchBar";
 import Stack from "../common/Stack";
-import { Product } from "../common/Schema";
+import { Product } from "../../common/Schema";
 import LocalityLogo from "../common/images/LocalityLogo";
 
 export interface SearchResults {

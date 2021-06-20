@@ -4,7 +4,7 @@ import { Session } from "next-auth";
 import { useRouter } from "next/router";
 
 import { GetRpcClient, PostRpcClient } from "../../components/common/RpcClient";
-import { WishListResponse } from "../../components/common/Schema";
+import { WishListResponse } from "../../common/Schema";
 import WishlistPage from "../../components/wishlist/WishList";
 import RootLayout from "../../components/common/RootLayout";
 
@@ -13,23 +13,20 @@ interface WishListProps {
   session: Session | null;
 }
 
-function onToggleWishList(objectId: string, value: boolean, cookie?: string) {
+function onToggleWishList(objectId: string, value: boolean) {
   if (value) {
-    return PostRpcClient.getInstance().call(
-      "AddToWishList",
-      { id: objectId },
-      cookie
-    );
+    return PostRpcClient.getInstance().call("AddToWishList", {
+      id: objectId,
+    });
+  } else {
+    return PostRpcClient.getInstance().call("DeleteFromWishList", {
+      id: objectId,
+    });
   }
-  return PostRpcClient.getInstance().call(
-    "DeleteFromWishList",
-    { id: objectId },
-    cookie
-  );
 }
 
 function fetcher(url: string, cookie?: string) {
-  return GetRpcClient.getInstance().call("WishList", url, cookie);
+  return GetRpcClient.getInstance().call("WishList", url, { cookie });
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {

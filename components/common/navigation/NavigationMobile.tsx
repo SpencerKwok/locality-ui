@@ -62,9 +62,15 @@ export default function Navigation({ type }: NavigationProps) {
         switch (type) {
           case "business":
             navLinks.push(
-              <Link key="Dashboard" href="/dashboard">
+              // Need to refresh CSP
+              <div
+                key="Dashboard"
+                onClick={() => {
+                  window.location.assign("/dashboard");
+                }}
+              >
                 <span className={`nav-link ${styles.navlink}`}>Dashboard</span>
-              </Link>
+              </div>
             );
           case "user":
             navLinks.push(

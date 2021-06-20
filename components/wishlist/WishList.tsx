@@ -1,5 +1,5 @@
 import ProductImage from "../common/product-image/ProductImage";
-import { Product } from "../common/Schema";
+import { Product } from "../../common/Schema";
 import Stack from "../common/Stack";
 
 export interface WishListProps {

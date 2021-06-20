@@ -1,4 +1,7 @@
 import Md5 from "md5";
+
+import SumoLogic from "./sumologic";
+
 const mailchimp = require("@mailchimp/mailchimp_marketing");
 
 import {
@@ -20,29 +23,32 @@ export interface Subscriber {
   email: string;
 }
 
-const mailchimpClient: { [key: string]: any } = {};
-mailchimpClient.addSubscriber = async (
-  { firstName, lastName, email }: Subscriber,
-  listId: string
-) => {
-  const subscriberHash = Md5(email.toLowerCase());
-  try {
-    const response = await mailchimp.lists.setListMember(
-      listId,
-      subscriberHash,
-      {
+const mailchimpClient: {
+  addSubscriber: (user: Subscriber, listId: string) => Promise<Error | null>;
+} = {
+  addSubscriber: async (user: Subscriber, listId: string) => {
+    const { firstName, lastName, email } = user;
+    const subscriberHash = Md5(email.toLowerCase());
+    try {
+      await mailchimp.lists.setListMember(listId, subscriberHash, {
         email_address: email,
         status_if_new: "subscribed",
         merge_fields: {
           FNAME: firstName,
           LNAME: lastName,
         },
-      }
-    );
-    return [response, null];
-  } catch (error) {
-    return [null, error.message];
-  }
+      });
+      return null;
+    } catch (error) {
+      SumoLogic.log({
+        level: "error",
+        method: "signup/user",
+        message: `Failed to add subscriber to Mail Chimp: ${error.message}`,
+        params: user,
+      });
+      return error;
+    }
+  },
 };
 
 export default mailchimpClient;

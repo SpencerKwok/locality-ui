@@ -1,24 +1,25 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/client";
-
 import SqlString from "sqlstring";
-import UIDGenerator from "uid-generator";
-import Psql from "./postgresql";
 
-function runMiddlewareHelper(
+import Psql from "./postgresql";
+import SumoLogic from "./sumologic";
+
+const runMiddlewareHelper = (
   req: NextApiRequest,
   res: NextApiResponse,
-  fn: any
-) {
+  fn: (req: NextApiRequestWithLocals, res: NextApiResponse, result: any) => any
+) => {
   return new Promise((resolve, reject) => {
-    fn(req, res, (result: any) => {
+    const newReq = Object.assign(req, { locals: { user: {} } });
+    fn(newReq, res, (result: any) => {
       if (result instanceof Error) {
         return reject(result);
       }
       return resolve(result);
     });
   });
-}
+};
 
 export type NextApiRequestWithLocals = NextApiRequest & {
   locals: {
@@ -33,13 +34,14 @@ export async function runMiddlewareUser(
   await runMiddlewareHelper(
     req,
     res,
-    async (
-      req: NextApiRequestWithLocals,
-      res: NextApiResponse,
-      next: (err?: any) => void
-    ) => {
+    async (req, res, next: (err?: any) => void) => {
       const session = await getSession({ req });
       if (!session || !session.user) {
+        SumoLogic.log({
+          level: "warning",
+          message: "Attempted user request with invalid credentials",
+          params: { req },
+        });
         res.status(403).json({ error: "Invalid credentials" });
         return;
       }
@@ -64,12 +66,22 @@ export async function runMiddlewareBusiness(
     ) => {
       const session = await getSession({ req });
       if (!session || !session.user) {
+        SumoLogic.log({
+          level: "warning",
+          message: "Attempted business request with invalid credentials",
+          params: { req },
+        });
         res.status(403).json({ error: "Invalid credentials" });
         return;
       }
 
       const user: any = session.user;
       if (!user.isBusiness) {
+        SumoLogic.log({
+          level: "warning",
+          message: "Attempted business request with invalid credentials",
+          params: { req },
+        });
         res.status(403).json({ error: "Invalid credentials" });
         return;
       }
@@ -94,36 +106,48 @@ export async function runMiddlewareExtension(
     ) => {
       if (
         typeof req.headers["id"] !== "string" ||
-        typeof req.headers["token"] !== "string"
+        typeof req.headers["token"] !== "string" ||
+        !req.headers["id"].match(/\d+/g)
       ) {
+        SumoLogic.log({
+          level: "warning",
+          message: "Attempted extension user request with invalid credentials",
+          params: { req },
+        });
         res.status(403).json({ error: "Invalid credentials" });
         return;
       }
 
-      try {
-        const id = parseInt(req.headers["id"]);
-        const [token, getToken] = await Psql.query(
-          SqlString.format("SELECT * FROM tokens WHERE token=E? AND id=?", [
-            req.headers["token"],
-            id,
-          ])
-        );
-        if (getToken) {
-          console.log(getToken);
-          res.status(403).json({ error: "Invalid credentials" });
-          return;
-        }
-        if (token.rows[0].length <= 0) {
-          res.status(403).json({ error: "Invalid credentials" });
-          return;
-        }
-
-        req.locals = { user: { id: id } };
-        next();
-      } catch {
+      const id = parseInt(req.headers["id"]);
+      const token = await Psql.select<never>({
+        table: "tokens",
+        values: ["*"],
+        conditions: SqlString.format("token=E? AND id=?", [
+          req.headers["token"],
+          id,
+        ]),
+      });
+      if (!token) {
+        SumoLogic.log({
+          level: "warning",
+          message: "Failed to SELECT from Heroku PSQL: Missing response",
+          params: { req },
+        });
         res.status(403).json({ error: "Invalid credentials" });
         return;
       }
+      if (token.rowCount <= 0) {
+        SumoLogic.log({
+          level: "warning",
+          message: "Attempted extension user request with invalid credentials",
+          params: { req },
+        });
+        res.status(403).json({ error: "Invalid credentials" });
+        return;
+      }
+
+      req.locals = { user: { id: id } };
+      next();
     }
   );
 }

@@ -9,14 +9,12 @@ import RootLayout from "../../components/common/RootLayout";
 
 import type { GetServerSideProps } from "next";
 import type { Session } from "next-auth";
-import type { UpdatePasswordRequest } from "../../components/dashboard/Account";
+import type { PasswordUpdateRequest } from "../../components/dashboard/Account";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const cookie = context.req.headers.cookie || "";
   const session = await getSession(context);
   return {
     props: {
-      cookie,
       session,
     },
   };
@@ -24,10 +22,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 interface AccountProps {
   session: Session | null;
-  cookie?: string;
 }
 
-export default function Account({ cookie, session }: AccountProps) {
+export default function Account({ session }: AccountProps) {
   const router = useRouter();
   const [updatePasswordStatus, setUpdatePasswordStatus] = useState({
     error: "",
@@ -42,16 +39,9 @@ export default function Account({ cookie, session }: AccountProps) {
     });
   }, []);
 
-  const onSubmitPassword = async (values: UpdatePasswordRequest) => {
+  const onSubmitPassword = async (values: PasswordUpdateRequest) => {
     await PostRpcClient.getInstance()
-      .call(
-        "PasswordUpdate",
-        {
-          currentPassword: values.currentPassword,
-          newPassword: values.newPassword1,
-        },
-        cookie
-      )
+      .call("PasswordUpdate", values)
       .then(({ error }) => {
         if (error) {
           setUpdatePasswordStatus({ error, updatedPassword: false });

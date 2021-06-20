@@ -3,7 +3,7 @@ import { getSession } from "next-auth/client";
 import { useRouter } from "next/router";
 import Fuse from "fuse.js";
 
-import { EmptyProduct } from "../../components/common/Schema";
+import { EmptyProduct } from "../../common/Schema";
 import DashboardLayout from "../../components/dashboard/Layout";
 import InventoryPage from "../../components/dashboard/Inventory";
 import RootLayout from "../../components/common/RootLayout";
@@ -11,7 +11,7 @@ import { GetRpcClient, PostRpcClient } from "../../components/common/RpcClient";
 import { useWindowSize } from "../../lib/common";
 
 import type { ChangeEvent } from "react";
-import type { BaseBusiness, BaseProduct } from "../../components/common/Schema";
+import type { BaseBusiness, BaseProduct } from "../../common/Schema";
 import type { GetServerSideProps } from "next";
 import type { FuseBaseProduct } from "../../components/dashboard/ProductGrid";
 import type {
@@ -42,7 +42,6 @@ function getBusinesses(url: string) {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const cookie = context.req.headers.cookie || "";
   const session = await getSession(context);
   let businesses = Array<BaseBusiness>();
   let initialProducts = Array<BaseProduct>();
@@ -70,7 +69,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
-      cookie,
       session,
       businesses,
       initialProducts,
@@ -82,14 +80,12 @@ interface InventoryProps {
   businesses: Array<BaseBusiness>;
   initialProducts: Array<FuseBaseProduct>;
   session: Session | null;
-  cookie?: string;
 }
 
 export default function Inventory({
   businesses,
   initialProducts,
   session,
-  cookie,
 }: InventoryProps) {
   const router = useRouter();
   const size = useWindowSize();
@@ -217,14 +213,10 @@ export default function Inventory({
       successful: false,
     });
     await PostRpcClient.getInstance()
-      .call(
-        methodName,
-        {
-          id: businesses[businessIndex].id,
-          csv: file,
-        },
-        cookie
-      )
+      .call(methodName, {
+        id: businesses[businessIndex].id,
+        csv: file,
+      })
       .then(({ error }) => {
         if (error) {
           setUploadStatus({
@@ -294,28 +286,24 @@ export default function Inventory({
     switch (option) {
       case "add":
         await PostRpcClient.getInstance()
-          .call(
-            "ProductAdd",
-            {
-              id: businesses[businessIndex].id,
-              product: {
-                name: name,
-                departments: departments.map((value) => value.trim()),
-                description: description,
-                link: link,
-                priceRange: isRange
-                  ? [parseFloat(priceLow), parseFloat(priceHigh)]
-                  : [parseFloat(price), parseFloat(price)],
-                tags: tags
-                  .split(",")
-                  .map((value) => value.trim())
-                  .filter(Boolean),
-                variantImages: [image],
-                variantTags: [variantTag],
-              },
+          .call("ProductAdd", {
+            id: businesses[businessIndex].id,
+            product: {
+              name: name,
+              departments: departments.map((value) => value.trim()),
+              description: description,
+              link: link,
+              priceRange: isRange
+                ? [parseFloat(priceLow), parseFloat(priceHigh)]
+                : [parseFloat(price), parseFloat(price)],
+              tags: tags
+                .split(",")
+                .map((value) => value.trim())
+                .filter(Boolean),
+              variantImages: [image],
+              variantTags: [variantTag].filter(Boolean),
             },
-            cookie
-          )
+          })
           .then(async ({ product, error }) => {
             if (error) {
               setRequestStatus({ error: error, success: "" });
@@ -344,16 +332,12 @@ export default function Inventory({
         break;
       case "delete":
         await PostRpcClient.getInstance()
-          .call(
-            "ProductDelete",
-            {
-              id: businesses[businessIndex].id,
-              product: {
-                id: parseInt(products[productIndex].objectId.split("_")[1]),
-              },
+          .call("ProductDelete", {
+            id: businesses[businessIndex].id,
+            product: {
+              id: parseInt(products[productIndex].objectId.split("_")[1]),
             },
-            cookie
-          )
+          })
           .then(({ error }) => {
             if (error) {
               setRequestStatus({ error: error, success: "" });
@@ -377,29 +361,27 @@ export default function Inventory({
         break;
       case "update":
         await PostRpcClient.getInstance()
-          .call(
-            "ProductUpdate",
-            {
-              id: businesses[businessIndex].id,
-              product: {
-                name: name,
-                id: parseInt(products[productIndex].objectId.split("_")[1]),
-                departments: departments.map((value) => value.trim()),
-                description: description,
-                link: link,
-                priceRange: isRange
-                  ? [parseFloat(priceLow), parseFloat(priceHigh)]
-                  : [parseFloat(price), parseFloat(price)],
-                tags: tags
-                  .split(",")
-                  .map((value) => value.trim())
-                  .filter(Boolean),
-                variantImages: [image, ...product.variantImages.slice(1)],
-                variantTags: [variantTag, ...product.variantTags.slice(1)],
-              },
+          .call("ProductUpdate", {
+            id: businesses[businessIndex].id,
+            product: {
+              name: name,
+              id: parseInt(products[productIndex].objectId.split("_")[1]),
+              departments: departments.map((value) => value.trim()),
+              description: description,
+              link: link,
+              priceRange: isRange
+                ? [parseFloat(priceLow), parseFloat(priceHigh)]
+                : [parseFloat(price), parseFloat(price)],
+              tags: tags
+                .split(",")
+                .map((value) => value.trim())
+                .filter(Boolean),
+              variantImages: [image, ...product.variantImages.slice(1)],
+              variantTags: [variantTag, ...product.variantTags.slice(1)].filter(
+                Boolean
+              ),
             },
-            cookie
-          )
+          })
           .then(({ product, error }) => {
             if (error) {
               setRequestStatus({ error: error, success: "" });

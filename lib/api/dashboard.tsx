@@ -4,8 +4,9 @@ import Algolia from "./algolia";
 import Cloudinary from "./cloudinary";
 import Psql from "./postgresql";
 import SqlString from "sqlstring";
+import SumoLogic from "./sumologic";
 
-import type { BaseProduct, Product } from "../../components/common/Schema";
+import type { BaseProduct, DatabaseProduct } from "../../common/Schema";
 
 const mapLimit = async <P extends any, R extends any>(
   arr: Array<P>,
@@ -24,10 +25,6 @@ const mapLimit = async <P extends any, R extends any>(
   return results;
 };
 
-export interface DatabaseProduct extends Product {
-  nextProductId?: number;
-}
-
 export function addHttpsProtocol(url: string) {
   if (url.match(/^http:\/\/.+/g)) {
     url = `https://${url.slice(7)}`;
@@ -39,30 +36,35 @@ export function addHttpsProtocol(url: string) {
 
 export async function productAdd(
   businessId: number,
-  products: Array<Product>,
+  products: Array<DatabaseProduct>,
   addToCloudinary = true
-) {
+): Promise<Array<BaseProduct> | null> {
   if (products.length === 0) {
-    return [[], null];
+    return [];
   }
 
-  const [businessResponse, psqlBusinessError] = await Psql.query(
-    SqlString.format(
-      "SELECT name, latitude, longitude, next_product_id FROM businesses WHERE id=?",
-      [businessId]
-    )
-  );
-  if (psqlBusinessError) {
-    return [null, psqlBusinessError];
+  const businessResponse = await Psql.select<{
+    name: string;
+    latitude: string;
+    longitude: string;
+    next_product_id: number;
+  }>({
+    table: "businesses",
+    values: ["name", "latitude", "longitude", "next_product_id"],
+    conditions: SqlString.format("id=?", [businessId]),
+  });
+  if (!businessResponse) {
+    SumoLogic.log({
+      level: "error",
+      message: "Failed to SELECT from Heroku PSQL: Missing response",
+      params: { businessId, products },
+    });
+    return null;
   }
 
   const businessName: string = businessResponse.rows[0].name;
-  const latitude: string = businessResponse.rows[0].latitude
-    .split(",")
-    .map((value: string) => value.trim());
-  const longitude: string = businessResponse.rows[0].longitude
-    .split(",")
-    .map((value: string) => value.trim());
+  const latitude: string[] = businessResponse.rows[0].latitude.split(",");
+  const longitude: string[] = businessResponse.rows[0].longitude.split(",");
 
   try {
     const baseProducts = await mapLimit<DatabaseProduct, BaseProduct>(
@@ -84,13 +86,12 @@ export async function productAdd(
         // nextProductId as items are uploaded instead of
         // within the product
         if (!Number.isInteger(nextProductId)) {
-          nextProductId = businessResponse.rows[0].next_product_id as number;
-          const [_, psqlErrorUpdateNextId] = await Psql.query(
-            SqlString.format(
-              "UPDATE businesses SET next_product_id=? WHERE id=?",
-              [nextProductId + 1, businessId]
-            )
-          );
+          nextProductId = businessResponse.rows[0].next_product_id;
+          const psqlErrorUpdateNextId = await Psql.update({
+            table: "businesses",
+            values: [{ key: "next_product_id", value: nextProductId + 1 }],
+            conditions: SqlString.format("id=?", [businessId]),
+          });
           if (psqlErrorUpdateNextId) {
             throw psqlErrorUpdateNextId;
           }
@@ -105,19 +106,19 @@ export async function productAdd(
               continue;
             }
 
-            const [url, cloudinaryError] = await Cloudinary.upload(
-              variantImage,
-              {
-                exif: false,
-                format: "webp",
-                public_id: `${businessId}/${nextProductId}/${i}`,
-                unique_filename: false,
-                overwrite: true,
-              }
-            );
-            if (cloudinaryError) {
-              throw cloudinaryError;
+            const url = await Cloudinary.upload(variantImage, {
+              exif: false,
+              format: "webp",
+              public_id: `${businessId}/${nextProductId}/${i}`,
+              unique_filename: false,
+              overwrite: true,
+            });
+            if (!url) {
+              throw Error(
+                "Failed to upload image to Cloudinary: Missing response"
+              );
             }
+
             variantImages[i] = url;
             variantMap.set(variantImage, url);
           }
@@ -155,12 +156,15 @@ export async function productAdd(
           throw algoliaError;
         }
 
-        const [, psqlErrorAddProduct] = await Psql.query(
-          SqlString.format(
-            "INSERT INTO products (business_id, id, name, preview) VALUES (?, ?, E?, E?)",
-            [businessId, nextProductId, name, variantImages[0]]
-          )
-        );
+        const psqlErrorAddProduct = await Psql.insert({
+          table: "products",
+          values: [
+            { key: "business_id", value: businessId },
+            { key: "id", value: nextProductId || 0 }, // Shouldn't be undefined
+            { key: "name", value: name },
+            { key: "preview", value: variantImages[0] },
+          ],
+        });
         if (psqlErrorAddProduct) {
           throw psqlErrorAddProduct;
         }
@@ -172,18 +176,26 @@ export async function productAdd(
         };
       }
     );
-    return [baseProducts, null];
+    return baseProducts;
   } catch (error) {
-    return [null, error];
+    SumoLogic.log({
+      level: "error",
+      message: `Failed to add product: ${error.message}`,
+      params: { businessId, products },
+    });
+    return null;
   }
 }
 
-export async function productDelete(businessId: number, productIds: string[]) {
+export async function productDelete(
+  businessId: number,
+  productIds: number[]
+): Promise<Error | null> {
   if (productIds.length === 0) {
     return null;
   }
 
-  const productIdsSegments = Array<Array<string>>();
+  const productIdsSegments = Array<Array<number>>();
   for (let i = 0; i < productIds.length; i += 100) {
     productIdsSegments.push(
       productIds.slice(i, Math.min(i + 100, productIds.length))
@@ -194,7 +206,7 @@ export async function productDelete(businessId: number, productIds: string[]) {
     await mapLimit(
       productIdsSegments,
       5,
-      async (productIdsSegment: Array<string>) => {
+      async (productIdsSegment: Array<number>) => {
         const algoliaObjectIds = productIdsSegment.map(
           (productId) => `${businessId}_${productId}`
         );
@@ -225,14 +237,13 @@ export async function productDelete(businessId: number, productIds: string[]) {
         (productId) => `id=${productId}`
       );
 
-      const [, psqlError] = await Psql.query(
-        SqlString.format(
-          `DELETE FROM products WHERE business_id=? AND (${psqlObjectIds.join(
-            " OR "
-          )})`,
+      const psqlError = await Psql.delete({
+        table: "products",
+        conditions: SqlString.format(
+          `business_id=? AND (${psqlObjectIds.join(" OR ")})`,
           [businessId]
-        )
-      );
+        ),
+      });
       if (psqlError) {
         throw psqlError;
       }
@@ -240,6 +251,11 @@ export async function productDelete(businessId: number, productIds: string[]) {
 
     return null;
   } catch (error) {
+    SumoLogic.log({
+      level: "error",
+      message: `Failed to delete product: ${error.message}`,
+      params: { businessId, productIds },
+    });
     return error;
   }
 }

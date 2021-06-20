@@ -3,26 +3,12 @@ import { Formik, FormikConfig } from "formik";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 
+import { PasswordUpdateSchema } from "../../common/ValidationSchema";
 import Stack from "../common/Stack";
 import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
 import styles from "./Account.module.css";
 
-const UpdatePasswordSchema = yup.object().shape({
-  currentPassword: yup.string().required("Required"),
-  newPassword1: yup
-    .string()
-    .required("Required")
-    .min(8, "Too short")
-    .max(255, "Too long"),
-  newPassword2: yup
-    .string()
-    .required("Required")
-    .min(8, "Too short")
-    .max(255, "Too long")
-    .oneOf([yup.ref("newPassword1")], "New passwords do not match"),
-});
-
-export interface UpdatePasswordRequest {
+export interface PasswordUpdateRequest {
   currentPassword: string;
   newPassword1: string;
   newPassword2: string;
@@ -33,7 +19,7 @@ export interface AccountProps {
   updatedPassword: boolean;
   firstName: string;
   lastName: string;
-  onSubmitPassword: FormikConfig<UpdatePasswordRequest>["onSubmit"];
+  onSubmitPassword: FormikConfig<PasswordUpdateRequest>["onSubmit"];
 }
 
 export default function Account({
@@ -57,10 +43,10 @@ export default function Account({
               currentPassword: "",
               newPassword1: "",
               newPassword2: "",
-            } as UpdatePasswordRequest
+            } as PasswordUpdateRequest
           }
           onSubmit={onSubmitPassword}
-          validationSchema={UpdatePasswordSchema}
+          validationSchema={PasswordUpdateSchema}
         >
           {({
             isSubmitting,

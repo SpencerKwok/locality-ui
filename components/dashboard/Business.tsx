@@ -1,20 +1,22 @@
 import { createRef, Fragment } from "react";
 import dynamic from "next/dynamic";
-import * as yup from "yup";
 import { Formik } from "formik";
 import { decode } from "html-entities";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
-import Tab from "react-bootstrap/Tab";
-import Tabs from "react-bootstrap/Tabs";
 
-import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
 import { Base64, fileToBase64 } from "./ImageHelpers";
+import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
+import {
+  DepartmentsUpdateSchema,
+  HomepagesUpdateSchema,
+  LogoUpdateSchema,
+} from "../../common/ValidationSchema";
 import Stack from "../common/Stack";
 import Select from "../common/select/VirtualSelect";
 import styles from "./Business.module.css";
 
-import type { BaseBusiness, UploadTypeSettings } from "../common/Schema";
+import type { BaseBusiness } from "../../common/Schema";
 import type { FormikConfig } from "formik";
 
 const BusinessList = dynamic(() => import("./BusinessList"));
@@ -54,35 +56,6 @@ export interface BusinessProps {
   onSubmitLogo: FormikConfig<UpdateLogoRequest>["onSubmit"];
   onSubmitHomepages: FormikConfig<UpdateHomepagesRequest>["onSubmit"];
 }
-
-const UpdateLogoSchema = yup.object().shape({
-  logo: yup.string().required("Invalid image url or image file"),
-});
-
-const UpdateHomepagesSchema = yup.object().shape({
-  homepage: yup.string().required("Required").max(255, "Too long"),
-  etsyHomepage: yup
-    .string()
-    .optional()
-    .test(
-      "EtsyFormat",
-      "Must have the following format: etsy.com/shop/[SHOP_ID]",
-      (page) => {
-        return (!page ||
-          page.length === 0 ||
-          page.match(
-            /^(http(s?):\/\/)?(www\.)?etsy\.com\/([^\/]+\/)*shop\/[a-zA-Z0-9_\-]+(\/?)$/g
-          )) as boolean;
-      }
-    )
-    .max(255, "Too long"),
-  shopifyHomepage: yup.string().optional().max(255, "Too long"),
-  squareHomepage: yup.string().optional().max(255, "Too long"),
-});
-
-const UpdateDepartmentsSchema = yup.object().shape({
-  departments: yup.array().of(yup.string()).optional(),
-});
 
 export default function Business({
   isNewBusiness,
@@ -135,14 +108,11 @@ export default function Business({
                     enableReinitialize
                     initialValues={
                       {
-                        departments: businesses[businessIndex].departments
-                          .split(":")
-                          .map((department) => decode(department))
-                          .filter(Boolean),
+                        departments: businesses[businessIndex].departments,
                       } as UpdateDepartmentsRequest
                     }
                     onSubmit={onSubmitDepartments}
-                    validationSchema={UpdateDepartmentsSchema}
+                    validationSchema={DepartmentsUpdateSchema}
                   >
                     {({
                       isSubmitting,
@@ -159,12 +129,35 @@ export default function Business({
                               isSearchable
                               searchable
                               clearable
-                              onChange={(newValues) => {
-                                setFieldValue(
-                                  "departments",
-                                  newValues.map((value: any) => value.label),
-                                  true
-                                );
+                              onChange={(_, action) => {
+                                switch (action.action) {
+                                  case "select-option":
+                                    if (action.option) {
+                                      const label = action.option.label;
+                                      if (!values.departments.includes(label))
+                                        setFieldValue(
+                                          "departments",
+                                          [...values.departments, label],
+                                          false
+                                        );
+                                    }
+                                    break;
+                                  case "remove-value":
+                                    if (action.removedValue) {
+                                      const label = action.removedValue.label;
+                                      setFieldValue(
+                                        "departments",
+                                        values.departments.filter(
+                                          (department) => department !== label
+                                        ),
+                                        false
+                                      );
+                                    }
+                                    break;
+                                  case "clear":
+                                    setFieldValue("departments", [], false);
+                                    break;
+                                }
                               }}
                               options={departmentsWithIds}
                               value={values.departments.map((department) => ({
@@ -209,7 +202,7 @@ export default function Business({
                     } as UpdateLogoRequest
                   }
                   onSubmit={onSubmitLogo}
-                  validationSchema={UpdateLogoSchema}
+                  validationSchema={LogoUpdateSchema}
                 >
                   {({
                     isSubmitting,
@@ -334,7 +327,7 @@ export default function Business({
                       } as UpdateHomepagesRequest
                     }
                     onSubmit={onSubmitHomepages}
-                    validationSchema={UpdateHomepagesSchema}
+                    validationSchema={HomepagesUpdateSchema}
                   >
                     {({
                       isSubmitting,

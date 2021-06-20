@@ -8,7 +8,7 @@ import DashboardLayout from "../../components/dashboard/Layout";
 import RootLayout from "../../components/common/RootLayout";
 import { useWindowSize } from "../../lib/common";
 
-import type { BaseBusiness } from "../../components/common/Schema";
+import type { BaseBusiness } from "../../common/Schema";
 import type { GetServerSideProps } from "next";
 import type { Session } from "next-auth";
 import type {
@@ -30,7 +30,6 @@ function getBusinesses(url: string) {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const cookie = context.req.headers.cookie || "";
   const session = await getSession(context);
   let businesses = Array<BaseBusiness>();
 
@@ -49,7 +48,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
-      cookie,
       session,
       businesses,
     },
@@ -57,16 +55,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 interface SettingsProps {
-  cookie?: string;
   session: Session | null;
   businesses: Array<BaseBusiness>;
 }
 
-export default function Account({
-  cookie,
-  businesses,
-  session,
-}: SettingsProps) {
+export default function Account({ businesses, session }: SettingsProps) {
   const router = useRouter();
   const size = useWindowSize();
 
@@ -107,7 +100,7 @@ export default function Account({
     };
 
     await PostRpcClient.getInstance()
-      .call("EtsyUploadSettingsUpdate", req, cookie)
+      .call("EtsyUploadSettingsUpdate", req)
       .then(({ error, etsy }) => {
         if (error) {
           setUpdateUploadSettingsStatus({
@@ -158,7 +151,7 @@ export default function Account({
     };
 
     await PostRpcClient.getInstance()
-      .call("ShopifyUploadSettingsUpdate", req, cookie)
+      .call("ShopifyUploadSettingsUpdate", req)
       .then(({ error, shopify }) => {
         if (error) {
           setUpdateUploadSettingsStatus({
@@ -209,7 +202,7 @@ export default function Account({
     };
 
     await PostRpcClient.getInstance()
-      .call("SquareUploadSettingsUpdate", req, cookie)
+      .call("SquareUploadSettingsUpdate", req)
       .then(({ error, square }) => {
         if (error) {
           setUpdateUploadSettingsStatus({

@@ -18,7 +18,7 @@ export interface ProductImageProps extends React.HTMLProps<HTMLDivElement> {
   loggedIn?: boolean;
   name: string;
   objectId: string;
-  priceRange: Array<number>;
+  priceRange: FixedLengthArray<[number, number]>;
   variantImages: Array<string>;
   variantIndex: number;
   onToggleWishList: (id: string, value: boolean) => void;

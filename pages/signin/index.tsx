@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getSession, signIn } from "next-auth/client";
+import { getSession, signIn, signOut } from "next-auth/client";
 
 import SigninPage from "../../components/signin/Signin";
 import RootLayout from "../../components/common/RootLayout";
@@ -13,6 +13,16 @@ export interface SignUpProps {
 
 export default function Signin({ session }: SignUpProps) {
   const [error, setError] = useState("");
+
+  if (!error) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const errorParam = urlParams.get("error");
+    if (errorParam) {
+      setError(
+        "Account does not exist. Please sign up in the top right corner to continue."
+      );
+    }
+  }
 
   const onSubmit = async (values: SignInRequest) => {
     await signIn("credentials", {
