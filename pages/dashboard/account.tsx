@@ -12,11 +12,9 @@ import type { Session } from "next-auth";
 import type { PasswordUpdateRequest } from "../../components/dashboard/Account";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const cookie = context.req.headers.cookie || "";
   const session = await getSession(context);
   return {
     props: {
-      cookie,
       session,
     },
   };
@@ -24,10 +22,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 interface AccountProps {
   session: Session | null;
-  cookie?: string;
 }
 
-export default function Account({ cookie, session }: AccountProps) {
+export default function Account({ session }: AccountProps) {
   const router = useRouter();
   const [updatePasswordStatus, setUpdatePasswordStatus] = useState({
     error: "",
@@ -44,7 +41,7 @@ export default function Account({ cookie, session }: AccountProps) {
 
   const onSubmitPassword = async (values: PasswordUpdateRequest) => {
     await PostRpcClient.getInstance()
-      .call("PasswordUpdate", values, cookie)
+      .call("PasswordUpdate", values)
       .then(({ error }) => {
         if (error) {
           setUpdatePasswordStatus({ error, updatedPassword: false });

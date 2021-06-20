@@ -323,7 +323,7 @@ export default async function handler(
       ];
       const allTags = Array.from(new Set([...categories, ...tags]));
       const variantImages = [hostedImageUrls[0]];
-      const variantTags = [optionValue.join(" ")];
+      const variantTags = [optionValue.join(" ")].filter(Boolean);
 
       let shouldInclude = true;
       let shouldExclude = false;

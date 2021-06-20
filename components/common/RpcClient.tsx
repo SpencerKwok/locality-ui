@@ -42,7 +42,7 @@ export class PostRpcClient {
   async call<methodName extends keyof PostMethods>(
     method: methodName,
     request: PostMethods[methodName]["request"],
-    cookie?: string
+    headers?: { [key: string]: string | undefined }
   ): Promise<PostMethods[methodName]["response"]> {
     const endpoint = endpoints.get(method);
     const fetchRequest = new Request(`${baseUrl}${endpoint}`, {
@@ -51,7 +51,7 @@ export class PostRpcClient {
       headers: {
         "content-type": "application/json",
         charset: "utf-8",
-        cookie: cookie || "",
+        ...headers,
       },
       body: JSON.stringify(request),
     });
@@ -93,7 +93,7 @@ export class GetRpcClient {
   async call<methodName extends keyof GetMethods>(
     method: methodName,
     endpoint: string,
-    cookie?: string
+    headers?: { [key: string]: string | undefined }
   ): Promise<GetMethods[methodName]> {
     const fetchRequest = new Request(`${baseUrl}${endpoint}`, {
       credentials: "same-origin",
@@ -101,7 +101,7 @@ export class GetRpcClient {
       headers: {
         "content-type": "application/json",
         charset: "utf-8",
-        cookie: cookie || "",
+        ...headers,
       },
     });
 

@@ -8,7 +8,7 @@ import { useWindowSize } from "../lib/common";
 import { helper } from "./api/businesses";
 
 import type { GetServerSideProps } from "next";
-import type { BaseBusiness, BusinessesResponse } from "../common/Schema";
+import type { BaseBusiness } from "../common/Schema";
 import type { Session } from "next-auth";
 
 interface HomeProps {

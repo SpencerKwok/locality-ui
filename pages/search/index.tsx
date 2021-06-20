@@ -11,23 +11,18 @@ import type { GetServerSideProps } from "next";
 import type { Session } from "next-auth";
 import type { SearchResponse } from "../../common/Schema";
 
-function onToggleWishList(objectId: string, value: boolean, cookie?: string) {
+function onToggleWishList(objectId: string, value: boolean) {
   if (value) {
-    return PostRpcClient.getInstance().call(
-      "AddToWishList",
-      { id: objectId },
-      cookie
-    );
+    return PostRpcClient.getInstance().call("AddToWishList", { id: objectId });
+  } else {
+    return PostRpcClient.getInstance().call("DeleteFromWishList", {
+      id: objectId,
+    });
   }
-  return PostRpcClient.getInstance().call(
-    "DeleteFromWishList",
-    { id: objectId },
-    cookie
-  );
 }
 
 function fetcher(url: string, cookie?: string) {
-  return GetRpcClient.getInstance().call("Search", url, cookie);
+  return GetRpcClient.getInstance().call("Search", url, { cookie });
 }
 
 class UserInput {
@@ -103,7 +98,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
-      cookie,
       query,
       ip,
       results,
@@ -111,13 +105,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function Search({
-  cookie,
-  query,
-  results,
-  ip,
-  session,
-}: SearchProps) {
+export default function Search({ query, results, ip, session }: SearchProps) {
   const [data, setData] = useState(results);
   const [showAllBusinesses, setShowAllBusinesses] = useState(false);
   const [showAllDepartments, setShowAllDepartments] = useState(false);
@@ -134,7 +122,7 @@ export default function Search({
     userInput.departments = new Set<string>();
     setUserInput(userInput.clone());
 
-    fetcher(`/api/search?${userInput.toString()}`, cookie)
+    fetcher(`/api/search?${userInput.toString()}`)
       .then((newData) => {
         data.facets = newData.facets;
         data.hits = newData.hits;
@@ -151,7 +139,7 @@ export default function Search({
 
   const onUserInputChange = () => {
     setUserInput(userInput.clone());
-    fetcher(`/api/search?${userInput.toString()}`, cookie)
+    fetcher(`/api/search?${userInput.toString()}`)
       .then(({ hits, nbHits }) => {
         setData({ facets: data.facets, hits, nbHits });
       })
@@ -183,7 +171,7 @@ export default function Search({
     userInput.business = new Set<string>();
     userInput.departments = new Set<string>();
     setUserInput(userInput.clone());
-    fetcher(`/api/search?${userInput.toString()}`, cookie)
+    fetcher(`/api/search?${userInput.toString()}`)
       .then((newData) => {
         data.facets = newData.facets;
         data.hits = newData.hits;
@@ -218,11 +206,11 @@ export default function Search({
     }
 
     userInput.page += 1;
-    fetcher(`/api/search?${userInput.toString()}`, cookie)
+    fetcher(`/api/search?${userInput.toString()}`)
       .then((nextPageData) => {
         if (userInput.page === 1) {
           userInput.page = 0;
-          fetcher(`/api/search?${userInput.toString()}`, cookie)
+          fetcher(`/api/search?${userInput.toString()}`)
             .then((firstPageData) => {
               data.facets = firstPageData.facets;
               data.hits = [...firstPageData.hits, ...nextPageData.hits];

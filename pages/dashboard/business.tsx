@@ -30,7 +30,6 @@ function getBusinesses(url: string) {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const cookie = context.req.headers.cookie || "";
   const session = await getSession(context);
   const isNewBusiness = context.query.newBusiness === "true";
   let businesses = Array<BaseBusiness>();
@@ -50,7 +49,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
-      cookie,
       session,
       isNewBusiness,
       businesses,
@@ -62,14 +60,12 @@ interface BusinessProps {
   isNewBusiness: boolean;
   businesses: Array<BaseBusiness>;
   session: Session | null;
-  cookie?: string;
 }
 
 export default function Business({
   isNewBusiness,
   businesses,
   session,
-  cookie,
 }: BusinessProps) {
   const router = useRouter();
   const size = useWindowSize();
@@ -104,14 +100,10 @@ export default function Business({
     departments,
   }: UpdateDepartmentsRequest) => {
     await PostRpcClient.getInstance()
-      .call(
-        "DepartmentsUpdate",
-        {
-          id: businesses[businessIndex].id,
-          departments: departments.map((value) => value.trim()),
-        },
-        cookie
-      )
+      .call("DepartmentsUpdate", {
+        id: businesses[businessIndex].id,
+        departments: departments.map((value) => value.trim()),
+      })
       .then(({ departments, error }) => {
         if (error) {
           setUpdateDepartmentsStatus({ error, successful: false });
@@ -133,17 +125,13 @@ export default function Business({
     squareHomepage,
   }: UpdateHomepagesRequest) => {
     await PostRpcClient.getInstance()
-      .call(
-        "HomepagesUpdate",
-        {
-          id: businesses[businessIndex].id,
-          homepage,
-          etsyHomepage,
-          shopifyHomepage,
-          squareHomepage,
-        },
-        cookie
-      )
+      .call("HomepagesUpdate", {
+        id: businesses[businessIndex].id,
+        homepage,
+        etsyHomepage,
+        shopifyHomepage,
+        squareHomepage,
+      })
       .then((res) => {
         if (res.error) {
           setUpdateHomepageStatus({ error: res.error, successful: false });
@@ -159,14 +147,10 @@ export default function Business({
 
   const onSubmitLogo = async ({ logo }: UpdateLogoRequest) => {
     await PostRpcClient.getInstance()
-      .call(
-        "LogoUpdate",
-        {
-          id: businesses[businessIndex].id,
-          logo,
-        },
-        cookie
-      )
+      .call("LogoUpdate", {
+        id: businesses[businessIndex].id,
+        logo,
+      })
       .then(({ logo, error }) => {
         if (error) {
           setUpdateLogoStatus({ error, successful: false });

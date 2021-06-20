@@ -1,5 +1,4 @@
 import SqlString from "sqlstring";
-import { decode } from "html-entities";
 import Xss from "xss";
 
 import Algolia from "../../../../lib/api/algolia";

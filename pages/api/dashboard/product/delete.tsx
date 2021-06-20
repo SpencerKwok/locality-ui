@@ -3,10 +3,7 @@ import { ProductDeleteSchema } from "../../../../common/ValidationSchema";
 import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
 import SumoLogic from "../../../../lib/api/sumologic";
 
-import type {
-  ProductDeleteRequest,
-  ProductDeleteResponse,
-} from "../../../../common/Schema";
+import type { ProductDeleteRequest } from "../../../../common/Schema";
 import type { NextApiResponse } from "next";
 import type { NextApiRequestWithLocals } from "../../../../lib/api/middleware";
 
