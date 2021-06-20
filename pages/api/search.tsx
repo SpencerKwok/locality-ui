@@ -25,8 +25,7 @@ export default async function handler(
     return;
   }
 
-  const query: { q?: string; ip?: string; filters?: string; pg?: string } =
-    req.query;
+  const query: { q?: string; filters?: string; pg?: string } = req.query;
   const headers: {
     "x-forwarded-for"?: string;
   } = req.headers as IncomingHttpHeaders & { "x-forwarded-for"?: string };
@@ -49,9 +48,7 @@ export default async function handler(
   }
 
   let ip = "";
-  if (query.ip && typeof query.ip === "string") {
-    ip = query.ip;
-  } else if (
+  if (
     headers["x-forwarded-for"] &&
     typeof headers["x-forwarded-for"] === "string"
   ) {
