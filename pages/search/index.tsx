@@ -1,3 +1,4 @@
+import ip from "ip";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
@@ -21,25 +22,25 @@ function onToggleWishList(objectId: string, value: boolean) {
   }
 }
 
-function fetcher(url: string, cookie?: string) {
-  return GetRpcClient.getInstance().call("Search", url, { cookie });
+function fetcher(url: string, ip: string, cookie?: string) {
+  return GetRpcClient.getInstance().call("Search", url, {
+    cookie,
+    "x-forwarded-for": ip,
+  });
 }
 
 class UserInput {
-  public ip: string;
   public query: string;
   public page: number;
   public business: Set<string>;
   public departments: Set<string>;
 
   constructor(
-    ip: string,
     query: string,
     page: number = 0,
     business: Set<string> = new Set<string>(),
     departments: Set<string> = new Set<string>()
   ) {
-    this.ip = ip;
     this.query = query;
     this.page = page;
     this.business = business;
@@ -48,7 +49,6 @@ class UserInput {
 
   clone() {
     return new UserInput(
-      this.ip,
       this.query,
       this.page,
       this.business,
@@ -60,9 +60,6 @@ class UserInput {
     let params = `q=${encodeURIComponent(this.query)}`;
     if (this.page > 0) {
       params += `&pg=${this.page}`;
-    }
-    if (this.ip !== "") {
-      params += `&ip=${this.ip}`;
     }
     const businessFilters = Array.from(this.business).map(
       (name) => `business:"${name}"`
@@ -92,24 +89,25 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const ip = forwarded.split(/,\s*/)[0];
   const query = decodeURIComponent((context.query["q"] || "") as string);
   const results = await fetcher(
-    `/api/search?q=${encodeURIComponent(query)}&ip=${ip}`,
+    `/api/search?q=${encodeURIComponent(query)}`,
+    ip,
     cookie
   );
 
   return {
     props: {
       query,
-      ip,
       results,
     },
   };
 };
 
-export default function Search({ query, results, ip, session }: SearchProps) {
+export default function Search({ query, results, session }: SearchProps) {
+  const ipAddress = ip.address();
   const [data, setData] = useState(results);
   const [showAllBusinesses, setShowAllBusinesses] = useState(false);
   const [showAllDepartments, setShowAllDepartments] = useState(false);
-  const [userInput, setUserInput] = useState(new UserInput(ip, query));
+  const [userInput, setUserInput] = useState(new UserInput(query));
   const router = useRouter();
 
   const onReset = () => {
@@ -122,7 +120,7 @@ export default function Search({ query, results, ip, session }: SearchProps) {
     userInput.departments = new Set<string>();
     setUserInput(userInput.clone());
 
-    fetcher(`/api/search?${userInput.toString()}`)
+    fetcher(`/api/search?${userInput.toString()}`, ipAddress)
       .then((newData) => {
         data.facets = newData.facets;
         data.hits = newData.hits;
@@ -139,7 +137,7 @@ export default function Search({ query, results, ip, session }: SearchProps) {
 
   const onUserInputChange = () => {
     setUserInput(userInput.clone());
-    fetcher(`/api/search?${userInput.toString()}`)
+    fetcher(`/api/search?${userInput.toString()}`, ipAddress)
       .then(({ hits, nbHits }) => {
         setData({ facets: data.facets, hits, nbHits });
       })
@@ -171,7 +169,7 @@ export default function Search({ query, results, ip, session }: SearchProps) {
     userInput.business = new Set<string>();
     userInput.departments = new Set<string>();
     setUserInput(userInput.clone());
-    fetcher(`/api/search?${userInput.toString()}`)
+    fetcher(`/api/search?${userInput.toString()}`, ipAddress)
       .then((newData) => {
         data.facets = newData.facets;
         data.hits = newData.hits;
@@ -206,11 +204,11 @@ export default function Search({ query, results, ip, session }: SearchProps) {
     }
 
     userInput.page += 1;
-    fetcher(`/api/search?${userInput.toString()}`)
+    fetcher(`/api/search?${userInput.toString()}`, ipAddress)
       .then((nextPageData) => {
         if (userInput.page === 1) {
           userInput.page = 0;
-          fetcher(`/api/search?${userInput.toString()}`)
+          fetcher(`/api/search?${userInput.toString()}`, ipAddress)
             .then((firstPageData) => {
               data.facets = firstPageData.facets;
               data.hits = [...firstPageData.hits, ...nextPageData.hits];
