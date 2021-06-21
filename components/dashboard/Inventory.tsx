@@ -1,6 +1,5 @@
 import { createRef, Fragment, useState } from "react";
 import dynamic from "next/dynamic";
-import * as yup from "yup";
 import { decode } from "html-entities";
 import { Formik, FormikConfig } from "formik";
 import Button from "react-bootstrap/Button";
@@ -184,13 +183,13 @@ export default function Inventory({
               {isNewItem ? "New Product" : "Product Details"}
             </h1>
             <Tabs
+              unmountOnExit
               activeKey={tab}
               onSelect={(key) => {
                 onTabClick(key || "");
               }}
             >
               <Tab
-                key="0"
                 eventKey="0"
                 title={(() => {
                   let title = decode(product.variantTags[0] || "Original");
@@ -912,8 +911,9 @@ export default function Inventory({
               ))}
               {!isNewItem && (
                 <Tab
-                  key={`${product.variantTags.length}`}
-                  eventKey={`${product.variantTags.length}`}
+                  // We add 1 to avoid duplicate event keys
+                  // since products can have no variant tags
+                  eventKey={`${product.variantTags.length + 1}`}
                   title="Add New Variant +"
                   onEnter={() => {
                     setNewVariant(newVariant);

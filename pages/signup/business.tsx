@@ -42,7 +42,7 @@ export default function BusinessSignUp({ session }: BusinessSignUpProps) {
         }
 
         // Need to refresh CSP
-        window.location.assign("/dashboard/business?newBusiness=true");
+        window.location.assign("/dashboard?tab=business&newBusiness=true");
       })
       .catch((error) => {
         setError(error);
@@ -53,7 +53,7 @@ export default function BusinessSignUp({ session }: BusinessSignUpProps) {
     const user: any = session.user;
 
     // Need to refresh CSP
-    window.location.assign(user.isBusiness ? "/dashboard" : "/");
+    window.location.assign(user.isBusiness ? "/dashboard?tab=inventory" : "/");
     return null;
   }
 

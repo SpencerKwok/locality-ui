@@ -66,7 +66,7 @@ export default function Navigation({ type }: NavigationProps) {
               <div
                 key="Dashboard"
                 onClick={() => {
-                  window.location.assign("/dashboard");
+                  window.location.assign("/dashboard?tab=inventory");
                 }}
               >
                 <span className={`nav-link ${styles.navlink}`}>Dashboard</span>
