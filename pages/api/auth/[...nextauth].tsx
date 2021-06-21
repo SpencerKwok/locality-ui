@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import Providers from "next-auth/providers";
 import Bcrypt from "bcryptjs";
 
-import SumoLogic from "../../../lib/api/sumologic";
+import SumoLogic from "lib/api/sumologic";
 
 import {
   FACEBOOK_APP_ID,
@@ -12,8 +12,8 @@ import {
   //JWT_SECRET,
   JWT_SIGNING_KEY,
   SESSION_SECRET,
-} from "../../../lib/env";
-import Psql from "../../../lib/api/postgresql";
+} from "lib/env";
+import Psql from "lib/api/postgresql";
 import SqlString from "sqlstring";
 
 export default NextAuth({

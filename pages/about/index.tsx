@@ -1,6 +1,6 @@
-import AboutPage from "../../components/about/About";
-import RootLayout from "../../components/common/RootLayout";
-import { useWindowSize } from "../../lib/common";
+import AboutPage from "components/about/About";
+import RootLayout from "components/common/RootLayout";
+import { useWindowSize } from "lib/common";
 
 import type { Session } from "next-auth";
 

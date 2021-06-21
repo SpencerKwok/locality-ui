@@ -3,17 +3,14 @@ import SqlString from "sqlstring";
 import UIDGenerator from "uid-generator";
 import Xss from "xss";
 
-import MailChimp, { MainListId } from "../../../../lib/api/mailchimp";
-import Psql from "../../../../lib/api/postgresql";
-import SumoLogic from "../../../../lib/api/sumologic";
-import { UserSignUpSchema } from "../../../../common/ValidationSchema";
-import { SALT } from "../../../../lib/env";
+import MailChimp, { MainListId } from "lib/api/mailchimp";
+import Psql from "lib/api/postgresql";
+import SumoLogic from "lib/api/sumologic";
+import { UserSignUpSchema } from "common/ValidationSchema";
+import { SALT } from "lib/env";
 
 import type { NextApiRequest, NextApiResponse } from "next";
-import type {
-  SignInResponse,
-  UserSignUpRequest,
-} from "../../../../common/Schema";
+import type { SignInResponse, UserSignUpRequest } from "common/Schema";
 
 const uidgen = new UIDGenerator(256, UIDGenerator.BASE58);
 export default async function handler(

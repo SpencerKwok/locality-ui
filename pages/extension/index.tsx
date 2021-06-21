@@ -1,5 +1,5 @@
-import ExtensionPage from "../../components/extension/Extension";
-import RootLayout from "../../components/common/RootLayout";
+import ExtensionPage from "components/extension/Extension";
+import RootLayout from "components/common/RootLayout";
 
 import type { Session } from "next-auth";
 

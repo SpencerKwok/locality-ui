@@ -1,12 +1,16 @@
-import * as yup from "yup";
 import { Formik, FormikConfig } from "formik";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 
-import { PasswordUpdateSchema } from "../../common/ValidationSchema";
-import Stack from "../common/Stack";
-import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
-import styles from "./Account.module.css";
+import {
+  InputGroup,
+  Label,
+  SubmitButton,
+  ErrorMessage,
+} from "components/common/form";
+import { PasswordUpdateSchema } from "common/ValidationSchema";
+import Stack from "components/common/Stack";
+import styles from "components/dashboard/Account.module.css";
 
 export interface PasswordUpdateRequest {
   currentPassword: string;

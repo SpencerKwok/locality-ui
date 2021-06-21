@@ -1,10 +1,10 @@
 import { useState } from "react";
 import Dropdown from "react-bootstrap/Dropdown";
 
-import { Product } from "../../common/Schema";
-import ProductImage from "../common/product-image/ProductImage";
-import Stack, { StackAlignment } from "../common/Stack";
-import styles from "./ProductShowcase.module.css";
+import { Product } from "common/Schema";
+import ProductImage from "components/common/product-image/ProductImage";
+import Stack, { StackAlignment } from "components/common/Stack";
+import styles from "components/search/ProductShowcase.module.css";
 
 type SortFilter =
   | "Relevancy"

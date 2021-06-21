@@ -1,11 +1,11 @@
 import { camelCase } from "lodash";
 
-import Algolia from "../../lib/api/algolia";
-import SumoLogic from "../../lib/api/sumologic";
-import { mapKeys } from "../../lib/api/common";
+import Algolia from "lib/api/algolia";
+import SumoLogic from "lib/api/sumologic";
+import { mapKeys } from "lib/api/common";
 
 import type { NextApiRequest, NextApiResponse } from "next";
-import type { Product, ProductResponse } from "../../common/Schema";
+import type { Product, ProductResponse } from "common/Schema";
 
 export default async function handler(
   req: NextApiRequest,

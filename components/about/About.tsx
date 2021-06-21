@@ -1,7 +1,7 @@
 import React from "react";
 
-import AboutDesktop from "./AboutDesktop";
-import AboutMobile from "./AboutMobile";
+import AboutDesktop from "components/about/AboutDesktop";
+import AboutMobile from "components/about/AboutMobile";
 
 export interface AboutProps {
   isMobile: boolean;

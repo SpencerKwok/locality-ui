@@ -2,8 +2,8 @@ import React from "react";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 
-import Stack from "../Stack";
-import styles from "./Popup.module.css";
+import Stack from "components/common/Stack";
+import styles from "components/common/popups/Popup.module.css";
 
 export default function NewBusiness() {
   return (

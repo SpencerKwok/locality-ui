@@ -2,8 +2,8 @@ import Pg from "pg";
 import { decode, encode } from "html-entities";
 import SqlString from "sqlstring";
 
-import { DATABASE_URL } from "../env";
-import SumoLogic from "./sumologic";
+import { DATABASE_URL } from "lib/env";
+import SumoLogic from "lib/api/sumologic";
 
 const client = new Pg.Client({
   // Must use SSL for Heroku Postgresql.

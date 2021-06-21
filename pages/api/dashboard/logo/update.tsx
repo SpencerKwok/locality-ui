@@ -1,18 +1,15 @@
 import SqlString from "sqlstring";
 import Xss from "xss";
 
-import Cloudinary from "../../../../lib/api/cloudinary";
-import SumoLogic from "../../../../lib/api/sumologic";
-import Psql from "../../../../lib/api/postgresql";
-import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
-import { LogoUpdateSchema } from "../../../../common/ValidationSchema";
+import Cloudinary from "lib/api/cloudinary";
+import SumoLogic from "lib/api/sumologic";
+import Psql from "lib/api/postgresql";
+import { runMiddlewareBusiness } from "lib/api/middleware";
+import { LogoUpdateSchema } from "common/ValidationSchema";
 
-import type {
-  LogoUpdateRequest,
-  LogoUpdateResponse,
-} from "../../../../common/Schema";
+import type { LogoUpdateRequest, LogoUpdateResponse } from "common/Schema";
 import type { NextApiResponse } from "next";
-import type { NextApiRequestWithLocals } from "../../../../lib/api/middleware";
+import type { NextApiRequestWithLocals } from "lib/api/middleware";
 
 export const config = {
   api: {

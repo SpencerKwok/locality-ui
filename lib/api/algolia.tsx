@@ -2,12 +2,12 @@ import { camelCase, mapKeys } from "lodash";
 
 import AlgoliaSearch from "algoliasearch";
 
-import SumoLogic from "./sumologic";
+import SumoLogic from "lib/api/sumologic";
 import {
   ALGOLIASEARCH_APPLICATION_ID,
   ALGOLIASEARCH_API_KEY,
   ALGOLIASEARCH_INDEX,
-} from "../env";
+} from "lib/env";
 
 import type {
   ChunkOptions,
@@ -18,7 +18,7 @@ import type {
   SearchResponse,
 } from "@algolia/client-search";
 import type { RequestOptions } from "@algolia/transporter";
-import type { Product } from "../../common/Schema";
+import type { Product } from "common/Schema";
 
 const client = AlgoliaSearch(
   ALGOLIASEARCH_APPLICATION_ID || "",

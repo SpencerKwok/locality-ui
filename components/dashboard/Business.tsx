@@ -6,21 +6,28 @@ import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 
 import { Base64, fileToBase64 } from "./ImageHelpers";
-import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
+import {
+  InputGroup,
+  Label,
+  SubmitButton,
+  ErrorMessage,
+} from "components/common/form";
 import {
   DepartmentsUpdateSchema,
   HomepagesUpdateSchema,
   LogoUpdateSchema,
-} from "../../common/ValidationSchema";
-import Stack from "../common/Stack";
-import Select from "../common/select/VirtualSelect";
+} from "common/ValidationSchema";
+import Stack from "components/common/Stack";
+import Select from "components/common/select/VirtualSelect";
 import styles from "./Business.module.css";
 
-import type { BaseBusiness } from "../../common/Schema";
+import type { BaseBusiness } from "common/Schema";
 import type { FormikConfig } from "formik";
 
 const BusinessList = dynamic(() => import("./BusinessList"));
-const NewBusiness = dynamic(() => import("../common/popups/NewBusiness"));
+const NewBusiness = dynamic(
+  () => import("components/common/popups/NewBusiness")
+);
 
 export interface UpdateLogoRequest {
   logo: Base64;

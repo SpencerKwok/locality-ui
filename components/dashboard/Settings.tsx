@@ -8,18 +8,23 @@ import Button from "react-bootstrap/Button";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 
-import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
+import {
+  InputGroup,
+  Label,
+  SubmitButton,
+  ErrorMessage,
+} from "components/common/form";
 import {
   EtsyUpdateUploadSettingsSchema,
   ShopifyUpdateUploadSettingsSchema,
   SquareUpdateUploadSettingsSchema,
-} from "../../common/ValidationSchema";
-import Select from "../common/select/VirtualSelect";
-import Stack from "../common/Stack";
-import styles from "./Settings.module.css";
+} from "common/ValidationSchema";
+import Select from "components/common/select/VirtualSelect";
+import Stack from "components/common/Stack";
+import styles from "components/dashboard/Settings.module.css";
 
 import type { FC } from "react";
-import type { BaseBusiness } from "../../common/Schema";
+import type { BaseBusiness } from "common/Schema";
 import type { FormikConfig } from "formik";
 
 const BusinessList = dynamic(() => import("./BusinessList"));

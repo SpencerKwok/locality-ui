@@ -1,10 +1,7 @@
 import Xss from "xss";
 
-import SumoLogic from "../../../../lib/api/sumologic";
-import {
-  GOOGLE_ANALYTICS_API_SECRET,
-  GOOGLE_MEASUREMENT_ID,
-} from "../../../../lib/env";
+import SumoLogic from "lib/api/sumologic";
+import { GOOGLE_ANALYTICS_API_SECRET, GOOGLE_MEASUREMENT_ID } from "lib/env";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 

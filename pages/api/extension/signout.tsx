@@ -1,11 +1,11 @@
 import SqlString from "sqlstring";
 
-import { runMiddlewareExtension } from "../../../lib/api/middleware";
-import Psql from "../../../lib/api/postgresql";
-import SumoLogic from "../../../lib/api/sumologic";
+import { runMiddlewareExtension } from "lib/api/middleware";
+import Psql from "lib/api/postgresql";
+import SumoLogic from "lib/api/sumologic";
 
 import type { NextApiResponse } from "next";
-import type { NextApiRequestWithLocals } from "../../../lib/api/middleware";
+import type { NextApiRequestWithLocals } from "lib/api/middleware";
 
 export default async function handler(
   req: NextApiRequestWithLocals,

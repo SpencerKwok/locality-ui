@@ -7,10 +7,10 @@ import Papa from "papaparse";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 
-import { InputGroup, SubmitButton, ErrorMessage } from "../common/form";
-import { UploadSquareProductsSchema } from "../../common/ValidationSchema";
-import Stack from "../common/Stack";
-import styles from "./AddProduct.module.css";
+import { InputGroup, SubmitButton, ErrorMessage } from "components/common/form";
+import { UploadSquareProductsSchema } from "common/ValidationSchema";
+import Stack from "components/common/Stack";
+import styles from "components/dashboard/AddProduct.module.css";
 
 export type UploadType = "" | "Etsy" | "Shopify" | "Square";
 

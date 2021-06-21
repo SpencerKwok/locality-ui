@@ -2,10 +2,10 @@ import { useState } from "react";
 import dynamic from "next/dynamic";
 import { decode } from "html-entities";
 
-import Heart from "../images/Heart";
-import HeartFilled from "../images/HeartFilled";
-import Stack from "../Stack";
-import styles from "./ProductImage.module.css";
+import Heart from "components/common/images/Heart";
+import HeartFilled from "components/common/images/HeartFilled";
+import Stack from "components/common/Stack";
+import styles from "components/common/product-image/ProductImage.module.css";
 
 const WishlistToolTip = dynamic(() => import("./WishlistToolTip"));
 

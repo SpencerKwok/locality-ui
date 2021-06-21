@@ -3,9 +3,9 @@ import Form from "react-bootstrap/Form";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 
-import QuestionMark from "../images/QuestionMark";
-import Stack from "../Stack";
-import styles from "./form.module.css";
+import QuestionMark from "components/common/images/QuestionMark";
+import Stack from "components/common/Stack";
+import styles from "components/common/form/form.module.css";
 
 export interface FormLabelProps extends React.HTMLAttributes<HTMLLabelElement> {
   required?: boolean;

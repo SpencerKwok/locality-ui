@@ -1,15 +1,15 @@
 import Bcrypt from "bcryptjs";
 import SqlString from "sqlstring";
 
-import { SALT } from "../../../../lib/env";
-import Psql from "../../../../lib/api/postgresql";
-import SumoLogic from "../../../../lib/api/sumologic";
-import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
-import { PasswordUpdateSchema } from "../../../../common/ValidationSchema";
+import { SALT } from "lib/env";
+import Psql from "lib/api/postgresql";
+import SumoLogic from "lib/api/sumologic";
+import { runMiddlewareBusiness } from "lib/api/middleware";
+import { PasswordUpdateSchema } from "common/ValidationSchema";
 
-import type { PasswordUpdateRequest } from "../../../../common/Schema";
+import type { PasswordUpdateRequest } from "common/Schema";
 import type { NextApiResponse } from "next";
-import type { NextApiRequestWithLocals } from "../../../../lib/api/middleware";
+import type { NextApiRequestWithLocals } from "lib/api/middleware";
 
 export default async function handler(
   req: NextApiRequestWithLocals,

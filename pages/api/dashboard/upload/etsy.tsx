@@ -2,19 +2,19 @@ import SqlString from "sqlstring";
 import Xss from "xss";
 import { decode, encode } from "html-entities";
 
-import { ETSY_API_KEY } from "../../../../lib/env";
-import Psql from "../../../../lib/api/postgresql";
-import SumoLogic from "../../../../lib/api/sumologic";
-import { productAdd, productDelete } from "../../../../lib/api/dashboard";
-import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
+import { ETSY_API_KEY } from "lib/env";
+import Psql from "lib/api/postgresql";
+import SumoLogic from "lib/api/sumologic";
+import { productAdd, productDelete } from "lib/api/dashboard";
+import { runMiddlewareBusiness } from "lib/api/middleware";
 
 import type { NextApiResponse } from "next";
-import type { NextApiRequestWithLocals } from "../../../../lib/api/middleware";
+import type { NextApiRequestWithLocals } from "lib/api/middleware";
 import type {
   BaseUploadTypeSettings,
   DatabaseProduct,
   HomepagesUpdateResponse,
-} from "../../../../common/Schema";
+} from "common/Schema";
 
 const currentUploadsRunning = new Set<number>();
 export default async function handler(

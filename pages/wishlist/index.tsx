@@ -3,10 +3,10 @@ import { getSession } from "next-auth/client";
 import { Session } from "next-auth";
 import { useRouter } from "next/router";
 
-import { GetRpcClient, PostRpcClient } from "../../components/common/RpcClient";
-import { WishListResponse } from "../../common/Schema";
-import WishlistPage from "../../components/wishlist/WishList";
-import RootLayout from "../../components/common/RootLayout";
+import { GetRpcClient, PostRpcClient } from "components/common/RpcClient";
+import { WishListResponse } from "common/Schema";
+import WishlistPage from "components/wishlist/WishList";
+import RootLayout from "components/common/RootLayout";
 
 interface WishListProps {
   wishlist: WishListResponse;

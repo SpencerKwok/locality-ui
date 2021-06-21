@@ -1,8 +1,8 @@
 import React from "react";
 
-import { BaseBusiness } from "../../common/Schema";
-import BusinessImage from "../common/business-image/BusinessImage";
-import Stack from "../common/Stack";
+import { BaseBusiness } from "common/Schema";
+import BusinessImage from "components/common/business-image/BusinessImage";
+import Stack from "components/common/Stack";
 
 export interface BusinessShowcaseProps {
   businesses: Array<BaseBusiness>;

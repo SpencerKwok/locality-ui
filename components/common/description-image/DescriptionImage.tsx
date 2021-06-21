@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
-import Stack, { StackProps } from "../Stack";
-import styles from "./DescriptionImage.module.css";
+import Stack, { StackProps } from "components/common/Stack";
+import styles from "components/common/description-image/DescriptionImage.module.css";
 
 export interface DescriptionImageProps extends StackProps {
   loading?: "lazy" | "eager";

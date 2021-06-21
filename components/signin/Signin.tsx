@@ -3,18 +3,18 @@ import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 import { Formik, FormikConfig } from "formik";
 
-import FacebookLogo from "../../components/common/images/FacebookLogo";
-import GoogleLogo from "../../components/common/images/GoogleLogo";
-import LocalityLogo from "../../components/common/images/LocalityLogo";
-import Stack from "../../components/common/Stack";
-import { SignInSchema } from "../../common/ValidationSchema";
+import FacebookLogo from "components/common/images/FacebookLogo";
+import GoogleLogo from "components/common/images/GoogleLogo";
+import LocalityLogo from "components/common/images/LocalityLogo";
+import Stack from "components/common/Stack";
+import { SignInSchema } from "common/ValidationSchema";
 import {
   SubmitButton,
   ErrorMessage,
   InputGroup,
   Label,
-} from "../../components/common/form";
-import styles from "./Signin.module.css";
+} from "components/common/form";
+import styles from "components/signin/Signin.module.css";
 
 export interface SignInProps {
   onProviderSignIn: (provider: string) => void;

@@ -1,10 +1,10 @@
 import { decode } from "html-entities";
-
-import Algolia from "./algolia";
-import Cloudinary from "./cloudinary";
-import Psql from "./postgresql";
 import SqlString from "sqlstring";
-import SumoLogic from "./sumologic";
+
+import Algolia from "lib/api/algolia";
+import Cloudinary from "lib/api/cloudinary";
+import Psql from "lib/api/postgresql";
+import SumoLogic from "lib/api/sumologic";
 
 import type { BaseProduct, DatabaseProduct } from "../../common/Schema";
 

@@ -4,13 +4,13 @@ import Link from "next/link";
 import FacetList from "./FacetList";
 import ProductShowcase from "./ProductShowcase";
 import SearchBar from "./SearchBar";
-import Stack from "../common/Stack";
+import Stack from "components/common/Stack";
 
-import LocalityLogo from "../common/images/LocalityLogo";
-import { useWindowSize } from "../../lib/common";
+import LocalityLogo from "components/common/images/LocalityLogo";
+import { useWindowSize } from "lib/common";
 
 import type { Ellipsis } from "react-bootstrap/PageItem";
-import type { Product } from "../../common/Schema";
+import type { Product } from "common/Schema";
 
 const Pagination = dynamic(() => import("react-bootstrap/Pagination"));
 const PaginationItem = dynamic(() => import("react-bootstrap/PageItem"));

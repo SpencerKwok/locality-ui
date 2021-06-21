@@ -3,10 +3,10 @@ import SqlString from "sqlstring";
 import Xss from "xss";
 import { getSession } from "next-auth/client";
 
-import Algolia from "../../lib/api/algolia";
-import Psql from "../../lib/api/postgresql";
-import SumoLogic from "../../lib/api/sumologic";
-import { getBestVariant } from "../../lib/api/search";
+import Algolia from "lib/api/algolia";
+import Psql from "lib/api/postgresql";
+import SumoLogic from "lib/api/sumologic";
+import { getBestVariant } from "lib/api/search";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { IncomingHttpHeaders } from "http";

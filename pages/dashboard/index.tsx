@@ -5,37 +5,37 @@ import { useRouter } from "next/router";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 
-import AccountPage from "../../components/dashboard/Account";
-import BusinessPage from "../../components/dashboard/Business";
-import InventoryPage from "../../components/dashboard/Inventory";
-import SettingsPage from "../../components/dashboard/Settings";
-import { GetRpcClient, PostRpcClient } from "../../components/common/RpcClient";
-import RootLayout from "../../components/common/RootLayout";
-import { EmptyProduct } from "../../common/Schema";
-import { useWindowSize } from "../../lib/common";
-import styles from "../../components/dashboard/Dashboard.module.css";
+import AccountPage from "components/dashboard/Account";
+import BusinessPage from "components/dashboard/Business";
+import InventoryPage from "components/dashboard/Inventory";
+import SettingsPage from "components/dashboard/Settings";
+import { GetRpcClient, PostRpcClient } from "components/common/RpcClient";
+import RootLayout from "components/common/RootLayout";
+import { EmptyProduct } from "common/Schema";
+import { useWindowSize } from "lib/common";
+import styles from "components/dashboard/Dashboard.module.css";
 
 import type { ChangeEvent } from "react";
 import type { GetServerSideProps } from "next";
-import type { FuseBaseProduct } from "../../components/dashboard/ProductGrid";
+import type { FuseBaseProduct } from "components/dashboard/ProductGrid";
 import type { Session } from "next-auth";
-import type { PasswordUpdateRequest } from "../../components/dashboard/Account";
-import type { UploadType } from "../../components/dashboard/AddProduct";
-import type { BaseBusiness, BaseProduct } from "../../common/Schema";
+import type { PasswordUpdateRequest } from "components/dashboard/Account";
+import type { UploadType } from "components/dashboard/AddProduct";
+import type { BaseBusiness, BaseProduct } from "common/Schema";
 import type {
   UpdateDepartmentsRequest,
   UpdateHomepagesRequest,
   UpdateLogoRequest,
-} from "../../components/dashboard/Business";
+} from "components/dashboard/Business";
 import type {
   ProductRequest,
   VariantRequest,
-} from "../../components/dashboard/Inventory";
+} from "components/dashboard/Inventory";
 import type {
   EtsyUpdateUploadSettingsRequest,
   ShopifyUpdateUploadSettingsRequest,
   SquareUpdateUploadSettingsRequest,
-} from "../../components/dashboard/Settings";
+} from "components/dashboard/Settings";
 
 function getDepartments(url: string) {
   return GetRpcClient.getInstance().call("Departments", url);

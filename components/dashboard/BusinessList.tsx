@@ -1,11 +1,11 @@
 import React, { CSSProperties } from "react";
 import { decode } from "html-entities";
 
-import { BaseBusiness } from "../../common/Schema";
-import VirtualList from "../common/list/VirtualList";
-import VirtualListItem from "../common/list/VirtualListItem";
-import Stack from "../common/Stack";
-import styles from "./Business.module.css";
+import { BaseBusiness } from "common/Schema";
+import VirtualList from "components/common/list/VirtualList";
+import VirtualListItem from "components/common/list/VirtualListItem";
+import Stack from "components/common/Stack";
+import styles from "components/dashboard/Business.module.css";
 
 export interface BusinessListProps {
   onBusinessClick: (id: number) => void;

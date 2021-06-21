@@ -1,6 +1,6 @@
 import { v2 as Cloudinary } from "cloudinary";
 
-import SumoLogic from "./sumologic";
+import SumoLogic from "lib/api/sumologic";
 
 import type { AdminApiOptions, UploadApiOptions } from "cloudinary";
 

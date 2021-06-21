@@ -1,8 +1,8 @@
 import React from "react";
 import { decode } from "html-entities";
 
-import Stack from "../Stack";
-import styles from "./BusinessImage.module.css";
+import Stack from "components/common/Stack";
+import styles from "components/common/business-image/BusinessImage.module.css";
 
 export interface BusinessImageProps
   extends React.HTMLProps<HTMLPictureElement> {

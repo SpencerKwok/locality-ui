@@ -2,11 +2,11 @@ import { useState } from "react";
 import { getSession, signIn } from "next-auth/client";
 import { useRouter } from "next/router";
 
-import { PostRpcClient } from "../../components/common/RpcClient";
-import RootLayout from "../../components/common/RootLayout";
-import SignUpUser from "../../components/signup/SignupUser";
+import { PostRpcClient } from "components/common/RpcClient";
+import RootLayout from "components/common/RootLayout";
+import SignUpUser from "components/signup/SignupUser";
 
-import type { SignUpRequest } from "../../components/signup/SignupUser";
+import type { SignUpRequest } from "components/signup/SignupUser";
 import type { Session } from "next-auth";
 
 export interface UserSignUpProps {

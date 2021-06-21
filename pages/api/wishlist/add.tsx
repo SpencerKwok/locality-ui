@@ -1,12 +1,12 @@
 import SqlString from "sqlstring";
 
-import Psql from "../../../lib/api/postgresql";
-import SumoLogic from "../../../lib/api/sumologic";
-import { runMiddlewareUser } from "../../../lib/api/middleware";
+import Psql from "lib/api/postgresql";
+import SumoLogic from "lib/api/sumologic";
+import { runMiddlewareUser } from "lib/api/middleware";
 
 import type { NextApiResponse } from "next";
-import type { NextApiRequestWithLocals } from "../../../lib/api/middleware";
-import type { AddToWishListRequest } from "../../../common/Schema";
+import type { NextApiRequestWithLocals } from "lib/api/middleware";
+import type { AddToWishListRequest } from "common/Schema";
 
 export default async function handler(
   req: NextApiRequestWithLocals,

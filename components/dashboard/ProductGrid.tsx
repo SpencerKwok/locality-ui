@@ -5,10 +5,10 @@ import { Grid } from "react-virtualized";
 import { CSSProperties, ReactNode } from "react";
 import { decode } from "html-entities";
 
-import { BaseProduct } from "../../common/Schema";
-import DescriptionImage from "../common/description-image/DescriptionImage";
-import Stack from "../common/Stack";
-import styles from "./ProductGrid.module.css";
+import { BaseProduct } from "common/Schema";
+import DescriptionImage from "components/common/description-image/DescriptionImage";
+import Stack from "components/common/Stack";
+import styles from "components/dashboard/ProductGrid.module.css";
 
 import type { ChangeEvent } from "react";
 import type { GridCellProps } from "react-virtualized";

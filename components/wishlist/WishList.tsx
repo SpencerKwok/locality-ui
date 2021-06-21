@@ -1,6 +1,6 @@
-import ProductImage from "../common/product-image/ProductImage";
-import { Product } from "../../common/Schema";
-import Stack from "../common/Stack";
+import ProductImage from "components/common/product-image/ProductImage";
+import { Product } from "common/Schema";
+import Stack from "components/common/Stack";
 
 export interface WishListProps {
   products: Array<Product>;

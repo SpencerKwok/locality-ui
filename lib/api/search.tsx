@@ -2,7 +2,7 @@ import { distance } from "fastest-levenshtein";
 import DoubleMetaphone from "doublemetaphone";
 
 import type { Hit } from "@algolia/client-search";
-import type { Product } from "../../common/Schema";
+import type { Product } from "common/Schema";
 const encoder = new DoubleMetaphone();
 
 /*

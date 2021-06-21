@@ -1,9 +1,9 @@
 import { useRouter } from "next/router";
 
-import SignUpDesktop from "../../components/signup/SignupDesktop";
-import SignUpMobile from "../../components/signup/SignupMobile";
-import RootLayout from "../../components/common/RootLayout";
-import { useMediaQuery } from "../../lib/common";
+import SignUpDesktop from "components/signup/SignupDesktop";
+import SignUpMobile from "components/signup/SignupMobile";
+import RootLayout from "components/common/RootLayout";
+import { useMediaQuery } from "lib/common";
 
 import type { Session } from "next-auth";
 

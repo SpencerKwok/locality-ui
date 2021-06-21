@@ -1,12 +1,12 @@
 import { camelCase } from "lodash";
 import SqlString from "sqlstring";
 
-import { deepMapKeys } from "../../lib/api/common";
-import Psql from "../../lib/api/postgresql";
-import SumoLogic from "../../lib/api/sumologic";
+import { deepMapKeys } from "lib/api/common";
+import Psql from "lib/api/postgresql";
+import SumoLogic from "lib/api/sumologic";
 
 import type { NextApiRequest, NextApiResponse } from "next";
-import type { BusinessResponse } from "../../common/Schema";
+import type { BusinessResponse } from "common/Schema";
 
 export default async function handler(
   req: NextApiRequest,

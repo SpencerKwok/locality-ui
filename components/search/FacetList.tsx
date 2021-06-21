@@ -1,10 +1,9 @@
-import { useState } from "react";
 import ListGroup from "react-bootstrap/ListGroup";
 import { decode } from "html-entities";
 
-import Arrow from "../common/images/Arrow";
-import Stack from "../common/Stack";
-import styles from "./FacetList.module.css";
+import Arrow from "components/common/images/Arrow";
+import Stack from "components/common/Stack";
+import styles from "components/search/FacetList.module.css";
 
 export interface FacetListProps {
   showAll: boolean;

@@ -1,10 +1,10 @@
 import SqlString from "sqlstring";
 import Xss from "xss";
 
-import Psql from "../../../../../lib/api/postgresql";
-import SumoLogic from "../../../../../lib/api/sumologic";
-import { runMiddlewareBusiness } from "../../../../../lib/api/middleware";
-import { UpdateUploadSettingsSchema } from "../../../../../common/ValidationSchema";
+import Psql from "lib/api/postgresql";
+import SumoLogic from "lib/api/sumologic";
+import { runMiddlewareBusiness } from "lib/api/middleware";
+import { UpdateUploadSettingsSchema } from "common/ValidationSchema";
 
 import type {
   EtsyUploadSettingsUpdateRequest,
@@ -15,9 +15,9 @@ import type {
   SquareUploadSettingsUpdateResponse,
   BaseUploadTypeSettings,
   UploadTypeSettings,
-} from "../../../../../common/Schema";
+} from "common/Schema";
 import type { NextApiResponse } from "next";
-import type { NextApiRequestWithLocals } from "../../../../../lib/api/middleware";
+import type { NextApiRequestWithLocals } from "lib/api/middleware";
 
 export default async function handler(
   req: NextApiRequestWithLocals,

@@ -1,8 +1,8 @@
-import { ETSY_API_KEY } from "../../../lib/env";
-import SumoLogic from "../../../lib/api/sumologic";
+import { ETSY_API_KEY } from "lib/env";
+import SumoLogic from "lib/api/sumologic";
 
 import type { NextApiRequest, NextApiResponse } from "next";
-import type { DepartmentsResponse } from "../../../common/Schema";
+import type { DepartmentsResponse } from "common/Schema";
 
 type Tree = Array<{ name: string; children: Tree }>;
 const helper = (tree: Tree) => {

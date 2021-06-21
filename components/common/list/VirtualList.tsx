@@ -1,5 +1,5 @@
 import { List, ListProps } from "react-virtualized";
-import styles from "./VirtualList.module.css";
+import styles from "components/common/list/VirtualList.module.css";
 
 export interface VirtualListProps extends ListProps {}
 

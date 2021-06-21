@@ -1,4 +1,4 @@
-import RootLayout from "../../components/common/RootLayout";
+import RootLayout from "components/common/RootLayout";
 
 import type { Session } from "next-auth";
 

@@ -2,14 +2,14 @@ import Bcrypt from "bcryptjs";
 import SqlString from "sqlstring";
 import Xss from "xss";
 
-import { BusinessSignUpSchema } from "../../../common/ValidationSchema";
-import { MAPQUEST_KEY, SALT } from "../../../lib/env";
-import MailChimp, { MainListId } from "../../../lib/api/mailchimp";
-import Psql from "../../../lib/api/postgresql";
-import SumoLogic from "../../../lib/api/sumologic";
+import { BusinessSignUpSchema } from "common/ValidationSchema";
+import { MAPQUEST_KEY, SALT } from "lib/env";
+import MailChimp, { MainListId } from "lib/api/mailchimp";
+import Psql from "lib/api/postgresql";
+import SumoLogic from "lib/api/sumologic";
 
 import type { NextApiRequest, NextApiResponse } from "next";
-import type { BusinessSignUpRequest } from "../../../common/Schema";
+import type { BusinessSignUpRequest } from "common/Schema";
 
 export default async function handler(
   req: NextApiRequest,

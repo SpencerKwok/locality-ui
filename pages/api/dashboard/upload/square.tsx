@@ -3,19 +3,19 @@ import Papa from "papaparse";
 import SqlString from "sqlstring";
 import Xss from "xss";
 
-import Psql from "../../../../lib/api/postgresql";
-import SumoLogic from "../../../../lib/api/sumologic";
-import { productAdd, productDelete } from "../../../../lib/api/dashboard";
-import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
-import { UploadSquareProductsSchema } from "../../../../common/ValidationSchema";
+import Psql from "lib/api/postgresql";
+import SumoLogic from "lib/api/sumologic";
+import { productAdd, productDelete } from "lib/api/dashboard";
+import { runMiddlewareBusiness } from "lib/api/middleware";
+import { UploadSquareProductsSchema } from "common/ValidationSchema";
 
 import type { NextApiResponse } from "next";
-import type { NextApiRequestWithLocals } from "../../../../lib/api/middleware";
+import type { NextApiRequestWithLocals } from "lib/api/middleware";
 import type {
   DatabaseProduct,
   SquareProductUploadRequest,
   UploadTypeSettings,
-} from "../../../../common/Schema";
+} from "common/Schema";
 
 export const config = {
   api: {

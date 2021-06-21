@@ -2,8 +2,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/client";
 import SqlString from "sqlstring";
 
-import Psql from "./postgresql";
-import SumoLogic from "./sumologic";
+import Psql from "lib/api/postgresql";
+import SumoLogic from "lib/api/sumologic";
 
 const runMiddlewareHelper = (
   req: NextApiRequest,

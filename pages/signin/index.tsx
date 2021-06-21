@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { getSession, signIn, signOut } from "next-auth/client";
 
-import SigninPage from "../../components/signin/Signin";
-import RootLayout from "../../components/common/RootLayout";
+import SigninPage from "components/signin/Signin";
+import RootLayout from "components/common/RootLayout";
 
 import type { Session } from "next-auth";
-import type { SignInRequest } from "../../components/signin/Signin";
+import type { SignInRequest } from "components/signin/Signin";
 
 export interface SignUpProps {
   session: Session | null;

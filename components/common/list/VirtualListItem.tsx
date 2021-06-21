@@ -2,7 +2,7 @@ import ListGroupItem, {
   ListGroupItemProps,
 } from "react-bootstrap/ListGroupItem";
 import styled from "styled-components";
-import styles from "./VirtualList.module.css";
+import styles from "components/common/list/VirtualList.module.css";
 
 export interface VirtualListItemProps extends ListGroupItemProps {}
 

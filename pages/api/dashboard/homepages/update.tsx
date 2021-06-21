@@ -1,18 +1,18 @@
 import SqlString from "sqlstring";
 import Xss from "xss";
 
-import Psql from "../../../../lib/api/postgresql";
-import SumoLogic from "../../../../lib/api/sumologic";
-import { addHttpsProtocol } from "../../../../lib/api/dashboard";
-import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
-import { HomepagesUpdateSchema } from "../../../../common/ValidationSchema";
+import Psql from "lib/api/postgresql";
+import SumoLogic from "lib/api/sumologic";
+import { addHttpsProtocol } from "lib/api/dashboard";
+import { runMiddlewareBusiness } from "lib/api/middleware";
+import { HomepagesUpdateSchema } from "common/ValidationSchema";
 
 import type {
   HomepagesUpdateRequest,
   HomepagesUpdateResponse,
-} from "../../../../common/Schema";
+} from "common/Schema";
 import type { NextApiResponse } from "next";
-import type { NextApiRequestWithLocals } from "../../../../lib/api/middleware";
+import type { NextApiRequestWithLocals } from "lib/api/middleware";
 
 export default async function handler(
   req: NextApiRequestWithLocals,

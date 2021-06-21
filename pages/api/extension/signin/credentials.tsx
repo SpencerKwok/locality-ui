@@ -3,11 +3,11 @@ import SqlString from "sqlstring";
 import UIDGenerator from "uid-generator";
 import Xss from "xss";
 
-import Psql from "../../../../lib/api/postgresql";
-import SumoLogic from "../../../../lib/api/sumologic";
-import { SignInSchema } from "../../../../common/ValidationSchema";
+import Psql from "lib/api/postgresql";
+import SumoLogic from "lib/api/sumologic";
+import { SignInSchema } from "common/ValidationSchema";
 
-import type { SignInRequest, SignInResponse } from "../../../../common/Schema";
+import type { SignInRequest, SignInResponse } from "common/Schema";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 const uidgen = new UIDGenerator(256, UIDGenerator.BASE58);

@@ -1,12 +1,16 @@
-import * as yup from "yup";
 import { Formik, FormikConfig } from "formik";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 
-import LocalityLogo from "../../components/common/images/LocalityLogo";
-import Stack from "../common/Stack";
-import { SubmitButton, ErrorMessage, InputGroup, Label } from "../common/form";
-import { UserSignUpSchema } from "../../common/ValidationSchema";
+import LocalityLogo from "components/common/images/LocalityLogo";
+import Stack from "components/common/Stack";
+import {
+  SubmitButton,
+  ErrorMessage,
+  InputGroup,
+  Label,
+} from "components/common/form";
+import { UserSignUpSchema } from "common/ValidationSchema";
 import styles from "./Signup.module.css";
 
 export interface SignUpRequest {

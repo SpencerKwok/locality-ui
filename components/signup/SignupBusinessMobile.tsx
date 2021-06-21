@@ -2,10 +2,18 @@ import { Formik, FormikConfig } from "formik";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 
-import LocalityLogo from "../../components/common/images/LocalityLogo";
-import { SignUpRequest, BusinessSignUpSchema } from "./SignupBusinessForm";
-import Stack from "../common/Stack";
-import { SubmitButton, ErrorMessage, InputGroup, Label } from "../common/form";
+import LocalityLogo from "components/common/images/LocalityLogo";
+import {
+  SignUpRequest,
+  BusinessSignUpSchema,
+} from "components/signup/SignupBusinessForm";
+import Stack from "components/common/Stack";
+import {
+  SubmitButton,
+  ErrorMessage,
+  InputGroup,
+  Label,
+} from "components/common/form";
 
 export interface SignupBusinessProps {
   error: string;

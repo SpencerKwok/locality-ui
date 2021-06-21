@@ -10,16 +10,18 @@ import Tabs from "react-bootstrap/Tabs";
 
 import AddProduct, { UploadType } from "./AddProduct";
 import { Base64, fileToBase64 } from "./ImageHelpers";
-import { BaseBusiness, Product } from "../../common/Schema";
-import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
+import { BaseBusiness, Product } from "common/Schema";
 import {
-  ProductFormSchema,
-  VariantFormSchema,
-} from "../../common/ValidationSchema";
+  InputGroup,
+  Label,
+  SubmitButton,
+  ErrorMessage,
+} from "components/common/form";
+import { ProductFormSchema, VariantFormSchema } from "common/ValidationSchema";
 import ProductGrid from "./ProductGrid";
-import Stack from "../common/Stack";
-import Select from "../common/select/VirtualSelect";
-import styles from "./Inventory.module.css";
+import Stack from "components/common/Stack";
+import Select from "components/common/select/VirtualSelect";
+import styles from "components/dashboard/Inventory.module.css";
 
 import type { ChangeEvent } from "react";
 import type { FuseBaseProduct } from "./ProductGrid";

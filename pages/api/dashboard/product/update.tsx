@@ -1,20 +1,20 @@
 import SqlString from "sqlstring";
 import Xss from "xss";
 
-import Algolia from "../../../../lib/api/algolia";
-import Cloudinary from "../../../../lib/api/cloudinary";
-import Psql from "../../../../lib/api/postgresql";
-import { addHttpsProtocol } from "../../../../lib/api/dashboard";
-import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
-import SumoLogic from "../../../../lib/api/sumologic";
-import { ProductUpdateSchema } from "../../../../common/ValidationSchema";
+import Algolia from "lib/api/algolia";
+import Cloudinary from "lib/api/cloudinary";
+import Psql from "lib/api/postgresql";
+import { addHttpsProtocol } from "lib/api/dashboard";
+import { runMiddlewareBusiness } from "lib/api/middleware";
+import SumoLogic from "lib/api/sumologic";
+import { ProductUpdateSchema } from "common/ValidationSchema";
 
 import type {
   ProductUpdateRequest,
   ProductUpdateResponse,
-} from "../../../../common/Schema";
+} from "common/Schema";
 import type { NextApiResponse } from "next";
-import type { NextApiRequestWithLocals } from "../../../../lib/api/middleware";
+import type { NextApiRequestWithLocals } from "lib/api/middleware";
 
 export const config = {
   api: {

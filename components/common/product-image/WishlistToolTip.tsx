@@ -1,6 +1,6 @@
-import Heart from "../images/Heart";
+import Heart from "components/common/images/Heart";
 import Popup from "reactjs-popup";
-import styles from "./ProductImage.module.css";
+import styles from "components/common/product-image/ProductImage.module.css";
 import "reactjs-popup/dist/index.css";
 
 export interface WishlistToolTipProps {

@@ -1,9 +1,9 @@
 import { useState } from "react";
 
-import ContactPage, { ContactRequest } from "../../components/contact/Contact";
-import RootLayout from "../../components/common/RootLayout";
-import { PostRpcClient } from "../../components/common/RpcClient";
-import { useWindowSize } from "../../lib/common";
+import ContactPage, { ContactRequest } from "components/contact/Contact";
+import RootLayout from "components/common/RootLayout";
+import { PostRpcClient } from "components/common/RpcClient";
+import { useWindowSize } from "lib/common";
 
 import type { Session } from "next-auth";
 

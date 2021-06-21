@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Button, InputGroup, FormControl } from "react-bootstrap";
 
-import Stack from "../common/Stack";
-import styles from "./SearchBar.module.css";
+import Stack from "components/common/Stack";
+import styles from "components/search/SearchBar.module.css";
 
 export interface SearchBarProps extends React.HTMLProps<HTMLDivElement> {
   defaultQuery?: string;

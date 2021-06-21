@@ -3,7 +3,7 @@ import ImageGallery, { ReactImageGalleryItem } from "react-image-gallery";
 import Button from "react-bootstrap/Button";
 import "react-image-gallery/styles/css/image-gallery.css";
 
-import Stack from "../common/Stack";
+import Stack from "components/common/Stack";
 
 const renderVideo = () => {
   return (

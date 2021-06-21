@@ -5,10 +5,10 @@ import Navbar from "react-bootstrap/Navbar";
 import Link from "next/link";
 import { signOut } from "next-auth/client";
 
-import FacebookLogo from "../images/FacebookLogo";
-import InstagramLogo from "../images/InstagramLogo";
-import NavigationProps from "./NavigationProps";
-import styles from "./Navigation.module.css";
+import FacebookLogo from "components/common/images/FacebookLogo";
+import InstagramLogo from "components/common/images/InstagramLogo";
+import NavigationProps from "components/common/navigation/NavigationProps";
+import styles from "components/common/navigation/Navigation.module.css";
 
 interface NavigationLayoutProps {
   children?: ReactNode;

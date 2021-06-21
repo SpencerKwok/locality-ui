@@ -8,7 +8,7 @@ import Document, {
 } from "next/document";
 import { ServerStyleSheet } from "styled-components";
 
-import { NODE_ENV } from "../lib/env";
+import { NODE_ENV } from "lib/env";
 
 const prod = NODE_ENV === "production";
 export default class MyDocument extends Document {

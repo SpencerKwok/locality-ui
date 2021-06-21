@@ -1,4 +1,4 @@
-import { SUMOLOGIC_URL } from "../env";
+import { SUMOLOGIC_URL } from "lib/env";
 
 const url = SUMOLOGIC_URL || "";
 const sumoLogicClient: {

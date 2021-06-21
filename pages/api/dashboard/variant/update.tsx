@@ -1,17 +1,17 @@
 import Xss from "xss";
 
-import Algolia from "../../../../lib/api/algolia";
-import Cloudinary from "../../../../lib/api/cloudinary";
-import SumoLogic from "../../../../lib/api/sumologic";
-import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
-import { VariantUpdateSchema } from "../../../../common/ValidationSchema";
+import Algolia from "lib/api/algolia";
+import Cloudinary from "lib/api/cloudinary";
+import SumoLogic from "lib/api/sumologic";
+import { runMiddlewareBusiness } from "lib/api/middleware";
+import { VariantUpdateSchema } from "common/ValidationSchema";
 
 import type {
   VariantUpdateRequest,
   VariantUpdateResponse,
-} from "../../../../common/Schema";
+} from "common/Schema";
 import type { NextApiResponse } from "next";
-import type { NextApiRequestWithLocals } from "../../../../lib/api/middleware";
+import type { NextApiRequestWithLocals } from "lib/api/middleware";
 
 export const config = {
   api: {

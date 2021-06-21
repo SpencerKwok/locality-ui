@@ -2,12 +2,12 @@ import React from "react";
 import dynamic from "next/dynamic";
 
 import BusinessShowcase from "./BusinessShowcase";
-import Search from "../search/Search";
-import Stack from "../common/Stack";
+import Search from "components/search/Search";
+import Stack from "components/common/Stack";
 
-import type { BaseBusiness } from "../../common/Schema";
+import type { BaseBusiness } from "common/Schema";
 
-const NewUser = dynamic(() => import("../common/popups/NewUser"));
+const NewUser = dynamic(() => import("components/common/popups/NewUser"));
 
 interface HomeProps {
   businesses: Array<BaseBusiness>;

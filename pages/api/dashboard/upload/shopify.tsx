@@ -3,18 +3,18 @@ import SqlString from "sqlstring";
 import Xss from "xss";
 import { decode, encode } from "html-entities";
 
-import Psql from "../../../../lib/api/postgresql";
-import SumoLogic from "../../../../lib/api/sumologic";
-import { productAdd, productDelete } from "../../../../lib/api/dashboard";
-import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
+import Psql from "lib/api/postgresql";
+import SumoLogic from "lib/api/sumologic";
+import { productAdd, productDelete } from "lib/api/dashboard";
+import { runMiddlewareBusiness } from "lib/api/middleware";
 
 import type { NextApiResponse } from "next";
-import type { NextApiRequestWithLocals } from "../../../../lib/api/middleware";
+import type { NextApiRequestWithLocals } from "lib/api/middleware";
 import type {
   DatabaseProduct,
   HomepagesUpdateResponse,
   UploadTypeSettings,
-} from "../../../../common/Schema";
+} from "common/Schema";
 
 /*
 This list may change at any time, but for now these are all the valid Shopify IP addresses

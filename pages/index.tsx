@@ -1,9 +1,9 @@
 import { useRouter } from "next/router";
 
-import HomePage from "../components/home/Home";
-import RootLayout from "../components/common/RootLayout";
-import SumoLogic from "../lib/api/sumologic";
-import { useWindowSize } from "../lib/common";
+import HomePage from "components/home/Home";
+import RootLayout from "components/common/RootLayout";
+import SumoLogic from "lib/api/sumologic";
+import { useWindowSize } from "lib/common";
 
 import { helper } from "./api/businesses";
 

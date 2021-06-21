@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { getSession, signIn } from "next-auth/client";
 
-import { PostRpcClient } from "../../components/common/RpcClient";
-import RootLayout from "../../components/common/RootLayout";
-import SignUpBusinessDesktop from "../../components/signup/SignupBusinessDesktop";
-import SignUpBusinessMobile from "../../components/signup/SignupBusinessMobile";
-import { useMediaQuery } from "../../lib/common";
+import { PostRpcClient } from "components/common/RpcClient";
+import RootLayout from "components/common/RootLayout";
+import SignUpBusinessDesktop from "components/signup/SignupBusinessDesktop";
+import SignUpBusinessMobile from "components/signup/SignupBusinessMobile";
+import { useMediaQuery } from "lib/common";
 
-import type { SignUpRequest } from "../../components/signup/SignupBusinessForm";
+import type { SignUpRequest } from "components/signup/SignupBusinessForm";
 import type { Session } from "next-auth";
 
 export interface BusinessSignUpProps {

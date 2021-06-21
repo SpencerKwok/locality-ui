@@ -1,7 +1,7 @@
 import React from "react";
 
 import DescriptionImage from "../common/description-image/DescriptionImage";
-import Stack from "../common/Stack";
+import Stack from "components/common/Stack";
 
 export default function About() {
   return (

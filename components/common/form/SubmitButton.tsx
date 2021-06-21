@@ -1,7 +1,7 @@
 import React from "react";
 import Button from "react-bootstrap/Button";
 
-import styles from "./form.module.css";
+import styles from "components/common/form/form.module.css";
 
 import type { ButtonProps } from "react-bootstrap/Button";
 

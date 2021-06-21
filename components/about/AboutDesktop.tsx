@@ -1,5 +1,5 @@
-import DescriptionImage from "../common/description-image/DescriptionImage";
-import Stack from "../common/Stack";
+import DescriptionImage from "components/common/description-image/DescriptionImage";
+import Stack from "components/common/Stack";
 
 export interface AboutProps {
   width: number;

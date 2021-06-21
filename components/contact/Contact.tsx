@@ -2,9 +2,14 @@ import { Formik, FormikConfig } from "formik";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 
-import { ContactSchema } from "../../common/ValidationSchema";
-import { SubmitButton, ErrorMessage, InputGroup, Label } from "../common/form";
-import Stack from "../common/Stack";
+import {
+  SubmitButton,
+  ErrorMessage,
+  InputGroup,
+  Label,
+} from "components/common/form";
+import { ContactSchema } from "common/ValidationSchema";
+import Stack from "components/common/Stack";
 
 export interface ContactRequest {
   email: string;

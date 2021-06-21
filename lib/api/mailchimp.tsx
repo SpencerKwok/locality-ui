@@ -1,6 +1,6 @@
 import Md5 from "md5";
 
-import SumoLogic from "./sumologic";
+import SumoLogic from "lib/api/sumologic";
 
 const mailchimp = require("@mailchimp/mailchimp_marketing");
 
@@ -8,7 +8,7 @@ import {
   MAILCHIMP_API_KEY,
   MAILCHIMP_SERVER,
   MAILCHIMP_LOCALITY_ID,
-} from "../env";
+} from "lib/env";
 
 mailchimp.setConfig({
   apiKey: MAILCHIMP_API_KEY,

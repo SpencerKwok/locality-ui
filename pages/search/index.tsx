@@ -2,15 +2,15 @@ import ip from "ip";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
-import { GetRpcClient, PostRpcClient } from "../../components/common/RpcClient";
-import SearchResultsDesktop from "../../components/search/SearchResultsDesktop";
-import SearchResultsMobile from "../../components/search/SearchResultsMobile";
-import RootLayout from "../../components/common/RootLayout";
-import { useMediaQuery } from "../../lib/common";
+import { GetRpcClient, PostRpcClient } from "components/common/RpcClient";
+import SearchResultsDesktop from "components/search/SearchResultsDesktop";
+import SearchResultsMobile from "components/search/SearchResultsMobile";
+import RootLayout from "components/common/RootLayout";
+import { useMediaQuery } from "lib/common";
 
 import type { GetServerSideProps } from "next";
 import type { Session } from "next-auth";
-import type { SearchResponse } from "../../common/Schema";
+import type { SearchResponse } from "common/Schema";
 
 function onToggleWishList(objectId: string, value: boolean) {
   if (value) {

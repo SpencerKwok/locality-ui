@@ -1,17 +1,17 @@
 import SqlString from "sqlstring";
 import Xss from "xss";
 
-import Psql from "../../../../lib/api/postgresql";
-import SumoLogic from "../../../../lib/api/sumologic";
-import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
-import { DepartmentsUpdateSchema } from "../../../../common/ValidationSchema";
+import Psql from "lib/api/postgresql";
+import SumoLogic from "lib/api/sumologic";
+import { runMiddlewareBusiness } from "lib/api/middleware";
+import { DepartmentsUpdateSchema } from "common/ValidationSchema";
 
 import type {
   DepartmentsUpdateRequest,
   DepartmentsUpdateResponse,
-} from "../../../../common/Schema";
+} from "common/Schema";
 import type { NextApiResponse } from "next";
-import type { NextApiRequestWithLocals } from "../../../../lib/api/middleware";
+import type { NextApiRequestWithLocals } from "lib/api/middleware";
 
 export default async function handler(
   req: NextApiRequestWithLocals,

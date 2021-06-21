@@ -1,9 +1,9 @@
 import React from "react";
 import { useRouter } from "next/router";
 
-import Stack from "../common/Stack";
-import SearchBar from "./SearchBar";
-import LocalityLogo from "../common/images/LocalityLogo";
+import Stack from "components/common/Stack";
+import SearchBar from "components/search/SearchBar";
+import LocalityLogo from "components/common/images/LocalityLogo";
 
 export interface SearchProps {
   width: number;

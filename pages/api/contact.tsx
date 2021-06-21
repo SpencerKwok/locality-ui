@@ -1,12 +1,12 @@
 import NodeMailer from "nodemailer";
 import Xss from "xss";
 
-import { ContactSchema } from "../../common/ValidationSchema";
-import { EMAIL_SERVICE, EMAIL_USER, EMAIL_PASSWORD } from "../../lib/env";
-import SumoLogic from "../../lib/api/sumologic";
+import { ContactSchema } from "common/ValidationSchema";
+import { EMAIL_SERVICE, EMAIL_USER, EMAIL_PASSWORD } from "lib/env";
+import SumoLogic from "lib/api/sumologic";
 
 import type { NextApiRequest, NextApiResponse } from "next";
-import type { ContactRequest } from "../../common/Schema";
+import type { ContactRequest } from "common/Schema";
 
 const transporter = NodeMailer.createTransport({
   service: EMAIL_SERVICE,

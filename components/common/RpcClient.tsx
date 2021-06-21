@@ -1,5 +1,5 @@
-import { NEXTAUTH_URL } from "../../lib/env";
-import { PostMethods, GetMethods } from "../../common/Schema";
+import { NEXTAUTH_URL } from "lib/env";
+import { PostMethods, GetMethods } from "common/Schema";
 
 const baseUrl = typeof window === "undefined" ? NEXTAUTH_URL : "";
 const endpoints = new Map<keyof PostMethods, string>([

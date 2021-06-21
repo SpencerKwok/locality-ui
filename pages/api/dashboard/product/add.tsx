@@ -1,16 +1,13 @@
 import Xss from "xss";
 
-import { addHttpsProtocol, productAdd } from "../../../../lib/api/dashboard";
-import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
-import SumoLogic from "../../../../lib/api/sumologic";
-import { ProductAddSchema } from "../../../../common/ValidationSchema";
+import { addHttpsProtocol, productAdd } from "lib/api/dashboard";
+import { runMiddlewareBusiness } from "lib/api/middleware";
+import SumoLogic from "lib/api/sumologic";
+import { ProductAddSchema } from "common/ValidationSchema";
 
-import type {
-  ProductAddRequest,
-  ProductAddResponse,
-} from "../../../../common/Schema";
+import type { ProductAddRequest, ProductAddResponse } from "common/Schema";
 import type { NextApiResponse } from "next";
-import type { NextApiRequestWithLocals } from "../../../../lib/api/middleware";
+import type { NextApiRequestWithLocals } from "lib/api/middleware";
 
 export const config = {
   api: {
