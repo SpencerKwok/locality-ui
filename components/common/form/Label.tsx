@@ -18,7 +18,7 @@ const FormLabel: FC<FormLabelProps> = ({
   className,
   description,
   ...rest
-}: FormLabelProps) => {
+}) => {
   const createTooltip = (description: string): ReactElement => (
     <Popup
       trigger={
@@ -40,7 +40,9 @@ const FormLabel: FC<FormLabelProps> = ({
   return (
     <Stack direction="row" columnAlign="flex-start" spacing={8}>
       <Form.Label className={finalClassName} {...rest}></Form.Label>
-      {typeof description === "string" && createTooltip(description)}
+      {typeof description === "string" &&
+        description &&
+        createTooltip(description)}
     </Stack>
   );
 };

@@ -6,7 +6,12 @@ import Select, {
 } from "react-select";
 import { FixedSizeList } from "react-window";
 
-import type { PropsWithChildren, ReactElement } from "react";
+import type {
+  HTMLProps,
+  JSXElementConstructor,
+  PropsWithChildren,
+  ReactElement,
+} from "react";
 
 type MenuListProps<
   T extends {},
@@ -34,9 +39,13 @@ function MenuList<T extends {}, isMulti extends boolean>({
       itemSize={height}
       initialScrollOffset={initialOffset}
     >
-      {({ index, style }): ReactElement<HTMLDivElement> => (
-        <div style={style}>{childrenArray[index]}</div>
-      )}
+      {({
+        index,
+        style,
+      }): ReactElement<
+        HTMLProps<HTMLDivElement>,
+        JSXElementConstructor<HTMLDivElement>
+      > => <div style={style}>{childrenArray[index]}</div>}
     </FixedSizeList>
   );
 }

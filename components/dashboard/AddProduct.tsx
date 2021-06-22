@@ -80,7 +80,7 @@ const AddProduct: FC<AddProductProps> = ({
           trigger={
             <Button
               className={styles.button}
-              disabled={!!uploadType}
+              disabled={!uploadType}
               style={{ width: "100%" }}
             >
               Upload

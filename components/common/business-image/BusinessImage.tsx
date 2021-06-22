@@ -20,7 +20,7 @@ const BusinessImage: FC<BusinessImageProps> = ({
   height,
   width,
   loading,
-}: BusinessImageProps) => {
+}) => {
   return (
     <Stack
       direction="column"

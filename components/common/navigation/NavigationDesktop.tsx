@@ -10,7 +10,7 @@ import InstagramLogo from "components/common/images/InstagramLogo";
 import NavigationProps from "components/common/navigation/NavigationProps";
 import styles from "components/common/navigation/Navigation.module.css";
 
-import type { FC, ReactNode } from "react";
+import type { FC, ReactFragment, ReactNode } from "react";
 
 interface NavigationLayoutProps {
   children?: ReactNode;
@@ -53,8 +53,8 @@ const Navigation: FC<NavigationProps> = ({ type }) => {
       <Link href="/contact">
         <span className={`nav-link ${styles.navlink}`}>Contact Us</span>
       </Link>
-      {((): ReactNode => {
-        const navLinks = [];
+      {((): ReactFragment => {
+        const navLinks = Array<JSX.Element>();
         const customSignOut = async (): Promise<void> => {
           await signOut({ redirect: false });
           window.location.assign("/signin");

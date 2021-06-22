@@ -4,12 +4,15 @@ import "reactjs-popup/dist/index.css";
 import Stack from "components/common/Stack";
 import styles from "components/common/popups/Popup.module.css";
 
-import type { FC, ReactElement } from "react";
+import type { FC, JSXElementConstructor, ReactElement } from "react";
+import type { StackProps } from "components/common/Stack";
 
 const NewBusiness: FC<{}> = () => {
   return (
     <Popup modal open={true}>
-      {(close: () => void): ReactElement => (
+      {(
+        close: () => void
+      ): ReactElement<StackProps, JSXElementConstructor<StackProps>> => (
         <Stack
           direction="column"
           rowAlign="center"

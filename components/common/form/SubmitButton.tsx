@@ -18,7 +18,7 @@ const FormSubmitButton: FC<FormSubmitButtonProps> = ({
   isSubmitting,
   disabled,
   ...rest
-}: FormSubmitButtonProps) => {
+}) => {
   return (
     <Button
       {...rest}
