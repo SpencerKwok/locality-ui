@@ -111,7 +111,7 @@ export default NextAuth({
         }
       };
 
-      if (typeof user?.email === "string") {
+      if (typeof user?.email === "string" && user.email) {
         token = { user: await createUser(user.email) };
       }
 

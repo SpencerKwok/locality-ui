@@ -13,7 +13,9 @@
     "build": "next build",
     "start": "node server.js",
     "svg": "svgr --typescript -d components/common/images public/images",
-    "lint": "eslint ./**/*.tsx",
+    "prettier": "prettier --check ./**/*.tsx ./**/*.ts ./**/*.js",
+    "prettier:fix": "prettier --write ./**/*.tsx ./**/*.ts ./**/*.js",
+    "lint": "eslint ./**/*.tsx ./**/*.ts",
     "lint:fix": "npm run lint -- --fix"
   },
   "repository": {

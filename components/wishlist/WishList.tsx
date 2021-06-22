@@ -19,30 +19,28 @@ const WishList: FC<WishListProps> = ({ products, onToggleWishList }) => {
     >
       <h1>My Wish List</h1>
       <Stack direction="row" columnAlign="flex-start" wrap="wrap" spacing={12}>
-        {products.map(
-          (product): ReactElement<ProductImageProps> => {
-            return (
-              <ProductImage
-                alwaysHover
-                initialWishList
-                loggedIn
-                key={product.objectId}
-                business={product.business}
-                link={product.link}
-                name={product.name}
-                objectId={product.objectId}
-                onToggleWishList={onToggleWishList}
-                priceRange={product.priceRange}
-                variantImages={product.variantImages}
-                variantIndex={product.variantIndex}
-                style={{
-                  maxWidth: 175,
-                  marginBottom: 12,
-                }}
-              />
-            );
-          }
-        )}
+        {products.map((product): ReactElement<ProductImageProps> => {
+          return (
+            <ProductImage
+              alwaysHover
+              initialWishList
+              loggedIn
+              key={product.objectId}
+              business={product.business}
+              link={product.link}
+              name={product.name}
+              objectId={product.objectId}
+              onToggleWishList={onToggleWishList}
+              priceRange={product.priceRange}
+              variantImages={product.variantImages}
+              variantIndex={product.variantIndex}
+              style={{
+                maxWidth: 175,
+                marginBottom: 12,
+              }}
+            />
+          );
+        })}
       </Stack>
     </Stack>
   );

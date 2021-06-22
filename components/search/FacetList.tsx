@@ -5,7 +5,8 @@ import Arrow from "components/common/images/Arrow";
 import Stack from "components/common/Stack";
 import styles from "components/search/FacetList.module.css";
 
-import type { FC, ReactElement } from "react";
+import type { FC, JSXElementConstructor, ReactElement } from "react";
+import type { ListGroupItemProps } from "react-bootstrap/ListGroupItem";
 
 export interface FacetListProps {
   showAll: boolean;
@@ -24,13 +25,16 @@ const FacetList: FC<FacetListProps> = ({
   onFacetClick,
   toggleShowAll,
 }) => {
-  const sortedFacets = Array.from(facets, ([name, value]): {
-    name: string;
-    value: number;
-  } => ({
-    name,
-    value,
-  }));
+  const sortedFacets = Array.from(
+    facets,
+    ([name, value]): {
+      name: string;
+      value: number;
+    } => ({
+      name,
+      value,
+    })
+  );
 
   const facetRowRenderer = ({
     name,
@@ -38,7 +42,10 @@ const FacetList: FC<FacetListProps> = ({
   }: {
     name: string;
     value: number;
-  }): ReactElement => {
+  }): ReactElement<
+    ListGroupItemProps,
+    JSXElementConstructor<ListGroupItemProps>
+  > => {
     return (
       <ListGroup.Item className={styles["list-item"]} key={name}>
         <Stack direction="row" spacing={12}>

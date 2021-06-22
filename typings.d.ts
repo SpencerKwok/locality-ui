@@ -1,9 +1,9 @@
 // Adding missing modules for back-end
 declare module "doublemetaphone" {
   class DoubleMetaphone {
-    constructor();
+    public constructor();
 
-    doubleMetaphone(str: string): { primary: string; alternate: string };
+    public doubleMetaphone(str: string): { primary: string; alternate: string };
   }
   export = DoubleMetaphone;
 }
@@ -14,20 +14,20 @@ declare module "*.module.css";
 // Adding fixed length array type as seen here:
 // https://stackoverflow.com/questions/41139763/how-to-declare-a-fixed-length-array-in-typescript
 type ArrayLengthMutationKeys =
-  | "splice"
-  | "push"
+  | number
   | "pop"
+  | "push"
   | "shift"
-  | "unshift"
-  | number;
+  | "splice"
+  | "unshift";
 type ArrayItems<T extends Array<any>> = T extends Array<infer TItems>
   ? TItems
   : never;
-type FixedLengthArray<T extends any[]> = Pick<
+type FixedLengthArray<T extends Array<any>> = Pick<
   T,
   Exclude<keyof T, ArrayLengthMutationKeys>
 > & { [Symbol.iterator]: () => IterableIterator<ArrayItems<T>> };
 
 // Adding non-empty array type as seen here:
 // https://stackoverflow.com/questions/56006111/is-it-possible-to-define-a-non-empty-array-type-in-typescript
-type NonEmptyArray<T> = [T, ...T[]];
+type NonEmptyArray<T> = [T, ...Array<T>];

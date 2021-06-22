@@ -11,7 +11,7 @@ import { UploadSquareProductsSchema } from "common/ValidationSchema";
 import Stack, { StackProps } from "components/common/Stack";
 import styles from "components/dashboard/AddProduct.module.css";
 
-import type { FC, ReactElement } from "react";
+import type { FC, JSXElementConstructor, ReactElement } from "react";
 import type { DropdownItemProps } from "react-bootstrap/esm/DropdownItem";
 
 export type UploadType = "" | "Etsy" | "Shopify" | "Square";
@@ -92,7 +92,9 @@ const AddProduct: FC<AddProductProps> = ({
             }
           }}
         >
-          {(close: () => void): ReactElement<StackProps> => (
+          {(
+            close: () => void
+          ): ReactElement<StackProps, JSXElementConstructor<StackProps>> => (
             <Stack
               direction="column"
               columnAlign="center"
@@ -214,7 +216,12 @@ const AddProduct: FC<AddProductProps> = ({
           </Dropdown.Toggle>
           <Dropdown.Menu>
             {(["Etsy", "Shopify", "Square"] as Array<UploadType>).map(
-              (value): ReactElement<DropdownItemProps> => (
+              (
+                value
+              ): ReactElement<
+                DropdownItemProps,
+                JSXElementConstructor<DropdownItemProps>
+              > => (
                 <Dropdown.Item
                   key={value}
                   className={styles["dropdown-item"]}

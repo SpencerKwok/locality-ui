@@ -74,11 +74,9 @@ export default async function handler(
   const passwordMatch = await Bcrypt.compare(
     password,
     user.rows[0].password
-  ).catch(
-    async (err): Promise<void> => {
-      console.log(err);
-    }
-  );
+  ).catch(async (err): Promise<void> => {
+    console.log(err);
+  });
   if (passwordMatch !== true) {
     res.status(400).json({ error: "Invalid credentials" });
     return;

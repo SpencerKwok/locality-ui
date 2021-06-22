@@ -138,9 +138,7 @@ export default async function handler(
     (uploadSettings.excludeTags ?? []).map((x) => x.toLowerCase())
   );
   const departmentMapping = new Map<string, Array<string>>(
-    (
-      uploadSettings.departmentMapping ?? []
-    ).map(
+    (uploadSettings.departmentMapping ?? []).map(
       ({ key, departments }: { key: string; departments: Array<string> }) => [
         encode(key.trim().toLowerCase()),
         departments.map((x) => x.trim()),
