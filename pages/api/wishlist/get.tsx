@@ -1,18 +1,18 @@
 import SqlString from "sqlstring";
 
-import Algolia from "../../../lib/api/algolia";
-import Psql from "../../../lib/api/postgresql";
-import SumoLogic from "../../../lib/api/sumologic";
-import { runMiddlewareUser } from "../../../lib/api/middleware";
+import Algolia from "lib/api/algolia";
+import Psql from "lib/api/postgresql";
+import SumoLogic from "lib/api/sumologic";
+import { runMiddlewareUser } from "lib/api/middleware";
 
 import type { NextApiResponse } from "next";
-import type { NextApiRequestWithLocals } from "../../../lib/api/middleware";
-import type { WishListResponse } from "../../../common/Schema";
+import type { NextApiRequestWithLocals } from "lib/api/middleware";
+import type { Product, WishListResponse } from "common/Schema";
 
 export default async function handler(
   req: NextApiRequestWithLocals,
   res: NextApiResponse
-) {
+): Promise<void> {
   await runMiddlewareUser(req, res);
 
   if (req.method !== "GET") {
@@ -77,13 +77,14 @@ export default async function handler(
     return;
   }
 
-  const results = [];
+  const results = Array<Product>();
   for (let i = 0; i < wishlist.length; ++i) {
-    if (!products[i]) {
+    const product = products[i];
+    if (product === null) {
       continue;
     }
     results.push({
-      ...products[i],
+      ...product,
       variantIndex: wishlist[i].variantIndex,
     });
   }

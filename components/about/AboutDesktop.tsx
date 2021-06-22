@@ -1,11 +1,13 @@
-import DescriptionImage from "../common/description-image/DescriptionImage";
-import Stack from "../common/Stack";
+import DescriptionImage from "components/common/description-image/DescriptionImage";
+import Stack from "components/common/Stack";
+
+import type { FC } from "react";
 
 export interface AboutProps {
   width: number;
 }
 
-export default function About({ width }: AboutProps) {
+const About: FC<AboutProps> = ({ width }) => {
   return (
     <Stack direction="row" columnAlign="center">
       <Stack direction="column" rowAlign="center" spacing={32}>
@@ -96,4 +98,6 @@ export default function About({ width }: AboutProps) {
       </Stack>
     </Stack>
   );
-}
+};
+
+export default About;

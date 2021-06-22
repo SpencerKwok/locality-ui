@@ -1,8 +1,10 @@
 import Link from "next/link";
-import Stack from "../common/Stack";
-import styles from "./Signup.module.css";
+import Stack from "components/common/Stack";
+import styles from "components/signup/Signup.module.css";
 
-export default function SignUp() {
+import type { FC } from "react";
+
+const SignUp: FC<{}> = () => {
   return (
     <Stack direction="row" columnAlign="center">
       <Stack direction="column" rowAlign="center">
@@ -34,4 +36,6 @@ export default function SignUp() {
       </Stack>
     </Stack>
   );
-}
+};
+
+export default SignUp;

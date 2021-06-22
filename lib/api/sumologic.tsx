@@ -1,12 +1,12 @@
-import { SUMOLOGIC_URL } from "../env";
+import { SUMOLOGIC_URL } from "lib/env";
 
-const url = SUMOLOGIC_URL || "";
+const url = SUMOLOGIC_URL ?? "";
 const sumoLogicClient: {
   log: (params: Message) => void;
 } = {
   log: ({ level, message, method, params }) => {
     const err = `${Date()} level=${level} message=${message} ${
-      method ? `method=${method}` : ""
+      typeof method === "string" ? `method=${method}` : ""
     } ${params ? `params=${JSON.stringify(params)}` : ""}`;
 
     // Log to console for real-time debugging
@@ -24,10 +24,10 @@ const sumoLogicClient: {
 };
 
 export interface Message {
-  level: "info" | "warning" | "error";
+  level: "error" | "info" | "warning";
   message: string;
   method?: string;
-  params?: { [key: string]: any };
+  params?: Record<string, any>;
 }
 
 export default sumoLogicClient;

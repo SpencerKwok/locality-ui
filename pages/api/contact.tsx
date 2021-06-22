@@ -1,12 +1,12 @@
 import NodeMailer from "nodemailer";
 import Xss from "xss";
 
-import { ContactSchema } from "../../common/ValidationSchema";
-import { EMAIL_SERVICE, EMAIL_USER, EMAIL_PASSWORD } from "../../lib/env";
-import SumoLogic from "../../lib/api/sumologic";
+import { ContactSchema } from "common/ValidationSchema";
+import { EMAIL_SERVICE, EMAIL_USER, EMAIL_PASSWORD } from "lib/env";
+import SumoLogic from "lib/api/sumologic";
 
 import type { NextApiRequest, NextApiResponse } from "next";
-import type { ContactRequest } from "../../common/Schema";
+import type { ContactRequest } from "common/Schema";
 
 const transporter = NodeMailer.createTransport({
   service: EMAIL_SERVICE,
@@ -19,7 +19,7 @@ const transporter = NodeMailer.createTransport({
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void> {
   if (req.method !== "POST") {
     SumoLogic.log({
       level: "info",
@@ -33,12 +33,12 @@ export default async function handler(
   const body: ContactRequest = req.body;
   try {
     await ContactSchema.validate(body, { abortEarly: false });
-  } catch (err) {
+  } catch (error: unknown) {
     SumoLogic.log({
       level: "warning",
       method: "contact",
-      message: `Invalid payload: ${err.inner}`,
-      params: { body, error: err },
+      message: "Invalid payload",
+      params: { body, error },
     });
     res.status(400).json({ error: "Invalid payload" });
     return;
@@ -66,12 +66,12 @@ export default async function handler(
     await transporter.sendMail(customerMailOptions);
     await transporter.sendMail(selfMailOptions);
     res.status(204).end();
-  } catch (err) {
+  } catch (error: unknown) {
     SumoLogic.log({
       level: "error",
       method: "contact",
-      message: `Failed to send mail: ${err.message}`,
-      params: body,
+      message: "Failed to send mail",
+      params: { body, error },
     });
     res.status(500).json({ error: "Internal server error" });
   }

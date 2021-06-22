@@ -93,7 +93,7 @@ export interface AddToWishListRequest {
   id: string;
 }
 
-export interface AddToWishListResponse extends BaseResponse {}
+export type AddToWishListResponse = BaseResponse;
 
 interface SignUpResponse extends BaseResponse {
   redirectTo: string;
@@ -109,7 +109,7 @@ export interface BusinessSignUpRequest extends UserSignUpRequest {
   country: string;
 }
 
-export interface BusinessSignUpResponse extends SignUpResponse {}
+export type BusinessSignUpResponse = SignUpResponse;
 
 export interface BaseUploadTypeSettings {
   includeTags?: Array<string>;
@@ -148,7 +148,7 @@ export interface ContactRequest {
   name: string;
 }
 
-export interface ContactResponse extends BaseResponse {}
+export type ContactResponse = BaseResponse;
 
 export interface DepartmentsUpdateRequest {
   id: number;
@@ -163,7 +163,7 @@ export interface DeleteFromWishListRequest {
   id: string;
 }
 
-export interface DeleteFromWishListResponse extends BaseResponse {}
+export type DeleteFromWishListResponse = BaseResponse;
 
 export interface HomepagesUpdateRequest {
   id: number;
@@ -279,7 +279,7 @@ export interface ProductDeleteRequest {
   };
 }
 
-export interface ProductDeleteResponse extends BaseResponse {}
+export type ProductDeleteResponse = BaseResponse;
 
 export interface PasswordUpdateRequest {
   currentPassword: string;
@@ -287,19 +287,19 @@ export interface PasswordUpdateRequest {
   newPassword2: string;
 }
 
-export interface PasswordUpdateResponse extends BaseResponse {}
+export type PasswordUpdateResponse = BaseResponse;
 
 export interface ProductUploadRequest {
   id: number;
 }
 
-export interface ProductUploadResponse extends BaseResponse {}
+export type ProductUploadResponse = BaseResponse;
 
 export interface SquareProductUploadRequest extends ProductUploadRequest {
   csv: string;
 }
 
-export interface SquareProductUploadResponse extends ProductUploadResponse {}
+export type SquareProductUploadResponse = ProductUploadResponse;
 
 export interface UserSignUpRequest {
   firstName: string;
@@ -309,7 +309,7 @@ export interface UserSignUpRequest {
   password2: string;
 }
 
-export interface UserSignUpResponse extends SignUpResponse {}
+export type UserSignUpResponse = SignUpResponse;
 
 export interface EtsyUploadSettingsUpdateRequest {
   id: number;
@@ -375,7 +375,7 @@ export interface VariantDeleteRequest {
   };
 }
 
-export interface VariantDeleteResponse extends BaseResponse {}
+export type VariantDeleteResponse = BaseResponse;
 
 export interface GetMethods {
   Business: BusinessResponse;
@@ -418,8 +418,8 @@ export interface SearchRequest {
 
 export interface SearchResponse {
   facets: {
-    business: { [key: string]: number };
-    departments: { [key: string]: number };
+    business: Record<string, number>;
+    departments: Record<string, number>;
   };
   hits: Array<Product>;
   nbHits: number;

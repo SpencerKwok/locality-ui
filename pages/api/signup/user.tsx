@@ -2,19 +2,19 @@ import Bcrypt from "bcryptjs";
 import SqlString from "sqlstring";
 import Xss from "xss";
 
-import MailChimp, { MainListId } from "../../../lib/api/mailchimp";
-import Psql from "../../../lib/api/postgresql";
-import { SALT } from "../../../lib/env";
-import SumoLogic from "../../../lib/api/sumologic";
-import { UserSignUpSchema } from "../../../common/ValidationSchema";
+import MailChimp, { MainListId } from "lib/api/mailchimp";
+import Psql from "lib/api/postgresql";
+import { SALT } from "lib/env";
+import SumoLogic from "lib/api/sumologic";
+import { UserSignUpSchema } from "common/ValidationSchema";
 
 import type { NextApiRequest, NextApiResponse } from "next";
-import type { UserSignUpRequest } from "../../../common/Schema";
+import type { UserSignUpRequest } from "common/Schema";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void> {
   if (req.method !== "POST") {
     SumoLogic.log({
       level: "info",
@@ -28,7 +28,7 @@ export default async function handler(
   const body: UserSignUpRequest = req.body;
   try {
     await UserSignUpSchema.validate(body, { abortEarly: false });
-  } catch (err) {
+  } catch (err: unknown) {
     SumoLogic.log({
       level: "warning",
       method: "signup/user",
@@ -91,8 +91,8 @@ export default async function handler(
     return;
   }
 
-  const userId = (user.rows[0] || { id: 0 }).id + 1;
-  const hash = await Bcrypt.hash(password, parseInt(SALT || "12"));
+  const userId = (user.rows[0] ?? { id: 0 }).id + 1;
+  const hash = await Bcrypt.hash(password, parseInt(SALT ?? "12"));
   const psqlErrorAddUser = await Psql.insert({
     table: "users",
     values: [

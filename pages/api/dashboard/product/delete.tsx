@@ -1,16 +1,16 @@
-import { productDelete } from "../../../../lib/api/dashboard";
-import { ProductDeleteSchema } from "../../../../common/ValidationSchema";
-import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
-import SumoLogic from "../../../../lib/api/sumologic";
+import { productDelete } from "lib/api/dashboard";
+import { ProductDeleteSchema } from "common/ValidationSchema";
+import { runMiddlewareBusiness } from "lib/api/middleware";
+import SumoLogic from "lib/api/sumologic";
 
-import type { ProductDeleteRequest } from "../../../../common/Schema";
+import type { ProductDeleteRequest } from "common/Schema";
 import type { NextApiResponse } from "next";
-import type { NextApiRequestWithLocals } from "../../../../lib/api/middleware";
+import type { NextApiRequestWithLocals } from "lib/api/middleware";
 
 export default async function handler(
   req: NextApiRequestWithLocals,
   res: NextApiResponse
-) {
+): Promise<void> {
   await runMiddlewareBusiness(req, res);
 
   if (req.method !== "POST") {
@@ -25,12 +25,12 @@ export default async function handler(
   const reqBody: ProductDeleteRequest = req.body;
   try {
     await ProductDeleteSchema.validate(reqBody, { abortEarly: false });
-  } catch (err) {
+  } catch (error: unknown) {
     SumoLogic.log({
       level: "warning",
       method: "dashboard/product/delete",
-      message: `Invalid payload: ${err.inner}`,
-      params: { body: reqBody, error: err },
+      message: "Invalid payload",
+      params: { body: reqBody, error },
     });
     res.status(400).json({ error: "Invalid payload" });
     return;

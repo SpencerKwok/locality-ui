@@ -1,12 +1,13 @@
-import RootLayout from "../../components/common/RootLayout";
+import RootLayout from "components/common/RootLayout";
 
+import type { FC } from "react";
 import type { Session } from "next-auth";
 
 export interface PrivacyProps {
   session: Session | null;
 }
 
-export default function Privacy({ session }: PrivacyProps) {
+const Privacy: FC<PrivacyProps> = ({ session }) => {
   return (
     <RootLayout session={session}>
       <div style={{ marginLeft: 12 }}>
@@ -26,4 +27,6 @@ export default function Privacy({ session }: PrivacyProps) {
       </div>
     </RootLayout>
   );
-}
+};
+
+export default Privacy;

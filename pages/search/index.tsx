@@ -2,27 +2,34 @@ import ip from "ip";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
-import { GetRpcClient, PostRpcClient } from "../../components/common/RpcClient";
-import SearchResultsDesktop from "../../components/search/SearchResultsDesktop";
-import SearchResultsMobile from "../../components/search/SearchResultsMobile";
-import RootLayout from "../../components/common/RootLayout";
-import { useMediaQuery } from "../../lib/common";
+import { GetRpcClient, PostRpcClient } from "components/common/RpcClient";
+import SearchResultsDesktop from "components/search/SearchResultsDesktop";
+import SearchResultsMobile from "components/search/SearchResultsMobile";
+import RootLayout from "components/common/RootLayout";
+import { useMediaQuery } from "lib/common";
 
+import type { FC } from "react";
 import type { GetServerSideProps } from "next";
 import type { Session } from "next-auth";
-import type { SearchResponse } from "../../common/Schema";
+import type { SearchResponse } from "common/Schema";
 
-function onToggleWishList(objectId: string, value: boolean) {
+function onToggleWishList(objectId: string, value: boolean): void {
   if (value) {
-    return PostRpcClient.getInstance().call("AddToWishList", { id: objectId });
+    void PostRpcClient.getInstance().call("AddToWishList", {
+      id: objectId,
+    });
   } else {
-    return PostRpcClient.getInstance().call("DeleteFromWishList", {
+    void PostRpcClient.getInstance().call("DeleteFromWishList", {
       id: objectId,
     });
   }
 }
 
-function fetcher(url: string, ip: string, cookie?: string) {
+async function fetcher(
+  url: string,
+  ip: string,
+  cookie?: string
+): Promise<SearchResponse> {
   return GetRpcClient.getInstance().call("Search", url, {
     cookie,
     "x-forwarded-for": ip,
@@ -35,9 +42,9 @@ class UserInput {
   public business: Set<string>;
   public departments: Set<string>;
 
-  constructor(
+  public constructor(
     query: string,
-    page: number = 0,
+    page = 0,
     business: Set<string> = new Set<string>(),
     departments: Set<string> = new Set<string>()
   ) {
@@ -47,7 +54,7 @@ class UserInput {
     this.departments = departments;
   }
 
-  clone() {
+  public clone(): UserInput {
     return new UserInput(
       this.query,
       this.page,
@@ -56,7 +63,7 @@ class UserInput {
     );
   }
 
-  toString() {
+  public toString(): string {
     let params = `q=${encodeURIComponent(this.query)}`;
     if (this.page > 0) {
       params += `&pg=${this.page}`;
@@ -85,9 +92,9 @@ export interface SearchProps {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const cookie = context.req.headers.cookie;
-  const forwarded = (context.req.headers["x-forwarded-for"] || "") as string;
+  const forwarded = (context.req.headers["x-forwarded-for"] ?? "") as string;
   const ip = forwarded.split(/,\s*/)[0];
-  const query = decodeURIComponent((context.query["q"] || "") as string);
+  const query = decodeURIComponent((context.query["q"] ?? "") as string);
   const results = await fetcher(
     `/api/search?q=${encodeURIComponent(query)}`,
     ip,
@@ -102,7 +109,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function Search({ query, results, session }: SearchProps) {
+const Search: FC<SearchProps> = ({ query, results, session }) => {
   const ipAddress = ip.address();
   const [data, setData] = useState(results);
   const [showAllBusinesses, setShowAllBusinesses] = useState(false);
@@ -110,11 +117,11 @@ export default function Search({ query, results, session }: SearchProps) {
   const [userInput, setUserInput] = useState(new UserInput(query));
   const router = useRouter();
 
-  const onReset = () => {
+  const onReset = (): void => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
 
-    userInput.query = urlParams.get("q") || "";
+    userInput.query = urlParams.get("q") ?? "";
     userInput.page = 0;
     userInput.business = new Set<string>();
     userInput.departments = new Set<string>();
@@ -135,7 +142,7 @@ export default function Search({ query, results, session }: SearchProps) {
   const isNarrow = useMediaQuery(42, "width");
   const loggedIn = !(!session || !session.user);
 
-  const onUserInputChange = () => {
+  const onUserInputChange = (): void => {
     setUserInput(userInput.clone());
     fetcher(`/api/search?${userInput.toString()}`, ipAddress)
       .then(({ hits, nbHits }) => {
@@ -147,7 +154,7 @@ export default function Search({ query, results, session }: SearchProps) {
   };
 
   const createOnFacetClick = (name: "business" | "departments") => {
-    return (value: string) => {
+    return (value: string): void => {
       userInput.page = 0;
       if (userInput[name].has(value)) {
         userInput[name].delete(value);
@@ -158,12 +165,12 @@ export default function Search({ query, results, session }: SearchProps) {
     };
   };
 
-  const onPageClick = (value: number) => {
+  const onPageClick = (value: number): void => {
     userInput.page = value;
     onUserInputChange();
   };
 
-  const onEnter = async (query: string) => {
+  const onEnter = async (query: string): Promise<void> => {
     userInput.query = query;
     userInput.page = 0;
     userInput.business = new Set<string>();
@@ -182,7 +189,7 @@ export default function Search({ query, results, session }: SearchProps) {
         console.log(err);
       });
 
-    router.push(
+    void router.push(
       { pathname: "/search", query: { q: encodeURIComponent(query) } },
       undefined,
       {
@@ -194,10 +201,10 @@ export default function Search({ query, results, session }: SearchProps) {
   // HACK: this function only runs on
   // the client side, so we need to update
   // the query value using the url
-  const onBottom = () => {
+  const onBottom = (): void => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const query = decodeURIComponent(urlParams.get("q") || "");
+    const query = decodeURIComponent(urlParams.get("q") ?? "");
     if (userInput.query !== query) {
       userInput.query = query;
       userInput.page = 0;
@@ -231,11 +238,11 @@ export default function Search({ query, results, session }: SearchProps) {
       });
   };
 
-  const onToggleShowAllBusinesses = () => {
+  const onToggleShowAllBusinesses = (): void => {
     setShowAllBusinesses(!showAllBusinesses);
   };
 
-  const onToggleShowAllDepartments = () => {
+  const onToggleShowAllDepartments = (): void => {
     setShowAllDepartments(!showAllDepartments);
   };
 
@@ -250,7 +257,9 @@ export default function Search({ query, results, session }: SearchProps) {
 
   useEffect(() => {
     window.addEventListener("popstate", onReset);
-    return () => window.removeEventListener("popstate", onReset);
+    return (): void => {
+      window.removeEventListener("popstate", onReset);
+    };
   }, []);
 
   useEffect(() => {
@@ -309,4 +318,6 @@ export default function Search({ query, results, session }: SearchProps) {
       )}
     </RootLayout>
   );
-}
+};
+
+export default Search;

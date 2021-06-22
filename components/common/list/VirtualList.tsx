@@ -1,10 +1,14 @@
 import { List, ListProps } from "react-virtualized";
-import styles from "./VirtualList.module.css";
+import styles from "components/common/list/VirtualList.module.css";
 
-export interface VirtualListProps extends ListProps {}
+import type { FC } from "react";
 
-export default function VirtualLista({ className, ...rest }: VirtualListProps) {
+export type VirtualListProps = ListProps;
+
+const VirtualList: FC<VirtualListProps> = ({ className, ...rest }) => {
   return (
     <List {...rest} className={`${styles["virtual-list"]} ${className}`} />
   );
-}
+};
+
+export default VirtualList;

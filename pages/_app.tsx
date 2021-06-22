@@ -6,9 +6,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 import type { AppProps } from "next/app";
 import type { Session } from "next-auth";
+import type { FC } from "react";
 
 const protectedPagesRegex = /^\/(dashboard|signin|signup|wishlist)/g;
-export default function App({ Component, pageProps }: AppProps) {
+
+const App: FC<AppProps> = ({ Component, pageProps }) => {
   const [loaded, setLoaded] = useState(false);
   const [prevPath, setPrevPath] = useState("/");
   const [session, setSession] = useState<Session | null>(null);
@@ -26,7 +28,7 @@ export default function App({ Component, pageProps }: AppProps) {
       setLoaded(false);
     }
 
-    getSession().then((value) => {
+    void getSession().then((value) => {
       setSession(value);
       setLoaded(true);
       setPrevPath(router.pathname);
@@ -53,4 +55,6 @@ export default function App({ Component, pageProps }: AppProps) {
       <Component {...pageProps} session={session} />
     </Fragment>
   );
-}
+};
+
+export default App;

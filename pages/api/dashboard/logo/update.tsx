@@ -1,18 +1,15 @@
 import SqlString from "sqlstring";
 import Xss from "xss";
 
-import Cloudinary from "../../../../lib/api/cloudinary";
-import SumoLogic from "../../../../lib/api/sumologic";
-import Psql from "../../../../lib/api/postgresql";
-import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
-import { LogoUpdateSchema } from "../../../../common/ValidationSchema";
+import Cloudinary from "lib/api/cloudinary";
+import SumoLogic from "lib/api/sumologic";
+import Psql from "lib/api/postgresql";
+import { runMiddlewareBusiness } from "lib/api/middleware";
+import { LogoUpdateSchema } from "common/ValidationSchema";
 
-import type {
-  LogoUpdateRequest,
-  LogoUpdateResponse,
-} from "../../../../common/Schema";
+import type { LogoUpdateRequest, LogoUpdateResponse } from "common/Schema";
 import type { NextApiResponse } from "next";
-import type { NextApiRequestWithLocals } from "../../../../lib/api/middleware";
+import type { NextApiRequestWithLocals } from "lib/api/middleware";
 
 export const config = {
   api: {
@@ -25,7 +22,7 @@ export const config = {
 export default async function handler(
   req: NextApiRequestWithLocals,
   res: NextApiResponse
-) {
+): Promise<void> {
   await runMiddlewareBusiness(req, res);
 
   if (req.method !== "POST") {
@@ -41,12 +38,12 @@ export default async function handler(
   const reqBody: LogoUpdateRequest = req.body;
   try {
     await LogoUpdateSchema.validate(reqBody, { abortEarly: false });
-  } catch (err) {
+  } catch (error: unknown) {
     SumoLogic.log({
       level: "warning",
       method: "dashboard/logo/update",
-      message: `Invalid payload: ${err.inner}`,
-      params: { body: reqBody, error: err },
+      message: "Invalid payload",
+      params: { body: reqBody, error },
     });
     res.status(400).json({ error: "Invalid payload" });
     return;
@@ -74,7 +71,7 @@ export default async function handler(
     unique_filename: false,
     overwrite: true,
   });
-  if (!url) {
+  if (url === null) {
     SumoLogic.log({
       level: "error",
       method: "dashboard/logo/update",

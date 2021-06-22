@@ -1,17 +1,19 @@
-import Heart from "../images/Heart";
+import Heart from "components/common/images/Heart";
 import Popup from "reactjs-popup";
-import styles from "./ProductImage.module.css";
+import styles from "components/common/product-image/ProductImage.module.css";
 import "reactjs-popup/dist/index.css";
+
+import type { FC } from "react";
 
 export interface WishlistToolTipProps {
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 }
 
-export default function WishlistToolTip({
+const WishlistToolTip: FC<WishlistToolTipProps> = ({
   onMouseEnter,
   onMouseLeave,
-}: WishlistToolTipProps) {
+}) => {
   return (
     <Popup
       contentStyle={{
@@ -37,4 +39,6 @@ export default function WishlistToolTip({
       </p>
     </Popup>
   );
-}
+};
+
+export default WishlistToolTip;

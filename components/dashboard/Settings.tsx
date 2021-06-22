@@ -8,21 +8,27 @@ import Button from "react-bootstrap/Button";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 
-import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
+import {
+  InputGroup,
+  Label,
+  SubmitButton,
+  ErrorMessage,
+} from "components/common/form";
 import {
   EtsyUpdateUploadSettingsSchema,
   ShopifyUpdateUploadSettingsSchema,
   SquareUpdateUploadSettingsSchema,
-} from "../../common/ValidationSchema";
-import Select from "../common/select/VirtualSelect";
-import Stack from "../common/Stack";
-import styles from "./Settings.module.css";
+} from "common/ValidationSchema";
+import Select from "components/common/select/VirtualSelect";
+import Stack from "components/common/Stack";
+import styles from "components/dashboard/Settings.module.css";
 
-import type { FC } from "react";
-import type { BaseBusiness } from "../../common/Schema";
+import type { FC, ReactElement } from "react";
+import type { BaseBusiness } from "common/Schema";
 import type { FormikConfig } from "formik";
+import type { CSSObject } from "react-select/node_modules/@emotion/serialize";
 
-const BusinessList = dynamic(() => import("./BusinessList"));
+const BusinessList = dynamic(async () => import("./BusinessList"));
 
 export interface UpdateStatus {
   error: string;
@@ -97,24 +103,27 @@ const Settings: FC<SettingsProps> = ({
                 initialValues={
                   {
                     includeTags: (
-                      uploadSettings.shopify?.includeTags || []
+                      uploadSettings.shopify?.includeTags ?? []
                     ).join(", "),
                     excludeTags: (
-                      uploadSettings.shopify?.excludeTags || []
+                      uploadSettings.shopify?.excludeTags ?? []
                     ).join(", "),
                     departmentMapping:
-                      uploadSettings.shopify?.departmentMapping || [],
+                      uploadSettings.shopify?.departmentMapping ?? [],
                   } as ShopifyUpdateUploadSettingsRequest
                 }
                 onSubmit={onSubmitShopifyUploadSettings}
-                validate={async (values) => {
-                  const errors: { [key: string]: string } = {};
+                validate={async (values): Promise<Record<string, string>> => {
+                  const errors: Record<string, string> = {};
                   try {
                     await ShopifyUpdateUploadSettingsSchema.validate(values, {
                       abortEarly: false,
                     });
-                  } catch (e) {
-                    e.inner.forEach((err: yup.ValidationError) => {
+                  } catch (e: unknown) {
+                    // yup.ValidationError is the only error thrown
+                    // by validate so we know the error's type
+                    const error = e as yup.ValidationError;
+                    error.inner.forEach((err: yup.ValidationError) => {
                       errors[`${err.path}`] = err.message;
                     });
                   }
@@ -129,7 +138,7 @@ const Settings: FC<SettingsProps> = ({
                   handleChange,
                   handleSubmit,
                   setFieldValue,
-                }) => (
+                }): JSX.Element => (
                   <Form onSubmit={handleSubmit} style={{ marginTop: 12 }}>
                     <Stack direction="row" spacing={36}>
                       <Stack direction="column" style={{ width: 300 }}>
@@ -147,18 +156,18 @@ const Settings: FC<SettingsProps> = ({
                               onChange={handleChange}
                               placeholder="feature,in-stock,..."
                               type="text"
-                              value={values.includeTags || ""}
+                              value={values.includeTags ?? ""}
                             />
                           </InputGroup>
                           <div
                             style={{
                               textAlign: "right",
                               color:
-                                (values.includeTags?.length || 0) > 255
+                                (values.includeTags?.length ?? 0) > 255
                                   ? "red"
                                   : "black",
                             }}
-                          >{`${values.includeTags?.length || 0}/255`}</div>
+                          >{`${values.includeTags?.length ?? 0}/255`}</div>
                           <ErrorMessage name="includeTags" />
                         </Form.Group>
                         <Form.Group>
@@ -175,18 +184,18 @@ const Settings: FC<SettingsProps> = ({
                               onChange={handleChange}
                               placeholder="out-of-stock,unavailable,..."
                               type="text"
-                              value={values.excludeTags || ""}
+                              value={values.excludeTags ?? ""}
                             />
                           </InputGroup>
                           <div
                             style={{
                               textAlign: "right",
                               color:
-                                (values.excludeTags?.length || 0) > 255
+                                (values.excludeTags?.length ?? 0) > 255
                                   ? "red"
                                   : "black",
                             }}
-                          >{`${values.excludeTags?.length || 0}/255`}</div>
+                          >{`${values.excludeTags?.length ?? 0}/255`}</div>
                           <ErrorMessage name="excludeTags" />
                         </Form.Group>
                         {updateUploadSettingsStatus.error && (
@@ -205,7 +214,7 @@ const Settings: FC<SettingsProps> = ({
                           Department Mapping
                         </Label>
                         {[
-                          ...(values.departmentMapping || []),
+                          ...(values.departmentMapping ?? []),
                           { key: "", departments: [] },
                         ].map((value, index) => {
                           return (
@@ -248,23 +257,25 @@ const Settings: FC<SettingsProps> = ({
                                       isSearchable
                                       searchable
                                       clearable
-                                      onChange={(newValues) => {
+                                      onChange={(newValues): void => {
                                         setFieldValue(
                                           `departmentMapping[${index}].departments`,
                                           newValues.map(
-                                            (value: any) => value.label
+                                            (value): string => value.label
                                           ),
                                           true
                                         );
                                       }}
                                       options={departmentsWithIds}
-                                      value={(value.departments || []).map(
-                                        (department) => ({
+                                      value={value.departments.map(
+                                        (department): { label: string } => ({
                                           label: department,
                                         })
                                       )}
                                       styles={{
-                                        container: (obj) => ({
+                                        container: (
+                                          obj: CSSObject
+                                        ): CSSObject => ({
                                           ...obj,
                                           width: 300,
                                         }),
@@ -273,20 +284,20 @@ const Settings: FC<SettingsProps> = ({
                                   </InputGroup>
                                 </Form.Group>
                                 {index <
-                                  (values.departmentMapping?.length || 0) && (
+                                  (values.departmentMapping?.length ?? 0) && (
                                   <Stack direction="column-reverse">
                                     <div style={{ height: "1rem" }} />
                                     <Button
                                       variant="danger"
-                                      onClick={() => {
+                                      onClick={(): void => {
                                         setFieldValue(
                                           "departmentMapping",
                                           [
                                             ...(
-                                              values.departmentMapping || []
+                                              values.departmentMapping ?? []
                                             ).slice(0, index),
                                             ...(
-                                              values.departmentMapping || []
+                                              values.departmentMapping ?? []
                                             ).slice(index + 1),
                                           ],
                                           true
@@ -298,12 +309,12 @@ const Settings: FC<SettingsProps> = ({
                                   </Stack>
                                 )}
                               </Stack>
-                              {(() => {
-                                const keyError =
-                                  //@ts-ignore
+                              {((): ReactElement<HTMLDivElement> => {
+                                const keyError: string =
+                                  //@ts-expect-error: index is unbounded, so we can't use Typescript to define all possible error keys
                                   errors[`departmentMapping[${index}].key`];
-                                const departmentsError =
-                                  //@ts-ignore
+                                const departmentsError: string =
+                                  //@ts-expect-error: index is unbounded, so we can't use Typescript to define all possible error keys
                                   errors[
                                     `departmentMapping[${index}].departments`
                                   ];
@@ -344,10 +355,10 @@ const Settings: FC<SettingsProps> = ({
                 enableReinitialize
                 initialValues={
                   {
-                    includeTags: (uploadSettings.etsy?.includeTags || []).join(
+                    includeTags: (uploadSettings.etsy?.includeTags ?? []).join(
                       ", "
                     ),
-                    excludeTags: (uploadSettings.etsy?.excludeTags || []).join(
+                    excludeTags: (uploadSettings.etsy?.excludeTags ?? []).join(
                       ", "
                     ),
                   } as EtsyUpdateUploadSettingsRequest
@@ -361,7 +372,7 @@ const Settings: FC<SettingsProps> = ({
                   handleBlur,
                   handleChange,
                   handleSubmit,
-                }) => (
+                }): JSX.Element => (
                   <Form onSubmit={handleSubmit} style={{ marginTop: 12 }}>
                     <Stack direction="column" style={{ width: 300 }}>
                       <Form.Group>
@@ -378,18 +389,18 @@ const Settings: FC<SettingsProps> = ({
                             onChange={handleChange}
                             placeholder="feature,in-stock,..."
                             type="text"
-                            value={values.includeTags || ""}
+                            value={values.includeTags ?? ""}
                           />
                         </InputGroup>
                         <div
                           style={{
                             textAlign: "right",
                             color:
-                              (values.includeTags?.length || 0) > 255
+                              (values.includeTags?.length ?? 0) > 255
                                 ? "red"
                                 : "black",
                           }}
-                        >{`${values.includeTags?.length || 0}/255`}</div>
+                        >{`${values.includeTags?.length ?? 0}/255`}</div>
                         <ErrorMessage name="includeTags" />
                       </Form.Group>
                       <Form.Group>
@@ -406,18 +417,18 @@ const Settings: FC<SettingsProps> = ({
                             onChange={handleChange}
                             placeholder="out-of-stock,unavailable,..."
                             type="text"
-                            value={values.excludeTags || ""}
+                            value={values.excludeTags ?? ""}
                           />
                         </InputGroup>
                         <div
                           style={{
                             textAlign: "right",
                             color:
-                              (values.excludeTags?.length || 0) > 255
+                              (values.excludeTags?.length ?? 0) > 255
                                 ? "red"
                                 : "black",
                           }}
-                        >{`${values.excludeTags?.length || 0}/255`}</div>
+                        >{`${values.excludeTags?.length ?? 0}/255`}</div>
                         <ErrorMessage name="excludeTags" />
                       </Form.Group>
                       {updateUploadSettingsStatus.error && (
@@ -448,24 +459,27 @@ const Settings: FC<SettingsProps> = ({
                 initialValues={
                   {
                     includeTags: (
-                      uploadSettings.square?.includeTags || []
+                      uploadSettings.square?.includeTags ?? []
                     ).join(", "),
                     excludeTags: (
-                      uploadSettings.square?.excludeTags || []
+                      uploadSettings.square?.excludeTags ?? []
                     ).join(", "),
                     departmentMapping:
-                      uploadSettings.square?.departmentMapping || [],
+                      uploadSettings.square?.departmentMapping ?? [],
                   } as SquareUpdateUploadSettingsRequest
                 }
                 onSubmit={onSubmitSquareUploadSettings}
-                validate={async (values) => {
-                  const errors: { [key: string]: string } = {};
+                validate={async (values): Promise<Record<string, string>> => {
+                  const errors: Record<string, string> = {};
                   try {
                     await SquareUpdateUploadSettingsSchema.validate(values, {
                       abortEarly: false,
                     });
-                  } catch (e) {
-                    e.inner.forEach((err: yup.ValidationError) => {
+                  } catch (e: unknown) {
+                    // yup.ValidationError is the only error thrown
+                    // by validate so we know the error's type
+                    const error = e as yup.ValidationError;
+                    error.inner.forEach((err: yup.ValidationError) => {
                       errors[`${err.path}`] = err.message;
                     });
                   }
@@ -480,7 +494,7 @@ const Settings: FC<SettingsProps> = ({
                   handleChange,
                   handleSubmit,
                   setFieldValue,
-                }) => (
+                }): JSX.Element => (
                   <Form onSubmit={handleSubmit} style={{ marginTop: 12 }}>
                     <Stack direction="row" spacing={36}>
                       <Stack direction="column" style={{ width: 300 }}>
@@ -498,18 +512,18 @@ const Settings: FC<SettingsProps> = ({
                               onChange={handleChange}
                               placeholder="feature,in-stock,..."
                               type="text"
-                              value={values.includeTags || ""}
+                              value={values.includeTags ?? ""}
                             />
                           </InputGroup>
                           <div
                             style={{
                               textAlign: "right",
                               color:
-                                (values.includeTags?.length || 0) > 255
+                                (values.includeTags?.length ?? 0) > 255
                                   ? "red"
                                   : "black",
                             }}
-                          >{`${values.includeTags?.length || 0}/255`}</div>
+                          >{`${values.includeTags?.length ?? 0}/255`}</div>
                           <ErrorMessage name="includeTags" />
                         </Form.Group>
                         <Form.Group>
@@ -526,18 +540,18 @@ const Settings: FC<SettingsProps> = ({
                               onChange={handleChange}
                               placeholder="out-of-stock,unavailable,..."
                               type="text"
-                              value={values.excludeTags || ""}
+                              value={values.excludeTags ?? ""}
                             />
                           </InputGroup>
                           <div
                             style={{
                               textAlign: "right",
                               color:
-                                (values.excludeTags?.length || 0) > 255
+                                (values.excludeTags?.length ?? 0) > 255
                                   ? "red"
                                   : "black",
                             }}
-                          >{`${values.excludeTags?.length || 0}/255`}</div>
+                          >{`${values.excludeTags?.length ?? 0}/255`}</div>
                           <ErrorMessage name="excludeTags" />
                         </Form.Group>
                         {updateUploadSettingsStatus.error && (
@@ -556,7 +570,7 @@ const Settings: FC<SettingsProps> = ({
                           Department Mapping
                         </Label>
                         {[
-                          ...(values.departmentMapping || []),
+                          ...(values.departmentMapping ?? []),
                           { key: "", departments: [] },
                         ].map((value, index) => {
                           return (
@@ -599,23 +613,25 @@ const Settings: FC<SettingsProps> = ({
                                       isSearchable
                                       searchable
                                       clearable
-                                      onChange={(newValues) => {
+                                      onChange={(newValues): void => {
                                         setFieldValue(
                                           `departmentMapping[${index}].departments`,
                                           newValues.map(
-                                            (value: any) => value.label
+                                            (value): string => value.label
                                           ),
                                           true
                                         );
                                       }}
                                       options={departmentsWithIds}
-                                      value={(value.departments || []).map(
-                                        (department) => ({
+                                      value={value.departments.map(
+                                        (department): { label: string } => ({
                                           label: department,
                                         })
                                       )}
                                       styles={{
-                                        container: (obj) => ({
+                                        container: (
+                                          obj: CSSObject
+                                        ): CSSObject => ({
                                           ...obj,
                                           width: 300,
                                         }),
@@ -624,20 +640,20 @@ const Settings: FC<SettingsProps> = ({
                                   </InputGroup>
                                 </Form.Group>
                                 {index <
-                                  (values.departmentMapping?.length || 0) && (
+                                  (values.departmentMapping?.length ?? 0) && (
                                   <Stack direction="column-reverse">
                                     <div style={{ height: "1rem" }} />
                                     <Button
                                       variant="danger"
-                                      onClick={() => {
+                                      onClick={(): void => {
                                         setFieldValue(
                                           "departmentMapping",
                                           [
                                             ...(
-                                              values.departmentMapping || []
+                                              values.departmentMapping ?? []
                                             ).slice(0, index),
                                             ...(
-                                              values.departmentMapping || []
+                                              values.departmentMapping ?? []
                                             ).slice(index + 1),
                                           ],
                                           true
@@ -649,18 +665,18 @@ const Settings: FC<SettingsProps> = ({
                                   </Stack>
                                 )}
                               </Stack>
-                              {(() => {
-                                const keyError =
-                                  //@ts-ignore
+                              {((): ReactElement<HTMLDivElement> => {
+                                const keyError: string =
+                                  //@ts-expect-error: index is unbounded, so we can't use Typescript to define all possible error keys
                                   errors[`departmentMapping[${index}].key`];
-                                const departmentsError =
-                                  //@ts-ignore
+                                const departmentsError: string =
+                                  //@ts-expect-error: index is unbounded, so we can't use Typescript to define all possible error keys
                                   errors[
                                     `departmentMapping[${index}].departments`
                                   ];
                                 let err = "";
                                 if (keyError && !departmentsError) {
-                                  err = "Incomplete category";
+                                  err = "Incomplete product type";
                                 } else if (!keyError && departmentsError) {
                                   err = "Incomplete departments";
                                 } else if (keyError && departmentsError) {

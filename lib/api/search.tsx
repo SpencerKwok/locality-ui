@@ -2,7 +2,7 @@ import { distance } from "fastest-levenshtein";
 import DoubleMetaphone from "doublemetaphone";
 
 import type { Hit } from "@algolia/client-search";
-import type { Product } from "../../common/Schema";
+import type { Product } from "common/Schema";
 const encoder = new DoubleMetaphone();
 
 /*
@@ -13,7 +13,10 @@ const encoder = new DoubleMetaphone();
   Metaphone 3 (although better) due to
   licensing + it's $240 USD for source code.
 */
-export const getBestVariant = (query: string, hit: Hit<Product>) => {
+export const getBestVariant = (
+  query: string,
+  hit: Hit<Product>
+): Hit<Product> => {
   const { variantImages, variantTags } = hit;
   const uniqueTags = new Map();
   const uniqueImages = new Set(variantImages);

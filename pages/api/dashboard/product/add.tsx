@@ -1,16 +1,13 @@
 import Xss from "xss";
 
-import { addHttpsProtocol, productAdd } from "../../../../lib/api/dashboard";
-import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
-import SumoLogic from "../../../../lib/api/sumologic";
-import { ProductAddSchema } from "../../../../common/ValidationSchema";
+import { addHttpsProtocol, productAdd } from "lib/api/dashboard";
+import { runMiddlewareBusiness } from "lib/api/middleware";
+import SumoLogic from "lib/api/sumologic";
+import { ProductAddSchema } from "common/ValidationSchema";
 
-import type {
-  ProductAddRequest,
-  ProductAddResponse,
-} from "../../../../common/Schema";
+import type { ProductAddRequest, ProductAddResponse } from "common/Schema";
 import type { NextApiResponse } from "next";
-import type { NextApiRequestWithLocals } from "../../../../lib/api/middleware";
+import type { NextApiRequestWithLocals } from "lib/api/middleware";
 
 export const config = {
   api: {
@@ -23,7 +20,7 @@ export const config = {
 export default async function handler(
   req: NextApiRequestWithLocals,
   res: NextApiResponse
-) {
+): Promise<void> {
   await runMiddlewareBusiness(req, res);
 
   if (req.method !== "POST") {
@@ -39,12 +36,12 @@ export default async function handler(
   const reqBody: ProductAddRequest = req.body;
   try {
     await ProductAddSchema.validate(reqBody, { abortEarly: false });
-  } catch (err) {
+  } catch (error: unknown) {
     SumoLogic.log({
       level: "warning",
       method: "dashboard/product/add",
-      message: `Invalid payload: ${err.inner}`,
-      params: { body: reqBody, error: err },
+      message: "Invalid payload",
+      params: { body: reqBody, error },
     });
     res.status(400).json({ error: "Invalid payload" });
     return;

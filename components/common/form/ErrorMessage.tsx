@@ -1,16 +1,21 @@
-import React from "react";
 import { ErrorMessage, ErrorMessageProps } from "formik";
 
-export interface FormErrorMessageProps extends ErrorMessageProps {}
+import type { FC, HTMLProps, JSXElementConstructor, ReactElement } from "react";
 
-function FormErrorMessage(props: FormErrorMessageProps) {
-  const { name } = props;
+export type FormErrorMessageProps = ErrorMessageProps;
+
+const FormErrorMessage: FC<FormErrorMessageProps> = ({ name }) => {
   return (
     <ErrorMessage
       name={name}
-      render={(msg) => <div style={{ color: "red" }}>{msg}</div>}
+      render={(
+        msg
+      ): ReactElement<
+        HTMLProps<HTMLDivElement>,
+        JSXElementConstructor<HTMLDivElement>
+      > => <div style={{ color: "red" }}>{msg}</div>}
     />
   );
-}
+};
 
 export default FormErrorMessage;

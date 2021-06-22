@@ -1,12 +1,18 @@
-import * as yup from "yup";
 import { Formik, FormikConfig } from "formik";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 
-import { PasswordUpdateSchema } from "../../common/ValidationSchema";
-import Stack from "../common/Stack";
-import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
-import styles from "./Account.module.css";
+import {
+  InputGroup,
+  Label,
+  SubmitButton,
+  ErrorMessage,
+} from "components/common/form";
+import { PasswordUpdateSchema } from "common/ValidationSchema";
+import Stack from "components/common/Stack";
+import styles from "components/dashboard/Account.module.css";
+
+import type { FC } from "react";
 
 export interface PasswordUpdateRequest {
   currentPassword: string;
@@ -22,13 +28,13 @@ export interface AccountProps {
   onSubmitPassword: FormikConfig<PasswordUpdateRequest>["onSubmit"];
 }
 
-export default function Account({
+const Account: FC<AccountProps> = ({
   error,
   firstName,
   lastName,
   updatedPassword,
   onSubmitPassword,
-}: AccountProps) {
+}) => {
   return (
     <Stack direction="column" rowAlign="flex-start" spacing={16}>
       <div>
@@ -54,7 +60,7 @@ export default function Account({
             handleBlur,
             handleChange,
             handleSubmit,
-          }) => (
+          }): JSX.Element => (
             <Form onSubmit={handleSubmit}>
               <Form.Group>
                 <Label required>Current password</Label>
@@ -123,4 +129,6 @@ export default function Account({
       </Stack>
     </Stack>
   );
-}
+};
+
+export default Account;

@@ -2,9 +2,16 @@ import { Formik, FormikConfig } from "formik";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 
-import { ContactSchema } from "../../common/ValidationSchema";
-import { SubmitButton, ErrorMessage, InputGroup, Label } from "../common/form";
-import Stack from "../common/Stack";
+import {
+  SubmitButton,
+  ErrorMessage,
+  InputGroup,
+  Label,
+} from "components/common/form";
+import { ContactSchema } from "common/ValidationSchema";
+import Stack from "components/common/Stack";
+
+import type { FC } from "react";
 
 export interface ContactRequest {
   email: string;
@@ -19,12 +26,7 @@ export interface ContactProps {
   onSubmit: FormikConfig<ContactRequest>["onSubmit"];
 }
 
-export default function Contact({
-  error,
-  success,
-  width,
-  onSubmit,
-}: ContactProps) {
+const Contact: FC<ContactProps> = ({ error, success, width, onSubmit }) => {
   return (
     <Stack direction="row" columnAlign="center">
       <Stack
@@ -62,7 +64,7 @@ export default function Contact({
               handleBlur,
               handleChange,
               handleSubmit,
-            }) => (
+            }): JSX.Element => (
               <Form
                 onSubmit={handleSubmit}
                 style={{ width: 600, maxWidth: width }}
@@ -147,4 +149,6 @@ export default function Contact({
       </Stack>
     </Stack>
   );
-}
+};
+
+export default Contact;

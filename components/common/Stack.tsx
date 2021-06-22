@@ -1,12 +1,14 @@
 import { Children } from "react";
 import styled from "styled-components";
 
+import type { FC, JSXElementConstructor, ReactElement } from "react";
+
 export type StackDirection =
-  | "row"
-  | "row-reverse"
+  | "column-reverse"
   | "column"
-  | "column-reverse";
-export type StackAlignment = "flex-start" | "center" | "flex-end";
+  | "row-reverse"
+  | "row";
+export type StackAlignment = "center" | "flex-end" | "flex-start";
 
 export interface StackProps extends React.HTMLProps<HTMLDivElement> {
   direction: StackDirection;
@@ -16,7 +18,7 @@ export interface StackProps extends React.HTMLProps<HTMLDivElement> {
   spacing?: number;
 }
 
-const directionToMargin = (direction: StackDirection) => {
+const directionToMargin = (direction: StackDirection): string => {
   switch (direction) {
     case "row":
       return "right";
@@ -29,7 +31,7 @@ const directionToMargin = (direction: StackDirection) => {
   }
 };
 
-function Stack(props: StackProps) {
+const Stack: FC<StackProps> = (props) => {
   return (
     <div {...props}>
       {Children.map(props.children, (child, index) => {
@@ -46,22 +48,35 @@ function Stack(props: StackProps) {
       })}
     </div>
   );
-}
+};
 
-export default styled(({ columnAlign, rowAlign, ...rest }: StackProps) => (
-  <Stack {...rest} />
-))`
-    align-items: ${({ rowAlign }) => rowAlign};
+export default styled(
+  ({
+    columnAlign,
+    rowAlign,
+    ...rest
+  }: StackProps): ReactElement<
+    StackProps,
+    JSXElementConstructor<StackProps>
+  > => {
+    // Refer to unused variables to stop
+    // typescript from complaining
+    void columnAlign, rowAlign;
+    return <Stack {...rest} />;
+  }
+)`
+    align-items: ${({ rowAlign }): string | undefined => rowAlign};
     display: flex;
-    flex-wrap: ${({ wrap }) => wrap};
-    flex-direction: ${({ direction }) => direction};
-    justify-content: ${({ columnAlign }) => columnAlign};
+    flex-wrap: ${({ wrap }): string | undefined => wrap};
+    flex-direction: ${({ direction }): string | undefined => direction};
+    justify-content: ${({ columnAlign }): string | undefined => columnAlign};
     > .stackitem {
-        margin-${({ direction }) => directionToMargin(direction)}: ${({
-  spacing,
-}) => spacing}px;
+        margin-${({ direction }): string | undefined =>
+          directionToMargin(direction)}: ${({ spacing }): number | undefined =>
+  spacing}px;
         &:last-child {
-            margin-${({ direction }) => directionToMargin(direction)}: 0px;
+            margin-${({ direction }): string | undefined =>
+              directionToMargin(direction)}: 0px;
         }
     }
 `;

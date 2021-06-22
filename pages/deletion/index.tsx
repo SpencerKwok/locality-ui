@@ -1,12 +1,13 @@
-import RootLayout from "../../components/common/RootLayout";
+import RootLayout from "components/common/RootLayout";
 
+import type { FC } from "react";
 import type { Session } from "next-auth";
 
 export interface DeletionProps {
   session: Session | null;
 }
 
-export default function Deletion({ session }: DeletionProps) {
+const Deletion: FC<DeletionProps> = ({ session }) => {
   return (
     <RootLayout session={session}>
       <div style={{ marginLeft: 12 }}>
@@ -18,4 +19,6 @@ export default function Deletion({ session }: DeletionProps) {
       </div>
     </RootLayout>
   );
-}
+};
+
+export default Deletion;

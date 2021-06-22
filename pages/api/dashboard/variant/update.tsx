@@ -1,17 +1,17 @@
 import Xss from "xss";
 
-import Algolia from "../../../../lib/api/algolia";
-import Cloudinary from "../../../../lib/api/cloudinary";
-import SumoLogic from "../../../../lib/api/sumologic";
-import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
-import { VariantUpdateSchema } from "../../../../common/ValidationSchema";
+import Algolia from "lib/api/algolia";
+import Cloudinary from "lib/api/cloudinary";
+import SumoLogic from "lib/api/sumologic";
+import { runMiddlewareBusiness } from "lib/api/middleware";
+import { VariantUpdateSchema } from "common/ValidationSchema";
 
 import type {
   VariantUpdateRequest,
   VariantUpdateResponse,
-} from "../../../../common/Schema";
+} from "common/Schema";
 import type { NextApiResponse } from "next";
-import type { NextApiRequestWithLocals } from "../../../../lib/api/middleware";
+import type { NextApiRequestWithLocals } from "lib/api/middleware";
 
 export const config = {
   api: {
@@ -24,7 +24,7 @@ export const config = {
 export default async function handler(
   req: NextApiRequestWithLocals,
   res: NextApiResponse
-) {
+): Promise<void> {
   await runMiddlewareBusiness(req, res);
 
   if (req.method !== "POST") {
@@ -40,12 +40,12 @@ export default async function handler(
   const reqBody: VariantUpdateRequest = req.body;
   try {
     await VariantUpdateSchema.validate(reqBody, { abortEarly: false });
-  } catch (err) {
+  } catch (error: unknown) {
     SumoLogic.log({
       level: "warning",
       method: "dashboard/variant/update",
-      message: `Invalid payload: ${err.inner}`,
-      params: { body: reqBody, error: err },
+      message: "Invalid payload",
+      params: { body: reqBody, error },
     });
     res.status(400).json({ error: "Invalid payload" });
     return;
@@ -91,7 +91,7 @@ export default async function handler(
     unique_filename: false,
     overwrite: true,
   });
-  if (!variantImageUrl) {
+  if (variantImageUrl === null) {
     SumoLogic.log({
       level: "error",
       method: "dashboard/variant/update",

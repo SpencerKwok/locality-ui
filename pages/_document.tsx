@@ -8,19 +8,32 @@ import Document, {
 } from "next/document";
 import { ServerStyleSheet } from "styled-components";
 
-import { NODE_ENV } from "../lib/env";
+import { NODE_ENV } from "lib/env";
+
+import type { DocumentInitialProps } from "next/document";
+import type { JSXElementConstructor, ReactElement } from "react";
+import type { RenderPageResult } from "next/dist/next-server/lib/utils";
 
 const prod = NODE_ENV === "production";
 export default class MyDocument extends Document {
-  static async getInitialProps(context: DocumentContext) {
+  public static async getInitialProps(
+    context: DocumentContext
+  ): Promise<DocumentInitialProps> {
     const sheet = new ServerStyleSheet();
     const originalRenderPage = context.renderPage;
 
     try {
-      context.renderPage = () =>
+      context.renderPage = (): Promise<RenderPageResult> | RenderPageResult =>
         originalRenderPage({
-          enhanceApp: (App) => (props) =>
-            sheet.collectStyles(<App {...props} />),
+          enhanceApp:
+            (App) =>
+            (
+              props
+            ): ReactElement<
+              { sheet: ServerStyleSheet },
+              JSXElementConstructor<any> | string
+            > =>
+              sheet.collectStyles(<App {...props} />),
         });
 
       const initialProps = await Document.getInitialProps(context);
@@ -38,7 +51,7 @@ export default class MyDocument extends Document {
     }
   }
 
-  render() {
+  public render(): JSX.Element {
     return (
       <Html>
         <Head>

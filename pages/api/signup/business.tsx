@@ -2,19 +2,19 @@ import Bcrypt from "bcryptjs";
 import SqlString from "sqlstring";
 import Xss from "xss";
 
-import { BusinessSignUpSchema } from "../../../common/ValidationSchema";
-import { MAPQUEST_KEY, SALT } from "../../../lib/env";
-import MailChimp, { MainListId } from "../../../lib/api/mailchimp";
-import Psql from "../../../lib/api/postgresql";
-import SumoLogic from "../../../lib/api/sumologic";
+import { BusinessSignUpSchema } from "common/ValidationSchema";
+import { MAPQUEST_KEY, SALT } from "lib/env";
+import MailChimp, { MainListId } from "lib/api/mailchimp";
+import Psql from "lib/api/postgresql";
+import SumoLogic from "lib/api/sumologic";
 
 import type { NextApiRequest, NextApiResponse } from "next";
-import type { BusinessSignUpRequest } from "../../../common/Schema";
+import type { BusinessSignUpRequest } from "common/Schema";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void> {
   if (req.method !== "POST") {
     SumoLogic.log({
       level: "info",
@@ -28,12 +28,12 @@ export default async function handler(
   const body: BusinessSignUpRequest = req.body;
   try {
     await BusinessSignUpSchema.validate(body, { abortEarly: false });
-  } catch (err) {
+  } catch (error: unknown) {
     SumoLogic.log({
       level: "warning",
       method: "signup/business",
       message: "Invalid payload",
-      params: { body, err },
+      params: { body, error },
     });
     res.status(400).json({ error: "Invalid payload" });
     return;
@@ -53,8 +53,11 @@ export default async function handler(
     const latLng = await fetch(
       `http://www.mapquestapi.com/geocoding/v1/address?key=${MAPQUEST_KEY}&maxResults=1&location=${address},${city},${province},${country}`
     )
-      .then((res) => res.json())
-      .then(({ results }) => results[0].locations[0].latLng);
+      .then(async (res) => res.json())
+      .then(
+        async ({ results }): Promise<{ lat: number; lng: number }> =>
+          results[0].locations[0].latLng as { lat: number; lng: number }
+      );
 
     const user = await Psql.select<{ id: number }>({
       table: "users",
@@ -101,7 +104,7 @@ export default async function handler(
       return;
     }
 
-    const userId = (user.rows[0] || { id: 0 }).id + 1;
+    const userId = (user.rows[0] ?? { id: 0 }).id + 1;
     const psqlErrorAddBusiness = await Psql.insert({
       table: "businesses",
       values: [
@@ -126,7 +129,7 @@ export default async function handler(
       return;
     }
 
-    const hash = await Bcrypt.hash(password, parseInt(SALT || "12"));
+    const hash = await Bcrypt.hash(password, parseInt(SALT ?? "12"));
     const psqlErrorAddUser = await Psql.insert({
       table: "users",
       values: [
@@ -170,12 +173,12 @@ export default async function handler(
     }
 
     res.status(204).end();
-  } catch (err) {
+  } catch (error: unknown) {
     SumoLogic.log({
       level: "error",
       method: "signup/business",
-      message: `Failed to get business location using Map Quest: ${err.message}`,
-      params: body,
+      message: "Failed to get business location using Map Quest",
+      params: { body, error },
     });
     res.status(500).json({ error: "Internal server error" });
   }

@@ -4,17 +4,18 @@ import Link from "next/link";
 import FacetList from "./FacetList";
 import ProductShowcase from "./ProductShowcase";
 import SearchBar from "./SearchBar";
-import Stack from "../common/Stack";
+import Stack from "components/common/Stack";
 
-import LocalityLogo from "../common/images/LocalityLogo";
-import { useWindowSize } from "../../lib/common";
+import LocalityLogo from "components/common/images/LocalityLogo";
+import { useWindowSize } from "lib/common";
 
 import type { Ellipsis } from "react-bootstrap/PageItem";
-import type { Product } from "../../common/Schema";
+import type { FC } from "react";
+import type { Product } from "common/Schema";
 
-const Pagination = dynamic(() => import("react-bootstrap/Pagination"));
-const PaginationItem = dynamic(() => import("react-bootstrap/PageItem"));
-const PaginationEllipsis = dynamic(() =>
+const Pagination = dynamic(async () => import("react-bootstrap/Pagination"));
+const PaginationItem = dynamic(async () => import("react-bootstrap/PageItem"));
+const PaginationEllipsis = dynamic(async () =>
   import("react-bootstrap/PageItem").then((module) => module.Ellipsis)
 ) as typeof Ellipsis;
 
@@ -53,7 +54,7 @@ export interface SearchProps {
   onToggleShowAllDepartments: () => void;
 }
 
-export default function Search({
+const Search: FC<SearchProps> = ({
   loggedIn,
   showAllBusinesses,
   showAllDepartments,
@@ -65,24 +66,24 @@ export default function Search({
   onToggleWishList,
   onToggleShowAllBusinesses,
   onToggleShowAllDepartments,
-}: SearchProps) {
+}) => {
   const size = useWindowSize();
 
-  if (!size.width) {
+  if (typeof size.width !== "number") {
     return null;
   }
 
-  const PaginationDisplay = () => {
+  const PaginationDisplay = (): JSX.Element => {
     return (
       <Pagination>
-        {(() => {
+        {((): Array<JSX.Element> => {
           const numPages = Math.ceil(searchResults.nbHits / 24);
           if (numPages < 12) {
             return Array.from(Array(numPages).keys()).map((index) => (
               <PaginationItem
                 active={userInput.page === index}
                 key={index}
-                onClick={() => {
+                onClick={(): void => {
                   onUserInputChange.page(index);
                 }}
               >
@@ -99,7 +100,7 @@ export default function Search({
                 <PaginationItem
                   active={userInput.page === index}
                   key={index}
-                  onClick={() => {
+                  onClick={(): void => {
                     onUserInputChange.page(index);
                   }}
                 >
@@ -112,7 +113,7 @@ export default function Search({
               <PaginationItem
                 active={userInput.page === numPages - 1}
                 key={numPages - 1}
-                onClick={() => {
+                onClick={(): void => {
                   onUserInputChange.page(numPages - 1);
                 }}
               >
@@ -124,7 +125,7 @@ export default function Search({
               <PaginationItem
                 active={userInput.page === 0}
                 key={0}
-                onClick={() => {
+                onClick={(): void => {
                   onUserInputChange.page(0);
                 }}
               >
@@ -141,7 +142,7 @@ export default function Search({
                 <PaginationItem
                   active={userInput.page === index}
                   key={index}
-                  onClick={() => {
+                  onClick={(): void => {
                     onUserInputChange.page(index);
                   }}
                 >
@@ -154,7 +155,7 @@ export default function Search({
               <PaginationItem
                 active={userInput.page === numPages - 1}
                 key={numPages - 1}
-                onClick={() => {
+                onClick={(): void => {
                   onUserInputChange.page(numPages - 1);
                 }}
               >
@@ -166,7 +167,7 @@ export default function Search({
               <PaginationItem
                 active={userInput.page === 0}
                 key={0}
-                onClick={() => {
+                onClick={(): void => {
                   onUserInputChange.page(0);
                 }}
               >
@@ -181,7 +182,7 @@ export default function Search({
                 <PaginationItem
                   active={userInput.page === index}
                   key={index}
-                  onClick={() => {
+                  onClick={(): void => {
                     onUserInputChange.page(index);
                   }}
                 >
@@ -231,7 +232,7 @@ export default function Search({
               showAll={showAllDepartments}
               facets={searchResults.facets.departments}
               selectedFacets={userInput.departments}
-              onFacetClick={(value) => {
+              onFacetClick={(value): void => {
                 onUserInputChange.departments(value);
               }}
               toggleShowAll={onToggleShowAllDepartments}
@@ -241,7 +242,7 @@ export default function Search({
               showAll={showAllBusinesses}
               facets={searchResults.facets.business}
               selectedFacets={userInput.business}
-              onFacetClick={(value) => {
+              onFacetClick={(value): void => {
                 onUserInputChange.business(value);
               }}
               toggleShowAll={onToggleShowAllBusinesses}
@@ -265,4 +266,6 @@ export default function Search({
       </Stack>
     </Stack>
   );
-}
+};
+
+export default Search;

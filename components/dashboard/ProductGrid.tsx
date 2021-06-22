@@ -5,12 +5,12 @@ import { Grid } from "react-virtualized";
 import { CSSProperties, ReactNode } from "react";
 import { decode } from "html-entities";
 
-import { BaseProduct } from "../../common/Schema";
-import DescriptionImage from "../common/description-image/DescriptionImage";
-import Stack from "../common/Stack";
-import styles from "./ProductGrid.module.css";
+import { BaseProduct } from "common/Schema";
+import DescriptionImage from "components/common/description-image/DescriptionImage";
+import Stack from "components/common/Stack";
+import styles from "components/dashboard/ProductGrid.module.css";
 
-import type { ChangeEvent } from "react";
+import type { ChangeEvent, FC } from "react";
 import type { GridCellProps } from "react-virtualized";
 
 export interface FuseBaseProduct extends BaseProduct {
@@ -30,13 +30,13 @@ export interface ProductGridProps {
   onProductClick: (id: number) => void;
 }
 
-export default function ProductGrid(props: ProductGridProps) {
-  const productRenderer = ({
+const ProductGrid: FC<ProductGridProps> = (props) => {
+  const productRenderer: FC<GridCellProps> = ({
     columnIndex,
     key,
     rowIndex,
     style,
-  }: GridCellProps) => {
+  }) => {
     const index = rowIndex * 3 + columnIndex;
     if (index >= props.products.length) {
       return <div key={key} style={style} />;
@@ -74,7 +74,7 @@ export default function ProductGrid(props: ProductGridProps) {
           }}
           height={props.width / 3 - 8}
           width={props.width / 3 - 8}
-          onClick={() => {
+          onClick={(): void => {
             props.onProductClick(props.products[index].index);
           }}
         >
@@ -128,4 +128,6 @@ export default function ProductGrid(props: ProductGridProps) {
       />
     </Stack>
   );
-}
+};
+
+export default ProductGrid;

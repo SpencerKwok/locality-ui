@@ -1,18 +1,15 @@
-import React from "react";
+import { BaseBusiness } from "common/Schema";
+import BusinessImage from "components/common/business-image/BusinessImage";
+import Stack from "components/common/Stack";
 
-import { BaseBusiness } from "../../common/Schema";
-import BusinessImage from "../common/business-image/BusinessImage";
-import Stack from "../common/Stack";
+import type { FC } from "react";
 
 export interface BusinessShowcaseProps {
   businesses: Array<BaseBusiness>;
   width: number;
 }
 
-export default function BusinessShowcase({
-  businesses,
-  width,
-}: BusinessShowcaseProps) {
+const BusinessShowcase: FC<BusinessShowcaseProps> = ({ businesses, width }) => {
   const numPerRow = Math.floor((width + 24) / 150);
   const startIndices = Array.from(
     { length: Math.ceil(businesses.length / numPerRow) },
@@ -28,11 +25,11 @@ export default function BusinessShowcase({
             spacing={24}
             key={startIndex}
           >
-            {(() => {
+            {((): Array<JSX.Element> => {
               const elements = Array<JSX.Element>();
               businesses
                 .slice(startIndex, startIndex + numPerRow)
-                .forEach((business) => {
+                .forEach((business): void => {
                   elements.push(
                     <a
                       href={business.homepages.homepage}
@@ -69,4 +66,6 @@ export default function BusinessShowcase({
       })}
     </Stack>
   );
-}
+};
+
+export default BusinessShowcase;

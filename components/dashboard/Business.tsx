@@ -6,21 +6,30 @@ import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 
 import { Base64, fileToBase64 } from "./ImageHelpers";
-import { InputGroup, Label, SubmitButton, ErrorMessage } from "../common/form";
+import {
+  InputGroup,
+  Label,
+  SubmitButton,
+  ErrorMessage,
+} from "components/common/form";
 import {
   DepartmentsUpdateSchema,
   HomepagesUpdateSchema,
   LogoUpdateSchema,
-} from "../../common/ValidationSchema";
-import Stack from "../common/Stack";
-import Select from "../common/select/VirtualSelect";
+} from "common/ValidationSchema";
+import Stack from "components/common/Stack";
+import Select from "components/common/select/VirtualSelect";
 import styles from "./Business.module.css";
 
-import type { BaseBusiness } from "../../common/Schema";
+import type { FC } from "react";
 import type { FormikConfig } from "formik";
+import type { BaseBusiness } from "common/Schema";
+import { CSSObject } from "react-select/node_modules/@emotion/serialize";
 
-const BusinessList = dynamic(() => import("./BusinessList"));
-const NewBusiness = dynamic(() => import("../common/popups/NewBusiness"));
+const BusinessList = dynamic(async () => import("./BusinessList"));
+const NewBusiness = dynamic(
+  async () => import("components/common/popups/NewBusiness")
+);
 
 export interface UpdateLogoRequest {
   logo: Base64;
@@ -57,7 +66,7 @@ export interface BusinessProps {
   onSubmitHomepages: FormikConfig<UpdateHomepagesRequest>["onSubmit"];
 }
 
-export default function Business({
+const Business: FC<BusinessProps> = ({
   isNewBusiness,
   businesses,
   businessIndex,
@@ -70,7 +79,7 @@ export default function Business({
   onSubmitLogo,
   onSubmitHomepages,
   onSubmitDepartments,
-}: BusinessProps) {
+}) => {
   const logoUrlRef = createRef<HTMLInputElement>();
   const logoFileRef = createRef<HTMLInputElement>();
   const departmentsWithIds = departments.map((department, index) => ({
@@ -119,7 +128,7 @@ export default function Business({
                       values,
                       handleSubmit,
                       setFieldValue,
-                    }) => (
+                    }): JSX.Element => (
                       <Form onSubmit={handleSubmit}>
                         <Form.Group>
                           <InputGroup>
@@ -129,7 +138,7 @@ export default function Business({
                               isSearchable
                               searchable
                               clearable
-                              onChange={(_, action) => {
+                              onChange={(_, action): void => {
                                 switch (action.action) {
                                   case "select-option":
                                     if (action.option) {
@@ -143,19 +152,20 @@ export default function Business({
                                     }
                                     break;
                                   case "remove-value":
-                                    if (action.removedValue) {
-                                      const label = action.removedValue.label;
-                                      setFieldValue(
-                                        "departments",
-                                        values.departments.filter(
-                                          (department) => department !== label
-                                        ),
-                                        false
-                                      );
-                                    }
+                                    const label = action.removedValue.label;
+                                    setFieldValue(
+                                      "departments",
+                                      values.departments.filter(
+                                        (department) => department !== label
+                                      ),
+                                      false
+                                    );
                                     break;
                                   case "clear":
                                     setFieldValue("departments", [], false);
+                                    break;
+                                  // Other options are not necessary with multi select
+                                  default:
                                     break;
                                 }
                               }}
@@ -164,7 +174,10 @@ export default function Business({
                                 label: department,
                               }))}
                               styles={{
-                                container: (obj) => ({ ...obj, width: 300 }),
+                                container: (obj: CSSObject): CSSObject => ({
+                                  ...obj,
+                                  width: 300,
+                                }),
                               }}
                             />
                           </InputGroup>
@@ -210,7 +223,7 @@ export default function Business({
                     handleBlur,
                     handleSubmit,
                     setFieldValue,
-                  }) => (
+                  }): JSX.Element => (
                     <Form onSubmit={handleSubmit}>
                       <Stack
                         direction="column"
@@ -222,7 +235,7 @@ export default function Business({
                           <img
                             src={values.logo}
                             alt={businesses[businessIndex].name}
-                            onError={() => {
+                            onError={(): void => {
                               setFieldValue("logo", "", true);
                             }}
                             style={{ maxHeight: 250, maxWidth: 300 }}
@@ -237,8 +250,8 @@ export default function Business({
                             aria-details="Enter image url here"
                             id="logo"
                             onBlur={handleBlur}
-                            onChange={async (event) => {
-                              if (event.currentTarget.value !== "") {
+                            onChange={async (event): Promise<void> => {
+                              if (event.currentTarget.value) {
                                 try {
                                   const url = event.currentTarget.value;
                                   setFieldValue("logo", url, true);
@@ -263,7 +276,7 @@ export default function Business({
                             onBlur={handleBlur}
                             onChange={async (
                               event: React.ChangeEvent<HTMLInputElement>
-                            ) => {
+                            ): Promise<void> => {
                               if (
                                 event.target.files &&
                                 event.target.files.length > 0
@@ -316,13 +329,13 @@ export default function Business({
                       {
                         homepage: businesses[businessIndex].homepages.homepage,
                         etsyHomepage:
-                          businesses[businessIndex].homepages.etsyHomepage ||
+                          businesses[businessIndex].homepages.etsyHomepage ??
                           "",
                         shopifyHomepage:
-                          businesses[businessIndex].homepages.shopifyHomepage ||
+                          businesses[businessIndex].homepages.shopifyHomepage ??
                           "",
                         squareHomepage:
-                          businesses[businessIndex].homepages.squareHomepage ||
+                          businesses[businessIndex].homepages.squareHomepage ??
                           "",
                       } as UpdateHomepagesRequest
                     }
@@ -335,7 +348,7 @@ export default function Business({
                       handleBlur,
                       handleChange,
                       handleSubmit,
-                    }) => (
+                    }): JSX.Element => (
                       <Form onSubmit={handleSubmit}>
                         <Form.Group>
                           <Label
@@ -453,4 +466,6 @@ export default function Business({
       </Stack>
     </Fragment>
   );
-}
+};
+
+export default Business;

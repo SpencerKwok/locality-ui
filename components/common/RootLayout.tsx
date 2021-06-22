@@ -1,31 +1,29 @@
-import { ReactNode, useEffect, useState } from "react";
-import { getSession } from "next-auth/client";
+import NavigationDesktop from "components/common/navigation/NavigationDesktop";
+import NavigationMobile from "components/common/navigation/NavigationMobile";
+import { useWindowSize } from "lib/common";
 
-import NavigationDesktop from "./navigation/NavigationDesktop";
-import NavigationMobile from "./navigation/NavigationMobile";
-import { useWindowSize } from "../../lib/common";
-
+import type { FC, ReactNode } from "react";
 import type { Session } from "next-auth";
-import type { NavigationType } from "./navigation/NavigationProps";
+import type { NavigationType } from "components/common/navigation/NavigationProps";
 
 export interface RootLayoutProps {
   children?: ReactNode;
   session: Session | null;
 }
 
-export default function RootLayout({ children, session }: RootLayoutProps) {
+const RootLayout: FC<RootLayoutProps> = ({ children, session }) => {
   const size = useWindowSize();
 
-  if (!size.width) {
+  if (typeof size.width !== "number") {
     return null;
   }
 
   let navigationType: NavigationType = "none";
   let breakpoint = 680;
-  if (session && session.user) {
+  if (session?.user) {
     const user: any = session.user;
-    navigationType = user.isBusiness ? "business" : "user";
-    breakpoint = user.isBusiness ? 800 : 680;
+    navigationType = user.isBusiness === true ? "business" : "user";
+    breakpoint = user.isBusiness === true ? 800 : 680;
   }
 
   return (
@@ -38,4 +36,6 @@ export default function RootLayout({ children, session }: RootLayoutProps) {
       <main style={{ marginTop: 24 }}>{children}</main>
     </div>
   );
-}
+};
+
+export default RootLayout;

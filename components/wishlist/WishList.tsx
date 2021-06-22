@@ -1,16 +1,16 @@
-import ProductImage from "../common/product-image/ProductImage";
-import { Product } from "../../common/Schema";
-import Stack from "../common/Stack";
+import ProductImage from "components/common/product-image/ProductImage";
+import { Product } from "common/Schema";
+import Stack from "components/common/Stack";
+
+import type { FC, ReactElement } from "react";
+import type { ProductImageProps } from "components/common/product-image/ProductImage";
 
 export interface WishListProps {
   products: Array<Product>;
   onToggleWishList: (id: string, value: boolean) => void;
 }
 
-export default function WishList({
-  products,
-  onToggleWishList,
-}: WishListProps) {
+const WishList: FC<WishListProps> = ({ products, onToggleWishList }) => {
   return (
     <Stack
       direction="column"
@@ -19,7 +19,7 @@ export default function WishList({
     >
       <h1>My Wish List</h1>
       <Stack direction="row" columnAlign="flex-start" wrap="wrap" spacing={12}>
-        {products.map((product) => {
+        {products.map((product): ReactElement<ProductImageProps> => {
           return (
             <ProductImage
               alwaysHover
@@ -44,4 +44,6 @@ export default function WishList({
       </Stack>
     </Stack>
   );
-}
+};
+
+export default WishList;

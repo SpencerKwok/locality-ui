@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Button, InputGroup, FormControl } from "react-bootstrap";
 
-import Stack from "../common/Stack";
-import styles from "./SearchBar.module.css";
+import Stack from "components/common/Stack";
+import styles from "components/search/SearchBar.module.css";
+
+import type { FC } from "react";
 
 export interface SearchBarProps extends React.HTMLProps<HTMLDivElement> {
   defaultQuery?: string;
@@ -10,27 +12,27 @@ export interface SearchBarProps extends React.HTMLProps<HTMLDivElement> {
   onEnter: (query: string) => void;
 }
 
-export default function SearchBar({
+const SearchBar: FC<SearchBarProps> = ({
   defaultQuery,
   style,
   width,
   onEnter,
-}: SearchBarProps) {
-  const [initialQuery, setInitialQuery] = useState(defaultQuery || "");
-  const [query, setQuery] = useState(defaultQuery || "");
+}) => {
+  const [initialQuery, setInitialQuery] = useState(defaultQuery ?? "");
+  const [query, setQuery] = useState(defaultQuery ?? "");
 
-  if (defaultQuery && defaultQuery !== initialQuery) {
-    setInitialQuery(defaultQuery || "");
-    setQuery(defaultQuery || "");
+  if (typeof defaultQuery === "string" && defaultQuery !== initialQuery) {
+    setInitialQuery(defaultQuery);
+    setQuery(defaultQuery);
   }
 
-  const onClear = () => {
+  const onClear = (): void => {
     setQuery("");
   };
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setQuery((event.target as HTMLInputElement).value);
   };
-  const onKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const onKeyPress = (event: React.KeyboardEvent<HTMLInputElement>): void => {
     if (event.key === "Enter") {
       onEnter(query);
     }
@@ -60,7 +62,7 @@ export default function SearchBar({
       </InputGroup>
       <Button
         className={styles["submit-button"]}
-        onClick={() => {
+        onClick={(): void => {
           onEnter(query);
         }}
       >
@@ -68,4 +70,6 @@ export default function SearchBar({
       </Button>
     </Stack>
   );
-}
+};
+
+export default SearchBar;

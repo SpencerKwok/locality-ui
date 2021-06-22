@@ -1,25 +1,17 @@
-import Algolia from "../../../../lib/api/algolia";
-import Cloudinary from "../../../../lib/api/cloudinary";
-import SumoLogic from "../../../../lib/api/sumologic";
-import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
-import { VariantDeleteSchema } from "../../../../common/ValidationSchema";
+import Algolia from "lib/api/algolia";
+import Cloudinary from "lib/api/cloudinary";
+import SumoLogic from "lib/api/sumologic";
+import { runMiddlewareBusiness } from "lib/api/middleware";
+import { VariantDeleteSchema } from "common/ValidationSchema";
 
-import type { VariantDeleteRequest } from "../../../../common/Schema";
+import type { VariantDeleteRequest } from "common/Schema";
 import type { NextApiResponse } from "next";
-import type { NextApiRequestWithLocals } from "../../../../lib/api/middleware";
-
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: "5mb",
-    },
-  },
-};
+import type { NextApiRequestWithLocals } from "lib/api/middleware";
 
 export default async function handler(
   req: NextApiRequestWithLocals,
   res: NextApiResponse
-) {
+): Promise<void> {
   await runMiddlewareBusiness(req, res);
 
   if (req.method !== "POST") {
@@ -35,12 +27,12 @@ export default async function handler(
   const reqBody: VariantDeleteRequest = req.body;
   try {
     await VariantDeleteSchema.validate(reqBody, { abortEarly: false });
-  } catch (err) {
+  } catch (error: unknown) {
     SumoLogic.log({
       level: "warning",
       method: "dashboard/variant/delete",
-      message: `Invalid payload: ${err.inner}`,
-      params: { body: reqBody, error: err },
+      message: "Invalid payload",
+      params: { body: reqBody, error },
     });
     res.status(400).json({ error: "Invalid payload" });
     return;
@@ -81,7 +73,7 @@ export default async function handler(
   const deleteVariantImageError = await Cloudinary.deleteResources([
     `${businessId}/${productId}/${variantIndex}`,
   ]);
-  if (deleteVariantImageError) {
+  if (deleteVariantImageError !== null) {
     SumoLogic.log({
       level: "warning",
       method: "dashboard/variant/delete",

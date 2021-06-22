@@ -1,13 +1,15 @@
 import { forwardRef } from "react";
-import Stack, { StackProps } from "../Stack";
-import styles from "./DescriptionImage.module.css";
+import Stack, { StackProps } from "components/common/Stack";
+import styles from "components/common/description-image/DescriptionImage.module.css";
+
+import type { FC } from "react";
 
 export interface DescriptionImageProps extends StackProps {
-  loading?: "lazy" | "eager";
+  loading?: "eager" | "lazy";
   src: string;
 }
 
-export default function DescriptionImage(props: DescriptionImageProps) {
+const DescriptionImage: FC<DescriptionImageProps> = (props) => {
   return (
     <Stack
       direction={props.direction}
@@ -32,7 +34,7 @@ export default function DescriptionImage(props: DescriptionImageProps) {
       <Stack direction="column">{props.children}</Stack>
     </Stack>
   );
-}
+};
 
 export const LinkedDescriptionImage = forwardRef<
   HTMLAnchorElement,
@@ -42,3 +44,5 @@ export const LinkedDescriptionImage = forwardRef<
     <DescriptionImage {...rest} />
   </a>
 ));
+
+export default DescriptionImage;

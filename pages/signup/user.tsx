@@ -2,26 +2,27 @@ import { useState } from "react";
 import { getSession, signIn } from "next-auth/client";
 import { useRouter } from "next/router";
 
-import { PostRpcClient } from "../../components/common/RpcClient";
-import RootLayout from "../../components/common/RootLayout";
-import SignUpUser from "../../components/signup/SignupUser";
+import { PostRpcClient } from "components/common/RpcClient";
+import RootLayout from "components/common/RootLayout";
+import SignUpUser from "components/signup/SignupUser";
 
-import type { SignUpRequest } from "../../components/signup/SignupUser";
+import type { FC } from "react";
 import type { Session } from "next-auth";
+import type { SignUpRequest } from "components/signup/SignupUser";
 
 export interface UserSignUpProps {
   session: Session | null;
 }
 
-export default function UserSignUp({ session }: UserSignUpProps) {
+const UserSignUp: FC<UserSignUpProps> = ({ session }) => {
   const [error, setError] = useState("");
   const router = useRouter();
 
-  const onSubmit = async (values: SignUpRequest) => {
+  const onSubmit = async (values: SignUpRequest): Promise<void> => {
     await PostRpcClient.getInstance()
       .call("UserSignUp", values)
       .then(async ({ error }) => {
-        if (error) {
+        if (typeof error === "string" && error) {
           setError(error);
           return;
         }
@@ -39,18 +40,20 @@ export default function UserSignUp({ session }: UserSignUpProps) {
           );
           return;
         }
-        router.push("/?newUser=true");
+        void router.push("/?newUser=true");
       })
       .catch((error) => {
         setError(error);
       });
   };
 
-  if (session && session.user) {
+  if (session?.user) {
     const user: any = session.user;
 
     // Need to refresh CSP
-    window.location.assign(user.isBusiness ? "/dashboard?tab=inventory" : "/");
+    window.location.assign(
+      user.isBusiness === true ? "/dashboard?tab=inventory" : "/"
+    );
     return null;
   }
 
@@ -59,4 +62,6 @@ export default function UserSignUp({ session }: UserSignUpProps) {
       <SignUpUser error={error} onSubmit={onSubmit} />
     </RootLayout>
   );
-}
+};
+
+export default UserSignUp;

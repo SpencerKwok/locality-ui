@@ -1,11 +1,14 @@
-import React from "react";
 import InputGroup, { InputGroupProps } from "react-bootstrap/InputGroup";
 
-export interface FormInputGroupProps extends InputGroupProps {}
+import type { FC } from "react";
 
-export default function FormInputGroup({
+export type FormInputGroupProps = InputGroupProps;
+
+const FormInputGroup: FC<FormInputGroupProps> = ({
   children,
   ...rest
-}: FormInputGroupProps) {
+}: FormInputGroupProps) => {
   return <InputGroup {...rest}>{children}</InputGroup>;
-}
+};
+
+export default FormInputGroup;

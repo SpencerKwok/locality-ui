@@ -1,17 +1,19 @@
 import { useState } from "react";
 import Dropdown from "react-bootstrap/Dropdown";
 
-import { Product } from "../../common/Schema";
-import ProductImage from "../common/product-image/ProductImage";
-import Stack, { StackAlignment } from "../common/Stack";
-import styles from "./ProductShowcase.module.css";
+import { Product } from "common/Schema";
+import ProductImage from "components/common/product-image/ProductImage";
+import Stack, { StackAlignment } from "components/common/Stack";
+import styles from "components/search/ProductShowcase.module.css";
+
+import type { FC } from "react";
 
 type SortFilter =
-  | "Relevancy"
-  | "Price: Low to High"
-  | "Price: High to Low"
   | "Alphabetical: A-Z"
-  | "Alphabetical: Z-A";
+  | "Alphabetical: Z-A"
+  | "Price: High to Low"
+  | "Price: Low to High"
+  | "Relevancy";
 
 export interface ProductShowcaseProps extends React.HTMLProps<HTMLDivElement> {
   hits: Array<Product>;
@@ -30,7 +32,7 @@ const allSortFilters: Array<SortFilter> = [
   "Alphabetical: Z-A",
 ];
 
-export default function ProductShowcase({
+const ProductShowcase: FC<ProductShowcaseProps> = ({
   hits,
   numEagerLoad,
   onToggleWishList,
@@ -38,7 +40,7 @@ export default function ProductShowcase({
   loggedIn,
   query,
   style,
-}: ProductShowcaseProps) {
+}) => {
   const [sortFilter, setSortFilter] = useState<SortFilter>("Relevancy");
 
   const sortedHits = hits.map((a) => ({ ...a }));
@@ -53,8 +55,8 @@ export default function ProductShowcase({
   }
 
   return (
-    <Stack direction="column" rowAlign={align || "flex-start"} style={style}>
-      {query && (
+    <Stack direction="column" rowAlign={align ?? "flex-start"} style={style}>
+      {(query ?? "") && (
         <Stack
           direction="row"
           columnAlign="flex-start"
@@ -63,7 +65,7 @@ export default function ProductShowcase({
           wrap="wrap"
         >
           <h4 style={{ paddingRight: 24 }}>
-            Results for "{decodeURIComponent(query)}"
+            Results for "{decodeURIComponent(query ?? "")}"
           </h4>
           <Dropdown style={{ marginBottom: ".5rem", lineHeight: 1.2 }}>
             <Dropdown.Toggle
@@ -78,7 +80,9 @@ export default function ProductShowcase({
                 .map((value) => (
                   <Dropdown.Item
                     key={value}
-                    onClick={() => setSortFilter(value)}
+                    onClick={(): void => {
+                      setSortFilter(value);
+                    }}
                   >
                     {value}
                   </Dropdown.Item>
@@ -89,7 +93,7 @@ export default function ProductShowcase({
       )}
       <Stack
         direction="row"
-        columnAlign={align || "flex-start"}
+        columnAlign={align ?? "flex-start"}
         wrap="wrap"
         spacing={12}
       >
@@ -117,4 +121,6 @@ export default function ProductShowcase({
       </Stack>
     </Stack>
   );
-}
+};
+
+export default ProductShowcase;

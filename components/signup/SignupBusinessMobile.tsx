@@ -2,20 +2,27 @@ import { Formik, FormikConfig } from "formik";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 
-import LocalityLogo from "../../components/common/images/LocalityLogo";
-import { SignUpRequest, BusinessSignUpSchema } from "./SignupBusinessForm";
-import Stack from "../common/Stack";
-import { SubmitButton, ErrorMessage, InputGroup, Label } from "../common/form";
+import LocalityLogo from "components/common/images/LocalityLogo";
+import {
+  SignUpRequest,
+  BusinessSignUpSchema,
+} from "components/signup/SignupBusinessForm";
+import Stack from "components/common/Stack";
+import {
+  SubmitButton,
+  ErrorMessage,
+  InputGroup,
+  Label,
+} from "components/common/form";
+
+import type { FC } from "react";
 
 export interface SignupBusinessProps {
   error: string;
   onSubmit: FormikConfig<SignUpRequest>["onSubmit"];
 }
 
-export default function SignupBusiness({
-  error,
-  onSubmit,
-}: SignupBusinessProps) {
+const SignupBusiness: FC<SignupBusinessProps> = ({ error, onSubmit }) => {
   return (
     <Stack direction="row" columnAlign="center" style={{ marginBottom: 12 }}>
       <Stack direction="column" rowAlign="center">
@@ -47,7 +54,7 @@ export default function SignupBusiness({
             handleBlur,
             handleChange,
             handleSubmit,
-          }) => (
+          }): JSX.Element => (
             <Form onSubmit={handleSubmit}>
               <Form.Group>
                 <Label required>First Name</Label>
@@ -249,4 +256,6 @@ export default function SignupBusiness({
       </Stack>
     </Stack>
   );
-}
+};
+
+export default SignupBusiness;

@@ -1,11 +1,12 @@
-import React from "react";
 import ImageGallery, { ReactImageGalleryItem } from "react-image-gallery";
 import Button from "react-bootstrap/Button";
 import "react-image-gallery/styles/css/image-gallery.css";
 
-import Stack from "../common/Stack";
+import Stack from "components/common/Stack";
 
-const renderVideo = () => {
+import type { FC, ReactElement } from "react";
+
+const renderVideo = (): ReactElement<HTMLVideoElement> => {
   return (
     <video width={"100%"} controls>
       <source
@@ -16,7 +17,9 @@ const renderVideo = () => {
   );
 };
 
-const renderItem = (item: ReactImageGalleryItem) => {
+const renderItem = (
+  item: ReactImageGalleryItem
+): ReactElement<HTMLPictureElement> => {
   return (
     <picture style={{ margin: 0 }}>
       <source srcSet={item.original} type="image/webp" />
@@ -60,7 +63,7 @@ const images = [
   },
 ];
 
-export default function Extension() {
+const Extension: FC<{}> = () => {
   return (
     <Stack direction="row" columnAlign="center">
       <Stack direction="column" rowAlign="center">
@@ -92,4 +95,6 @@ export default function Extension() {
       </Stack>
     </Stack>
   );
-}
+};
+
+export default Extension;

@@ -1,20 +1,20 @@
 import Bcrypt from "bcryptjs";
 import SqlString from "sqlstring";
 
-import { SALT } from "../../../../lib/env";
-import Psql from "../../../../lib/api/postgresql";
-import SumoLogic from "../../../../lib/api/sumologic";
-import { runMiddlewareBusiness } from "../../../../lib/api/middleware";
-import { PasswordUpdateSchema } from "../../../../common/ValidationSchema";
+import { SALT } from "lib/env";
+import Psql from "lib/api/postgresql";
+import SumoLogic from "lib/api/sumologic";
+import { runMiddlewareBusiness } from "lib/api/middleware";
+import { PasswordUpdateSchema } from "common/ValidationSchema";
 
-import type { PasswordUpdateRequest } from "../../../../common/Schema";
+import type { PasswordUpdateRequest } from "common/Schema";
 import type { NextApiResponse } from "next";
-import type { NextApiRequestWithLocals } from "../../../../lib/api/middleware";
+import type { NextApiRequestWithLocals } from "lib/api/middleware";
 
 export default async function handler(
   req: NextApiRequestWithLocals,
   res: NextApiResponse
-) {
+): Promise<void> {
   await runMiddlewareBusiness(req, res);
 
   if (req.method !== "POST") {
@@ -30,12 +30,12 @@ export default async function handler(
   const reqBody: PasswordUpdateRequest = req.body;
   try {
     await PasswordUpdateSchema.validate(reqBody, { abortEarly: false });
-  } catch (err) {
+  } catch (error: unknown) {
     SumoLogic.log({
       level: "warning",
       method: "dashboard/password/update",
-      message: `Invalid payload: ${err.inner}`,
-      params: { body: reqBody, error: err },
+      message: "Invalid payload",
+      params: { body: reqBody, error },
     });
     res.status(400).json({ error: "Invalid payload" });
     return;
@@ -80,7 +80,7 @@ export default async function handler(
 
     const newPasswordHash = await Bcrypt.hash(
       newPassword,
-      parseInt(SALT || "12")
+      parseInt(SALT ?? "12")
     );
     const psqlError = await Psql.update({
       table: "users",
@@ -98,12 +98,12 @@ export default async function handler(
       return;
     }
     res.status(204).end();
-  } catch (error) {
+  } catch (error: unknown) {
     SumoLogic.log({
       level: "error",
       method: "dashboard/password/update",
-      message: `Failed to compare passwords: ${error.message}`,
-      params: { body: reqBody },
+      message: "Failed to compare passwords",
+      params: { body: reqBody, error },
     });
     res.status(500).json({ error: "Internal server error" });
   }

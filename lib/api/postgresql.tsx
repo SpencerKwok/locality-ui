@@ -2,8 +2,8 @@ import Pg from "pg";
 import { decode, encode } from "html-entities";
 import SqlString from "sqlstring";
 
-import { DATABASE_URL } from "../env";
-import SumoLogic from "./sumologic";
+import { DATABASE_URL } from "lib/env";
+import SumoLogic from "lib/api/sumologic";
 
 const client = new Pg.Client({
   // Must use SSL for Heroku Postgresql.
@@ -108,9 +108,9 @@ const psql: {
     await client
       .query(
         `SELECT ${values.join(", ")} FROM ${table} ${
-          conditions ? `WHERE ${conditions}` : ""
-        } ${orderBy ? `ORDER BY ${orderBy}` : ""} ${
-          limit ? `LIMIT ${limit}` : ""
+          typeof conditions === "string" ? `WHERE ${conditions}` : ""
+        } ${typeof orderBy === "string" ? `ORDER BY ${orderBy}` : ""} ${
+          typeof limit === "number" ? `LIMIT ${limit}` : ""
         }`
       )
       .then((res: Pg.QueryResult<T>) => {
@@ -123,8 +123,9 @@ const psql: {
               }
               const value = row[key];
               if (typeof value === "string") {
-                //@ts-ignore
-                row[key] = decode(value);
+                const obj = {} as Record<keyof T, string>;
+                obj[key] = decode(value);
+                Object.assign(row, obj);
               }
             }
             return row;
@@ -192,7 +193,7 @@ export interface Delete {
 
 export interface Insert {
   table: Tables;
-  values: NonEmptyArray<{ key: string; value: string | number }>;
+  values: NonEmptyArray<{ key: string; value: number | string }>;
 }
 
 export interface Select {
@@ -205,7 +206,7 @@ export interface Select {
 
 export interface Update {
   table: Tables;
-  values: NonEmptyArray<{ key: string; value: string | number }>;
+  values: NonEmptyArray<{ key: string; value: number | string }>;
   conditions: string;
 }
 

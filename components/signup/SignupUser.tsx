@@ -1,13 +1,19 @@
-import * as yup from "yup";
 import { Formik, FormikConfig } from "formik";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 
-import LocalityLogo from "../../components/common/images/LocalityLogo";
-import Stack from "../common/Stack";
-import { SubmitButton, ErrorMessage, InputGroup, Label } from "../common/form";
-import { UserSignUpSchema } from "../../common/ValidationSchema";
+import LocalityLogo from "components/common/images/LocalityLogo";
+import Stack from "components/common/Stack";
+import {
+  SubmitButton,
+  ErrorMessage,
+  InputGroup,
+  Label,
+} from "components/common/form";
+import { UserSignUpSchema } from "common/ValidationSchema";
 import styles from "./Signup.module.css";
+
+import type { FC } from "react";
 
 export interface SignUpRequest {
   firstName: string;
@@ -22,7 +28,7 @@ export interface SignInProps {
   onSubmit: FormikConfig<SignUpRequest>["onSubmit"];
 }
 
-export default function Customer({ error, onSubmit }: SignInProps) {
+const Customer: FC<SignInProps> = ({ error, onSubmit }) => {
   return (
     <Stack direction="row" columnAlign="center">
       <Stack direction="column" rowAlign="center" style={{ width: 300 }}>
@@ -46,7 +52,7 @@ export default function Customer({ error, onSubmit }: SignInProps) {
             handleBlur,
             handleChange,
             handleSubmit,
-          }) => (
+          }): JSX.Element => (
             <Form onSubmit={handleSubmit}>
               <Form.Group>
                 <Label required>First Name</Label>
@@ -147,4 +153,6 @@ export default function Customer({ error, onSubmit }: SignInProps) {
       </Stack>
     </Stack>
   );
-}
+};
+
+export default Customer;

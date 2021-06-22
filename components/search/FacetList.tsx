@@ -1,10 +1,12 @@
-import { useState } from "react";
 import ListGroup from "react-bootstrap/ListGroup";
 import { decode } from "html-entities";
 
-import Arrow from "../common/images/Arrow";
-import Stack from "../common/Stack";
-import styles from "./FacetList.module.css";
+import Arrow from "components/common/images/Arrow";
+import Stack from "components/common/Stack";
+import styles from "components/search/FacetList.module.css";
+
+import type { FC, JSXElementConstructor, ReactElement } from "react";
+import type { ListGroupItemProps } from "react-bootstrap/ListGroupItem";
 
 export interface FacetListProps {
   showAll: boolean;
@@ -15,18 +17,24 @@ export interface FacetListProps {
   toggleShowAll: () => void;
 }
 
-export default function FacetList({
+const FacetList: FC<FacetListProps> = ({
   showAll,
   name,
   facets,
   selectedFacets,
   onFacetClick,
   toggleShowAll,
-}: FacetListProps) {
-  const sortedFacets = Array.from(facets, ([name, value]) => ({
-    name,
-    value,
-  }));
+}) => {
+  const sortedFacets = Array.from(
+    facets,
+    ([name, value]): {
+      name: string;
+      value: number;
+    } => ({
+      name,
+      value,
+    })
+  );
 
   const facetRowRenderer = ({
     name,
@@ -34,14 +42,19 @@ export default function FacetList({
   }: {
     name: string;
     value: number;
-  }) => {
+  }): ReactElement<
+    ListGroupItemProps,
+    JSXElementConstructor<ListGroupItemProps>
+  > => {
     return (
       <ListGroup.Item className={styles["list-item"]} key={name}>
         <Stack direction="row" spacing={12}>
           <input
             type="checkbox"
             checked={selectedFacets.has(name)}
-            onChange={() => onFacetClick(name)}
+            onChange={(): void => {
+              onFacetClick(name);
+            }}
           />
           <span>{`${decode(name)} (${value})`}</span>
         </Stack>
@@ -64,11 +77,21 @@ export default function FacetList({
             width={8}
           />
           {showAll ? (
-            <a className="" onClick={() => toggleShowAll()}>
+            <a
+              className=""
+              onClick={(): void => {
+                toggleShowAll();
+              }}
+            >
               Show Less
             </a>
           ) : (
-            <a className="" onClick={() => toggleShowAll()}>
+            <a
+              className=""
+              onClick={(): void => {
+                toggleShowAll();
+              }}
+            >
               Show All {sortedFacets.length} {name}
             </a>
           )}
@@ -76,4 +99,6 @@ export default function FacetList({
       )}
     </Stack>
   );
-}
+};
+
+export default FacetList;

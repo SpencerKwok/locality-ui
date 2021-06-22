@@ -1,28 +1,29 @@
 import { useState } from "react";
 
-import ContactPage, { ContactRequest } from "../../components/contact/Contact";
-import RootLayout from "../../components/common/RootLayout";
-import { PostRpcClient } from "../../components/common/RpcClient";
-import { useWindowSize } from "../../lib/common";
+import ContactPage, { ContactRequest } from "components/contact/Contact";
+import RootLayout from "components/common/RootLayout";
+import { PostRpcClient } from "components/common/RpcClient";
+import { useWindowSize } from "lib/common";
 
+import type { FC } from "react";
 import type { Session } from "next-auth";
 
 export interface ContactProps {
   session: Session | null;
 }
 
-export default function Contact({ session }: ContactProps) {
+const Contact: FC<ContactProps> = ({ session }) => {
   const [contactStatus, setContactStatus] = useState({
     error: "",
     success: false,
   });
 
   const size = useWindowSize();
-  if (!size.width) {
+  if (typeof size.width !== "number") {
     return null;
   }
 
-  const onSubmit = async (values: ContactRequest) => {
+  const onSubmit = async (values: ContactRequest): Promise<void> => {
     await PostRpcClient.getInstance()
       .call("Contact", {
         email: values.email,
@@ -30,7 +31,7 @@ export default function Contact({ session }: ContactProps) {
         message: values.message,
       })
       .then(({ error }) => {
-        if (error) {
+        if (typeof error === "string" && error) {
           setContactStatus({ error, success: false });
           return;
         }
@@ -51,4 +52,6 @@ export default function Contact({ session }: ContactProps) {
       />
     </RootLayout>
   );
-}
+};
+
+export default Contact;

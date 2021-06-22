@@ -6,15 +6,26 @@ import Select, {
 } from "react-select";
 import { FixedSizeList } from "react-window";
 
-interface MenuListProps<T extends {}, isMulti extends boolean>
-  extends MenuListComponentProps<T, isMulti> {}
+import type {
+  HTMLProps,
+  JSXElementConstructor,
+  PropsWithChildren,
+  ReactElement,
+} from "react";
+
+type MenuListProps<
+  T extends {},
+  isMulti extends boolean
+> = MenuListComponentProps<T, isMulti>;
 
 function MenuList<T extends {}, isMulti extends boolean>({
   options,
   children,
   maxHeight,
   getValue,
-}: MenuListProps<T, isMulti>) {
+}: PropsWithChildren<MenuListProps<T, isMulti>>): ReactElement<
+  PropsWithChildren<MenuListProps<T, isMulti>>
+> {
   const [value] = getValue();
   const height = 35;
   const initialOffset = options.indexOf(value) * height;
@@ -28,17 +39,25 @@ function MenuList<T extends {}, isMulti extends boolean>({
       itemSize={height}
       initialScrollOffset={initialOffset}
     >
-      {({ index, style }) => <div style={style}>{childrenArray[index]}</div>}
+      {({
+        index,
+        style,
+      }): ReactElement<
+        HTMLProps<HTMLDivElement>,
+        JSXElementConstructor<HTMLDivElement>
+      > => <div style={style}>{childrenArray[index]}</div>}
     </FixedSizeList>
   );
 }
 
-export interface VirtualSelectProps<T extends {}, isMulti extends boolean>
-  extends Props<T, isMulti> {}
+export type VirtualSelectProps<T extends {}, isMulti extends boolean> = Props<
+  T,
+  isMulti
+>;
 
 export default function VirtualSelect<T extends {}, isMulti extends boolean>(
   props: VirtualSelectProps<T, isMulti>
-) {
+): ReactElement<PropsWithChildren<VirtualSelectProps<T, isMulti>>> {
   return (
     <Select
       {...props}

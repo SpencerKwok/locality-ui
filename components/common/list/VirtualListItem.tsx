@@ -2,11 +2,17 @@ import ListGroupItem, {
   ListGroupItemProps,
 } from "react-bootstrap/ListGroupItem";
 import styled from "styled-components";
-import styles from "./VirtualList.module.css";
+import styles from "components/common/list/VirtualList.module.css";
 
-export interface VirtualListItemProps extends ListGroupItemProps {}
+import type { FC } from "react";
 
-function VirtualListItem({ className, style, ...rest }: VirtualListItemProps) {
+export type VirtualListItemProps = ListGroupItemProps;
+
+const VirtualListItem: FC<VirtualListItemProps> = ({
+  className,
+  style,
+  ...rest
+}) => {
   return (
     <ListGroupItem
       {...rest}
@@ -14,10 +20,13 @@ function VirtualListItem({ className, style, ...rest }: VirtualListItemProps) {
       style={style}
     />
   );
-}
+};
 
 export default styled(VirtualListItem)`
-  ${({ active }) =>
-    active &&
-    "background-color: #449ed7 !important; border-color: #449ed7 !important"}
+  ${({ active }): string => {
+    if (active === true) {
+      return "background-color: #449ed7 !important; border-color: #449ed7 !important";
+    }
+    return "";
+  }}
 `;

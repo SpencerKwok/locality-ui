@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import Providers from "next-auth/providers";
 import Bcrypt from "bcryptjs";
 
-import SumoLogic from "../../../lib/api/sumologic";
+import SumoLogic from "lib/api/sumologic";
 
 import {
   FACEBOOK_APP_ID,
@@ -12,14 +12,16 @@ import {
   //JWT_SECRET,
   JWT_SIGNING_KEY,
   SESSION_SECRET,
-} from "../../../lib/env";
-import Psql from "../../../lib/api/postgresql";
+} from "lib/env";
+import Psql from "lib/api/postgresql";
 import SqlString from "sqlstring";
+
+import type { JWT } from "next-auth/jwt";
 
 export default NextAuth({
   callbacks: {
     signIn: async (user) => {
-      let email = user.email || "";
+      const email = user.email ?? "";
       const userData = await Psql.select<{ rowCount: number }>({
         table: "users",
         values: ["id"],
@@ -46,7 +48,7 @@ export default NextAuth({
       return Promise.resolve(true);
     },
     jwt: async (token, user) => {
-      const createUser = async (email: string) => {
+      const createUser = async (email: string): Promise<JWT> => {
         const userData = await Psql.select<{
           first_name: string;
           last_name: string;
@@ -109,7 +111,7 @@ export default NextAuth({
         }
       };
 
-      if (user && user.email) {
+      if (typeof user?.email === "string" && user.email) {
         token = { user: await createUser(user.email) };
       }
 
@@ -164,11 +166,13 @@ export default NextAuth({
           return Promise.resolve(null);
         }
 
-        let passwordMatch = await Bcrypt.compare(
+        const passwordMatch = await Bcrypt.compare(
           password,
           users.rows[0].password
-        ).catch((err) => console.log(err));
-        if (!passwordMatch) {
+        ).catch((err) => {
+          console.log(err);
+        });
+        if (passwordMatch !== true) {
           console.log("Incorrect password");
           return Promise.resolve(null);
         }

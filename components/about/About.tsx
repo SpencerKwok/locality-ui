@@ -1,13 +1,15 @@
-import React from "react";
+import AboutDesktop from "components/about/AboutDesktop";
+import AboutMobile from "components/about/AboutMobile";
 
-import AboutDesktop from "./AboutDesktop";
-import AboutMobile from "./AboutMobile";
+import type { FC } from "react";
 
 export interface AboutProps {
   isMobile: boolean;
   width: number;
 }
 
-export default function About({ isMobile, width }: AboutProps) {
+const About: FC<AboutProps> = ({ isMobile, width }) => {
   return isMobile ? <AboutMobile /> : <AboutDesktop width={width * 0.8} />;
-}
+};
+
+export default About;

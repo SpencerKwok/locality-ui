@@ -1,8 +1,9 @@
-import React from "react";
 import { decode } from "html-entities";
 
-import Stack from "../Stack";
-import styles from "./BusinessImage.module.css";
+import Stack from "components/common/Stack";
+import styles from "components/common/business-image/BusinessImage.module.css";
+
+import type { FC } from "react";
 
 export interface BusinessImageProps
   extends React.HTMLProps<HTMLPictureElement> {
@@ -13,13 +14,13 @@ export interface BusinessImageProps
   loading?: "eager" | "lazy";
 }
 
-export default function BusinessImage({
+const BusinessImage: FC<BusinessImageProps> = ({
   name,
   src,
   height,
   width,
   loading,
-}: BusinessImageProps) {
+}) => {
   return (
     <Stack
       direction="column"
@@ -39,4 +40,6 @@ export default function BusinessImage({
       <h4 className={styles.h4}>{decode(name)}</h4>
     </Stack>
   );
-}
+};
+
+export default BusinessImage;

@@ -1,18 +1,17 @@
 import SqlString from "sqlstring";
-import Xss from "xss";
 
-import Psql from "../../../lib/api/postgresql";
-import SumoLogic from "../../../lib/api/sumologic";
-import { runMiddlewareUser } from "../../../lib/api/middleware";
+import Psql from "lib/api/postgresql";
+import SumoLogic from "lib/api/sumologic";
+import { runMiddlewareUser } from "lib/api/middleware";
 
 import type { NextApiResponse } from "next";
-import type { NextApiRequestWithLocals } from "../../../lib/api/middleware";
-import type { DeleteFromWishListRequest } from "../../../common/Schema";
+import type { NextApiRequestWithLocals } from "lib/api/middleware";
+import type { DeleteFromWishListRequest } from "common/Schema";
 
 export default async function handler(
   req: NextApiRequestWithLocals,
   res: NextApiResponse
-) {
+): Promise<void> {
   await runMiddlewareUser(req, res);
 
   if (req.method !== "POST") {

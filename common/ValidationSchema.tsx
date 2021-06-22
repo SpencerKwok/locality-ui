@@ -78,9 +78,8 @@ export const HomepagesUpdateSchema = yup.object().shape({
       "EtsyFormat",
       "Must have the following format: etsy.com/shop/[SHOP_ID]",
       (page) => {
-        return (!page ||
-          page.length === 0 ||
-          page.match(
+        return (page?.length === 0 ||
+          page?.match(
             /^(http(s?):\/\/)?(www\.)?etsy\.com\/([^\/]+\/)*shop\/[a-zA-Z0-9_\-]+(\/?)(\?.*)*$/g
           )) as boolean;
       }
@@ -216,7 +215,7 @@ export const ProductFormSchema = yup.object().shape({
         "Must be lower than the upper price range",
         (lowPrice, { parent }) => {
           try {
-            const p1 = parseFloat(lowPrice || "");
+            const p1 = parseFloat(lowPrice ?? "");
             const p2 = parseFloat(parent.priceHigh);
             return p1 < p2;
           } catch {
