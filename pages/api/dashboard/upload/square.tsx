@@ -29,7 +29,7 @@ const currentUploadsRunning = new Set<number>();
 export default async function handler(
   req: NextApiRequestWithLocals,
   res: NextApiResponse
-) {
+): Promise<void> {
   await runMiddlewareBusiness(req, res);
 
   if (req.method !== "POST") {
@@ -52,12 +52,12 @@ export default async function handler(
 
   try {
     await UploadSquareProductsSchema.validate(reqBody, { abortEarly: false });
-  } catch (err) {
+  } catch (error: unknown) {
     SumoLogic.log({
       level: "warning",
       method: "dashboard/upload/square",
-      message: `Invalid payload: ${err.inner}`,
-      params: { body: reqBody, error: err },
+      message: "Invalid payload",
+      params: { body: reqBody, error },
     });
     res.status(400).json({ error: "Invalid payload" });
     return;
@@ -77,12 +77,12 @@ export default async function handler(
   }
   try {
     csv = Papa.parse(rawCsv);
-  } catch (error) {
+  } catch (error: unknown) {
     SumoLogic.log({
       level: "warning",
       method: "dashboard/upload/square",
-      message: `Invalid CSV: ${error.message}`,
-      params: { body: reqBody },
+      message: "Invalid CSV",
+      params: { body: reqBody, error },
     });
     res.status(400).json({ error: "Invalid payload" });
     return;
@@ -130,16 +130,16 @@ export default async function handler(
   let nextProductId: number = businessResponse.rows[0].next_product_id;
   const homepages = JSON.parse(businessResponse.rows[0].homepages);
   const uploadSettings: UploadTypeSettings =
-    JSON.parse(businessResponse.rows[0].upload_settings).square || {};
+    JSON.parse(businessResponse.rows[0].upload_settings).square ?? {};
   const includeTags = new Set<string>(
-    (uploadSettings.includeTags || []).map((x) => x.toLowerCase())
+    (uploadSettings.includeTags ?? []).map((x) => x.toLowerCase())
   );
   const excludeTags = new Set<string>(
-    (uploadSettings.excludeTags || []).map((x) => x.toLowerCase())
+    (uploadSettings.excludeTags ?? []).map((x) => x.toLowerCase())
   );
   const departmentMapping = new Map<string, Array<string>>(
     (
-      uploadSettings.departmentMapping || []
+      uploadSettings.departmentMapping ?? []
     ).map(
       ({ key, departments }: { key: string; departments: Array<string> }) => [
         encode(key.trim().toLowerCase()),
@@ -147,8 +147,8 @@ export default async function handler(
       ]
     )
   );
-  const squareHomepage = homepages.squareHomepage || "";
-  if (squareHomepage === "") {
+  const squareHomepage: string = homepages.squareHomepage ?? "";
+  if (!squareHomepage) {
     SumoLogic.log({
       level: "info",
       method: "dashboard/upload/square",
@@ -331,16 +331,16 @@ export default async function handler(
       let shouldExclude = false;
       if (includeTags.size > 0) {
         shouldInclude = false;
-        for (let i = 0; i < allTags.length; i++) {
-          if (includeTags.has(allTags[i].toLowerCase())) {
+        for (const tag of allTags) {
+          if (includeTags.has(tag.toLowerCase())) {
             shouldInclude = true;
             break;
           }
         }
       }
       if (excludeTags.size > 0) {
-        for (let i = 0; i < allTags.length; i++) {
-          if (excludeTags.has(allTags[i].toLowerCase())) {
+        for (const tag of allTags) {
+          if (excludeTags.has(tag.toLowerCase())) {
             shouldExclude = true;
             break;
           }
@@ -365,7 +365,7 @@ export default async function handler(
       });
 
       nextProductId += 1;
-    } else if (optionValue && visible) {
+    } else if (visible) {
       const variantTag = optionValue.join(" ");
       if (variantTag.length > 0) {
         const prevProduct = products[products.length - 1];

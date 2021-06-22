@@ -5,7 +5,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import type { DepartmentsResponse } from "common/Schema";
 
 type Tree = Array<{ name: string; children: Tree }>;
-const helper = (tree: Tree) => {
+const helper = (tree: Tree): Array<string> => {
   if (tree.length === 0) {
     return [];
   }
@@ -19,11 +19,11 @@ const helper = (tree: Tree) => {
   return Array.from(new Set(departments)).sort();
 };
 
-async function init() {
+async function init(): Promise<Array<string>> {
   return await fetch(
     `http://openapi.etsy.com/v2/taxonomy/seller/get?api_key=${ETSY_API_KEY}`
   )
-    .then((data) => data.json())
+    .then(async (data) => data.json())
     .then((tree) => helper(tree.results));
 }
 
@@ -31,7 +31,7 @@ let departments: Array<string> = [];
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void> {
   if (req.method !== "GET") {
     SumoLogic.log({
       level: "info",
@@ -42,14 +42,15 @@ export default async function handler(
     return;
   }
 
-  if (!departments || departments.length <= 0) {
+  if (departments.length <= 0) {
     try {
       departments = await init();
-    } catch (err) {
+    } catch (error: unknown) {
       SumoLogic.log({
         level: "error",
         method: "departments/get",
-        message: `Failed to fetch Etsy taxonomy: ${err.message}`,
+        message: "Failed to fetch Etsy taxonomy",
+        params: { error },
       });
     }
   }

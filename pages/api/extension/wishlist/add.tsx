@@ -11,7 +11,7 @@ import type { AddToWishListRequest } from "common/Schema";
 export default async function handler(
   req: NextApiRequestWithLocals,
   res: NextApiResponse
-) {
+): Promise<void> {
   await runMiddlewareExtension(req, res);
 
   if (req.method !== "POST") {

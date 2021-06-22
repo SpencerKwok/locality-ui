@@ -10,7 +10,7 @@ import type { NextApiRequestWithLocals } from "lib/api/middleware";
 export default async function handler(
   req: NextApiRequestWithLocals,
   res: NextApiResponse
-) {
+): Promise<void> {
   await runMiddlewareExtension(req, res);
 
   if (req.method !== "GET") {
@@ -38,5 +38,5 @@ export default async function handler(
     });
   }
 
-  res.status(200).json({});
+  res.status(204).end();
 }

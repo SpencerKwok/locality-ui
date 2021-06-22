@@ -16,7 +16,7 @@ const uidgen = new UIDGenerator(256, UIDGenerator.BASE58);
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void> {
   if (req.method !== "POST") {
     SumoLogic.log({
       level: "info",
@@ -30,12 +30,12 @@ export default async function handler(
   const reqBody: UserSignUpRequest = req.body;
   try {
     await UserSignUpSchema.validate(reqBody, { abortEarly: false });
-  } catch (err) {
+  } catch (error: unknown) {
     SumoLogic.log({
       level: "warning",
       method: "extension/signup/user",
-      message: `Invalid payload: ${err.inner}`,
-      params: { body: reqBody, error: err },
+      message: "Invalid payload",
+      params: { body: reqBody, error },
     });
     res.status(400).json({ error: "Invalid payload" });
     return;
@@ -89,8 +89,8 @@ export default async function handler(
     return;
   }
 
-  const userId = (user.rows[0] || { id: 0 }).id + 1;
-  const hash = await Bcrypt.hash(password, parseInt(SALT || "12"));
+  const userId = (user.rows[0] ?? { id: 0 }).id + 1;
+  const hash = await Bcrypt.hash(password, parseInt(SALT ?? "12"));
   const psqlErrorAddUser = await Psql.insert({
     table: "users",
     values: [

@@ -8,7 +8,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void> {
   if (req.method !== "GET") {
     SumoLogic.log({
       level: "info",
@@ -52,8 +52,8 @@ export default async function handler(
   }
 
   // Don't send name and redirect url to Google analytics
-  delete req.query["name"];
-  delete req.query["redirect_url"];
+  delete req.query.name;
+  delete req.query.redirect_url;
   fetch(
     `https://www.google-analytics.com/mp/collect?measurement_id=${GOOGLE_MEASUREMENT_ID}&api_secret=${GOOGLE_ANALYTICS_API_SECRET}`,
     {

@@ -5,18 +5,19 @@ import SqlString from "sqlstring";
 import Psql from "lib/api/postgresql";
 import SumoLogic from "lib/api/sumologic";
 
-const runMiddlewareHelper = (
+const runMiddlewareHelper = async (
   req: NextApiRequest,
   res: NextApiResponse,
   fn: (req: NextApiRequestWithLocals, res: NextApiResponse, result: any) => any
-) => {
+): Promise<any> => {
   return new Promise((resolve, reject) => {
     const newReq = Object.assign(req, { locals: { user: {} } });
     fn(newReq, res, (result: any) => {
       if (result instanceof Error) {
-        return reject(result);
+        reject(result);
+        return;
       }
-      return resolve(result);
+      resolve(result);
     });
   });
 };
@@ -30,7 +31,7 @@ export type NextApiRequestWithLocals = NextApiRequest & {
 export async function runMiddlewareUser(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void> {
   await runMiddlewareHelper(
     req,
     res,
@@ -55,7 +56,7 @@ export async function runMiddlewareUser(
 export async function runMiddlewareBusiness(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void> {
   await runMiddlewareHelper(
     req,
     res,
@@ -76,7 +77,7 @@ export async function runMiddlewareBusiness(
       }
 
       const user: any = session.user;
-      if (!user.isBusiness) {
+      if (user.isBusiness !== true) {
         SumoLogic.log({
           level: "warning",
           message: "Attempted business request with invalid credentials",
@@ -95,7 +96,7 @@ export async function runMiddlewareBusiness(
 export async function runMiddlewareExtension(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void> {
   await runMiddlewareHelper(
     req,
     res,

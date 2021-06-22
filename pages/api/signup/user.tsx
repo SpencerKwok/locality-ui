@@ -14,7 +14,7 @@ import type { UserSignUpRequest } from "common/Schema";
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void> {
   if (req.method !== "POST") {
     SumoLogic.log({
       level: "info",
@@ -28,7 +28,7 @@ export default async function handler(
   const body: UserSignUpRequest = req.body;
   try {
     await UserSignUpSchema.validate(body, { abortEarly: false });
-  } catch (err) {
+  } catch (err: unknown) {
     SumoLogic.log({
       level: "warning",
       method: "signup/user",
@@ -91,8 +91,8 @@ export default async function handler(
     return;
   }
 
-  const userId = (user.rows[0] || { id: 0 }).id + 1;
-  const hash = await Bcrypt.hash(password, parseInt(SALT || "12"));
+  const userId = (user.rows[0] ?? { id: 0 }).id + 1;
+  const hash = await Bcrypt.hash(password, parseInt(SALT ?? "12"));
   const psqlErrorAddUser = await Psql.insert({
     table: "users",
     values: [

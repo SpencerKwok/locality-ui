@@ -1,14 +1,14 @@
-import React from "react";
+import type { FC } from "react";
 
 export interface FormCharacterLimitProps {
   message: string;
   maxCharacters: number;
 }
 
-function FormCharacterLimit({
+const FormCharacterLimit: FC<FormCharacterLimitProps> = ({
   message,
   maxCharacters,
-}: FormCharacterLimitProps) {
+}: FormCharacterLimitProps) => {
   return (
     <div
       style={{
@@ -17,6 +17,6 @@ function FormCharacterLimit({
       }}
     >{`${message.length}/${maxCharacters}`}</div>
   );
-}
+};
 
 export default FormCharacterLimit;

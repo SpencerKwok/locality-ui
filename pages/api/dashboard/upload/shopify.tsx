@@ -39,7 +39,7 @@ const currentUploadsRunning = new Set<number>();
 export default async function handler(
   req: NextApiRequestWithLocals,
   res: NextApiResponse
-) {
+): Promise<void> {
   await runMiddlewareBusiness(req, res);
 
   if (req.method !== "POST") {
@@ -100,20 +100,20 @@ export default async function handler(
     businessResponse.rows[0].homepages
   );
   const uploadSettings: UploadTypeSettings =
-    JSON.parse(businessResponse.rows[0].upload_settings).shopify || {};
+    JSON.parse(businessResponse.rows[0].upload_settings).shopify ?? {};
   const includeTags = new Set<string>(
-    (uploadSettings.includeTags || []).map((x: string) =>
+    (uploadSettings.includeTags ?? []).map((x: string) =>
       encode(x.trim()).toLowerCase()
     )
   );
   const excludeTags = new Set<string>(
-    (uploadSettings.excludeTags || []).map((x: string) =>
+    (uploadSettings.excludeTags ?? []).map((x: string) =>
       encode(x.trim()).toLowerCase()
     )
   );
   const departmentMapping = new Map<string, Array<string>>(
     (
-      uploadSettings.departmentMapping || []
+      uploadSettings.departmentMapping ?? []
     ).map(
       ({ key, departments }: { key: string; departments: Array<string> }) => [
         encode(key.trim().toLowerCase()),
@@ -121,7 +121,7 @@ export default async function handler(
       ]
     )
   );
-  let shopifyHomepage: string = homepages.shopifyHomepage || "";
+  let shopifyHomepage: string = homepages.shopifyHomepage ?? "";
 
   if (!shopifyHomepage) {
     SumoLogic.log({
@@ -137,25 +137,27 @@ export default async function handler(
     return;
   }
 
-  const domain = (shopifyHomepage.match(/www\.[^\/]+/g) || [""])[0] || "";
-  const addresses: string[] = await Dns.promises.resolve4(domain).catch(() => {
-    SumoLogic.log({
-      level: "error",
-      method: "dashboard/upload/shopify",
-      message:
-        "Attempted to upload Shopify products from an invalid Shopify domain",
-      params: { body: reqBody, addresses },
+  const domain = (shopifyHomepage.match(/www\.[^\/]+/g) ?? [""])[0] || "";
+  const addresses: Array<string> = await Dns.promises
+    .resolve4(domain)
+    .catch(() => {
+      SumoLogic.log({
+        level: "error",
+        method: "dashboard/upload/shopify",
+        message:
+          "Attempted to upload Shopify products from an invalid Shopify domain",
+        params: { body: reqBody, addresses },
+      });
+      res.status(400).json({
+        error:
+          'It looks like your Shopify website has not been set up properly. Please go to the "Business" tab and make sure your Shopify website URL is setup correctly or contact us at locality.info@yahoo.com for assistance',
+      });
+      return [];
     });
-    res.status(400).json({
-      error:
-        'It looks like your Shopify website has not been set up properly. Please go to the "Business" tab and make sure your Shopify website URL is setup correctly or contact us at locality.info@yahoo.com for assistance',
-    });
-    return [];
-  });
 
   let isShopify = addresses.length > 0;
-  for (let i = 0; i < addresses.length; ++i) {
-    if (!validShopifyIp4.has(addresses[i])) {
+  for (const address of addresses) {
+    if (!validShopifyIp4.has(address)) {
       isShopify = false;
       break;
     }
@@ -228,118 +230,130 @@ export default async function handler(
   let done = false;
   let error: Error | null = null;
   const products: Array<DatabaseProduct> = [];
-  while (!done) {
-    await fetch(`${shopifyHomepage}/collections/all/products.json?page=${page}`)
-      .then((res) => res.json())
-      .then(async (data) => {
-        if (data.products.length === 0) {
-          done = true;
-          return;
-        }
-
-        data.products.forEach((product: any, index: number) => {
-          let shouldInclude = true;
-          let shouldExclude = false;
-          if (includeTags.size > 0) {
-            shouldInclude = false;
-            for (let i = 0; i < product.tags.length; i++) {
-              if (includeTags.has(product.tags[i].toLowerCase())) {
-                shouldInclude = true;
-                break;
-              }
-            }
-          }
-          if (excludeTags.size > 0) {
-            for (let i = 0; i < product.tags.length; i++) {
-              if (excludeTags.has(product.tags[i].toLowerCase())) {
-                shouldExclude = true;
-                break;
-              }
-            }
-          }
-
-          if (shouldExclude || !shouldInclude) {
+  do {
+    try {
+      await fetch(
+        `${shopifyHomepage}/collections/all/products.json?page=${page}`
+      )
+        .then(async (res) => res.json())
+        .then(async (data) => {
+          if (data.products.length === 0) {
+            done = true;
             return;
           }
 
-          if (product.images.length === 0 || product.variants.length === 0) {
-            return;
-          }
-
-          const productTypes: Array<string> = product.product_type
-            .split(",")
-            .map((x: string) => Xss(x.trim()))
-            .filter(Boolean);
-          const departments: Array<string> = [];
-          productTypes.forEach((value) => {
-            const department = departmentMapping.get(value.toLowerCase());
-            if (department) {
-              departments.push(...department);
+          data.products.forEach((product: any, index: number) => {
+            let shouldInclude = true;
+            let shouldExclude = false;
+            if (includeTags.size > 0) {
+              shouldInclude = false;
+              for (const tag of product.tags) {
+                if (includeTags.has(tag.toLowerCase())) {
+                  shouldInclude = true;
+                  break;
+                }
+              }
             }
+            if (excludeTags.size > 0) {
+              for (const tag of product.tags) {
+                if (excludeTags.has(tag.toLowerCase())) {
+                  shouldExclude = true;
+                  break;
+                }
+              }
+            }
+
+            if (shouldExclude || !shouldInclude) {
+              return;
+            }
+
+            if (product.images.length === 0 || product.variants.length === 0) {
+              return;
+            }
+
+            const productTypes: Array<string> = product.product_type
+              .split(",")
+              .map((x: string) => Xss(x.trim()))
+              .filter(Boolean);
+            const departments: Array<string> = [];
+            productTypes.forEach((value) => {
+              const department = departmentMapping.get(value.toLowerCase());
+              if (department) {
+                departments.push(...department);
+              }
+            });
+
+            // Shopify data is encoded, so we need to decode it
+            const name = Xss(product.title);
+            const tags = Array.from(
+              new Set([
+                ...productTypes.map((x) => decode(x)),
+                ...product.tags
+                  .map((x: string) => decode(Xss(x.trim())))
+                  .filter(Boolean),
+              ])
+            );
+            const description = Xss(
+              product.body_html.replace(/<br>/g, "\n").replace(/<[^>]*>/g, "")
+            );
+            // Don't decode link, it is meant to be encoded
+            const link = Xss(`${shopifyHomepage}/products/${product.handle}`)
+              .replace(/\/\/+/g, "/")
+              .replace("https:/", "https://");
+            const price = parseFloat(product.variants[0].price);
+            const priceRange: FixedLengthArray<[number, number]> = [
+              price,
+              price,
+            ];
+            product.variants.forEach((variant: { price: string }) => {
+              priceRange[0] = Math.min(
+                priceRange[0],
+                parseFloat(variant.price)
+              );
+              priceRange[1] = Math.max(
+                priceRange[1],
+                parseFloat(variant.price)
+              );
+            });
+            // Don't decode image urls, they are meant to be encoded
+            const variantImages = Array<string>(product.variants.length).fill(
+              product.images[0].src.replace(".jpg", "_400x.jpg")
+            );
+            const variantTags = product.variants.map(
+              ({ title }: { title: string }) => decode(Xss(title.trim()))
+            );
+
+            products.push({
+              nextProductId: nextProductId + index,
+              name,
+              departments,
+              description,
+              link,
+              priceRange,
+              tags,
+              variantImages,
+              variantTags,
+            });
           });
 
-          // Shopify data is encoded, so we need to decode it
-          const name = Xss(product.title);
-          const tags = Array.from(
-            new Set([
-              ...productTypes.map((x) => decode(x)),
-              ...product.tags
-                .map((x: string) => decode(Xss(x.trim())))
-                .filter(Boolean),
-            ])
-          );
-          const description = Xss(
-            product.body_html.replace(/<br>/g, "\n").replace(/<[^>]*>/g, "")
-          );
-          // Don't decode link, it is meant to be encoded
-          const link = Xss(`${shopifyHomepage}/products/${product.handle}`)
-            .replace(/\/\/+/g, "/")
-            .replace("https:/", "https://");
-          const price = parseFloat(product.variants[0].price);
-          let priceRange: FixedLengthArray<[number, number]> = [price, price];
-          product.variants.forEach((variant: { price: string }) => {
-            priceRange[0] = Math.min(priceRange[0], parseFloat(variant.price));
-            priceRange[1] = Math.max(priceRange[1], parseFloat(variant.price));
-          });
-          // Don't decode image urls, they are meant to be encoded
-          const variantImages = Array<string>(product.variants.length).fill(
-            product.images[0].src.replace(".jpg", "_400x.jpg")
-          );
-          const variantTags = product.variants.map(
-            ({ title }: { title: string }) => decode(Xss(title.trim()))
-          );
+          nextProductId += data.products.length;
+          page += 1;
 
-          products.push({
-            nextProductId: nextProductId + index,
-            name,
-            departments,
-            description,
-            link,
-            priceRange,
-            tags,
-            variantImages,
-            variantTags,
-          });
+          // Cap Shopify API calls to 100 requests per second
+          await new Promise((resolve) => setTimeout(resolve, 10));
         });
+    } catch (err: unknown) {
+      error = err as Error;
+      done = true;
+    }
+  } while (!done);
 
-        nextProductId += data.products.length;
-        page += 1;
-
-        // Cap Shopify API calls to 100 requests per second
-        await new Promise((resolve) => setTimeout(resolve, 10));
-      })
-      .catch((err) => {
-        error = err;
-        done = true;
-      });
-  }
-  if (error) {
+  if (error !== null) {
     SumoLogic.log({
       level: "error",
       method: "dashboard/upload/shopify",
-      //@ts-ignore (error will contain the "message" property here)
-      message: `Failed to fetch products from Shopify: ${error.message}`,
-      params: { body: reqBody },
+      message: "Failed to fetch products from Shopify",
+      params: { body: reqBody, error },
     });
     currentUploadsRunning.delete(businessId);
     return;

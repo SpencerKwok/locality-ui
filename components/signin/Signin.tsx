@@ -1,4 +1,3 @@
-import * as yup from "yup";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 import { Formik, FormikConfig } from "formik";
@@ -16,6 +15,8 @@ import {
 } from "components/common/form";
 import styles from "components/signin/Signin.module.css";
 
+import type { FC } from "react";
+
 export interface SignInProps {
   onProviderSignIn: (provider: string) => void;
   onSubmit: FormikConfig<SignInRequest>["onSubmit"];
@@ -27,11 +28,7 @@ export interface SignInRequest {
   password: string;
 }
 
-export default function SignIn({
-  error,
-  onProviderSignIn,
-  onSubmit,
-}: SignInProps) {
+const SignIn: FC<SignInProps> = ({ error, onProviderSignIn, onSubmit }) => {
   return (
     <Stack direction="row" columnAlign="center">
       <Stack direction="column" rowAlign="center" style={{ width: 300 }}>
@@ -39,7 +36,7 @@ export default function SignIn({
         <Stack direction="column" rowAlign="center" spacing={16}>
           <button
             className={styles["signin"]}
-            onClick={() => {
+            onClick={(): void => {
               onProviderSignIn("google");
             }}
           >
@@ -48,7 +45,7 @@ export default function SignIn({
           </button>
           <button
             className={styles["signin"]}
-            onClick={() => {
+            onClick={(): void => {
               onProviderSignIn("facebook");
             }}
           >
@@ -71,7 +68,7 @@ export default function SignIn({
               handleBlur,
               handleChange,
               handleSubmit,
-            }) => (
+            }): JSX.Element => (
               <Form onSubmit={handleSubmit}>
                 <Form.Group>
                   <Label required>Email</Label>
@@ -120,4 +117,6 @@ export default function SignIn({
       </Stack>
     </Stack>
   );
-}
+};
+
+export default SignIn;

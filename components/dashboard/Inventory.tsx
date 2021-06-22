@@ -23,10 +23,11 @@ import Stack from "components/common/Stack";
 import Select from "components/common/select/VirtualSelect";
 import styles from "components/dashboard/Inventory.module.css";
 
-import type { ChangeEvent } from "react";
+import type { ChangeEvent, FC } from "react";
 import type { FuseBaseProduct } from "./ProductGrid";
+import type { CSSObject } from "react-select/node_modules/@emotion/serialize";
 
-const BusinessList = dynamic(() => import("./BusinessList"));
+const BusinessList = dynamic(async () => import("./BusinessList"));
 
 export interface RequestStatus {
   error: string;
@@ -74,17 +75,17 @@ export interface ProductRequest {
   priceHigh: string;
   image: Base64;
   link: string;
-  option: "add" | "update" | "delete";
+  option: "add" | "delete" | "update";
 }
 
 export interface VariantRequest {
   index: number;
   variantTag: string;
   image: Base64;
-  option: "add" | "update" | "delete";
+  option: "add" | "delete" | "update";
 }
 
-export default function Inventory({
+const Inventory: FC<InventoryProps> = ({
   isNewItem,
   businesses,
   businessIndex,
@@ -111,7 +112,7 @@ export default function Inventory({
   onTabClick,
   onUpload,
   onUploadTypeChange,
-}: InventoryProps) {
+}) => {
   const [newVariant, setNewVariant] = useState<VariantRequest>({
     index: -1,
     variantTag: "",
@@ -187,14 +188,14 @@ export default function Inventory({
             <Tabs
               unmountOnExit
               activeKey={tab}
-              onSelect={(key) => {
-                onTabClick(key || "");
+              onSelect={(key): void => {
+                onTabClick(key ?? "");
               }}
             >
               <Tab
                 eventKey="0"
-                title={(() => {
-                  let title = decode(product.variantTags[0] || "Original");
+                title={((): string => {
+                  let title = decode(product.variantTags[0] ?? "Original");
                   if (title.length > 16) {
                     title = `${title.substr(0, 14)}...`;
                   }
@@ -208,7 +209,7 @@ export default function Inventory({
                       {
                         name: decode(product.name),
                         tags: decode(product.tags.join(", ")),
-                        variantTag: decode(product.variantTags[0] || ""),
+                        variantTag: decode(product.variantTags[0] ?? ""),
                         departments: product.departments
                           .map((department) => decode(department))
                           .filter(Boolean),
@@ -224,7 +225,7 @@ export default function Inventory({
                         priceHigh: isNewItem
                           ? ""
                           : product.priceRange[1].toFixed(2),
-                        image: product.variantImages[0] || "",
+                        image: product.variantImages[0] ?? "",
                         link: decode(product.link),
                         option: isNewItem ? "add" : "update",
                       } as ProductRequest
@@ -239,7 +240,7 @@ export default function Inventory({
                       handleChange,
                       handleSubmit,
                       setFieldValue,
-                    }) => (
+                    }): JSX.Element => (
                       <Form onSubmit={handleSubmit}>
                         <div style={{ width: 774 }}>
                           <Stack
@@ -284,7 +285,7 @@ export default function Inventory({
                                     isSearchable
                                     searchable
                                     clearable
-                                    onChange={(_, action) => {
+                                    onChange={(_, action): void => {
                                       switch (action.action) {
                                         case "select-option":
                                           if (action.option) {
@@ -302,18 +303,16 @@ export default function Inventory({
                                           }
                                           break;
                                         case "remove-value":
-                                          if (action.removedValue) {
-                                            const label =
-                                              action.removedValue.label;
-                                            setFieldValue(
-                                              "departments",
-                                              values.departments.filter(
-                                                (department) =>
-                                                  department !== label
-                                              ),
-                                              false
-                                            );
-                                          }
+                                          const label =
+                                            action.removedValue.label;
+                                          setFieldValue(
+                                            "departments",
+                                            values.departments.filter(
+                                              (department) =>
+                                                department !== label
+                                            ),
+                                            false
+                                          );
                                           break;
                                         case "clear":
                                           setFieldValue(
@@ -322,16 +321,21 @@ export default function Inventory({
                                             false
                                           );
                                           break;
+                                        // Other options are not necessary with multi select
+                                        default:
+                                          break;
                                       }
                                     }}
                                     options={departmentsWithIds}
                                     value={values.departments.map(
-                                      (department) => ({
+                                      (department): { label: string } => ({
                                         label: department,
                                       })
                                     )}
                                     styles={{
-                                      container: (obj) => ({
+                                      container: (
+                                        obj: CSSObject
+                                      ): CSSObject => ({
                                         ...obj,
                                         width: 250,
                                       }),
@@ -545,7 +549,7 @@ export default function Inventory({
                                       style={{
                                         maxWidth: 250,
                                       }}
-                                      onError={() => {
+                                      onError={(): void => {
                                         setFieldValue("image", "", true);
                                       }}
                                     />
@@ -560,7 +564,7 @@ export default function Inventory({
                                     aria-details="Enter image url here"
                                     id="image"
                                     onBlur={handleBlur}
-                                    onChange={async (event) => {
+                                    onChange={async (event): Promise<void> => {
                                       try {
                                         const url = event.currentTarget.value;
                                         setFieldValue("image", url, true);
@@ -584,7 +588,7 @@ export default function Inventory({
                                     onBlur={handleBlur}
                                     onChange={async (
                                       event: React.ChangeEvent<HTMLInputElement>
-                                    ) => {
+                                    ): Promise<void> => {
                                       if (
                                         event.target.files &&
                                         event.target.files.length > 0
@@ -662,7 +666,7 @@ export default function Inventory({
                                 type="submit"
                                 disabled={isSubmitting}
                                 style={{ padding: "11px 24px 11px 24px" }}
-                                onClick={() => {
+                                onClick={(): void => {
                                   setFieldValue("option", "delete", false);
                                   handleSubmit();
                                 }}
@@ -703,7 +707,7 @@ export default function Inventory({
                 <Tab
                   key={`${index + 1}`}
                   eventKey={`${index + 1}`}
-                  title={(() => {
+                  title={((): string => {
                     let title = decode(variantTag);
                     if (title.length > 16) {
                       title = `${title.substr(0, 14)}...`;
@@ -732,7 +736,7 @@ export default function Inventory({
                         handleChange,
                         handleSubmit,
                         setFieldValue,
-                      }) => (
+                      }): JSX.Element => (
                         <Form onSubmit={handleSubmit}>
                           <div style={{ width: 774 }}>
                             <Stack
@@ -763,7 +767,7 @@ export default function Inventory({
                                       style={{
                                         maxWidth: 250,
                                       }}
-                                      onError={() => {
+                                      onError={(): void => {
                                         setFieldValue("image", "", true);
                                       }}
                                     />
@@ -797,7 +801,7 @@ export default function Inventory({
                                     aria-details="Enter image url here"
                                     id="image"
                                     onBlur={handleBlur}
-                                    onChange={async (event) => {
+                                    onChange={async (event): Promise<void> => {
                                       try {
                                         const url = event.currentTarget.value;
                                         setFieldValue("image", url, true);
@@ -821,7 +825,7 @@ export default function Inventory({
                                     onBlur={handleBlur}
                                     onChange={async (
                                       event: React.ChangeEvent<HTMLInputElement>
-                                    ) => {
+                                    ): Promise<void> => {
                                       if (
                                         event.target.files &&
                                         event.target.files.length > 0
@@ -874,7 +878,7 @@ export default function Inventory({
                                 type="submit"
                                 disabled={isSubmitting}
                                 style={{ padding: "11px 24px 11px 24px" }}
-                                onClick={() => {
+                                onClick={(): void => {
                                   setFieldValue("option", "delete", false);
                                   handleSubmit();
                                 }}
@@ -917,7 +921,7 @@ export default function Inventory({
                   // since products can have no variant tags
                   eventKey={`${product.variantTags.length + 1}`}
                   title="Add New Variant +"
-                  onEnter={() => {
+                  onEnter={(): void => {
                     setNewVariant(newVariant);
                   }}
                 >
@@ -935,7 +939,7 @@ export default function Inventory({
                         handleChange,
                         handleSubmit,
                         setFieldValue,
-                      }) => (
+                      }): JSX.Element => (
                         <Form onSubmit={handleSubmit}>
                           <div style={{ width: 774 }}>
                             <Stack
@@ -966,7 +970,7 @@ export default function Inventory({
                                       style={{
                                         maxWidth: 250,
                                       }}
-                                      onError={() => {
+                                      onError={(): void => {
                                         setFieldValue("image", "", true);
                                       }}
                                     />
@@ -1003,7 +1007,7 @@ export default function Inventory({
                                     aria-details="Enter image url here"
                                     id="image"
                                     onBlur={handleBlur}
-                                    onChange={async (event) => {
+                                    onChange={async (event): Promise<void> => {
                                       try {
                                         const url = event.currentTarget.value;
                                         setFieldValue("image", url, true);
@@ -1027,7 +1031,7 @@ export default function Inventory({
                                     onBlur={handleBlur}
                                     onChange={async (
                                       event: React.ChangeEvent<HTMLInputElement>
-                                    ) => {
+                                    ): Promise<void> => {
                                       if (
                                         event.target.files &&
                                         event.target.files.length > 0
@@ -1096,4 +1100,6 @@ export default function Inventory({
       </Stack>
     </Stack>
   );
-}
+};
+
+export default Inventory;

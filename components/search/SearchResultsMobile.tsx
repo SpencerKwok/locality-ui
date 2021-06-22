@@ -7,6 +7,8 @@ import Stack from "components/common/Stack";
 import { Product } from "common/Schema";
 import LocalityLogo from "components/common/images/LocalityLogo";
 
+import type { FC } from "react";
+
 export interface SearchResults {
   facets: {
     business: Map<string, number>;
@@ -25,21 +27,21 @@ export interface SearchProps {
   onToggleWishList: (objectId: string, value: boolean) => void;
 }
 
-export default function Search({
+const Search: FC<SearchProps> = ({
   loggedIn,
   query,
   searchResults,
   onEnter,
   onBottom,
   onToggleWishList,
-}: SearchProps) {
+}) => {
   let atBottom = false;
 
   const resizeObserver = new ResizeObserver(() => {
     atBottom = false;
   });
 
-  const onScroll = () => {
+  const onScroll = (): void => {
     const pixelsAboveBottom =
       document.body.offsetHeight - window.innerHeight - window.pageYOffset;
     if (!atBottom && pixelsAboveBottom <= 800) {
@@ -51,7 +53,7 @@ export default function Search({
   useEffect(() => {
     resizeObserver.observe(document.body);
     window.addEventListener("scroll", onScroll);
-    return () => {
+    return (): void => {
       resizeObserver.unobserve(document.body);
       window.removeEventListener("scroll", onScroll);
     };
@@ -81,4 +83,6 @@ export default function Search({
       />
     </Stack>
   );
-}
+};
+
+export default Search;

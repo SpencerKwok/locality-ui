@@ -8,29 +8,34 @@ import { WishListResponse } from "common/Schema";
 import WishlistPage from "components/wishlist/WishList";
 import RootLayout from "components/common/RootLayout";
 
+import type { FC } from "react";
+
 interface WishListProps {
   wishlist: WishListResponse;
   session: Session | null;
 }
 
-function onToggleWishList(objectId: string, value: boolean) {
+function onToggleWishList(objectId: string, value: boolean): void {
   if (value) {
-    return PostRpcClient.getInstance().call("AddToWishList", {
+    void PostRpcClient.getInstance().call("AddToWishList", {
       id: objectId,
     });
   } else {
-    return PostRpcClient.getInstance().call("DeleteFromWishList", {
+    void PostRpcClient.getInstance().call("DeleteFromWishList", {
       id: objectId,
     });
   }
 }
 
-function fetcher(url: string, cookie?: string) {
+async function fetcher(
+  url: string,
+  cookie?: string
+): Promise<WishListResponse> {
   return GetRpcClient.getInstance().call("WishList", url, { cookie });
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const cookie = context.req.headers.cookie || "";
+  const cookie = context.req.headers.cookie;
   const session = await getSession(context);
   const wishlist = await fetcher("/api/wishlist/get", cookie);
 
@@ -39,11 +44,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function WishList({ wishlist, session }: WishListProps) {
+const WishList: FC<WishListProps> = ({ wishlist, session }) => {
   const router = useRouter();
 
   if (typeof window !== "undefined" && !session) {
-    router.push("/");
+    void router.push("/");
     return null;
   }
 
@@ -55,4 +60,6 @@ export default function WishList({ wishlist, session }: WishListProps) {
       />
     </RootLayout>
   );
-}
+};
+
+export default WishList;

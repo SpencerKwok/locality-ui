@@ -6,7 +6,7 @@ import type { AdminApiOptions, UploadApiOptions } from "cloudinary";
 
 const cloudinaryClient: {
   upload: (file: string, options?: UploadApiOptions) => Promise<string | null>;
-  deleteResources: (public_ids: string[]) => Promise<Error | null>;
+  deleteResources: (public_ids: Array<string>) => Promise<Error | null>;
   deleteFolder: (
     path: string,
     options: AdminApiOptions
@@ -46,7 +46,9 @@ const cloudinaryClient: {
         prefix: path,
       })
       .then(async ({ resources }) => {
-        const publicIds = resources.map(({ public_id }: any) => public_id);
+        const publicIds: Array<string> = resources.map(
+          ({ public_id }: { public_id: string }) => public_id
+        );
         if (publicIds.length > 0) {
           const deleteResources = await cloudinaryClient.deleteResources(
             publicIds
@@ -56,21 +58,30 @@ const cloudinaryClient: {
           if (deleteResources) {
             SumoLogic.log({
               level: "warning",
-              message: `Failed to upload file to Cloudinary: ${deleteResources.message}`,
+              message: `Failed to delete files from Cloudinary: ${deleteResources.message}`,
               params: { path },
             });
           }
-          const deleteFolder = await Cloudinary.api.delete_folder(
-            path,
-            options
-          );
+          const deleteFolder = await Cloudinary.api
+            .delete_folder(path, options)
+            .catch((error) => {
+              SumoLogic.log({
+                level: "warning",
+                message: "Failed to delete folder from Cloudinary",
+                params: { path, error },
+              });
+            });
+
           // Don't throw error on failed deletes,
           // it doesn't affect the client
-          if (deleteFolder) {
+          if (
+            deleteFolder?.error !== null &&
+            deleteFolder?.error !== undefined
+          ) {
             SumoLogic.log({
               level: "warning",
-              message: `Failed to upload file to Cloudinary: ${deleteFolder.message}`,
-              params: { path },
+              message: "Failed to delete folder from Cloudinary",
+              params: { path, response: deleteFolder },
             });
           }
         }

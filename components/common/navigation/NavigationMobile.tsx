@@ -1,4 +1,4 @@
-import { Fragment, ReactNode } from "react";
+import { Fragment } from "react";
 import Link from "next/link";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
@@ -9,11 +9,13 @@ import InstagramLogo from "components/common/images/InstagramLogo";
 import NavigationProps from "./NavigationProps";
 import styles from "components/common/navigation/Navigation.module.css";
 
+import type { FC, ReactNode } from "react";
+
 interface NavigationLayoutProps {
   children?: ReactNode;
 }
 
-const NavigationLayout = ({ children }: NavigationLayoutProps) => (
+const NavigationLayout: FC<NavigationLayoutProps> = ({ children }) => (
   <Navbar className={styles.navbar} collapseOnSelect expand="lg" variant="dark">
     <span>
       <a
@@ -38,7 +40,7 @@ const NavigationLayout = ({ children }: NavigationLayoutProps) => (
   </Navbar>
 );
 
-export default function Navigation({ type }: NavigationProps) {
+const Navigation: FC<NavigationProps> = ({ type }) => {
   return (
     <NavigationLayout>
       <Link href="/">
@@ -53,11 +55,11 @@ export default function Navigation({ type }: NavigationProps) {
       <Link href="/contact">
         <span className={`nav-link ${styles.navlink}`}>Contact Us</span>
       </Link>
-      {(() => {
+      {((): ReactNode => {
         const navLinks = [];
-        const customSignOut = async () => {
+        const customSignOut = async (): Promise<void> => {
           await signOut({ redirect: false });
-          window.location.pathname = "/signin";
+          window.location.assign("/signin");
         };
         switch (type) {
           case "business":
@@ -65,7 +67,7 @@ export default function Navigation({ type }: NavigationProps) {
               // Need to refresh CSP
               <div
                 key="Dashboard"
-                onClick={() => {
+                onClick={(): void => {
                   window.location.assign("/dashboard?tab=inventory");
                 }}
               >
@@ -105,4 +107,6 @@ export default function Navigation({ type }: NavigationProps) {
       })()}
     </NavigationLayout>
   );
-}
+};
+
+export default Navigation;

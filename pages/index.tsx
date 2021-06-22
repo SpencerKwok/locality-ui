@@ -7,6 +7,7 @@ import { useWindowSize } from "lib/common";
 
 import { helper } from "./api/businesses";
 
+import type { FC } from "react";
 import type { GetServerSideProps } from "next";
 import type { BaseBusiness } from "../common/Schema";
 import type { Session } from "next-auth";
@@ -24,7 +25,7 @@ let cachedBusinesses: Array<{
 }> = [];
 export const getServerSideProps: GetServerSideProps = async () => {
   await new Promise((resolve) => {
-    helper().then((res) => {
+    void helper().then((res) => {
       if (!res) {
         // Don't update cached businesses
         // if we fail to fetch them
@@ -58,10 +59,10 @@ export const getServerSideProps: GetServerSideProps = async () => {
   };
 };
 
-export default function Home({ businesses, session }: HomeProps) {
+const Home: FC<HomeProps> = ({ businesses, session }) => {
   const { query } = useRouter();
   const size = useWindowSize();
-  if (!size.width) {
+  if (typeof size.width !== "number") {
     return <RootLayout session={session} />;
   }
 
@@ -75,4 +76,6 @@ export default function Home({ businesses, session }: HomeProps) {
       />
     </RootLayout>
   );
-}
+};
+
+export default Home;

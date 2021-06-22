@@ -12,15 +12,14 @@ import {
   Label,
 } from "components/common/form";
 
+import type { FC } from "react";
+
 export interface SignupBusinessProps {
   error: string;
   onSubmit: FormikConfig<SignUpRequest>["onSubmit"];
 }
 
-export default function SignupBusiness({
-  error,
-  onSubmit,
-}: SignupBusinessProps) {
+const SignupBusiness: FC<SignupBusinessProps> = ({ error, onSubmit }) => {
   return (
     <Stack direction="row" columnAlign="center">
       <Stack direction="column" rowAlign="center" style={{ display: "block" }}>
@@ -59,7 +58,7 @@ export default function SignupBusiness({
             handleBlur,
             handleChange,
             handleSubmit,
-          }) => (
+          }): JSX.Element => (
             <Form onSubmit={handleSubmit}>
               <Stack direction="row" spacing={12} priority={[1, 1]}>
                 <Form.Group>
@@ -261,4 +260,6 @@ export default function SignupBusiness({
       </Stack>
     </Stack>
   );
-}
+};
+
+export default SignupBusiness;

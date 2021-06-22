@@ -5,19 +5,20 @@ import SignUpMobile from "components/signup/SignupMobile";
 import RootLayout from "components/common/RootLayout";
 import { useMediaQuery } from "lib/common";
 
+import type { FC } from "react";
 import type { Session } from "next-auth";
 
 export interface SignUpProps {
   session: Session | null;
 }
 
-export default function SignUp({ session }: SignUpProps) {
+const SignUp: FC<SignUpProps> = ({ session }) => {
   const isNarrow = useMediaQuery(42, "width");
   const router = useRouter();
 
-  if (session && session.user) {
+  if (session?.user) {
     const user: any = session.user;
-    router.push(user.isBusiness ? "/dashboard" : "/");
+    void router.push(user.isBusiness === true ? "/dashboard" : "/");
     return null;
   }
 
@@ -26,4 +27,6 @@ export default function SignUp({ session }: SignUpProps) {
       {isNarrow ? <SignUpMobile /> : <SignUpDesktop />}
     </RootLayout>
   );
-}
+};
+
+export default SignUp;

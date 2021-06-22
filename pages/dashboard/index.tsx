@@ -15,13 +15,21 @@ import { EmptyProduct } from "common/Schema";
 import { useWindowSize } from "lib/common";
 import styles from "components/dashboard/Dashboard.module.css";
 
-import type { ChangeEvent } from "react";
+import type { ChangeEvent, FC } from "react";
 import type { GetServerSideProps } from "next";
 import type { FuseBaseProduct } from "components/dashboard/ProductGrid";
 import type { Session } from "next-auth";
 import type { PasswordUpdateRequest } from "components/dashboard/Account";
 import type { UploadType } from "components/dashboard/AddProduct";
-import type { BaseBusiness, BaseProduct } from "common/Schema";
+import type {
+  BaseBusiness,
+  BaseProduct,
+  BusinessResponse,
+  BusinessesResponse,
+  DepartmentsResponse,
+  ProductResponse,
+  ProductsResponse,
+} from "common/Schema";
 import type {
   UpdateDepartmentsRequest,
   UpdateHomepagesRequest,
@@ -37,23 +45,23 @@ import type {
   SquareUpdateUploadSettingsRequest,
 } from "components/dashboard/Settings";
 
-function getDepartments(url: string) {
+async function getDepartments(url: string): Promise<DepartmentsResponse> {
   return GetRpcClient.getInstance().call("Departments", url);
 }
 
-function getProduct(url: string) {
+async function getProduct(url: string): Promise<ProductResponse> {
   return GetRpcClient.getInstance().call("Product", url);
 }
 
-function getProducts(url: string) {
+async function getProducts(url: string): Promise<ProductsResponse> {
   return GetRpcClient.getInstance().call("Products", url);
 }
 
-function getBusiness(url: string) {
+async function getBusiness(url: string): Promise<BusinessResponse> {
   return GetRpcClient.getInstance().call("Business", url);
 }
 
-function getBusinesses(url: string) {
+async function getBusinesses(url: string): Promise<BusinessesResponse> {
   return GetRpcClient.getInstance().call("Businesses", url);
 }
 
@@ -61,12 +69,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
   const isNewBusiness = context.query.newBusiness === "true";
   const initialTab = decodeURIComponent(
-    (context.query["tab"] || "inventory") as string
+    (context.query["tab"] ?? "inventory") as string
   );
 
   let businesses = Array<BaseBusiness>();
   let initialProducts = Array<BaseProduct>();
-  if (session && session.user) {
+  if (session?.user) {
     const user: any = session.user;
     if (user.id === 0) {
       businesses = await getBusinesses("/api/businesses").then(
@@ -75,14 +83,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       initialProducts = await getProducts(
         `/api/products?id=${businesses[0].id}`
       ).then(({ products }) => products);
-    } else if (user.id) {
-      businesses = await getBusiness(
-        `/api/business?id=${user.id}`
-      ).then(({ business }) => [business]);
-      initialProducts = await getProducts(
-        `/api/products?id=${user.id}`
-      ).then(({ products }) =>
-        products.map((product, index) => ({ ...product, index }))
+    } else if (typeof user.id === "number") {
+      businesses = await getBusiness(`/api/business?id=${user.id}`).then(
+        ({ business }) => [business]
+      );
+      initialProducts = await getProducts(`/api/products?id=${user.id}`).then(
+        ({ products }) =>
+          products.map((product, index) => ({ ...product, index }))
       );
     }
   }
@@ -106,13 +113,13 @@ interface DashboardProps {
   initialTab: string;
 }
 
-export default function Dashboard({
+const Dashboard: FC<DashboardProps> = ({
   businesses,
   isNewBusiness,
   session,
   initialProducts,
   initialTab,
-}: DashboardProps) {
+}) => {
   const router = useRouter();
   const size = useWindowSize();
 
@@ -166,25 +173,26 @@ export default function Dashboard({
   });
 
   useEffect(() => {
-    getDepartments("/api/departments/get").then(({ departments }) => {
+    void getDepartments("/api/departments/get").then(({ departments }) => {
       setDepartments(departments);
     });
-    getSession().then((value) => {
+    void getSession().then((value) => {
       if (!value || !value.user) {
-        router.push("/");
+        // Need to refresh CSP
+        window.location.assign("/");
       }
     });
   }, []);
 
   /// INVENTORY
-  const onAddProduct = () => {
+  const onAddProduct = (): void => {
     setIsNewItem(true);
     setProduct(EmptyProduct);
     setRequestStatus({ error: "", success: "" });
     setTab("0");
   };
 
-  const onInventoryBusinessClick = async (index: number) => {
+  const onInventoryBusinessClick = async (index: number): Promise<void> => {
     setFilter("");
     setBusinessIndex(index);
     setProductIndex(-1);
@@ -207,7 +215,7 @@ export default function Dashboard({
     );
   };
 
-  const onProductClick = async (index: number) => {
+  const onProductClick = async (index: number): Promise<void> => {
     setProduct(
       await getProduct(`/api/product?id=${products[index].objectId}`).then(
         ({ product }) => product
@@ -219,25 +227,28 @@ export default function Dashboard({
     setProductIndex(index);
   };
 
-  const onFilterChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const onFilterChange = (event: ChangeEvent<HTMLInputElement>): void => {
     setFilter(event.target.value);
   };
 
-  const onFilterClear = () => {
+  const onFilterClear = (): void => {
     setFilter("");
   };
 
-  const onUploadTypeChange = (uploadType: UploadType) => {
+  const onUploadTypeChange = (uploadType: UploadType): void => {
     setUploadStatus({
       ...uploadStatus,
       uploadType,
     });
   };
 
-  const onUpload = async (uploadType: UploadType, file?: string) => {
+  const onUpload = async (
+    uploadType: UploadType,
+    file?: string
+  ): Promise<void> => {
     let methodName:
-      | "ShopifyProductUpload"
       | "EtsyProductUpload"
+      | "ShopifyProductUpload"
       | "SquareProductUpload";
     switch (uploadType) {
       case "Etsy":
@@ -266,10 +277,10 @@ export default function Dashboard({
         csv: file,
       })
       .then(({ error }) => {
-        if (error) {
+        if (typeof error === "string" && error) {
           setUploadStatus({
             uploadType,
-            error: error,
+            error,
             open: true,
             loading: false,
             successful: false,
@@ -310,7 +321,7 @@ export default function Dashboard({
         setUploadStatus({
           uploadType,
           open: true,
-          error: error,
+          error,
           loading: false,
           successful: false,
         });
@@ -330,7 +341,7 @@ export default function Dashboard({
     link,
     option,
     variantTag,
-  }: ProductRequest) => {
+  }: ProductRequest): Promise<void> => {
     switch (option) {
       case "add":
         await PostRpcClient.getInstance()
@@ -353,8 +364,8 @@ export default function Dashboard({
             },
           })
           .then(async ({ product, error }) => {
-            if (error) {
-              setRequestStatus({ error: error, success: "" });
+            if (typeof error === "string" && error) {
+              setRequestStatus({ error, success: "" });
               return;
             }
 
@@ -387,8 +398,8 @@ export default function Dashboard({
             },
           })
           .then(({ error }) => {
-            if (error) {
-              setRequestStatus({ error: error, success: "" });
+            if (typeof error === "string" && error) {
+              setRequestStatus({ error, success: "" });
               return;
             }
 
@@ -431,8 +442,8 @@ export default function Dashboard({
             },
           })
           .then(({ product, error }) => {
-            if (error) {
-              setRequestStatus({ error: error, success: "" });
+            if (typeof error === "string" && error) {
+              setRequestStatus({ error, success: "" });
               return;
             }
 
@@ -458,7 +469,7 @@ export default function Dashboard({
     variantTag,
     image,
     option,
-  }: VariantRequest) => {
+  }: VariantRequest): Promise<void> => {
     switch (option) {
       case "add":
         await PostRpcClient.getInstance()
@@ -471,8 +482,8 @@ export default function Dashboard({
             },
           })
           .then(({ error, variantImage, variantTag }) => {
-            if (error) {
-              setRequestStatus({ error: error, success: "" });
+            if (typeof error === "string" && error) {
+              setRequestStatus({ error, success: "" });
               return;
             }
             setProduct({
@@ -499,8 +510,8 @@ export default function Dashboard({
             },
           })
           .then(({ error }) => {
-            if (error) {
-              setRequestStatus({ error: error, success: "" });
+            if (typeof error === "string" && error) {
+              setRequestStatus({ error, success: "" });
               return;
             }
             setTab("0");
@@ -536,8 +547,8 @@ export default function Dashboard({
             },
           })
           .then(({ error, variantImage, variantTag }) => {
-            if (error) {
-              setRequestStatus({ error: error, success: "" });
+            if (typeof error === "string" && error) {
+              setRequestStatus({ error, success: "" });
               return;
             }
             setProduct({
@@ -566,7 +577,7 @@ export default function Dashboard({
   };
 
   /// BUSINESS
-  const onBusinessBusinessClick = (index: number) => {
+  const onBusinessBusinessClick = (index: number): void => {
     setBusinessIndex(index);
     setUpdateDepartmentsStatus({
       error: "",
@@ -584,14 +595,14 @@ export default function Dashboard({
 
   const onSubmitDepartments = async ({
     departments,
-  }: UpdateDepartmentsRequest) => {
+  }: UpdateDepartmentsRequest): Promise<void> => {
     await PostRpcClient.getInstance()
       .call("DepartmentsUpdate", {
         id: businesses[businessIndex].id,
         departments: departments.map((value) => value.trim()),
       })
       .then(({ departments, error }) => {
-        if (error) {
+        if (typeof error === "string" && error) {
           setUpdateDepartmentsStatus({ error, successful: false });
           return;
         }
@@ -609,7 +620,7 @@ export default function Dashboard({
     etsyHomepage,
     shopifyHomepage,
     squareHomepage,
-  }: UpdateHomepagesRequest) => {
+  }: UpdateHomepagesRequest): Promise<void> => {
     await PostRpcClient.getInstance()
       .call("HomepagesUpdate", {
         id: businesses[businessIndex].id,
@@ -619,7 +630,7 @@ export default function Dashboard({
         squareHomepage,
       })
       .then((res) => {
-        if (res.error) {
+        if (typeof res.error === "string" && res.error) {
           setUpdateHomepageStatus({ error: res.error, successful: false });
           return;
         }
@@ -631,14 +642,14 @@ export default function Dashboard({
       });
   };
 
-  const onSubmitLogo = async ({ logo }: UpdateLogoRequest) => {
+  const onSubmitLogo = async ({ logo }: UpdateLogoRequest): Promise<void> => {
     await PostRpcClient.getInstance()
       .call("LogoUpdate", {
         id: businesses[businessIndex].id,
         logo,
       })
       .then(({ logo, error }) => {
-        if (error) {
+        if (typeof error === "string" && error) {
           setUpdateLogoStatus({ error, successful: false });
           return;
         }
@@ -654,15 +665,15 @@ export default function Dashboard({
   const onSubmitEtsyUploadSettings = async ({
     includeTags,
     excludeTags,
-  }: EtsyUpdateUploadSettingsRequest) => {
+  }: EtsyUpdateUploadSettingsRequest): Promise<void> => {
     const req = {
       id: businesses[businessIndex].id,
       etsy: {
-        includeTags: (includeTags || "")
+        includeTags: (includeTags ?? "")
           .split(",")
           .map((x) => x.trim())
           .filter(Boolean),
-        excludeTags: (excludeTags || "")
+        excludeTags: (excludeTags ?? "")
           .split(",")
           .map((x) => x.trim())
           .filter(Boolean),
@@ -672,9 +683,9 @@ export default function Dashboard({
     await PostRpcClient.getInstance()
       .call("EtsyUploadSettingsUpdate", req)
       .then(({ error, etsy }) => {
-        if (error) {
+        if (typeof error === "string" && error) {
           setUpdateUploadSettingsStatus({
-            error: error,
+            error,
             successful: false,
           });
           return;
@@ -695,24 +706,22 @@ export default function Dashboard({
     includeTags,
     excludeTags,
     departmentMapping,
-  }: ShopifyUpdateUploadSettingsRequest) => {
+  }: ShopifyUpdateUploadSettingsRequest): Promise<void> => {
     const req = {
       id: businesses[businessIndex].id,
       shopify: {
-        includeTags: (includeTags || "")
+        includeTags: (includeTags ?? "")
           .split(",")
           .map((x) => x.trim())
           .filter(Boolean),
-        excludeTags: (excludeTags || "")
+        excludeTags: (excludeTags ?? "")
           .split(",")
           .map((x) => x.trim())
           .filter(Boolean),
-        departmentMapping: (departmentMapping || [])
+        departmentMapping: (departmentMapping ?? [])
           .map(({ key, departments }) => ({
             key: key.trim(),
-            departments: (departments || []).map((department) =>
-              department.trim()
-            ),
+            departments: departments.map((department) => department.trim()),
           }))
           .filter(
             ({ key, departments }) => key !== "" && departments.length !== 0
@@ -723,9 +732,9 @@ export default function Dashboard({
     await PostRpcClient.getInstance()
       .call("ShopifyUploadSettingsUpdate", req)
       .then(({ error, shopify }) => {
-        if (error) {
+        if (typeof error === "string" && error) {
           setUpdateUploadSettingsStatus({
-            error: error,
+            error,
             successful: false,
           });
           return;
@@ -746,24 +755,22 @@ export default function Dashboard({
     includeTags,
     excludeTags,
     departmentMapping,
-  }: SquareUpdateUploadSettingsRequest) => {
+  }: SquareUpdateUploadSettingsRequest): Promise<void> => {
     const req = {
       id: businesses[businessIndex].id,
       square: {
-        includeTags: (includeTags || "")
+        includeTags: (includeTags ?? "")
           .split(",")
           .map((x) => x.trim())
           .filter(Boolean),
-        excludeTags: (excludeTags || "")
+        excludeTags: (excludeTags ?? "")
           .split(",")
           .map((x) => x.trim())
           .filter(Boolean),
-        departmentMapping: (departmentMapping || [])
+        departmentMapping: (departmentMapping ?? [])
           .map(({ key, departments }) => ({
             key: key.trim(),
-            departments: (departments || []).map((department) =>
-              department.trim()
-            ),
+            departments: departments.map((department) => department.trim()),
           }))
           .filter(
             ({ key, departments }) => key !== "" && departments.length !== 0
@@ -774,9 +781,9 @@ export default function Dashboard({
     await PostRpcClient.getInstance()
       .call("SquareUploadSettingsUpdate", req)
       .then(({ error, square }) => {
-        if (error) {
+        if (typeof error === "string" && error) {
           setUpdateUploadSettingsStatus({
-            error: error,
+            error,
             successful: false,
           });
           return;
@@ -793,7 +800,7 @@ export default function Dashboard({
       });
   };
 
-  const onSettingsBusinessClick = (index: number) => {
+  const onSettingsBusinessClick = (): void => {
     setUpdateUploadSettingsStatus({
       error: "",
       successful: false,
@@ -801,11 +808,13 @@ export default function Dashboard({
   };
 
   /// ACCOUNT
-  const onSubmitPassword = async (values: PasswordUpdateRequest) => {
+  const onSubmitPassword = async (
+    values: PasswordUpdateRequest
+  ): Promise<void> => {
     await PostRpcClient.getInstance()
       .call("PasswordUpdate", values)
       .then(({ error }) => {
-        if (error) {
+        if (typeof error === "string" && error) {
           setUpdatePasswordStatus({ error, updatedPassword: false });
           return;
         }
@@ -816,7 +825,11 @@ export default function Dashboard({
       });
   };
 
-  if (!session || !session.user) {
+  if (!session?.user) {
+    return null;
+  }
+
+  if (typeof size.height !== "number") {
     return null;
   }
 
@@ -828,82 +841,76 @@ export default function Dashboard({
       <Tabs
         unmountOnExit
         defaultActiveKey={tab}
-        onSelect={(key) => {
-          router.replace(`/dashboard?tab=${key}`);
-          setTab(key || "inventory");
+        onSelect={(key): void => {
+          void router.replace(`/dashboard?tab=${key}`);
+          setTab(key ?? "inventory");
         }}
       >
         <Tab className={styles.tab} eventKey="inventory" title="Inventory">
-          {size.height && (
-            <InventoryPage
-              isNewItem={isNewItem}
-              businesses={businesses}
-              businessIndex={businessIndex}
-              departments={departments}
-              filter={filter}
-              products={
-                filter
-                  ? productSearch.search(filter).map(({ item }) => item)
-                  : products
-              }
-              productIndex={productIndex}
-              product={product}
-              requestStatus={requestStatus}
-              tab={variantTab}
-              uploadType={uploadStatus.uploadType}
-              uploadError={uploadStatus.error}
-              uploadOpen={uploadStatus.open}
-              uploadLoading={uploadStatus.loading}
-              uploadSuccessful={uploadStatus.successful}
-              height={size.height}
-              onAddProduct={onAddProduct}
-              onBusinessClick={onInventoryBusinessClick}
-              onFilterChange={onFilterChange}
-              onFilterClear={onFilterClear}
-              onProductClick={onProductClick}
-              onTabClick={(key) => {
-                setRequestStatus({ error: "", success: "" });
-                setVariantTab(key);
-              }}
-              onUpload={onUpload}
-              onUploadTypeChange={onUploadTypeChange}
-              onProductSubmit={onProductSubmit}
-              onVariantSubmit={onVariantSubmit}
-            />
-          )}
+          <InventoryPage
+            isNewItem={isNewItem}
+            businesses={businesses}
+            businessIndex={businessIndex}
+            departments={departments}
+            filter={filter}
+            products={
+              filter
+                ? productSearch.search(filter).map(({ item }) => item)
+                : products
+            }
+            productIndex={productIndex}
+            product={product}
+            requestStatus={requestStatus}
+            tab={variantTab}
+            uploadType={uploadStatus.uploadType}
+            uploadError={uploadStatus.error}
+            uploadOpen={uploadStatus.open}
+            uploadLoading={uploadStatus.loading}
+            uploadSuccessful={uploadStatus.successful}
+            height={size.height}
+            onAddProduct={onAddProduct}
+            onBusinessClick={onInventoryBusinessClick}
+            onFilterChange={onFilterChange}
+            onFilterClear={onFilterClear}
+            onProductClick={onProductClick}
+            onTabClick={(key): void => {
+              setRequestStatus({ error: "", success: "" });
+              setVariantTab(key);
+            }}
+            onUpload={onUpload}
+            onUploadTypeChange={onUploadTypeChange}
+            onProductSubmit={onProductSubmit}
+            onVariantSubmit={onVariantSubmit}
+          />
         </Tab>
         <Tab className={styles.tab} eventKey="business" title="Business">
-          {size.height && (
-            <BusinessPage
-              isNewBusiness={isNewBusiness}
-              businesses={businesses}
-              businessIndex={businessIndex}
-              departments={departments}
-              updateDepartmentsStatus={updateDepartmentsStatus}
-              updateHomepagesStatus={updateHomepagesStatus}
-              updateLogoStatus={updateLogoStatus}
-              height={size.height}
-              onBusinessClick={onBusinessBusinessClick}
-              onSubmitDepartments={onSubmitDepartments}
-              onSubmitLogo={onSubmitLogo}
-              onSubmitHomepages={onSubmitHomepages}
-            />
-          )}
+          <BusinessPage
+            isNewBusiness={isNewBusiness}
+            businesses={businesses}
+            businessIndex={businessIndex}
+            departments={departments}
+            updateDepartmentsStatus={updateDepartmentsStatus}
+            updateHomepagesStatus={updateHomepagesStatus}
+            updateLogoStatus={updateLogoStatus}
+            height={size.height}
+            onBusinessClick={onBusinessBusinessClick}
+            onSubmitDepartments={onSubmitDepartments}
+            onSubmitLogo={onSubmitLogo}
+            onSubmitHomepages={onSubmitHomepages}
+          />
         </Tab>
         <Tab className={styles.tab} eventKey="settings" title="Settings">
-          {size.height && (
-            <SettingsPage
-              businesses={businesses}
-              businessIndex={businessIndex}
-              departments={departments}
-              updateUploadSettingsStatus={updateUploadSettingsStatus}
-              height={size.height}
-              onBusinessClick={onSettingsBusinessClick}
-              onSubmitEtsyUploadSettings={onSubmitEtsyUploadSettings}
-              onSubmitShopifyUploadSettings={onSubmitShopifyUploadSettings}
-              onSubmitSquareUploadSettings={onSubmitSquareUploadSettings}
-            />
-          )}
+          <SettingsPage
+            businesses={businesses}
+            businessIndex={businessIndex}
+            departments={departments}
+            updateUploadSettingsStatus={updateUploadSettingsStatus}
+            height={size.height}
+            onBusinessClick={onSettingsBusinessClick}
+            onSubmitEtsyUploadSettings={onSubmitEtsyUploadSettings}
+            onSubmitShopifyUploadSettings={onSubmitShopifyUploadSettings}
+            onSubmitSquareUploadSettings={onSubmitSquareUploadSettings}
+          />
         </Tab>
         <Tab className={styles.tab} eventKey="account" title="Account">
           <AccountPage
@@ -917,4 +924,6 @@ export default function Dashboard({
       </Tabs>
     </RootLayout>
   );
-}
+};
+
+export default Dashboard;

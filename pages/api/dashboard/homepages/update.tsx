@@ -17,7 +17,7 @@ import type { NextApiRequestWithLocals } from "lib/api/middleware";
 export default async function handler(
   req: NextApiRequestWithLocals,
   res: NextApiResponse
-) {
+): Promise<void> {
   await runMiddlewareBusiness(req, res);
 
   if (req.method !== "POST") {
@@ -33,12 +33,12 @@ export default async function handler(
   const reqBody: HomepagesUpdateRequest = req.body;
   try {
     await HomepagesUpdateSchema.validate(reqBody, { abortEarly: false });
-  } catch (err) {
+  } catch (error: unknown) {
     SumoLogic.log({
       level: "warning",
       method: "dashboard/homepages/update",
-      message: `Invalid payload: ${err.inner}`,
-      params: { body: reqBody, error: err },
+      message: "Invalid payload",
+      params: { body: reqBody, error },
     });
     res.status(400).json({ error: "Invalid payload" });
     return;
@@ -58,15 +58,18 @@ export default async function handler(
   }
 
   const homepage = addHttpsProtocol(Xss(reqBody.homepage));
-  const etsyHomepage = reqBody.etsyHomepage
-    ? addHttpsProtocol(Xss(reqBody.etsyHomepage.replace(/\?.*$/g, "")))
-    : "";
-  const shopifyHomepage = reqBody.shopifyHomepage
-    ? addHttpsProtocol(Xss(reqBody.shopifyHomepage))
-    : "";
-  const squareHomepage = reqBody.squareHomepage
-    ? addHttpsProtocol(Xss(reqBody.squareHomepage))
-    : "";
+  const etsyHomepage =
+    typeof reqBody.etsyHomepage === "string"
+      ? addHttpsProtocol(Xss(reqBody.etsyHomepage.replace(/\?.*$/g, "")))
+      : "";
+  const shopifyHomepage =
+    typeof reqBody.shopifyHomepage === "string"
+      ? addHttpsProtocol(Xss(reqBody.shopifyHomepage))
+      : "";
+  const squareHomepage =
+    typeof reqBody.squareHomepage === "string"
+      ? addHttpsProtocol(Xss(reqBody.squareHomepage))
+      : "";
 
   const prevHomepages = await Psql.select<{
     homepages: string;
@@ -97,17 +100,17 @@ export default async function handler(
 
   const homepages = JSON.parse(prevHomepages.rows[0].homepages);
   homepages.homepage = homepage;
-  if (homepages.etsyHomepage) {
+  if (typeof homepages.etsyHomepage === "string") {
     homepages.etsyHomepage = etsyHomepage ? etsyHomepage : undefined;
   } else if (etsyHomepage) {
     homepages.etsyHomepage = etsyHomepage;
   }
-  if (homepages.shopifyHomepage) {
+  if (typeof homepages.shopifyHomepage === "string") {
     homepages.shopifyHomepage = shopifyHomepage ? shopifyHomepage : undefined;
   } else if (shopifyHomepage) {
     homepages.shopifyHomepage = shopifyHomepage;
   }
-  if (homepages.squareHomepage) {
+  if (typeof homepages.squareHomepage === "string") {
     homepages.squareHomepage = squareHomepage ? squareHomepage : undefined;
   } else if (squareHomepage) {
     homepages.squareHomepage = squareHomepage;

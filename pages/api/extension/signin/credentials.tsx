@@ -14,7 +14,7 @@ const uidgen = new UIDGenerator(256, UIDGenerator.BASE58);
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void> {
   if (req.method !== "POST") {
     SumoLogic.log({
       level: "info",
@@ -28,18 +28,18 @@ export default async function handler(
   const reqBody: SignInRequest = req.body;
   try {
     await SignInSchema.validate(reqBody, { abortEarly: false });
-  } catch (err) {
+  } catch (error: unknown) {
     SumoLogic.log({
       level: "warning",
       method: "extension/signin/credentials",
-      message: `Invalid payload: ${err.inner}`,
-      params: { body: reqBody, error: err },
+      message: "Invalid payload",
+      params: { body: reqBody, error },
     });
     res.status(400).json({ error: "Invalid payload" });
     return;
   }
 
-  const email = Xss(req.body.email || "");
+  const email = Xss(req.body.email ?? "");
   const password = req.body.password;
 
   const user = await Psql.select<{
@@ -74,8 +74,12 @@ export default async function handler(
   const passwordMatch = await Bcrypt.compare(
     password,
     user.rows[0].password
-  ).catch((err) => console.log(err));
-  if (!passwordMatch) {
+  ).catch(
+    async (err): Promise<void> => {
+      console.log(err);
+    }
+  );
+  if (passwordMatch !== true) {
     res.status(400).json({ error: "Invalid credentials" });
     return;
   }

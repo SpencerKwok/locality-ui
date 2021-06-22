@@ -10,7 +10,7 @@ import type { Product, ProductResponse } from "common/Schema";
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void> {
   if (req.method !== "GET") {
     SumoLogic.log({
       level: "info",
@@ -24,7 +24,7 @@ export default async function handler(
   const query: { id?: string } = req.query;
   const { id } = query;
 
-  if (!id || typeof id !== "string" || !id.match(/^\d+_\d+$/g)) {
+  if (typeof id !== "string" || !id || !id.match(/^\d+_\d+$/g)) {
     SumoLogic.log({
       level: "warning",
       method: "product",

@@ -5,9 +5,10 @@ import BusinessShowcase from "./BusinessShowcase";
 import Search from "components/search/Search";
 import Stack from "components/common/Stack";
 
+import type { FC } from "react";
 import type { BaseBusiness } from "common/Schema";
 
-const NewUser = dynamic(() => import("components/common/popups/NewUser"));
+const NewUser = dynamic(async () => import("components/common/popups/NewUser"));
 
 interface HomeProps {
   businesses: Array<BaseBusiness>;
@@ -15,7 +16,7 @@ interface HomeProps {
   width: number;
 }
 
-export default function Home({ businesses, isNewUser, width }: HomeProps) {
+const Home: FC<HomeProps> = ({ businesses, isNewUser, width }) => {
   return (
     <div>
       {isNewUser && <NewUser />}
@@ -42,4 +43,6 @@ export default function Home({ businesses, isNewUser, width }: HomeProps) {
       </Stack>
     </div>
   );
-}
+};
+
+export default Home;

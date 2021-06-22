@@ -1,4 +1,3 @@
-import { decode } from "html-entities";
 import { camelCase } from "lodash";
 import { deepMapKeys } from "lib/api/common";
 
@@ -54,7 +53,7 @@ export async function helper(): Promise<BusinessesResponse | null> {
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void> {
   if (req.method !== "GET") {
     SumoLogic.log({
       level: "info",

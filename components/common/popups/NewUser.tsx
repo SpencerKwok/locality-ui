@@ -1,14 +1,15 @@
-import React from "react";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 
 import Stack from "components/common/Stack";
 import styles from "components/common/popups/Popup.module.css";
 
-export default function NewUser() {
+import type { FC, ReactElement } from "react";
+
+const NewUser: FC<{}> = () => {
   return (
     <Popup modal open={true}>
-      {(close: () => void) => (
+      {(close: () => void): ReactElement => (
         <Stack
           direction="column"
           rowAlign="center"
@@ -36,4 +37,6 @@ export default function NewUser() {
       )}
     </Popup>
   );
-}
+};
+
+export default NewUser;

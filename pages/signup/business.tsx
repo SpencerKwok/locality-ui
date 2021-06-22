@@ -7,6 +7,7 @@ import SignUpBusinessDesktop from "components/signup/SignupBusinessDesktop";
 import SignUpBusinessMobile from "components/signup/SignupBusinessMobile";
 import { useMediaQuery } from "lib/common";
 
+import type { FC } from "react";
 import type { SignUpRequest } from "components/signup/SignupBusinessForm";
 import type { Session } from "next-auth";
 
@@ -14,15 +15,15 @@ export interface BusinessSignUpProps {
   session: Session | null;
 }
 
-export default function BusinessSignUp({ session }: BusinessSignUpProps) {
+const BusinessSignUp: FC<BusinessSignUpProps> = ({ session }) => {
   const [error, setError] = useState("");
   const isNarrow = useMediaQuery(38, "width");
 
-  const onSubmit = async (values: SignUpRequest) => {
+  const onSubmit = async (values: SignUpRequest): Promise<void> => {
     await PostRpcClient.getInstance()
       .call("BusinessSignUp", values)
       .then(async ({ error }) => {
-        if (error) {
+        if (typeof error === "string" && error) {
           setError(error);
           return;
         }
@@ -49,11 +50,13 @@ export default function BusinessSignUp({ session }: BusinessSignUpProps) {
       });
   };
 
-  if (session && session.user) {
+  if (session?.user) {
     const user: any = session.user;
 
     // Need to refresh CSP
-    window.location.assign(user.isBusiness ? "/dashboard?tab=inventory" : "/");
+    window.location.assign(
+      user.isBusiness === true ? "/dashboard?tab=inventory" : "/"
+    );
     return null;
   }
 
@@ -66,4 +69,6 @@ export default function BusinessSignUp({ session }: BusinessSignUpProps) {
       )}
     </RootLayout>
   );
-}
+};
+
+export default BusinessSignUp;

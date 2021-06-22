@@ -1,12 +1,13 @@
 import RootLayout from "../components/common/RootLayout";
 
+import type { FC } from "react";
 import type { Session } from "next-auth";
 
 export interface OfflineProps {
   session: Session | null;
 }
 
-export default function Offline({ session }: OfflineProps) {
+const Offline: FC<OfflineProps> = ({ session }) => {
   return (
     <RootLayout session={session}>
       <div style={{ marginLeft: 12 }}>
@@ -15,4 +16,6 @@ export default function Offline({ session }: OfflineProps) {
       </div>
     </RootLayout>
   );
-}
+};
+
+export default Offline;

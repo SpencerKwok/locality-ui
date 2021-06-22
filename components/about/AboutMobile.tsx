@@ -1,9 +1,9 @@
-import React from "react";
-
 import DescriptionImage from "../common/description-image/DescriptionImage";
 import Stack from "components/common/Stack";
 
-export default function About() {
+import type { FC } from "react";
+
+const About: FC<{}> = () => {
   return (
     <Stack direction="row" columnAlign="center">
       <Stack direction="column" rowAlign="center" spacing={32}>
@@ -94,4 +94,6 @@ export default function About() {
       </Stack>
     </Stack>
   );
-}
+};
+
+export default About;

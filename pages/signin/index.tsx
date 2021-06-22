@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { getSession, signIn, signOut } from "next-auth/client";
+import { getSession, signIn } from "next-auth/client";
 
 import SigninPage from "components/signin/Signin";
 import RootLayout from "components/common/RootLayout";
 
+import type { FC } from "react";
 import type { Session } from "next-auth";
 import type { SignInRequest } from "components/signin/Signin";
 
@@ -11,20 +12,20 @@ export interface SignUpProps {
   session: Session | null;
 }
 
-export default function Signin({ session }: SignUpProps) {
+const Signin: FC<SignUpProps> = ({ session }) => {
   const [error, setError] = useState("");
 
   if (!error) {
     const urlParams = new URLSearchParams(window.location.search);
     const errorParam = urlParams.get("error");
-    if (errorParam) {
+    if (typeof errorParam === "string" && !errorParam) {
       setError(
         "Account does not exist. Please sign up in the top right corner to continue."
       );
     }
   }
 
-  const onSubmit = async (values: SignInRequest) => {
+  const onSubmit = async (values: SignInRequest): Promise<void> => {
     await signIn("credentials", {
       email: values.email,
       password: values.password,
@@ -41,18 +42,23 @@ export default function Signin({ session }: SignUpProps) {
     const user: any = newSession.user;
 
     // Need to refresh CSP
-    window.location.assign(user.isBusiness ? "/dashboard?tab=inventory" : "/");
+    window.location.assign(
+      user.isBusiness === true ? "/dashboard?tab=inventory" : "/"
+    );
   };
 
-  const onProviderSignIn = (provider: string) => {
-    signIn(provider, { redirect: false });
+  const onProviderSignIn = (provider: string): void => {
+    // Return undefined for providers
+    void signIn(provider, { redirect: false });
   };
 
-  if (session && session.user) {
+  if (session?.user) {
     const user: any = session.user;
 
     // Need to refresh CSP
-    window.location.assign(user.isBusiness ? "/dashboard?tab=inventory" : "/");
+    window.location.assign(
+      user.isBusiness === true ? "/dashboard?tab=inventory" : "/"
+    );
     return null;
   }
 
@@ -65,4 +71,6 @@ export default function Signin({ session }: SignUpProps) {
       />
     </RootLayout>
   );
-}
+};
+
+export default Signin;

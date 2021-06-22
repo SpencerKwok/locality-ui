@@ -12,6 +12,7 @@ import {
 import type {
   ChunkOptions,
   GetObjectOptions,
+  ObjectWithObjectID,
   PartialUpdateObjectsOptions,
   SaveObjectsOptions,
   SearchOptions,
@@ -21,32 +22,32 @@ import type { RequestOptions } from "@algolia/transporter";
 import type { Product } from "common/Schema";
 
 const client = AlgoliaSearch(
-  ALGOLIASEARCH_APPLICATION_ID || "",
-  ALGOLIASEARCH_API_KEY || ""
+  ALGOLIASEARCH_APPLICATION_ID ?? "",
+  ALGOLIASEARCH_API_KEY ?? ""
 );
-const index = client.initIndex(ALGOLIASEARCH_INDEX || "");
+const index = client.initIndex(ALGOLIASEARCH_INDEX ?? "");
 
 const algoliaClient: {
-  deleteObjects: (objectIDs: readonly string[]) => Promise<Error | null>;
+  deleteObjects: (objectIDs: ReadonlyArray<string>) => Promise<Error | null>;
   getObject: (
     objectID: string,
-    options?: RequestOptions & GetObjectOptions
+    options?: GetObjectOptions & RequestOptions
   ) => Promise<Product | null>;
   getObjects: (
     objectIDs: Array<string>,
-    options?: RequestOptions & GetObjectOptions
-  ) => Promise<Array<Product> | null>;
+    options?: GetObjectOptions & RequestOptions
+  ) => Promise<Array<Product | null> | null>;
   partialUpdateObject: (
     object: Readonly<Record<string, any>>,
-    options?: RequestOptions & ChunkOptions & PartialUpdateObjectsOptions
+    options?: ChunkOptions & PartialUpdateObjectsOptions & RequestOptions
   ) => Promise<Error | null>;
   saveObject: (
     object: Readonly<Record<string, any>>,
-    options?: RequestOptions & ChunkOptions & SaveObjectsOptions
+    options?: ChunkOptions & RequestOptions & SaveObjectsOptions
   ) => Promise<Error | null>;
   saveObjects: (
-    object: Readonly<Record<string, any>>[],
-    options?: RequestOptions & ChunkOptions & SaveObjectsOptions
+    object: Array<Readonly<Record<string, any>>>,
+    options?: ChunkOptions & RequestOptions & SaveObjectsOptions
   ) => Promise<Error | null>;
   search: (
     query: string,
@@ -69,9 +70,12 @@ const algoliaClient: {
     let object: Product | null = null;
     await index
       .getObject(objectID, options)
-      .then((res) => {
+      .then((res?: ObjectWithObjectID) => {
         if (res) {
-          //@ts-ignore
+          //@ts-expect-error: Algolia objects use snake case
+          // while objects on the front end use camel case.
+          // We know the conversion is valid, so we ignore
+          // typescript here
           object = {
             ...mapKeys(res, (v, k) => camelCase(k)),
           };
@@ -91,7 +95,10 @@ const algoliaClient: {
     await index
       .getObjects(objectIDs, options)
       .then((res) => {
-        //@ts-ignore
+        //@ts-expect-error: Algolia objects use snake case
+        // while objects on the front end use camel case.
+        // We know the conversion is valid, so we ignore
+        // typescript here
         objects = res.results.filter(Boolean).map((product) => ({
           ...mapKeys(product, (v, k) => camelCase(k)),
         }));
@@ -148,7 +155,10 @@ const algoliaClient: {
       .then((res) => {
         results = {
           ...res,
-          //@ts-ignore
+          //@ts-expect-error: Algolia objects use snake case
+          // while objects on the front end use camel case.
+          // We know the conversion is valid, so we ignore
+          // typescript here
           hits: res.hits.map((hit) => ({
             ...mapKeys(hit, (v, k) => camelCase(k)),
           })),

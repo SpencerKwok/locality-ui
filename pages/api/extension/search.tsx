@@ -13,7 +13,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void> {
   if (req.method !== "GET") {
     SumoLogic.log({
       level: "info",
@@ -29,7 +29,7 @@ export default async function handler(
     "x-forwarded-for"?: string;
   } = req.headers as IncomingHttpHeaders & { "x-forwarded-for"?: string };
 
-  if (!query.q || typeof query.q !== "string") {
+  if (typeof query.q !== "string" || !query.q) {
     SumoLogic.log({
       level: "warning",
       method: "extension/search",
@@ -42,21 +42,21 @@ export default async function handler(
   const q = decode(Xss(query.q));
 
   let filters = "";
-  if (query.filters && typeof query.filters === "string") {
+  if (typeof query.filters === "string" && query.filters) {
     filters = decode(Xss(query.filters));
   }
 
   let ip = "";
   if (
-    headers["x-forwarded-for"] &&
-    typeof headers["x-forwarded-for"] === "string"
+    typeof headers["x-forwarded-for"] === "string" &&
+    headers["x-forwarded-for"]
   ) {
     const header = headers["x-forwarded-for"];
     ip = Xss(header.split(/,\s*/g)[0]);
   }
 
   let page = 0;
-  if (query.pg && typeof query.pg === "string" && query.pg.match(/\d+/g)) {
+  if (typeof query.pg === "string" && query.pg && query.pg.match(/\d+/g)) {
     page = parseInt(query.pg);
   }
 
@@ -72,8 +72,8 @@ export default async function handler(
   ];
 
   let wishlist: Set<string> | null = null;
-  const id: string = (req.headers["id"] || "") as string;
-  const token: string = (req.headers["token"] || "") as string;
+  const id: string = (req.headers["id"] ?? "") as string;
+  const token: string = (req.headers["token"] ?? "") as string;
   if (id && token) {
     try {
       const user = await Psql.select<{}>({
@@ -100,14 +100,14 @@ export default async function handler(
 
         wishlist = new Set(JSON.parse(productIDs.rows[0].wishlist));
       }
-    } catch (error) {
+    } catch (error: unknown) {
       // Don't error out because we failed
       // to retrieve the wishlist
       SumoLogic.log({
         level: "warning",
         method: "extension/search",
-        message: `Failed to retrieve wishlist: ${error.message}`,
-        params: query,
+        message: "Failed to retrieve wishlist",
+        params: { query, error },
       });
     }
   }

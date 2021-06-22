@@ -1,9 +1,12 @@
 import { useState, useCallback, useEffect } from "react";
 
-export function useMediaQuery(length: number, dimension: "height" | "width") {
+export function useMediaQuery(
+  length: number,
+  dimension: "height" | "width"
+): boolean {
   const [targetReached, setTargetReached] = useState(false);
 
-  const updateTarget = useCallback((e) => {
+  const updateTarget = useCallback((e: MediaQueryListEvent) => {
     if (e.matches) {
       setTargetReached(true);
     } else {
@@ -13,26 +16,32 @@ export function useMediaQuery(length: number, dimension: "height" | "width") {
 
   useEffect(() => {
     const media = window.matchMedia(`(max-${dimension}: ${length}em)`);
-    media.addEventListener("change", (e) => updateTarget(e));
+    media.addEventListener("change", (e) => {
+      updateTarget(e);
+    });
 
     if (media.matches) {
       setTargetReached(true);
     }
 
-    return () => media.removeEventListener("change", (e) => updateTarget(e));
+    return (): void => {
+      media.removeEventListener("change", (e) => {
+        updateTarget(e);
+      });
+    };
   }, []);
 
   return targetReached;
 }
 
-export function useWindowSize() {
+export function useWindowSize(): { height?: number; width?: number } {
   const [windowSize, setWindowSize] = useState({
     width: undefined as number | undefined,
     height: undefined as number | undefined,
   });
 
   useEffect(() => {
-    const handleResize = () => {
+    const handleResize = (): void => {
       setWindowSize({
         width: document.body.clientWidth,
         height: window.innerHeight,
@@ -49,7 +58,7 @@ export function useWindowSize() {
     });
     resizeObserver.observe(document.body);
 
-    return () => {
+    return (): void => {
       window.removeEventListener("resize", handleResize);
       resizeObserver.disconnect();
     };

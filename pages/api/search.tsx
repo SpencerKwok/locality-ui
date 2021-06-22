@@ -14,7 +14,7 @@ import type { IncomingHttpHeaders } from "http";
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void> {
   if (req.method !== "GET") {
     SumoLogic.log({
       level: "info",
@@ -30,7 +30,7 @@ export default async function handler(
     "x-forwarded-for"?: string;
   } = req.headers as IncomingHttpHeaders & { "x-forwarded-for"?: string };
 
-  if (!query.q || typeof query.q !== "string") {
+  if (typeof query.q !== "string" || !query.q) {
     SumoLogic.log({
       level: "warning",
       method: "search",
@@ -43,21 +43,21 @@ export default async function handler(
   const q = decode(Xss(query.q));
 
   let filters = "";
-  if (query.filters && typeof query.filters === "string") {
+  if (typeof query.filters === "string" && query.filters) {
     filters = decode(Xss(query.filters));
   }
 
   let ip = "";
   if (
-    headers["x-forwarded-for"] &&
-    typeof headers["x-forwarded-for"] === "string"
+    typeof headers["x-forwarded-for"] === "string" &&
+    headers["x-forwarded-for"]
   ) {
     const header = headers["x-forwarded-for"];
     ip = Xss(header.split(/,\s*/g)[0]);
   }
 
   let page = 0;
-  if (query.pg && typeof query.pg === "string" && query.pg.match(/\d+/g)) {
+  if (typeof query.pg === "string" && query.pg && query.pg.match(/\d+/g)) {
     page = parseInt(query.pg);
   }
 
@@ -74,7 +74,7 @@ export default async function handler(
 
   let wishlist: Set<string> | null = null;
   const session = await getSession({ req });
-  if (session && session.user) {
+  if (session?.user) {
     const user = session.user as { id: number };
     const productIDs = await Psql.select<{
       wishlist: string;

@@ -7,7 +7,9 @@ import HeartFilled from "components/common/images/HeartFilled";
 import Stack from "components/common/Stack";
 import styles from "components/common/product-image/ProductImage.module.css";
 
-const WishlistToolTip = dynamic(() => import("./WishlistToolTip"));
+import type { FC } from "react";
+
+const WishlistToolTip = dynamic(async () => import("./WishlistToolTip"));
 
 export interface ProductImageProps extends React.HTMLProps<HTMLDivElement> {
   alwaysHover?: boolean;
@@ -24,7 +26,7 @@ export interface ProductImageProps extends React.HTMLProps<HTMLDivElement> {
   onToggleWishList: (id: string, value: boolean) => void;
 }
 
-function ProductImage({
+const ProductImage: FC<ProductImageProps> = ({
   alwaysHover,
   business,
   initialWishList,
@@ -38,51 +40,53 @@ function ProductImage({
   variantImages,
   variantIndex,
   style,
-}: ProductImageProps) {
+}) => {
   const [hover, setHover] = useState(false);
   const [wishlist, setWishList] = useState(initialWishList);
 
   return (
     <div key={objectId}>
-      {!loggedIn && (hover || alwaysHover) && (
+      {loggedIn !== true && (hover === true || alwaysHover === true) && (
         <Stack direction="row-reverse" style={{ marginRight: 42 }}>
           <div style={{ position: "absolute", marginTop: 8 }}>
             <WishlistToolTip
-              onMouseEnter={() => {
+              onMouseEnter={(): void => {
                 setHover(true);
               }}
-              onMouseLeave={() => {
+              onMouseLeave={(): void => {
                 setHover(false);
               }}
             />
           </div>
         </Stack>
       )}
-      {loggedIn && (hover || alwaysHover) && !wishlist && (
-        <Stack direction="row-reverse" style={{ marginRight: 42 }}>
-          <div style={{ position: "absolute", marginTop: 8 }}>
-            <Heart
-              className={styles.heart}
-              onMouseEnter={() => {
-                setHover(true);
-              }}
-              onClick={() => {
-                onToggleWishList(`${objectId}_${variantIndex}`, true);
-                setWishList(true);
-              }}
-            />
-          </div>
-        </Stack>
-      )}
-      {loggedIn && wishlist && (
+      {loggedIn === true &&
+        (hover === true || alwaysHover === true) &&
+        wishlist !== true && (
+          <Stack direction="row-reverse" style={{ marginRight: 42 }}>
+            <div style={{ position: "absolute", marginTop: 8 }}>
+              <Heart
+                className={styles.heart}
+                onMouseEnter={(): void => {
+                  setHover(true);
+                }}
+                onClick={(): void => {
+                  onToggleWishList(`${objectId}_${variantIndex}`, true);
+                  setWishList(true);
+                }}
+              />
+            </div>
+          </Stack>
+        )}
+      {loggedIn === true && wishlist === true && (
         <Stack direction="row-reverse" style={{ marginRight: 42 }}>
           <div style={{ position: "absolute", marginTop: 8 }}>
             <HeartFilled
               className={styles["heart-filled"]}
-              onMouseEnter={() => {
+              onMouseEnter={(): void => {
                 setHover(true);
               }}
-              onClick={() => {
+              onClick={(): void => {
                 onToggleWishList(`${objectId}_${variantIndex}`, false);
                 setWishList(false);
               }}
@@ -99,12 +103,12 @@ function ProductImage({
         <Stack direction="column" rowAlign="flex-start" style={style}>
           <picture
             className={styles.picture}
-            onMouseOver={() => {
+            onMouseOver={(): void => {
               if (!hover) {
                 setHover(true);
               }
             }}
-            onMouseLeave={() => {
+            onMouseLeave={(): void => {
               setHover(false);
             }}
           >
@@ -131,6 +135,6 @@ function ProductImage({
       </a>
     </div>
   );
-}
+};
 
 export default ProductImage;

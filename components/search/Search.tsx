@@ -5,15 +5,17 @@ import Stack from "components/common/Stack";
 import SearchBar from "components/search/SearchBar";
 import LocalityLogo from "components/common/images/LocalityLogo";
 
+import type { FC } from "react";
+
 export interface SearchProps {
   width: number;
 }
 
-export default function Search({ width }: SearchProps) {
+const Search: FC<SearchProps> = ({ width }) => {
   const router = useRouter();
 
-  const onEnter = (query: string) => {
-    router.push({
+  const onEnter = (query: string): void => {
+    void router.push({
       pathname: "/search",
       query: { q: encodeURIComponent(query) },
     });
@@ -27,4 +29,6 @@ export default function Search({ width }: SearchProps) {
       </Stack>
     </Stack>
   );
-}
+};
+
+export default Search;

@@ -1,5 +1,4 @@
 import SqlString from "sqlstring";
-import Xss from "xss";
 
 import Psql from "lib/api/postgresql";
 import SumoLogic from "lib/api/sumologic";
@@ -12,7 +11,7 @@ import type { DeleteFromWishListRequest } from "common/Schema";
 export default async function handler(
   req: NextApiRequestWithLocals,
   res: NextApiResponse
-) {
+): Promise<void> {
   await runMiddlewareUser(req, res);
 
   if (req.method !== "POST") {

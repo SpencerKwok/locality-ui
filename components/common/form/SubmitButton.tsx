@@ -1,8 +1,9 @@
-import React from "react";
+import { Fragment } from "react";
 import Button from "react-bootstrap/Button";
 
 import styles from "components/common/form/form.module.css";
 
+import type { FC } from "react";
 import type { ButtonProps } from "react-bootstrap/Button";
 
 export interface FormSubmitButtonProps extends ButtonProps {
@@ -11,13 +12,13 @@ export interface FormSubmitButtonProps extends ButtonProps {
   isSubmitting: boolean;
 }
 
-export default function FormSubmitButton({
+const FormSubmitButton: FC<FormSubmitButtonProps> = ({
   text,
   submittingText,
   isSubmitting,
   disabled,
   ...rest
-}: FormSubmitButtonProps) {
+}: FormSubmitButtonProps) => {
   return (
     <Button
       {...rest}
@@ -25,8 +26,8 @@ export default function FormSubmitButton({
       type="submit"
       disabled={isSubmitting}
     >
-      {isSubmitting && !disabled ? (
-        <React.Fragment>
+      {isSubmitting === true && disabled !== true ? (
+        <Fragment>
           <span
             className="spinner-border spinner-border-sm"
             role="status"
@@ -34,10 +35,12 @@ export default function FormSubmitButton({
             style={{ marginBottom: 2, marginRight: 12 }}
           ></span>
           {submittingText}
-        </React.Fragment>
+        </Fragment>
       ) : (
-        <React.Fragment>{text}</React.Fragment>
+        <Fragment>{text}</Fragment>
       )}
     </Button>
   );
-}
+};
+
+export default FormSubmitButton;

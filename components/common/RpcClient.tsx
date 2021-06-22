@@ -26,10 +26,12 @@ const endpoints = new Map<keyof PostMethods, string>([
   ["VariantUpdate", "/api/dashboard/variant/update"],
 ]);
 
-let postRpcClient: PostRpcClient;
+let postRpcClient: PostRpcClient | null = null;
 export class PostRpcClient {
-  static getInstance() {
-    if (postRpcClient) {
+  private constructor() {}
+
+  public static getInstance(): PostRpcClient {
+    if (postRpcClient !== null) {
       return postRpcClient;
     }
 
@@ -37,12 +39,10 @@ export class PostRpcClient {
     return postRpcClient;
   }
 
-  private constructor() {}
-
-  async call<methodName extends keyof PostMethods>(
+  public async call<methodName extends keyof PostMethods>(
     method: methodName,
     request: PostMethods[methodName]["request"],
-    headers?: { [key: string]: string | undefined }
+    headers?: Record<string, string | undefined>
   ): Promise<PostMethods[methodName]["response"]> {
     const endpoint = endpoints.get(method);
     const fetchRequest = new Request(`${baseUrl}${endpoint}`, {
@@ -59,7 +59,7 @@ export class PostRpcClient {
     let rawResponse: Response;
     try {
       rawResponse = await fetch(fetchRequest);
-    } catch (err) {
+    } catch (err: unknown) {
       throw err;
     }
 
@@ -70,17 +70,19 @@ export class PostRpcClient {
 
     try {
       response = await rawResponse.json();
-    } catch (err) {
+    } catch (err: unknown) {
       throw err;
     }
     return response;
   }
 }
 
-let getRpcClient: GetRpcClient;
+let getRpcClient: GetRpcClient | null = null;
 export class GetRpcClient {
-  static getInstance() {
-    if (getRpcClient) {
+  private constructor() {}
+
+  public static getInstance(): GetRpcClient {
+    if (getRpcClient !== null) {
       return getRpcClient;
     }
 
@@ -88,12 +90,10 @@ export class GetRpcClient {
     return getRpcClient;
   }
 
-  private constructor() {}
-
-  async call<methodName extends keyof GetMethods>(
+  public async call<methodName extends keyof GetMethods>(
     method: methodName,
     endpoint: string,
-    headers?: { [key: string]: string | undefined }
+    headers?: Record<string, string | undefined>
   ): Promise<GetMethods[methodName]> {
     const fetchRequest = new Request(`${baseUrl}${endpoint}`, {
       credentials: "same-origin",
@@ -108,14 +108,14 @@ export class GetRpcClient {
     let rawResponse: Response;
     try {
       rawResponse = await fetch(fetchRequest);
-    } catch (err) {
+    } catch (err: unknown) {
       throw err;
     }
 
     let response: GetMethods[methodName];
     try {
       response = await rawResponse.json();
-    } catch (err) {
+    } catch (err: unknown) {
       throw err;
     }
     return response;

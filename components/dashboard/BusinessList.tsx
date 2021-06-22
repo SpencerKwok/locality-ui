@@ -7,6 +7,8 @@ import VirtualListItem from "components/common/list/VirtualListItem";
 import Stack from "components/common/Stack";
 import styles from "components/dashboard/Business.module.css";
 
+import type { FC, ReactElement } from "react";
+
 export interface BusinessListProps {
   onBusinessClick: (id: number) => void;
   businesses: Array<BaseBusiness>;
@@ -16,7 +18,7 @@ export interface BusinessListProps {
   style?: CSSProperties;
 }
 
-export default function BusinessList(props: BusinessListProps) {
+const BusinessList: FC<BusinessListProps> = (props) => {
   const businessRowRenderer = ({
     index,
     key,
@@ -25,12 +27,12 @@ export default function BusinessList(props: BusinessListProps) {
     index: number;
     key: string;
     style: CSSProperties;
-  }) => {
+  }): ReactElement<HTMLDivElement> => {
     return (
       <div key={key} style={style}>
         <VirtualListItem
           active={props.index === index}
-          onClick={() => {
+          onClick={(): void => {
             props.onBusinessClick(index);
           }}
           style={{ height: 49 }}
@@ -53,4 +55,6 @@ export default function BusinessList(props: BusinessListProps) {
       />
     </Stack>
   );
-}
+};
+
+export default BusinessList;

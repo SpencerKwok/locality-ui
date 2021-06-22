@@ -1,5 +1,4 @@
 import { Formik } from "formik";
-import * as yup from "yup";
 import Button from "react-bootstrap/Button";
 import Dropdown from "react-bootstrap/Dropdown";
 import Form from "react-bootstrap/Form";
@@ -9,8 +8,11 @@ import "reactjs-popup/dist/index.css";
 
 import { InputGroup, SubmitButton, ErrorMessage } from "components/common/form";
 import { UploadSquareProductsSchema } from "common/ValidationSchema";
-import Stack from "components/common/Stack";
+import Stack, { StackProps } from "components/common/Stack";
 import styles from "components/dashboard/AddProduct.module.css";
+
+import type { FC, ReactElement } from "react";
+import type { DropdownItemProps } from "react-bootstrap/esm/DropdownItem";
 
 export type UploadType = "" | "Etsy" | "Shopify" | "Square";
 
@@ -29,7 +31,7 @@ export interface AddProductProps extends React.HTMLProps<HTMLDivElement> {
   onAddProduct: () => void;
 }
 
-async function parseCsv(file: File) {
+const parseCsv = async (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
     Papa.parse<Array<string>>(file, {
       complete: (results) => {
@@ -46,9 +48,9 @@ async function parseCsv(file: File) {
       },
     });
   });
-}
+};
 
-function AddProduct({
+const AddProduct: FC<AddProductProps> = ({
   error,
   open,
   loading,
@@ -57,7 +59,7 @@ function AddProduct({
   onUploadTypeChange,
   onAddProduct,
   onUpload,
-}: AddProductProps) {
+}) => {
   return (
     <Stack
       direction="row"
@@ -72,25 +74,25 @@ function AddProduct({
       <Stack direction="row-reverse" columnAlign="flex-start" spacing={8}>
         <Popup
           modal
-          closeOnDocumentClick={error !== "" || !loading}
-          closeOnEscape={error !== "" || !loading}
+          closeOnDocumentClick={!!error || !loading}
+          closeOnEscape={!!error || !loading}
           open={open}
           trigger={
             <Button
               className={styles.button}
-              disabled={uploadType === ""}
+              disabled={!!uploadType}
               style={{ width: "100%" }}
             >
               Upload
             </Button>
           }
-          onOpen={() => {
+          onOpen={(): void => {
             if (uploadType === "Etsy" || uploadType === "Shopify") {
               onUpload(uploadType);
             }
           }}
         >
-          {(close: () => void) => (
+          {(close: () => void): ReactElement<StackProps> => (
             <Stack
               direction="column"
               columnAlign="center"
@@ -102,7 +104,7 @@ function AddProduct({
                 <Formik
                   enableReinitialize
                   initialValues={{} as UploadSquareProductsRequest}
-                  onSubmit={(value) => {
+                  onSubmit={(value): void => {
                     onUpload(uploadType, value.csv);
                   }}
                   validationSchema={UploadSquareProductsSchema}
@@ -113,7 +115,7 @@ function AddProduct({
                     handleBlur,
                     handleSubmit,
                     setFieldValue,
-                  }) => (
+                  }): JSX.Element => (
                     <Form onSubmit={handleSubmit}>
                       <h3>Instructions</h3>
                       <p>
@@ -139,7 +141,7 @@ function AddProduct({
                             onBlur={handleBlur}
                             onChange={async (
                               event: React.ChangeEvent<HTMLInputElement>
-                            ) => {
+                            ): Promise<void> => {
                               if (
                                 event.target.files &&
                                 event.target.files.length > 0
@@ -165,7 +167,7 @@ function AddProduct({
                           text="Upload"
                           submittingText="Uploading..."
                           isSubmitting={isSubmitting}
-                          onClick={() => {
+                          onClick={(): void => {
                             setFieldValue("csv", values.csv || "", true);
                           }}
                         />
@@ -176,12 +178,7 @@ function AddProduct({
               )}
               {error !== "" && <p style={{ textAlign: "center" }}>{error}</p>}
               {!loading && (
-                <button
-                  className={styles["close-button"]}
-                  onClick={() => {
-                    !loading && close();
-                  }}
-                >
+                <button className={styles["close-button"]} onClick={close}>
                   &times;
                 </button>
               )}
@@ -217,11 +214,11 @@ function AddProduct({
           </Dropdown.Toggle>
           <Dropdown.Menu>
             {(["Etsy", "Shopify", "Square"] as Array<UploadType>).map(
-              (value) => (
+              (value): ReactElement<DropdownItemProps> => (
                 <Dropdown.Item
                   key={value}
                   className={styles["dropdown-item"]}
-                  onClick={() => {
+                  onClick={(): void => {
                     onUploadTypeChange(value);
                   }}
                 >
@@ -234,6 +231,6 @@ function AddProduct({
       </Stack>
     </Stack>
   );
-}
+};
 
 export default AddProduct;

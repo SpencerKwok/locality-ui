@@ -27,7 +27,7 @@ export const config = {
 export default async function handler(
   req: NextApiRequestWithLocals,
   res: NextApiResponse
-) {
+): Promise<void> {
   await runMiddlewareBusiness(req, res);
 
   if (req.method !== "POST") {
@@ -43,12 +43,12 @@ export default async function handler(
   const reqBody: ProductUpdateRequest = req.body;
   try {
     await ProductUpdateSchema.validate(reqBody, { abortEarly: false });
-  } catch (err) {
+  } catch (error: unknown) {
     SumoLogic.log({
       level: "warning",
       method: "dashboard/product/update",
-      message: `Invalid payload: ${err.inner}`,
-      params: { body: reqBody, error: err },
+      message: "Invalid payload",
+      params: { body: reqBody, error },
     });
     res.status(400).json({ error: "Invalid payload" });
     return;
@@ -86,7 +86,7 @@ export default async function handler(
     unique_filename: false,
     overwrite: true,
   });
-  if (!url) {
+  if (url === null) {
     SumoLogic.log({
       level: "warning",
       method: "dashboard/product/update",

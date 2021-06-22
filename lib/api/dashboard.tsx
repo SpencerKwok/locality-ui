@@ -8,12 +8,12 @@ import SumoLogic from "lib/api/sumologic";
 
 import type { BaseProduct, DatabaseProduct } from "../../common/Schema";
 
-const mapLimit = async <P extends any, R extends any>(
+const mapLimit = async <P, R>(
   arr: Array<P>,
   limit: number,
   func: (item: P) => Promise<R>
-) => {
-  let results = Array<R>();
+): Promise<Array<R>> => {
+  const results = Array<R>();
   await Promise.all(
     arr.slice(0, limit).map(async (_, i) => {
       results[i] = await func(arr[i]);
@@ -25,7 +25,7 @@ const mapLimit = async <P extends any, R extends any>(
   return results;
 };
 
-export function addHttpsProtocol(url: string) {
+export function addHttpsProtocol(url: string): string {
   if (url.match(/^http:\/\/.+/g)) {
     url = `https://${url.slice(7)}`;
   } else if (!url.match(/^https:\/\/.+/g)) {
@@ -63,8 +63,9 @@ export async function productAdd(
   }
 
   const businessName: string = businessResponse.rows[0].name;
-  const latitude: string[] = businessResponse.rows[0].latitude.split(",");
-  const longitude: string[] = businessResponse.rows[0].longitude.split(",");
+  const latitude: Array<string> = businessResponse.rows[0].latitude.split(",");
+  const longitude: Array<string> =
+    businessResponse.rows[0].longitude.split(",");
 
   try {
     const baseProducts = await mapLimit<DatabaseProduct, BaseProduct>(
@@ -102,7 +103,7 @@ export async function productAdd(
           for (let i = 0; i < variantImages.length; ++i) {
             const variantImage = variantImages[i];
             if (variantMap.has(variantImage)) {
-              variantImages[i] = variantMap.get(variantImage) || "";
+              variantImages[i] = variantMap.get(variantImage) ?? "";
               continue;
             }
 
@@ -113,7 +114,7 @@ export async function productAdd(
               unique_filename: false,
               overwrite: true,
             });
-            if (!url) {
+            if (url === null) {
               throw Error(
                 "Failed to upload image to Cloudinary: Missing response"
               );
@@ -160,7 +161,7 @@ export async function productAdd(
           table: "products",
           values: [
             { key: "business_id", value: businessId },
-            { key: "id", value: nextProductId || 0 }, // Shouldn't be undefined
+            { key: "id", value: nextProductId ?? 0 }, // Shouldn't be undefined
             { key: "name", value: name },
             { key: "preview", value: variantImages[0] },
           ],
@@ -177,11 +178,11 @@ export async function productAdd(
       }
     );
     return baseProducts;
-  } catch (error) {
+  } catch (error: unknown) {
     SumoLogic.log({
       level: "error",
-      message: `Failed to add product: ${error.message}`,
-      params: { businessId, products },
+      message: "Failed to add product",
+      params: { businessId, products, error },
     });
     return null;
   }
@@ -189,7 +190,7 @@ export async function productAdd(
 
 export async function productDelete(
   businessId: number,
-  productIds: number[]
+  productIds: Array<number>
 ): Promise<Error | null> {
   if (productIds.length === 0) {
     return null;
@@ -231,8 +232,7 @@ export async function productDelete(
     }
     */
 
-    for (let i = 0; i < productIdsSegments.length; ++i) {
-      const productIdsSegment = productIdsSegments[i];
+    for (const productIdsSegment of productIdsSegments) {
       const psqlObjectIds = productIdsSegment.map(
         (productId) => `id=${productId}`
       );
@@ -250,11 +250,12 @@ export async function productDelete(
     }
 
     return null;
-  } catch (error) {
+  } catch (err: unknown) {
+    const error = err as Error;
     SumoLogic.log({
       level: "error",
-      message: `Failed to delete product: ${error.message}`,
-      params: { businessId, productIds },
+      message: "Failed to delete product",
+      params: { businessId, productIds, error },
     });
     return error;
   }
