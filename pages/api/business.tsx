@@ -77,10 +77,6 @@ export default async function handler(
     business: {
       id: business.id,
       name: business.name,
-      address: business.address,
-      city: business.city,
-      province: business.province,
-      country: business.country,
       logo: business.logo,
       departments: JSON.parse(business.departments),
       homepages: JSON.parse(business.homepages),

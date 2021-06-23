@@ -123,10 +123,6 @@ export interface UploadTypeSettings extends BaseUploadTypeSettings {
 export interface BaseBusiness {
   id: number;
   name: string;
-  address: string;
-  city: string;
-  province: string;
-  country: string;
   logo: string;
   departments: Array<string>;
   homepages: {
