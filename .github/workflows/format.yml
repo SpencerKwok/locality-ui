@@ -1,14 +1,14 @@
-name: Lint
+name: Format
 
 on:
   push:
   pull_request:
-  
+
 jobs:
   run-eslint:
     name: Run ESLint
     runs-on: ${{ matrix.os }}
-    
+
     strategy:
       matrix:
         os: [macOS-latest, windows-latest, ubuntu-latest]
@@ -23,10 +23,10 @@ jobs:
         with:
           node-version: 15.8.0
           npm-version: 7.12.1
-          
+          check-latest: true
+
       - name: Install Node.js dependencies
         run: npm ci
 
-      - name: Run linters
-        run: npm run lint
-          
+      - name: Run Format
+        run: npm run format

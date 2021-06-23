@@ -13,8 +13,8 @@
     "build": "next build",
     "start": "node server.js",
     "svg": "svgr --typescript -d components/common/images public/images",
-    "prettier": "prettier --check ./**/*.tsx ./**/*.ts ./**/*.js",
-    "prettier:fix": "prettier --write ./**/*.tsx ./**/*.ts ./**/*.js",
+    "format": "prettier --check ./**/*.tsx ./**/*.ts *.js",
+    "format:fix": "prettier --write ./**/*.tsx ./**/*.ts *.js",
     "lint": "eslint --max-warnings 0 ./**/*.tsx ./**/*.ts *.js",
     "lint:fix": "npm run lint -- --fix"
   },
