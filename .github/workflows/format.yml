@@ -21,10 +21,9 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 15.8.0
-          check-latest: true
 
       - name: Get latest NPM version
-        run: npm install npm@latest
+        run: npm install npm@latest -g
 
       - name: Install Node.js dependencies
         run: npm ci
