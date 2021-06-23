@@ -1,0 +1,32 @@
+name: Lint
+
+on:
+  push:
+  pull_request:
+  
+jobs:
+  run-eslint:
+    name: Run ESLint
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        os: [macOS-latest, windows-latest, ubuntu-latest]
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 15.8.0
+          npm-version: 7.12.1
+          
+      - name: Install Node.js dependencies
+        run: npm ci
+
+      - name: Run linters
+        run: npm run lint
+          
