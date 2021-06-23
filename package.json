@@ -15,7 +15,7 @@
     "svg": "svgr --typescript -d components/common/images public/images",
     "prettier": "prettier --check ./**/*.tsx ./**/*.ts ./**/*.js",
     "prettier:fix": "prettier --write ./**/*.tsx ./**/*.ts ./**/*.js",
-    "lint": "eslint ./**/*.tsx ./**/*.ts ./**/*.js",
+    "lint": "eslint --max-warnings 0 ./**/*.tsx ./**/*.ts ./**/*.js",
     "lint:fix": "npm run lint -- --fix"
   },
   "repository": {
