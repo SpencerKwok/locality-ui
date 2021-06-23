@@ -839,7 +839,6 @@ const Dashboard: FC<DashboardProps> = ({
   return (
     <RootLayout session={session}>
       <Tabs
-        unmountOnExit
         defaultActiveKey={tab}
         onSelect={(key): void => {
           void router.replace(`/dashboard?tab=${key}`);

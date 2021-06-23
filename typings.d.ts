@@ -7,6 +7,10 @@ declare module "doublemetaphone" {
   }
   export = DoubleMetaphone;
 }
+declare module "next-pwa" {
+  function withPWA(nextConfig?: object): object;
+  export = withPWA;
+}
 
 // Adding module css since it isn't declared in next.js
 declare module "*.module.css";

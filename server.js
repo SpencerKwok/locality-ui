@@ -28,41 +28,45 @@ const extensionOrigins = new Set([
   "https://www.walmart.com",
 ]);
 
-app.prepare().then(() => {
+void app.prepare().then(() => {
   const server = express();
 
   server.use(
     shrinkRay({
-      useZopfliForGzip: false,
-      cache: () => true,
-      zlib: { level: 1 },
       brotli: { quality: 1 },
+      cache: () => true,
+      useZopfliForGzip: false,
+      zlib: { level: 1 },
     })
   );
 
   server.use((req, res, next) => {
-    if (req.path.match(/\/api\/extension\/.*/g)) {
-      res.setHeader(
-        "Access-Control-Allow-Origin",
-        extensionOrigins.has(req.headers.origin) ? req.headers.origin : false
-      );
+    const origin = req.headers.origin;
+    if (typeof origin === "string" && req.path.match(/\/api\/extension\/.*/g)) {
+      if (extensionOrigins.has(origin)) {
+        res.setHeader("Access-Control-Allow-Origin", origin);
+      }
     }
-    const vary = res.headers ? res.headers["vary"] || [] : [];
-    res.setHeader("Vary", [...vary, "Origin"]);
+
+    const vary = res.getHeader("Vary");
+    if (typeof vary === "string" || typeof vary === "number") {
+      res.setHeader("Vary", [vary.toString(), "Origin"]);
+    } else if (Array.isArray(vary)) {
+      res.setHeader("Vary", [...vary, "Origin"]);
+    }
     next();
   });
 
   server.get("*", (req, res) => {
     const url = parse(req.url, true);
-    return handle(req, res, url);
+    void handle(req, res, url);
   });
   server.post("*", (req, res) => {
     const url = parse(req.url, true);
-    return handle(req, res, url);
+    void handle(req, res, url);
   });
 
-  server.listen(prod ? "/tmp/nginx.socket" : 3000, (err) => {
-    if (err) throw err;
+  server.listen(prod ? "/tmp/nginx.socket" : 3000, () => {
     prod && console.log("NextJS Server listening to NGINX");
     prod && fs.openSync("/tmp/app-initialized", "w");
   });

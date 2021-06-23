@@ -65,7 +65,7 @@ module.exports = withPWA({
         ],
       },
       {
-        source: "/dashboard/:path*",
+        source: "/dashboard",
         headers: [
           {
             key: "Cache-Control",
