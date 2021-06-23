@@ -5,8 +5,8 @@ on:
   pull_request:
 
 jobs:
-  run-eslint:
-    name: Run ESLint
+  run-format:
+    name: Format
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -20,8 +20,8 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v1
         with:
+          version: 7.12.1
           node-version: 15.8.0
-          npm-version: 7.12.1
           check-latest: true
 
       - name: Install Node.js dependencies
