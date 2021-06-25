@@ -1,9 +1,11 @@
 const faker = require("faker");
 
 const log = jest.fn();
-describe("Business", () => {
+describe("Products", () => {
   beforeAll(() => {
-    jest.doMock("lib/api/sumologic", () => ({ log }));
+    jest.doMock("lib/api/sumologic", () => ({
+      log,
+    }));
   });
 
   beforeEach(() => {
@@ -32,7 +34,7 @@ describe("Business", () => {
     jest.doMock("lib/api/postgresql", () => ({
       select,
     }));
-    const handler = require("pages/api/business");
+    const handler = require("pages/api/products");
     const httpMocks = require("node-mocks-http");
     const mockReq = httpMocks.createRequest({
       method: "GET",
@@ -55,7 +57,7 @@ describe("Business", () => {
     expect(mockRes.statusCode).toBe(400);
   });
 
-  it("Database error, valid inputs, logged once + server error response", async () => {
+  it("Database error (getting business), valid inputs, logged once + server error response", async () => {
     // Arrange
     const id = faker.datatype.number();
     const select = jest.fn().mockImplementation(async (params) => {
@@ -63,13 +65,13 @@ describe("Business", () => {
         return null;
       }
 
-      // Should never reach here
+      // Should not reach here
       throw new Error();
     });
     jest.doMock("lib/api/postgresql", () => ({
       select,
     }));
-    const handler = require("pages/api/business");
+    const handler = require("pages/api/products");
     const httpMocks = require("node-mocks-http");
     const mockReq = httpMocks.createRequest({
       method: "GET",
@@ -92,7 +94,7 @@ describe("Business", () => {
     expect(mockRes.statusCode).toBe(500);
   });
 
-  it("Health check, valid inputs, valid response", async () => {
+  it("Database error (getting products), valid inputs, logged once + server error response", async () => {
     // Arrange
     const id = faker.datatype.number();
     const resData = {
@@ -100,147 +102,106 @@ describe("Business", () => {
       rows: [
         {
           id,
-          name: faker.company.companyName(),
-          address: faker.address.streetAddress(),
-          city: faker.address.city(),
-          province: faker.address.state(),
-          country: faker.address.country(),
-          latitude: faker.address.latitude(),
-          longitude: faker.address.longitude(),
-          logo: faker.image.imageUrl(
-            faker.datatype.number(),
-            faker.datatype.number(),
-            faker.commerce.department(),
-            true
-          ),
-          departments: JSON.stringify(
-            Array.from(
-              {
-                length: faker.datatype.number({
-                  min: 0,
-                  max: 5,
-                }),
-              },
-              () => faker.commerce.department()
-            )
-          ),
-          upload_settings: JSON.stringify({
-            etsy: {
-              includeTags: Array.from(
-                {
-                  length: faker.datatype.number({
-                    min: 0,
-                    max: 5,
-                  }),
-                },
-                () => faker.random.words()
-              ),
-              excludeTags: Array.from(
-                {
-                  length: faker.datatype.number({
-                    min: 0,
-                    max: 5,
-                  }),
-                },
-                () => faker.random.words()
-              ),
-            },
-            shopify: {
-              includeTags: Array.from(
-                {
-                  length: faker.datatype.number({
-                    min: 0,
-                    max: 5,
-                  }),
-                },
-                () => faker.random.words()
-              ),
-              excludeTags: Array.from(
-                {
-                  length: faker.datatype.number({
-                    min: 0,
-                    max: 5,
-                  }),
-                },
-                () => faker.random.words()
-              ),
-              departmentMapping: Array.from(
-                {
-                  length: faker.datatype.number({
-                    min: 0,
-                    max: 5,
-                  }),
-                },
-                () => ({
-                  key: faker.random.words(),
-                  value: faker.random.words(),
-                })
-              ),
-            },
-            square: {
-              includeTags: Array.from(
-                {
-                  length: faker.datatype.number({
-                    min: 0,
-                    max: 5,
-                  }),
-                },
-                () => faker.random.words()
-              ),
-              excludeTags: Array.from(
-                {
-                  length: faker.datatype.number({
-                    min: 0,
-                    max: 5,
-                  }),
-                },
-                () => faker.random.words()
-              ),
-              departmentMapping: Array.from(
-                {
-                  length: faker.datatype.number({
-                    min: 0,
-                    max: 5,
-                  }),
-                },
-                () => ({
-                  key: faker.random.words(),
-                  value: faker.random.words(),
-                })
-              ),
-            },
-          }),
-          homepages: JSON.stringify({
-            homepage: faker.internet.url(),
-            etsyHomepage:
-              faker.datatype.boolean() === true
-                ? faker.internet.url()
-                : undefined,
-            shopifyHomepage:
-              faker.datatype.boolean() === true
-                ? faker.internet.url()
-                : undefined,
-            squareHomepage:
-              faker.datatype.boolean() === true
-                ? faker.internet.url()
-                : undefined,
-          }),
-          next_product_id: faker.datatype.number(),
         },
       ],
     };
     const select = jest.fn().mockImplementation(async (params) => {
       if (params.table === "businesses" && params.conditions === `id=${id}`) {
         return resData;
+      } else if (
+        params.table === "products" &&
+        params.conditions === `business_id=${id}`
+      ) {
+        return null;
       }
 
-      // Should never reach here
+      // Should not reach here
       throw new Error();
     });
     jest.doMock("lib/api/postgresql", () => ({
       select,
     }));
-    const handler = require("pages/api/business");
+    const handler = require("pages/api/products");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "GET",
+      query: {
+        id: `${id}`,
+      },
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(select).toHaveBeenCalledTimes(2);
+    expect(mockRes.statusCode).toBe(500);
+  });
+
+  it("Health check, valid inputs, valid response", async () => {
+    // Arrange
+    const id = faker.datatype.number();
+    const numRows = faker.datatype.number({ min: 1, max: 5 });
+    const businessesResData = {
+      rowCount: 1,
+      rows: [
+        {
+          id,
+        },
+      ],
+    };
+    const incorrectProductsResData = {
+      rowCount: numRows,
+      rows: Array.from({ length: numRows }, () => ({
+        id: `${faker.datatype.number()}`,
+        business_id: `${id}`,
+        name: faker.commerce.productName(),
+        preview: faker.image.imageUrl(
+          faker.datatype.number(),
+          faker.datatype.number(),
+          faker.commerce.department(),
+          true
+        ),
+      })),
+    };
+    const correctProductsResData = {
+      rowCount: numRows,
+      rows: incorrectProductsResData.rows.map(
+        ({ id, business_id, ...rest }) => ({
+          ...rest,
+          object_id: `${business_id}_${id}`,
+        })
+      ),
+    };
+    const select = jest.fn().mockImplementation(async (params) => {
+      if (params.table === "businesses" && params.conditions === `id=${id}`) {
+        return businessesResData;
+      } else if (
+        params.table === "products" &&
+        params.conditions === `business_id=${id}`
+      ) {
+        if (
+          !params.values.includes("CONCAT(business_id, '_', id) AS object_id")
+        ) {
+          return incorrectProductsResData;
+        } else {
+          return correctProductsResData;
+        }
+      }
+
+      // Should not reach here
+      throw new Error();
+    });
+    jest.doMock("lib/api/postgresql", () => ({
+      select,
+    }));
+    const handler = require("pages/api/products");
     const httpMocks = require("node-mocks-http");
     const mockReq = httpMocks.createRequest({
       method: "GET",
@@ -262,17 +223,16 @@ describe("Business", () => {
 
     // Assert
     expect(log).toHaveBeenCalledTimes(0);
-    expect(select).toHaveBeenCalledTimes(1);
+    expect(select).toHaveBeenCalledTimes(2);
     expect(mockRes.statusCode).toBe(200);
     expect(actual).toEqual({
-      business: {
-        id,
-        name: resData.rows[0].name,
-        logo: resData.rows[0].logo,
-        departments: JSON.parse(resData.rows[0].departments),
-        uploadSettings: JSON.parse(resData.rows[0].upload_settings),
-        homepages: JSON.parse(resData.rows[0].homepages),
-      },
+      products: correctProductsResData.rows.map(
+        ({ object_id, name, preview }) => ({
+          objectId: object_id,
+          name,
+          preview,
+        })
+      ),
     });
   });
 
@@ -282,7 +242,7 @@ describe("Business", () => {
     jest.doMock("lib/api/postgresql", () => ({
       select,
     }));
-    const handler = require("pages/api/business");
+    const handler = require("pages/api/products");
     const httpMocks = require("node-mocks-http");
     const mockReq = httpMocks.createRequest({
       method: "POST",
@@ -308,7 +268,7 @@ describe("Business", () => {
     jest.doMock("lib/api/postgresql", () => ({
       select,
     }));
-    const handler = require("pages/api/business");
+    const handler = require("pages/api/products");
     const httpMocks = require("node-mocks-http");
     const mockReq = httpMocks.createRequest({
       method: "GET",
@@ -337,7 +297,7 @@ describe("Business", () => {
     jest.doMock("lib/api/postgresql", () => ({
       select,
     }));
-    const handler = require("pages/api/business");
+    const handler = require("pages/api/products");
     const httpMocks = require("node-mocks-http");
     const mockReq = httpMocks.createRequest({
       method: "GET",

@@ -9,6 +9,42 @@ jobs:
     name: Tests
     runs-on: ${{ matrix.os }}
 
+    env:
+      ALGOLIASEARCH_API_KEY: 8224a01c8bda9a91a33cfb6c2abf0a47
+      ALGOLIASEARCH_APPLICATION_ID: HJ20MIEM9K
+      ALGOLIASEARCH_INDEX: locality_dev
+      CLOUDINARY_URL: cloudinary://214585362672414:kgREaqDewAWjcnLzRwUxLbdsJts@hzu2rm8bn
+      DATABASE_URL: postgres://kmpxaysnrscztj:739ddb365dc11ffba82131a6492debd11e16510d88d035c8722865d53bb65cc9@ec2-3-234-22-132.compute-1.amazonaws.com:5432/dcil5tnfg4lfkt
+      EMAIL_PASSWORD: wrpbhgxluquzpyem
+      EMAIL_SERVICE: Yahoo
+      EMAIL_USER: locality.info@yahoo.com
+      ETSY_API_KEY: av6xe8y6fxpxz66u2eba49oh
+      FACEBOOK_APP_ID: 1104392240044864
+      FACEBOOK_APP_SECRET: c2bef194f72b94a1f13d57cd32086a40
+      GOOGLE_ANALYTICS_API_SECRET: 3CXifHnmQxOdkE1SqbHwVQ
+      GOOGLE_CLIENT_ID: 932752957308-o9h4fvv5tjp8r1e7edcl3klb27o8jdde.apps.googleusercontent.com
+      GOOGLE_CLIENT_SECRET: nUwbqdYvlBytrER_JBlSQQOB
+      GOOGLE_MEASUREMENT_ID: G-LPQJV39LSV
+      JWT_SECRET: qaz/q+Ft5ZM95dAAAhI8Ga/2HTMs9v8KfhcSxwKG/T+35jDxGRBQAqR56igfXIM8n2xkuG6oNcNEqdjhp702WAhKdxsHFWw8v336ygdV0ez8FOJdUnlg3HL8sy9DJ4l4p3M+PFqbCuUkDSSY61VgCOPYmWf8Mjj4L3ShHN/ZFE8=
+      JWT_SIGNING_KEY:
+        {
+          "kty": "oct",
+          "kid": "oo9-VhitMPNPJwBc7PF3LWAtfvtM6GpzJmwV_VNrHeE",
+          "alg": "HS512",
+          "k": "6NAC_dbyInUKtE_5Jk44PkAi-Fzih4SogG-NZ0x3K1vdkubEM2ScH3H0HVXAuvD3YcOfOWjzSiBSgqP26fyn-fcSEYOVX0CnKO2DNBWCPj_bzSNJ5tSFLppLZ0-EfZqNnlmmIvHKB2b3PgwkMe3TNP8jPypG6LOekp_NQh43zy7pN8BIlMBi7QaNcUWDkA-odiDfqf3zUSgasMfLK4evQtSSrjeFshKV0GGBC6Bug5Go-MV2dV0W0G9ajGhL75JQirjA3XG5zQ6aPlTsAqXdSTRRy3A311A1TGsNP5YBO5WVMdqM5ltg1Socy-T5igqN7ybfqHbrOia6qYQ9b3mMQQ",
+        }
+      MAILCHIMP_API_KEY: aa1061fae4da87122007f8558819deb0-us7
+      MAILCHIMP_LOCALITY_ID: f6866fe7f4
+      MAILCHIMP_SERVER: us7
+      MAPQUEST_KEY: hg8GJLzAooQiqxZ38rWFAQz9hVVcJEAY
+      NODE_ENV: development
+      NEXTAUTH_URL: http://localhost:3000
+      SALT: 12
+      SESSION_SECRET: 6hp8jzovgdhamRd6yXYZQucrax1163oy0IjSFmkyuCPkuh9Vut1h45cqRW5oAgV4fFjWUCVAp1nypw5vkS0EYOAFFPztLqr8e14Rf8q61VIdDVE02xOg3ooNwvXGamhC
+      SQREEN_APP_NAME: locality-ui-dev
+      SQREEN_TOKEN: env_org_2fdb71a997bb34426e1af22d1e0492d09b03ebdf6dfb506c119fec80
+      SUMOLOGIC_URL: https://endpoint6.collection.us2.sumologic.com/receiver/v1/http/ZaVnC4dhaV0vxGPvbaYOEKlECSPcVp1bgf2Xub34KinjzfaTqVV3JK1clGxMg9X4RezGiZzsnyesMNBwQXoqpTEu_AdFjox_e_UOyLA4j_Uampb-RQz3vA==
+
     strategy:
       matrix:
         os: [ubuntu-latest]

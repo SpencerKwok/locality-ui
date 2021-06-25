@@ -36,6 +36,31 @@ export default async function handler(
   }
 
   const businessId = parseInt(id);
+  const businesses = await Psql.select<{}>({
+    table: "businesses",
+    values: ["*"],
+    conditions: SqlString.format("id=?", [businessId]),
+  });
+  if (!businesses) {
+    SumoLogic.log({
+      level: "error",
+      method: "business",
+      message: "Failed to SELECT from Heroku PSQL: Missing response",
+      params: { businessId },
+    });
+    res.status(500).json({ error: "Internal server error" });
+    return;
+  } else if (businesses.rowCount !== 1) {
+    SumoLogic.log({
+      level: "warning",
+      method: "business",
+      message: "Attempted to SELECT non-existing business from Heroku PSQL",
+      params: { businessId },
+    });
+    res.status(400).json({ error: "Invalid payload" });
+    return;
+  }
+
   const products = await Psql.select<{
     rows: Array<{
       object_id: string;

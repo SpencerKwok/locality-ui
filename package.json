@@ -17,7 +17,7 @@
     "format:fix": "prettier --write ./**/*.tsx ./**/*.ts *.js ./tests/**/*.js",
     "lint": "eslint --max-warnings 0 ./**/*.tsx ./**/*.ts *.js ./tests/**/*.js",
     "lint:fix": "npm run lint -- --fix",
-    "test": "jest --passWithNoTests --detectOpenHandles"
+    "test": "jest"
   },
   "repository": {
     "type": "git",

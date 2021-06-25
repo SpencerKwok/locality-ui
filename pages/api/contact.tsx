@@ -48,6 +48,15 @@ export default async function handler(
   const email = Xss(body.email);
   const message = Xss(body.message);
 
+  if (name !== body.name || email !== body.email || message !== body.message) {
+    SumoLogic.log({
+      level: "warning",
+      method: "contact",
+      message: "XSS attack",
+      params: { body },
+    });
+  }
+
   const selfMailOptions = {
     from: EMAIL_USER,
     to: EMAIL_USER,
