@@ -22,12 +22,9 @@ describe("Business", () => {
       rows: [],
     };
     const select = jest.fn().mockImplementation(async (params) => {
-      if (params.table === "businesses" && params.conditions === `id=${id}`) {
-        return resData;
-      }
-
-      // Should never reach here
-      throw new Error();
+      expect(params.table).toEqual("businesses");
+      expect(params.conditions).toEqual(`id=${id}`);
+      return resData;
     });
     jest.doMock("lib/api/postgresql", () => ({
       select,
@@ -59,12 +56,9 @@ describe("Business", () => {
     // Arrange
     const id = faker.datatype.number();
     const select = jest.fn().mockImplementation(async (params) => {
-      if (params.table === "businesses" && params.conditions === `id=${id}`) {
-        return null;
-      }
-
-      // Should never reach here
-      throw new Error();
+      expect(params.table).toEqual("businesses");
+      expect(params.conditions).toEqual(`id=${id}`);
+      return null;
     });
     jest.doMock("lib/api/postgresql", () => ({
       select,
@@ -230,12 +224,9 @@ describe("Business", () => {
       ],
     };
     const select = jest.fn().mockImplementation(async (params) => {
-      if (params.table === "businesses" && params.conditions === `id=${id}`) {
-        return resData;
-      }
-
-      // Should never reach here
-      throw new Error();
+      expect(params.table).toEqual("businesses");
+      expect(params.conditions).toEqual(`id=${id}`);
+      return resData;
     });
     jest.doMock("lib/api/postgresql", () => ({
       select,
@@ -276,7 +267,7 @@ describe("Business", () => {
     });
   });
 
-  it("Invalid method, invalid inputs, logged once + client error response", async () => {
+  it("Invalid method, valid inputs, logged once + client error response", async () => {
     // Arrange
     const select = jest.fn();
     jest.doMock("lib/api/postgresql", () => ({
@@ -289,6 +280,9 @@ describe("Business", () => {
       headers: {
         "content-type": "application/json",
         charset: "utf-8",
+      },
+      body: {
+        id: faker.datatype.number(),
       },
     });
     const mockRes = httpMocks.createResponse();

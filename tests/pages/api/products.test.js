@@ -24,12 +24,9 @@ describe("Products", () => {
       rows: [],
     };
     const select = jest.fn().mockImplementation(async (params) => {
-      if (params.table === "businesses" && params.conditions === `id=${id}`) {
-        return resData;
-      }
-
-      // Should never reach here
-      throw new Error();
+      expect(params.table).toEqual("businesses");
+      expect(params.conditions).toEqual(`id=${id}`);
+      return resData;
     });
     jest.doMock("lib/api/postgresql", () => ({
       select,
@@ -61,12 +58,9 @@ describe("Products", () => {
     // Arrange
     const id = faker.datatype.number();
     const select = jest.fn().mockImplementation(async (params) => {
-      if (params.table === "businesses" && params.conditions === `id=${id}`) {
-        return null;
-      }
-
-      // Should not reach here
-      throw new Error();
+      expect(params.table).toEqual("businesses");
+      expect(params.conditions).toEqual(`id=${id}`);
+      return null;
     });
     jest.doMock("lib/api/postgresql", () => ({
       select,
@@ -105,19 +99,18 @@ describe("Products", () => {
         },
       ],
     };
-    const select = jest.fn().mockImplementation(async (params) => {
-      if (params.table === "businesses" && params.conditions === `id=${id}`) {
+    const select = jest
+      .fn()
+      .mockImplementationOnce(async (params) => {
+        expect(params.table).toEqual("businesses");
+        expect(params.conditions).toEqual(`id=${id}`);
         return resData;
-      } else if (
-        params.table === "products" &&
-        params.conditions === `business_id=${id}`
-      ) {
+      })
+      .mockImplementationOnce(async (params) => {
+        expect(params.table).toEqual("products");
+        expect(params.conditions).toEqual(`business_id=${id}`);
         return null;
-      }
-
-      // Should not reach here
-      throw new Error();
-    });
+      });
     jest.doMock("lib/api/postgresql", () => ({
       select,
     }));
@@ -156,11 +149,10 @@ describe("Products", () => {
         },
       ],
     };
-    const incorrectProductsResData = {
+    const productsResData = {
       rowCount: numRows,
       rows: Array.from({ length: numRows }, () => ({
-        id: `${faker.datatype.number()}`,
-        business_id: `${id}`,
+        object_id: `${id}_${faker.datatype.number()}`,
         name: faker.commerce.productName(),
         preview: faker.image.imageUrl(
           faker.datatype.number(),
@@ -170,34 +162,22 @@ describe("Products", () => {
         ),
       })),
     };
-    const correctProductsResData = {
-      rowCount: numRows,
-      rows: incorrectProductsResData.rows.map(
-        ({ id, business_id, ...rest }) => ({
-          ...rest,
-          object_id: `${business_id}_${id}`,
-        })
-      ),
-    };
-    const select = jest.fn().mockImplementation(async (params) => {
-      if (params.table === "businesses" && params.conditions === `id=${id}`) {
-        return businessesResData;
-      } else if (
-        params.table === "products" &&
-        params.conditions === `business_id=${id}`
-      ) {
-        if (
-          !params.values.includes("CONCAT(business_id, '_', id) AS object_id")
-        ) {
-          return incorrectProductsResData;
-        } else {
-          return correctProductsResData;
-        }
-      }
 
-      // Should not reach here
-      throw new Error();
-    });
+    const select = jest
+      .fn()
+      .mockImplementationOnce(async (params) => {
+        expect(params.table).toEqual("businesses");
+        expect(params.conditions).toEqual(`id=${id}`);
+        return businessesResData;
+      })
+      .mockImplementationOnce(async (params) => {
+        expect(params.table).toEqual("products");
+        expect(params.conditions).toEqual(`business_id=${id}`);
+        expect(
+          params.values.includes("CONCAT(business_id, '_', id) AS object_id")
+        ).toEqual(true);
+        return productsResData;
+      });
     jest.doMock("lib/api/postgresql", () => ({
       select,
     }));
@@ -226,13 +206,11 @@ describe("Products", () => {
     expect(select).toHaveBeenCalledTimes(2);
     expect(mockRes.statusCode).toBe(200);
     expect(actual).toEqual({
-      products: correctProductsResData.rows.map(
-        ({ object_id, name, preview }) => ({
-          objectId: object_id,
-          name,
-          preview,
-        })
-      ),
+      products: productsResData.rows.map(({ object_id, name, preview }) => ({
+        objectId: object_id,
+        name,
+        preview,
+      })),
     });
   });
 
@@ -249,6 +227,9 @@ describe("Products", () => {
       headers: {
         "content-type": "application/json",
         charset: "utf-8",
+      },
+      body: {
+        id: `${faker.datatype.number()}`,
       },
     });
     const mockRes = httpMocks.createResponse();

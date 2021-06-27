@@ -19,12 +19,8 @@ describe("Product", () => {
     // Arrange
     const id = `${faker.datatype.number()}_${faker.datatype.number()}`;
     const getObject = jest.fn().mockImplementation(async (params) => {
-      if (params === id) {
-        return null;
-      }
-
-      // Should never reach here
-      throw new Error();
+      expect(params).toEqual(id);
+      return null;
     });
     jest.doMock("lib/api/algolia", () => ({
       getObject,
@@ -56,12 +52,8 @@ describe("Product", () => {
     // Arrange
     const id = `${faker.datatype.number()}_${faker.datatype.number()}`;
     const getObject = jest.fn().mockImplementation(async (params) => {
-      if (params === id) {
-        return null;
-      }
-
-      // Should never reach here
-      throw new Error();
+      expect(params).toEqual(id);
+      return null;
     });
     jest.doMock("lib/api/algolia", () => ({
       getObject,
@@ -105,7 +97,7 @@ describe("Product", () => {
       name: faker.commerce.productName(),
       business: faker.company.companyName(),
       description,
-      description_length: description.length,
+      descriptionLength: description.length,
       departments: Array.from(
         {
           length: faker.datatype.number({
@@ -116,12 +108,12 @@ describe("Product", () => {
         () => faker.commerce.department()
       ),
       link: faker.internet.url(),
-      price_range: [faker.commerce.price(), faker.commerce.price()].sort(
+      priceRange: [faker.commerce.price(), faker.commerce.price()].sort(
         (a, b) => a - b
       ),
       tags,
-      tags_length: tags.join("").length,
-      variant_images: Array.from(
+      tagsLength: tags.join("").length,
+      variantImages: Array.from(
         {
           length: faker.datatype.number({
             min: 1,
@@ -136,7 +128,7 @@ describe("Product", () => {
             true
           )
       ),
-      variant_tags: Array.from(
+      variantTags: Array.from(
         {
           length: faker.datatype.number({
             min: 0,
@@ -148,12 +140,8 @@ describe("Product", () => {
       objectId: `${faker.datatype.number()}_${faker.datatype.number()}`,
     };
     const getObject = jest.fn().mockImplementation((id) => {
-      if (id === resData.objectId) {
-        return resData;
-      }
-
-      // Should never reach here
-      throw new Error();
+      expect(id).toEqual(resData.objectId);
+      return resData;
     });
     jest.doMock("lib/api/algolia", () => ({
       getObject,
@@ -182,22 +170,7 @@ describe("Product", () => {
     expect(log).toHaveBeenCalledTimes(0);
     expect(getObject).toHaveBeenCalledTimes(1);
     expect(mockRes.statusCode).toBe(200);
-    expect(actual).toEqual({
-      product: {
-        name: resData.name,
-        business: resData.business,
-        description: resData.description,
-        descriptionLength: resData.description_length,
-        departments: resData.departments,
-        link: resData.link,
-        priceRange: resData.price_range,
-        tags: resData.tags,
-        tagsLength: resData.tags_length,
-        variantImages: resData.variant_images,
-        variantTags: resData.variant_tags,
-        objectId: resData.objectId,
-      },
-    });
+    expect(actual).toEqual({ product: resData });
   });
 
   it("Invalid method, invalid inputs, logged once + client error response", async () => {
@@ -213,6 +186,9 @@ describe("Product", () => {
       headers: {
         "content-type": "application/json",
         charset: "utf-8",
+      },
+      body: {
+        id: `${faker.datatype.number()}_${faker.datatype.number()}`,
       },
     });
     const mockRes = httpMocks.createResponse();

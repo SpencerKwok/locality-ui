@@ -86,7 +86,14 @@ export default async function handler(
 
     // Don't error out if the
     // wishlist cannot be retrieved
-    if (productIDs) {
+    if (!productIDs) {
+      SumoLogic.log({
+        level: "warning",
+        method: "search",
+        message: "Failed to fetch wishlist",
+        params: { user },
+      });
+    } else {
       wishlist = new Set(JSON.parse(productIDs.rows[0].wishlist));
     }
   }
@@ -96,7 +103,7 @@ export default async function handler(
       aroundLatLngViaIP: true,
       facets,
       filters,
-      headers: { "X-Forwarded-For": ip },
+      headers: { "x-forwarded-for": ip },
       page,
       attributesToRetrieve,
     });

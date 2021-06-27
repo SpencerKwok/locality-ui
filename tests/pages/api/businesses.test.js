@@ -257,12 +257,8 @@ describe("Businesses", () => {
       rows: [],
     };
     const select = jest.fn().mockImplementation(async (params) => {
-      if (params.table === "businesses" && !params.conditions) {
-        return resData;
-      }
-
-      // Should never reach here
-      throw new Error();
+      expect(params.table).toEqual("businesses");
+      return resData;
     });
     jest.doMock("lib/api/postgresql", () => ({
       select,

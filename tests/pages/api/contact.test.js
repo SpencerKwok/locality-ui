@@ -24,16 +24,10 @@ describe("Product", () => {
       sendMail,
     };
     const createTransport = jest.fn().mockImplementation((options) => {
-      if (
-        options.service === process.env.EMAIL_SERVICE &&
-        options.auth.user === process.env.EMAIL_USER &&
-        options.auth.pass === process.env.EMAIL_PASSWORD
-      ) {
-        return mockTransporter;
-      }
-
-      // Should not reach here
-      throw new Error();
+      expect(options.service).toEqual(process.env.EMAIL_SERVICE);
+      expect(options.auth.user).toEqual(process.env.EMAIL_USER);
+      expect(options.auth.pass).toEqual(process.env.EMAIL_PASSWORD);
+      return mockTransporter;
     });
     jest.doMock("nodemailer", () => ({
       createTransport,
@@ -71,16 +65,10 @@ describe("Product", () => {
       sendMail,
     };
     const createTransport = jest.fn().mockImplementation((options) => {
-      if (
-        options.service === process.env.EMAIL_SERVICE &&
-        options.auth.user === process.env.EMAIL_USER &&
-        options.auth.pass === process.env.EMAIL_PASSWORD
-      ) {
-        return mockTransporter;
-      }
-
-      // Should not reach here
-      throw new Error();
+      expect(options.service).toEqual(process.env.EMAIL_SERVICE);
+      expect(options.auth.user).toEqual(process.env.EMAIL_USER);
+      expect(options.auth.pass).toEqual(process.env.EMAIL_PASSWORD);
+      return mockTransporter;
     });
     jest.doMock("nodemailer", () => ({
       createTransport,
@@ -118,16 +106,10 @@ describe("Product", () => {
       sendMail,
     };
     const createTransport = jest.fn().mockImplementation((options) => {
-      if (
-        options.service === process.env.EMAIL_SERVICE &&
-        options.auth.user === process.env.EMAIL_USER &&
-        options.auth.pass === process.env.EMAIL_PASSWORD
-      ) {
-        return mockTransporter;
-      }
-
-      // Should not reach here
-      throw new Error();
+      expect(options.service).toEqual(process.env.EMAIL_SERVICE);
+      expect(options.auth.user).toEqual(process.env.EMAIL_USER);
+      expect(options.auth.pass).toEqual(process.env.EMAIL_PASSWORD);
+      return mockTransporter;
     });
     jest.doMock("nodemailer", () => ({
       createTransport,
@@ -165,16 +147,10 @@ describe("Product", () => {
       sendMail,
     };
     const createTransport = jest.fn().mockImplementation((options) => {
-      if (
-        options.service === process.env.EMAIL_SERVICE &&
-        options.auth.user === process.env.EMAIL_USER &&
-        options.auth.pass === process.env.EMAIL_PASSWORD
-      ) {
-        return mockTransporter;
-      }
-
-      // Should not reach here
-      throw new Error();
+      expect(options.service).toEqual(process.env.EMAIL_SERVICE);
+      expect(options.auth.user).toEqual(process.env.EMAIL_USER);
+      expect(options.auth.pass).toEqual(process.env.EMAIL_PASSWORD);
+      return mockTransporter;
     });
     jest.doMock("nodemailer", () => ({
       createTransport,
@@ -212,16 +188,10 @@ describe("Product", () => {
       sendMail,
     };
     const createTransport = jest.fn().mockImplementation((options) => {
-      if (
-        options.service === process.env.EMAIL_SERVICE &&
-        options.auth.user === process.env.EMAIL_USER &&
-        options.auth.pass === process.env.EMAIL_PASSWORD
-      ) {
-        return mockTransporter;
-      }
-
-      // Should not reach here
-      throw new Error();
+      expect(options.service).toEqual(process.env.EMAIL_SERVICE);
+      expect(options.auth.user).toEqual(process.env.EMAIL_USER);
+      expect(options.auth.pass).toEqual(process.env.EMAIL_PASSWORD);
+      return mockTransporter;
     });
     jest.doMock("nodemailer", () => ({
       createTransport,
@@ -233,6 +203,11 @@ describe("Product", () => {
       headers: {
         "content-type": "application/json",
         charset: "utf-8",
+      },
+      query: {
+        email: faker.internet.email(),
+        name: faker.datatype.number(),
+        message: faker.commerce.productDescription(),
       },
     });
     const mockRes = httpMocks.createResponse();
@@ -252,24 +227,16 @@ describe("Product", () => {
     const sendMail = jest.fn().mockImplementation(async (options) => {
       // Throw error if XSS attack is detected
       const optionsStr = JSON.stringify(options);
-      if (optionsStr.match(/<(\/?)script(\/?)>/g)) {
-        throw new Error();
-      }
+      expect(optionsStr).not.toMatch(/<(\/?)script(\/?)>/g);
     });
     const mockTransporter = {
       sendMail,
     };
     const createTransport = jest.fn().mockImplementation((options) => {
-      if (
-        options.service === process.env.EMAIL_SERVICE &&
-        options.auth.user === process.env.EMAIL_USER &&
-        options.auth.pass === process.env.EMAIL_PASSWORD
-      ) {
-        return mockTransporter;
-      }
-
-      // Should not reach here
-      throw new Error();
+      expect(options.service).toEqual(process.env.EMAIL_SERVICE);
+      expect(options.auth.user).toEqual(process.env.EMAIL_USER);
+      expect(options.auth.pass).toEqual(process.env.EMAIL_PASSWORD);
+      return mockTransporter;
     });
     jest.doMock("nodemailer", () => ({
       createTransport,
