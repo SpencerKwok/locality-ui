@@ -1,3 +1,5 @@
+import fetch from "node-fetch";
+
 import { ETSY_API_KEY } from "lib/env";
 import SumoLogic from "lib/api/sumologic";
 
@@ -20,11 +22,12 @@ const helper = (tree: Tree): Array<string> => {
 };
 
 async function init(): Promise<Array<string>> {
-  return await fetch(
+  const result: Array<string> = await fetch(
     `http://openapi.etsy.com/v2/taxonomy/seller/get?api_key=${ETSY_API_KEY}`
   )
-    .then(async (data) => data.json())
+    .then(async (data) => data.json() as Promise<{ results: Tree }>)
     .then((tree) => helper(tree.results));
+  return result;
 }
 
 let departments: Array<string> = [];
@@ -46,6 +49,7 @@ export default async function handler(
     try {
       departments = await init();
     } catch (error: unknown) {
+      console.log(error);
       SumoLogic.log({
         level: "error",
         method: "departments/get",

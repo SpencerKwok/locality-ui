@@ -2,7 +2,7 @@ const faker = require("faker");
 
 const userId = faker.datatype.number();
 const log = jest.fn();
-const runMiddlewareUser = jest.fn().mockImplementation(async (req, res) => {
+const runMiddlewareUser = jest.fn().mockImplementation(async (req) => {
   req.locals = { user: { id: userId } };
 });
 describe("Delete from Wishlist", () => {
@@ -56,6 +56,7 @@ describe("Delete from Wishlist", () => {
     // Assert
     expect(log).toHaveBeenCalledTimes(1);
     expect(select).toHaveBeenCalledTimes(1);
+    expect(runMiddlewareUser).toHaveBeenCalledTimes(1);
     expect(update).toHaveBeenCalledTimes(0);
     expect(mockRes.statusCode).toBe(500);
   });
@@ -76,7 +77,7 @@ describe("Delete from Wishlist", () => {
       expect(params.table).toEqual("users");
       expect(params.conditions).toEqual(`id=${userId}`);
       return {
-        rowCount: numObjects,
+        rowCount: 1,
         rows: [{ wishlist: JSON.stringify(wishlist) }],
       };
     });
@@ -113,6 +114,7 @@ describe("Delete from Wishlist", () => {
     // Assert
     expect(log).toHaveBeenCalledTimes(1);
     expect(select).toHaveBeenCalledTimes(1);
+    expect(runMiddlewareUser).toHaveBeenCalledTimes(1);
     expect(update).toHaveBeenCalledTimes(1);
     expect(mockRes.statusCode).toBe(500);
   });
@@ -172,6 +174,7 @@ describe("Delete from Wishlist", () => {
 
     // Assert
     expect(log).toHaveBeenCalledTimes(1);
+    expect(runMiddlewareUser).toHaveBeenCalledTimes(1);
     expect(select).toHaveBeenCalledTimes(0);
     expect(mockRes.statusCode).toBe(400);
   });
@@ -201,6 +204,7 @@ describe("Delete from Wishlist", () => {
 
     // Assert
     expect(log).toHaveBeenCalledTimes(1);
+    expect(runMiddlewareUser).toHaveBeenCalledTimes(1);
     expect(select).toHaveBeenCalledTimes(0);
     expect(mockRes.statusCode).toBe(400);
   });
@@ -221,7 +225,7 @@ describe("Delete from Wishlist", () => {
       expect(params.table).toEqual("users");
       expect(params.conditions).toEqual(`id=${userId}`);
       return {
-        rowCount: numObjects,
+        rowCount: 1,
         rows: [{ wishlist: JSON.stringify(wishlist) }],
       };
     });
@@ -257,6 +261,7 @@ describe("Delete from Wishlist", () => {
 
     // Assert
     expect(log).toHaveBeenCalledTimes(0);
+    expect(runMiddlewareUser).toHaveBeenCalledTimes(1);
     expect(select).toHaveBeenCalledTimes(1);
     expect(update).toHaveBeenCalledTimes(1);
     expect(mockRes.statusCode).toBe(204);

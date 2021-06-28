@@ -75,40 +75,29 @@ export default async function handler(
   const id: string = (req.headers["id"] ?? "") as string;
   const token: string = (req.headers["token"] ?? "") as string;
   if (id && token) {
-    try {
-      const user = await Psql.select<{}>({
-        table: "tokens",
-        values: ["*"],
-        conditions: SqlString.format("token=E? AND id=?", [
-          token,
-          parseInt(id),
-        ]),
-      });
-      if (!user) {
-        throw new Error("Missing response from tokens table");
-      }
-
-      if (user.rowCount > 0) {
-        const productIDs = await Psql.select<{ wishlist: string }>({
-          table: "users",
-          values: ["wishlist"],
-          conditions: SqlString.format("id=?", [parseInt(id)]),
-        });
-        if (!productIDs) {
-          throw new Error("Missing response from users table");
-        }
-
-        wishlist = new Set(JSON.parse(productIDs.rows[0].wishlist));
-      }
-    } catch (error: unknown) {
+    const productIDs = await Psql.select<{ wishlist: string }>({
+      table: "users",
+      values: ["wishlist"],
+      conditions: SqlString.format("id=?", [parseInt(id)]),
+    });
+    if (!productIDs) {
       // Don't error out because we failed
       // to retrieve the wishlist
       SumoLogic.log({
         level: "warning",
         method: "extension/search",
-        message: "Failed to retrieve wishlist",
-        params: { query, error },
+        message: "Failed to SELECT from Heroku PSQL: Missing response",
+        params: { headers: req.headers, query },
       });
+    } else if (productIDs.rowCount !== 1) {
+      SumoLogic.log({
+        level: "error",
+        method: "extension/search",
+        message: "Failed to SELECT from Heroku PSQL: User does not exist",
+        params: { headers: req.headers, query },
+      });
+    } else {
+      wishlist = new Set(JSON.parse(productIDs.rows[0].wishlist));
     }
   }
 
@@ -117,7 +106,7 @@ export default async function handler(
       aroundLatLngViaIP: true,
       facets,
       filters,
-      headers: { "X-Forwarded-For": ip },
+      headers: { "x-forwarded-for": ip },
       page,
       attributesToRetrieve,
     });

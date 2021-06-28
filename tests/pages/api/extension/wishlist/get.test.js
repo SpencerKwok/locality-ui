@@ -2,7 +2,7 @@ const faker = require("faker");
 
 const userId = faker.datatype.number();
 const log = jest.fn();
-const runMiddlewareUser = jest.fn().mockImplementation(async (req) => {
+const runMiddlewareExtension = jest.fn().mockImplementation(async (req) => {
   req.locals = { user: { id: userId } };
 });
 describe("Get Wishlist", () => {
@@ -11,7 +11,7 @@ describe("Get Wishlist", () => {
       log,
     }));
     jest.doMock("lib/api/middleware", () => ({
-      runMiddlewareUser,
+      runMiddlewareExtension,
     }));
   });
 
@@ -38,7 +38,7 @@ describe("Get Wishlist", () => {
     jest.doMock("lib/api/algolia", () => ({
       getObjects,
     }));
-    const handler = require("pages/api/wishlist/get");
+    const handler = require("pages/api/extension/wishlist/get");
     const httpMocks = require("node-mocks-http");
     const mockReq = httpMocks.createRequest({
       method: "GET",
@@ -54,8 +54,8 @@ describe("Get Wishlist", () => {
 
     // Assert
     expect(log).toHaveBeenCalledTimes(1);
-    expect(runMiddlewareUser).toHaveBeenCalledTimes(1);
     expect(select).toHaveBeenCalledTimes(1);
+    expect(runMiddlewareExtension).toHaveBeenCalledTimes(1);
     expect(getObjects).toHaveBeenCalledTimes(0);
     expect(mockRes.statusCode).toBe(500);
   });
@@ -91,7 +91,7 @@ describe("Get Wishlist", () => {
     jest.doMock("lib/api/algolia", () => ({
       getObjects,
     }));
-    const handler = require("pages/api/wishlist/get");
+    const handler = require("pages/api/extension/wishlist/get");
     const httpMocks = require("node-mocks-http");
     const mockReq = httpMocks.createRequest({
       method: "GET",
@@ -107,8 +107,8 @@ describe("Get Wishlist", () => {
 
     // Assert
     expect(log).toHaveBeenCalledTimes(1);
-    expect(runMiddlewareUser).toHaveBeenCalledTimes(1);
     expect(select).toHaveBeenCalledTimes(1);
+    expect(runMiddlewareExtension).toHaveBeenCalledTimes(1);
     expect(getObjects).toHaveBeenCalledTimes(1);
     expect(mockRes.statusCode).toBe(500);
   });
@@ -123,7 +123,7 @@ describe("Get Wishlist", () => {
     jest.doMock("lib/api/algolia", () => ({
       getObjects,
     }));
-    const handler = require("pages/api/wishlist/get");
+    const handler = require("pages/api/extension/wishlist/get");
     const httpMocks = require("node-mocks-http");
     const mockReq = httpMocks.createRequest({
       method: "POST",
@@ -139,8 +139,8 @@ describe("Get Wishlist", () => {
 
     // Assert
     expect(log).toHaveBeenCalledTimes(1);
-    expect(runMiddlewareUser).toHaveBeenCalledTimes(1);
     expect(select).toHaveBeenCalledTimes(0);
+    expect(runMiddlewareExtension).toHaveBeenCalledTimes(1);
     expect(getObjects).toHaveBeenCalledTimes(0);
     expect(mockRes.statusCode).toBe(400);
   });
@@ -237,7 +237,7 @@ describe("Get Wishlist", () => {
     jest.doMock("lib/api/algolia", () => ({
       getObjects,
     }));
-    const handler = require("pages/api/wishlist/get");
+    const handler = require("pages/api/extension/wishlist/get");
     const httpMocks = require("node-mocks-http");
     const mockReq = httpMocks.createRequest({
       method: "GET",
@@ -256,8 +256,8 @@ describe("Get Wishlist", () => {
 
     // Assert
     expect(log).toHaveBeenCalledTimes(0);
-    expect(runMiddlewareUser).toHaveBeenCalledTimes(1);
     expect(select).toHaveBeenCalledTimes(1);
+    expect(runMiddlewareExtension).toHaveBeenCalledTimes(1);
     expect(getObjects).toHaveBeenCalledTimes(1);
     expect(mockRes.statusCode).toBe(200);
     expect(actual).toEqual({

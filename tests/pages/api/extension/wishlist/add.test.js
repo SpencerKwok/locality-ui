@@ -2,7 +2,7 @@ const faker = require("faker");
 
 const userId = faker.datatype.number();
 const log = jest.fn();
-const runMiddlewareUser = jest.fn().mockImplementation(async (req) => {
+const runMiddlewareExtension = jest.fn().mockImplementation(async (req) => {
   req.locals = { user: { id: userId } };
 });
 describe("Add to Wishlist", () => {
@@ -11,7 +11,7 @@ describe("Add to Wishlist", () => {
       log,
     }));
     jest.doMock("lib/api/middleware", () => ({
-      runMiddlewareUser,
+      runMiddlewareExtension,
     }));
   });
 
@@ -36,7 +36,7 @@ describe("Add to Wishlist", () => {
       select,
       update,
     }));
-    const handler = require("pages/api/wishlist/add");
+    const handler = require("pages/api/extension/wishlist/add");
     const httpMocks = require("node-mocks-http");
     const mockReq = httpMocks.createRequest({
       method: "POST",
@@ -56,8 +56,8 @@ describe("Add to Wishlist", () => {
     // Assert
     expect(log).toHaveBeenCalledTimes(1);
     expect(select).toHaveBeenCalledTimes(1);
-    expect(runMiddlewareUser).toHaveBeenCalledTimes(1);
     expect(update).toHaveBeenCalledTimes(0);
+    expect(runMiddlewareExtension).toHaveBeenCalledTimes(1);
     expect(mockRes.statusCode).toBe(500);
   });
 
@@ -93,7 +93,7 @@ describe("Add to Wishlist", () => {
       select,
       update,
     }));
-    const handler = require("pages/api/wishlist/add");
+    const handler = require("pages/api/extension/wishlist/add");
     const httpMocks = require("node-mocks-http");
     const mockReq = httpMocks.createRequest({
       method: "POST",
@@ -113,8 +113,8 @@ describe("Add to Wishlist", () => {
     // Assert
     expect(log).toHaveBeenCalledTimes(1);
     expect(select).toHaveBeenCalledTimes(1);
-    expect(runMiddlewareUser).toHaveBeenCalledTimes(1);
     expect(update).toHaveBeenCalledTimes(1);
+    expect(runMiddlewareExtension).toHaveBeenCalledTimes(1);
     expect(mockRes.statusCode).toBe(500);
   });
 
@@ -124,7 +124,7 @@ describe("Add to Wishlist", () => {
     jest.doMock("lib/api/postgresql", () => ({
       select,
     }));
-    const handler = require("pages/api/wishlist/add");
+    const handler = require("pages/api/extension/wishlist/add");
     const httpMocks = require("node-mocks-http");
     const mockReq = httpMocks.createRequest({
       method: "GET",
@@ -143,7 +143,7 @@ describe("Add to Wishlist", () => {
 
     // Assert
     expect(log).toHaveBeenCalledTimes(1);
-    expect(runMiddlewareUser).toHaveBeenCalledTimes(1);
+    expect(runMiddlewareExtension).toHaveBeenCalledTimes(1);
     expect(select).toHaveBeenCalledTimes(0);
     expect(mockRes.statusCode).toBe(400);
   });
@@ -154,7 +154,7 @@ describe("Add to Wishlist", () => {
     jest.doMock("lib/api/postgresql", () => ({
       select,
     }));
-    const handler = require("pages/api/wishlist/add");
+    const handler = require("pages/api/extension/wishlist/add");
     const httpMocks = require("node-mocks-http");
     const mockReq = httpMocks.createRequest({
       method: "POST",
@@ -174,7 +174,7 @@ describe("Add to Wishlist", () => {
     // Assert
     expect(log).toHaveBeenCalledTimes(1);
     expect(select).toHaveBeenCalledTimes(0);
-    expect(runMiddlewareUser).toHaveBeenCalledTimes(1);
+    expect(runMiddlewareExtension).toHaveBeenCalledTimes(1);
     expect(mockRes.statusCode).toBe(400);
   });
 
@@ -184,7 +184,7 @@ describe("Add to Wishlist", () => {
     jest.doMock("lib/api/postgresql", () => ({
       select,
     }));
-    const handler = require("pages/api/wishlist/add");
+    const handler = require("pages/api/extension/wishlist/add");
     const httpMocks = require("node-mocks-http");
     const mockReq = httpMocks.createRequest({
       method: "POST",
@@ -204,7 +204,7 @@ describe("Add to Wishlist", () => {
     // Assert
     expect(log).toHaveBeenCalledTimes(1);
     expect(select).toHaveBeenCalledTimes(0);
-    expect(runMiddlewareUser).toHaveBeenCalledTimes(1);
+    expect(runMiddlewareExtension).toHaveBeenCalledTimes(1);
     expect(mockRes.statusCode).toBe(400);
   });
 
@@ -240,7 +240,7 @@ describe("Add to Wishlist", () => {
       select,
       update,
     }));
-    const handler = require("pages/api/wishlist/add");
+    const handler = require("pages/api/extension/wishlist/add");
     const httpMocks = require("node-mocks-http");
     const mockReq = httpMocks.createRequest({
       method: "POST",
@@ -260,8 +260,8 @@ describe("Add to Wishlist", () => {
     // Assert
     expect(log).toHaveBeenCalledTimes(0);
     expect(select).toHaveBeenCalledTimes(1);
-    expect(runMiddlewareUser).toHaveBeenCalledTimes(1);
     expect(update).toHaveBeenCalledTimes(1);
+    expect(runMiddlewareExtension).toHaveBeenCalledTimes(1);
     expect(mockRes.statusCode).toBe(204);
   });
 });

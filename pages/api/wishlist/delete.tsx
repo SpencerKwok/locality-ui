@@ -58,6 +58,15 @@ export default async function handler(
     });
     res.status(500).json({ error: "Internal server error" });
     return;
+  } else if (productIDs.rowCount !== 1) {
+    SumoLogic.log({
+      level: "error",
+      method: "wishlist/delete",
+      message: "Failed to SELECT from Heroku PSQL: User does not exist",
+      params: body,
+    });
+    res.status(500).json({ error: "Internal server error" });
+    return;
   }
 
   const wishlist = JSON.parse(productIDs.rows[0].wishlist);

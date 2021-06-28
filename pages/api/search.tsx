@@ -90,8 +90,15 @@ export default async function handler(
       SumoLogic.log({
         level: "warning",
         method: "search",
-        message: "Failed to fetch wishlist",
+        message: "Failed to SELECT from Heroku PSQL: Missing response",
         params: { user },
+      });
+    } else if (productIDs.rowCount !== 1) {
+      SumoLogic.log({
+        level: "error",
+        method: "search",
+        message: "Failed to SELECT from Heroku PSQL: User does not exist",
+        params: { headers: req.headers, query },
       });
     } else {
       wishlist = new Set(JSON.parse(productIDs.rows[0].wishlist));
