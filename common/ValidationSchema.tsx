@@ -396,5 +396,10 @@ export const SignInSchema = yup.object().shape({
     .email("Invalid email")
     .required("Required")
     .max(255, "Too long"),
-  password: yup.string().strict(true).required("Required").max(255, "Too long"),
+  password: yup
+    .string()
+    .strict(true)
+    .required("Required")
+    .min(8, "Too short")
+    .max(255, "Too long"),
 });

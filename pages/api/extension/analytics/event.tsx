@@ -1,7 +1,7 @@
 import Xss from "xss";
 
+import GoogleAnalytics from "lib/api/googleanalytics";
 import SumoLogic from "lib/api/sumologic";
-import { GOOGLE_ANALYTICS_API_SECRET, GOOGLE_MEASUREMENT_ID } from "lib/env";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -9,71 +9,63 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
-  if (req.method !== "GET") {
+  if (req.method !== "POST") {
     SumoLogic.log({
       level: "info",
       method: "extension/analytics/event",
       message: "Incorrect method",
     });
-    res.status(400).json({ error: "Must be GET method" });
+    res.status(400).json({ error: "Must be POST method" });
     return;
   }
 
-  // Redirect users immediately, users should
-  // not wait on analytics to complete
-  const redirectUrl: string = Xss(
-    decodeURIComponent((req.query["redirect_url"] as string) || "")
-  );
-  if (redirectUrl) {
-    res.redirect(redirectUrl);
-  } else {
-    SumoLogic.log({
-      level: "error",
-      method: "extension/analytics/event",
-      message: "Missing redirect url",
-      params: { query: req.query },
-    });
-    res.status(200).end();
-  }
+  // Requester shouldn't wait for analytics to complete
+  res.status(204).end();
 
   // If there are any issues with
   // the sent event, ignore it
-  const name: string = Xss(
-    decodeURIComponent((req.query["name"] as string) || "")
-  );
+  const name: string = Xss(decodeURIComponent(req.body.name ?? ""));
   if (!name) {
     SumoLogic.log({
       level: "warning",
       method: "extension/analytics/event",
       message: "Missing name in analytic event",
-      params: { query: req.query },
+      params: { body: req.body },
     });
     return;
   }
 
-  // Don't send name and redirect url to Google analytics
-  delete req.query.name;
-  delete req.query.redirect_url;
-  fetch(
-    `https://www.google-analytics.com/mp/collect?measurement_id=${GOOGLE_MEASUREMENT_ID}&api_secret=${GOOGLE_ANALYTICS_API_SECRET}`,
-    {
-      method: "POST",
-      body: JSON.stringify({
-        client_id: "extension",
-        events: [
-          {
-            name,
-            params: req.query,
-          },
-        ],
-      }),
+  // Don't send name to Google analytics as parameter
+  delete req.body.name;
+
+  // Remove any potential XSS attacks in the params
+  for (const k of Object.keys(req.body)) {
+    switch (typeof req.body[k]) {
+      case "string":
+        req.body[k] = Xss(req.body[k]);
+        break;
+      case "number":
+      case "boolean":
+        break;
+      default:
+        SumoLogic.log({
+          level: "warning",
+          method: "extension/analytics/event",
+          message: "Unrecognized param type",
+          params: { body: req.body },
+        });
+        delete req.body[k];
+        break;
     }
-  ).catch((err) => {
+  }
+
+  const error = await GoogleAnalytics.sendEvent(name, req.body);
+  if (error) {
     SumoLogic.log({
       level: "warning",
       method: "extension/analytics/event",
-      message: `Failed to send event to Google Analytics: ${err.message}`,
-      params: { query: req.query },
+      message: "Failed to send event to google analytics",
+      params: { body: req.body, error },
     });
-  });
+  }
 }

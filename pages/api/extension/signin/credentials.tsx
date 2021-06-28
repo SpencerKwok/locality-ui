@@ -58,7 +58,7 @@ export default async function handler(
       message: "Failed to SELECT from Heroku PSQL: Missing response",
       params: { body: reqBody },
     });
-    res.status(400).json({ error: "Invalid payload" });
+    res.status(500).json({ error: "Invalid payload" });
     return;
   } else if (user.rowCount !== 1) {
     SumoLogic.log({
@@ -93,7 +93,7 @@ export default async function handler(
       message: `Failed to DELETE from Heroku PSQL: ${deleteIdError.message}`,
       params: { body: reqBody },
     });
-    res.status(400).json({ error: "Invalid credentials" });
+    res.status(500).json({ error: "Invalid credentials" });
     return;
   }
 
