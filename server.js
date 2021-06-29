@@ -15,7 +15,7 @@ const { parse } = require("url");
 
 const shrinkRay = require("shrink-ray-current");
 
-const app = next({ dev: false });
+const app = next({ dev: !prod });
 const handle = app.getRequestHandler();
 
 const extensionOrigins = new Set([

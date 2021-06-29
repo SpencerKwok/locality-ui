@@ -601,12 +601,11 @@ const Dashboard: FC<DashboardProps> = ({
         id: businesses[businessIndex].id,
         departments: departments.map((value) => value.trim()),
       })
-      .then(({ departments, error }) => {
+      .then(({ error }) => {
         if (typeof error === "string" && error) {
           setUpdateDepartmentsStatus({ error, successful: false });
           return;
         }
-
         businesses[businessIndex].departments = departments;
         setUpdateDepartmentsStatus({ error: "", successful: true });
       })

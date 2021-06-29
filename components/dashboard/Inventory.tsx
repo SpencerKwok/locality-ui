@@ -25,7 +25,7 @@ import styles from "components/dashboard/Inventory.module.css";
 
 import type { ChangeEvent, FC } from "react";
 import type { FuseBaseProduct } from "./ProductGrid";
-import type { CSSObject } from "react-select/node_modules/@emotion/serialize";
+import type { CSSObject } from "@emotion/serialize";
 
 const BusinessList = dynamic(async () => import("./BusinessList"));
 

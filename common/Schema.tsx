@@ -151,9 +151,7 @@ export interface DepartmentsUpdateRequest {
   departments: Array<string>;
 }
 
-export interface DepartmentsUpdateResponse extends BaseResponse {
-  departments: Array<string>;
-}
+export interface DepartmentsUpdateResponse extends BaseResponse {}
 
 export interface DeleteFromWishListRequest {
   id: string;

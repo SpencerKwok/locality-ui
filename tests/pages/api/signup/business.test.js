@@ -1136,6 +1136,1130 @@ describe("Business signup", () => {
     expect(mockRes.statusCode).toBe(400);
   });
 
+  it("Invalid first name (string), invalid inputs, logged once + client error response", async () => {
+    // Arrange
+    const firstName = faker.random.alpha({ count: 256 });
+    const lastName = faker.name.lastName();
+    const businessName = faker.company.companyName();
+    const address = faker.address.streetAddress();
+    const city = faker.address.city();
+    const province = faker.address.state();
+    const country = faker.address.country();
+    const email = faker.internet.email();
+    const password = faker.internet.password();
+    const addSubscriber = jest.fn();
+    const getLatLng = jest.fn();
+    const insert = jest.fn();
+    const select = jest.fn();
+    jest.doMock("lib/api/mapquest", () => ({
+      getLatLng,
+    }));
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/business");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        firstName,
+        lastName,
+        email,
+        businessName,
+        address,
+        city,
+        province,
+        country,
+        password1: password,
+        password2: password,
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(getLatLng).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
+  it("Invalid last name (string), invalid inputs, logged once + client error response", async () => {
+    // Arrange
+    const firstName = faker.name.firstName();
+    const lastName = faker.random.alpha({ count: 256 });
+    const businessName = faker.company.companyName();
+    const address = faker.address.streetAddress();
+    const city = faker.address.city();
+    const province = faker.address.state();
+    const country = faker.address.country();
+    const email = faker.internet.email();
+    const password = faker.internet.password();
+    const addSubscriber = jest.fn();
+    const getLatLng = jest.fn();
+    const insert = jest.fn();
+    const select = jest.fn();
+    jest.doMock("lib/api/mapquest", () => ({
+      getLatLng,
+    }));
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/business");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        firstName,
+        lastName,
+        email,
+        businessName,
+        address,
+        city,
+        province,
+        country,
+        password1: password,
+        password2: password,
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(getLatLng).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
+  it("Invalid business name (string), invalid inputs, logged once + client error response", async () => {
+    // Arrange
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
+    const businessName = faker.random.alpha({ count: 256 });
+    const address = faker.address.streetAddress();
+    const city = faker.address.city();
+    const province = faker.address.state();
+    const country = faker.address.country();
+    const email = faker.internet.email();
+    const password = faker.internet.password();
+    const addSubscriber = jest.fn();
+    const getLatLng = jest.fn();
+    const insert = jest.fn();
+    const select = jest.fn();
+    jest.doMock("lib/api/mapquest", () => ({
+      getLatLng,
+    }));
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/business");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        firstName,
+        lastName,
+        email,
+        businessName,
+        address,
+        city,
+        province,
+        country,
+        password1: password,
+        password2: password,
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(getLatLng).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
+  it("Invalid address (string), invalid inputs, logged once + client error response", async () => {
+    // Arrange
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
+    const businessName = faker.company.companyName();
+    const address = `${faker.datatype.number()} ${faker.random.alpha({
+      count: 255,
+    })}`;
+    const city = faker.address.city();
+    const province = faker.address.state();
+    const country = faker.address.country();
+    const email = faker.internet.email();
+    const password = faker.internet.password();
+    const addSubscriber = jest.fn();
+    const getLatLng = jest.fn();
+    const insert = jest.fn();
+    const select = jest.fn();
+    jest.doMock("lib/api/mapquest", () => ({
+      getLatLng,
+    }));
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/business");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        firstName,
+        lastName,
+        email,
+        businessName,
+        address,
+        city,
+        province,
+        country,
+        password1: password,
+        password2: password,
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(getLatLng).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
+  it("Invalid city (string), valid inputs, logged once + client error response", async () => {
+    // Arrange
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
+    const businessName = faker.company.companyName();
+    const address = faker.address.streetAddress();
+    const city = faker.random.alphaNumeric({ count: 256 });
+    const province = faker.address.state();
+    const country = faker.address.country();
+    const email = faker.internet.email();
+    const password = faker.internet.password();
+    const addSubscriber = jest.fn();
+    const getLatLng = jest.fn();
+    const insert = jest.fn();
+    const select = jest.fn();
+    jest.doMock("lib/api/mapquest", () => ({
+      getLatLng,
+    }));
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/business");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        firstName,
+        lastName,
+        email,
+        businessName,
+        address,
+        city,
+        province,
+        country,
+        password1: password,
+        password2: password,
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(getLatLng).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
+  it("Invalid province (string), valid inputs, logged once + client error response", async () => {
+    // Arrange
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
+    const businessName = faker.company.companyName();
+    const address = faker.address.streetAddress();
+    const city = faker.address.city();
+    const province = faker.random.alphaNumeric({ count: 256 });
+    const country = faker.address.country();
+    const email = faker.internet.email();
+    const password = faker.internet.password();
+    const addSubscriber = jest.fn();
+    const getLatLng = jest.fn();
+    const insert = jest.fn();
+    const select = jest.fn();
+    jest.doMock("lib/api/mapquest", () => ({
+      getLatLng,
+    }));
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/business");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        firstName,
+        lastName,
+        email,
+        businessName,
+        address,
+        city,
+        province,
+        country,
+        password1: password,
+        password2: password,
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(getLatLng).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
+  it("Invalid country (string), valid inputs, logged once + client error response", async () => {
+    // Arrange
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
+    const businessName = faker.company.companyName();
+    const address = faker.address.streetAddress();
+    const city = faker.address.city();
+    const province = faker.address.state();
+    const country = faker.random.alphaNumeric({ count: 256 });
+    const email = faker.internet.email();
+    const password = faker.internet.password();
+    const addSubscriber = jest.fn();
+    const getLatLng = jest.fn();
+    const insert = jest.fn();
+    const select = jest.fn();
+    jest.doMock("lib/api/mapquest", () => ({
+      getLatLng,
+    }));
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/business");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        firstName,
+        lastName,
+        email,
+        businessName,
+        address,
+        city,
+        province,
+        country,
+        password1: password,
+        password2: password,
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(getLatLng).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
+  it("Invalid password (string), valid inputs, logged once + client error response", async () => {
+    // Arrange
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
+    const businessName = faker.company.companyName();
+    const address = faker.address.streetAddress();
+    const city = faker.address.city();
+    const province = faker.address.state();
+    const country = faker.address.country();
+    const email = faker.internet.email();
+    const password = faker.random.alphaNumeric({ count: 256 });
+    const addSubscriber = jest.fn();
+    const getLatLng = jest.fn();
+    const insert = jest.fn();
+    const select = jest.fn();
+    jest.doMock("lib/api/mapquest", () => ({
+      getLatLng,
+    }));
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/business");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        firstName,
+        lastName,
+        email,
+        businessName,
+        address,
+        city,
+        province,
+        country,
+        password1: password,
+        password2: password,
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(getLatLng).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
+  it("Invalid email (string), valid inputs, logged once + client error response", async () => {
+    // Arrange
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
+    const businessName = faker.company.companyName();
+    const address = faker.address.streetAddress();
+    const city = faker.address.city();
+    const province = faker.address.state();
+    const country = faker.address.country();
+    const email = faker.internet.email(faker.random.alpha({ count: 255 }));
+    const password = faker.internet.password();
+    const addSubscriber = jest.fn();
+    const getLatLng = jest.fn();
+    const insert = jest.fn();
+    const select = jest.fn();
+    jest.doMock("lib/api/mapquest", () => ({
+      getLatLng,
+    }));
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/business");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        firstName,
+        lastName,
+        email,
+        businessName,
+        address,
+        city,
+        province,
+        country,
+        password1: password,
+        password2: password,
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(getLatLng).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
+  it("Mismatched passwords (string), valid inputs, logged once + client error response", async () => {
+    // Arrange
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
+    const businessName = faker.company.companyName();
+    const address = faker.address.streetAddress();
+    const city = faker.address.city();
+    const province = faker.address.state();
+    const country = faker.address.country();
+    const email = faker.internet.email();
+    const addSubscriber = jest.fn();
+    const getLatLng = jest.fn();
+    const insert = jest.fn();
+    const select = jest.fn();
+    jest.doMock("lib/api/mapquest", () => ({
+      getLatLng,
+    }));
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/business");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        firstName,
+        lastName,
+        email,
+        businessName,
+        address,
+        city,
+        province,
+        country,
+        password1: faker.internet.password(15),
+        password2: faker.internet.password(13),
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(getLatLng).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
+  it("Missing first name, invalid inputs, logged once + client error response", async () => {
+    // Arrange
+    const lastName = faker.name.lastName();
+    const businessName = faker.company.companyName();
+    const address = faker.address.streetAddress();
+    const city = faker.address.city();
+    const province = faker.address.state();
+    const country = faker.address.country();
+    const email = faker.internet.email();
+    const password = faker.internet.password();
+    const addSubscriber = jest.fn();
+    const getLatLng = jest.fn();
+    const insert = jest.fn();
+    const select = jest.fn();
+    jest.doMock("lib/api/mapquest", () => ({
+      getLatLng,
+    }));
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/business");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        lastName,
+        email,
+        businessName,
+        address,
+        city,
+        province,
+        country,
+        password1: password,
+        password2: password,
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(getLatLng).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
+  it("Missing last name, invalid inputs, logged once + client error response", async () => {
+    // Arrange
+    const firstName = faker.name.firstName();
+    const businessName = faker.company.companyName();
+    const address = faker.address.streetAddress();
+    const city = faker.address.city();
+    const province = faker.address.state();
+    const country = faker.address.country();
+    const email = faker.internet.email();
+    const password = faker.internet.password();
+    const addSubscriber = jest.fn();
+    const getLatLng = jest.fn();
+    const insert = jest.fn();
+    const select = jest.fn();
+    jest.doMock("lib/api/mapquest", () => ({
+      getLatLng,
+    }));
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/business");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        firstName,
+        email,
+        businessName,
+        address,
+        city,
+        province,
+        country,
+        password1: password,
+        password2: password,
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(getLatLng).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
+  it("Missing business name invalid inputs, logged once + client error response", async () => {
+    // Arrange
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
+    const address = faker.address.streetAddress();
+    const city = faker.address.city();
+    const province = faker.address.state();
+    const country = faker.address.country();
+    const email = faker.internet.email();
+    const password = faker.internet.password();
+    const addSubscriber = jest.fn();
+    const getLatLng = jest.fn();
+    const insert = jest.fn();
+    const select = jest.fn();
+    jest.doMock("lib/api/mapquest", () => ({
+      getLatLng,
+    }));
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/business");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        firstName,
+        lastName,
+        email,
+        address,
+        city,
+        province,
+        country,
+        password1: password,
+        password2: password,
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(getLatLng).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
+  it("Missing address, invalid inputs, logged once + client error response", async () => {
+    // Arrange
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
+    const businessName = faker.company.companyName();
+    const city = faker.address.city();
+    const province = faker.address.state();
+    const country = faker.address.country();
+    const email = faker.internet.email();
+    const password = faker.internet.password();
+    const addSubscriber = jest.fn();
+    const getLatLng = jest.fn();
+    const insert = jest.fn();
+    const select = jest.fn();
+    jest.doMock("lib/api/mapquest", () => ({
+      getLatLng,
+    }));
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/business");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        firstName,
+        lastName,
+        email,
+        businessName,
+        city,
+        province,
+        country,
+        password1: password,
+        password2: password,
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(getLatLng).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
+  it("Missing city, valid inputs, logged once + client error response", async () => {
+    // Arrange
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
+    const businessName = faker.company.companyName();
+    const address = faker.address.streetAddress();
+    const province = faker.address.state();
+    const country = faker.address.country();
+    const email = faker.internet.email();
+    const password = faker.internet.password();
+    const addSubscriber = jest.fn();
+    const getLatLng = jest.fn();
+    const insert = jest.fn();
+    const select = jest.fn();
+    jest.doMock("lib/api/mapquest", () => ({
+      getLatLng,
+    }));
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/business");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        firstName,
+        lastName,
+        email,
+        businessName,
+        address,
+        province,
+        country,
+        password1: password,
+        password2: password,
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(getLatLng).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
+  it("Missing province, valid inputs, logged once + client error response", async () => {
+    // Arrange
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
+    const businessName = faker.company.companyName();
+    const address = faker.address.streetAddress();
+    const city = faker.address.city();
+    const country = faker.address.country();
+    const email = faker.internet.email();
+    const password = faker.internet.password();
+    const addSubscriber = jest.fn();
+    const getLatLng = jest.fn();
+    const insert = jest.fn();
+    const select = jest.fn();
+    jest.doMock("lib/api/mapquest", () => ({
+      getLatLng,
+    }));
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/business");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        firstName,
+        lastName,
+        email,
+        businessName,
+        address,
+        city,
+        country,
+        password1: password,
+        password2: password,
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(getLatLng).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
+  it("Missing country, valid inputs, logged once + client error response", async () => {
+    // Arrange
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
+    const businessName = faker.company.companyName();
+    const address = faker.address.streetAddress();
+    const city = faker.address.city();
+    const province = faker.address.state();
+    const email = faker.internet.email();
+    const password = faker.internet.password();
+    const addSubscriber = jest.fn();
+    const getLatLng = jest.fn();
+    const insert = jest.fn();
+    const select = jest.fn();
+    jest.doMock("lib/api/mapquest", () => ({
+      getLatLng,
+    }));
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/business");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        firstName,
+        lastName,
+        email,
+        businessName,
+        address,
+        city,
+        province,
+        password1: password,
+        password2: password,
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(getLatLng).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
+  it("Missing password, valid inputs, logged once + client error response", async () => {
+    // Arrange
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
+    const businessName = faker.company.companyName();
+    const address = faker.address.streetAddress();
+    const city = faker.address.city();
+    const province = faker.address.state();
+    const country = faker.address.country();
+    const email = faker.internet.email();
+    const addSubscriber = jest.fn();
+    const getLatLng = jest.fn();
+    const insert = jest.fn();
+    const select = jest.fn();
+    jest.doMock("lib/api/mapquest", () => ({
+      getLatLng,
+    }));
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/business");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        firstName,
+        lastName,
+        email,
+        businessName,
+        address,
+        city,
+        province,
+        country,
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(getLatLng).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
+  it("Missing email (string), valid inputs, logged once + client error response", async () => {
+    // Arrange
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
+    const businessName = faker.company.companyName();
+    const address = faker.address.streetAddress();
+    const city = faker.address.city();
+    const province = faker.address.state();
+    const country = faker.address.country();
+    const email = `${faker.random.alphaNumeric({ count: 255 })}@outlook.com`;
+    const password = faker.internet.password();
+    const addSubscriber = jest.fn();
+    const getLatLng = jest.fn();
+    const insert = jest.fn();
+    const select = jest.fn();
+    jest.doMock("lib/api/mapquest", () => ({
+      getLatLng,
+    }));
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/business");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        firstName,
+        lastName,
+        email,
+        businessName,
+        address,
+        city,
+        province,
+        country,
+        password1: password,
+        password2: password,
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(getLatLng).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
   it("XSS attack (in user data), valid inputs, valid response", async () => {
     // Arrange
     const firstName = `<script>window.onload = function() {var link=document.getElementsByTagName("a");link[0].href="${faker.internet.url()}";}</script>`;

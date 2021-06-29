@@ -26,7 +26,7 @@ import styles from "components/dashboard/Settings.module.css";
 import type { FC, ReactElement } from "react";
 import type { BaseBusiness } from "common/Schema";
 import type { FormikConfig } from "formik";
-import type { CSSObject } from "react-select/node_modules/@emotion/serialize";
+import type { CSSObject } from "@emotion/serialize";
 
 const BusinessList = dynamic(async () => import("./BusinessList"));
 

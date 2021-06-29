@@ -512,6 +512,186 @@ describe("User signup", () => {
     expect(mockRes.statusCode).toBe(204);
   });
 
+  it("Invalid first name (string), invalid inputs, logged once + client error response", async () => {
+    // Arrange
+    const firstName = faker.random.alpha({ count: 256 });
+    const lastName = faker.name.lastName();
+    const email = faker.internet.email();
+    const password = faker.internet.password();
+    const addSubscriber = jest.fn();
+    const select = jest.fn();
+    const insert = jest.fn();
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/user");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        firstName,
+        lastName,
+        email,
+        password1: password,
+        password2: password,
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
+  it("Invalid last name (string), invalid inputs, logged once + client error response", async () => {
+    // Arrange
+    const firstName = faker.name.firstName();
+    const lastName = faker.random.alpha({ count: 256 });
+    const email = faker.internet.email();
+    const password = faker.internet.password();
+    const addSubscriber = jest.fn();
+    const select = jest.fn();
+    const insert = jest.fn();
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/user");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        firstName,
+        lastName,
+        email,
+        password1: password,
+        password2: password,
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
+  it("Invalid email (string), invalid inputs, logged once + client error response", async () => {
+    // Arrange
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
+    const email = faker.internet.email(faker.random.alpha({ count: 255 }));
+    const password = faker.internet.password();
+    const addSubscriber = jest.fn();
+    const select = jest.fn();
+    const insert = jest.fn();
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/user");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        firstName,
+        lastName,
+        email,
+        password1: password,
+        password2: password,
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
+  it("Invalid password (string), invalid inputs, logged once + client error response", async () => {
+    // Arrange
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
+    const email = faker.internet.email();
+    const password = faker.internet.password(256);
+    const addSubscriber = jest.fn();
+    const select = jest.fn();
+    const insert = jest.fn();
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/user");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        firstName,
+        lastName,
+        email,
+        password1: password,
+        password2: password,
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
   it("Invalid method, valid inputs, logged once + client error response", async () => {
     // Arrange
     const password = faker.internet.password();
@@ -547,6 +727,221 @@ describe("User signup", () => {
     // Assert
     expect(log).toHaveBeenCalledTimes(1);
     expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
+  it("Mismatched passwords, invalid inputs, logged once + client error response", async () => {
+    // Arrange
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
+    const email = faker.internet.email();
+    const addSubscriber = jest.fn();
+    const select = jest.fn();
+    const insert = jest.fn();
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/user");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        firstName,
+        lastName,
+        email,
+        password1: faker.internet.password(12),
+        password2: faker.internet.password(11),
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
+  it("Missing first name, invalid inputs, logged once + client error response", async () => {
+    // Arrange
+    const lastName = faker.name.lastName();
+    const email = faker.internet.email();
+    const password = faker.internet.password();
+    const addSubscriber = jest.fn();
+    const select = jest.fn();
+    const insert = jest.fn();
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/user");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        lastName,
+        email,
+        password1: password,
+        password2: password,
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
+  it("Missing last name, invalid inputs, logged once + client error response", async () => {
+    // Arrange
+    const firstName = faker.name.firstName();
+    const email = faker.internet.email();
+    const password = faker.internet.password();
+    const addSubscriber = jest.fn();
+    const select = jest.fn();
+    const insert = jest.fn();
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/user");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        firstName,
+        email,
+        password1: password,
+        password2: password,
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
+  it("Missing password, invalid inputs, logged once + client error response", async () => {
+    // Arrange
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
+    const email = faker.internet.email();
+    const addSubscriber = jest.fn();
+    const select = jest.fn();
+    const insert = jest.fn();
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/user");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        firstName,
+        lastName,
+        email,
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(0);
+    expect(mockRes.statusCode).toBe(400);
+  });
+
+  it("Missing email, invalid inputs, logged once + client error response", async () => {
+    // Arrange
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
+    const password = faker.internet.password();
+    const addSubscriber = jest.fn();
+    const select = jest.fn();
+    const insert = jest.fn();
+    jest.doMock("lib/api/mailchimp", () => ({
+      addSubscriber,
+    }));
+    jest.doMock("lib/api/postgresql", () => ({
+      insert,
+      select,
+    }));
+    const handler = require("pages/api/signup/user");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        firstName,
+        lastName,
+        password1: password,
+        password2: password,
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(addSubscriber).toHaveBeenCalledTimes(0);
+    expect(insert).toHaveBeenCalledTimes(0);
     expect(select).toHaveBeenCalledTimes(0);
     expect(mockRes.statusCode).toBe(400);
   });

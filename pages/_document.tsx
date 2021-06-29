@@ -6,6 +6,7 @@ import Document, {
   Main,
   NextScript,
 } from "next/document";
+import Script from "next/script";
 import { ServerStyleSheet } from "styled-components";
 
 import { NODE_ENV } from "lib/env";
@@ -110,8 +111,8 @@ export default class MyDocument extends Document {
 
           <link rel="canonical" href="https://www.mylocality.shop" />
 
-          {prod && <script src="/js/hotjar.js" />}
-          {prod && <script src="/js/gtag.js" />}
+          {prod && <Script src="/js/hotjar.js" strategy="afterInteractive" />}
+          {prod && <Script src="/js/gtag.js" strategy="afterInteractive" />}
         </Head>
         <body>
           <noscript>
