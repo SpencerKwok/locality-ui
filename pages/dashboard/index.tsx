@@ -614,12 +614,11 @@ const Dashboard: FC<DashboardProps> = ({
       });
   };
 
-  const onSubmitHomepages = async ({
-    homepage,
-    etsyHomepage,
-    shopifyHomepage,
-    squareHomepage,
-  }: UpdateHomepagesRequest): Promise<void> => {
+  const onSubmitHomepages = async (
+    homepages: UpdateHomepagesRequest
+  ): Promise<void> => {
+    const { homepage, etsyHomepage, shopifyHomepage, squareHomepage } =
+      homepages;
     await PostRpcClient.getInstance()
       .call("HomepagesUpdate", {
         id: businesses[businessIndex].id,
@@ -628,12 +627,12 @@ const Dashboard: FC<DashboardProps> = ({
         shopifyHomepage,
         squareHomepage,
       })
-      .then((res) => {
-        if (typeof res.error === "string" && res.error) {
-          setUpdateHomepageStatus({ error: res.error, successful: false });
+      .then(({ error }) => {
+        if (typeof error === "string" && error) {
+          setUpdateHomepageStatus({ error, successful: false });
           return;
         }
-        businesses[businessIndex].homepages = res;
+        businesses[businessIndex].homepages = homepages;
         setUpdateHomepageStatus({ error: "", successful: true });
       })
       .catch((error) => {

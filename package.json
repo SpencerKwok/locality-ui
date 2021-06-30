@@ -18,7 +18,7 @@
     "license": "license-checker-rseidelsohn --summary --excludePrivatePackages --excludePackages ';sq-ecosystem;sq-native;'",
     "lint": "eslint --max-warnings 0 ./**/*.tsx ./**/*.ts *.js ./tests/**/*.js",
     "lint:fix": "npm run lint -- --fix",
-    "test": "jest"
+    "test": "jest --maxWorkers 4"
   },
   "repository": {
     "type": "git",

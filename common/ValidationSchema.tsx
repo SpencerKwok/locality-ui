@@ -80,7 +80,7 @@ export const BusinessSignUpSchema = yup.object().shape({
 });
 
 export const DepartmentsUpdateSchema = yup.object().shape({
-  departments: StringArrayValidator.optional(),
+  departments: StringArrayValidator.required("Required"),
 });
 
 export const HomepagesUpdateSchema = yup.object().shape({
@@ -92,9 +92,9 @@ export const HomepagesUpdateSchema = yup.object().shape({
       "EtsyFormat",
       "Must have the following format: etsy.com/shop/[SHOP_ID]",
       (page) => {
-        return (page?.length === 0 ||
+        return ((page?.length ?? 0) === 0 ||
           page?.match(
-            /^(http(s?):\/\/)?(www\.)?etsy\.com\/([^\/]+\/)*shop\/[a-zA-Z0-9_\-]+(\/?)(\?.*)*$/g
+            /^(http(s?):\/\/)?(www\.)?etsy\.com\/([a-zA-Z]+\/)*shop\/[a-zA-Z0-9_\-%']+(\/?)(\?.*)*$/g
           )) as boolean;
       }
     )

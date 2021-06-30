@@ -167,12 +167,7 @@ export interface HomepagesUpdateRequest {
   squareHomepage?: string;
 }
 
-export interface HomepagesUpdateResponse extends BaseResponse {
-  homepage: string;
-  etsyHomepage?: string;
-  shopifyHomepage?: string;
-  squareHomepage?: string;
-}
+export interface HomepagesUpdateResponse extends BaseResponse {}
 
 export interface LogoUpdateRequest {
   id: number;
