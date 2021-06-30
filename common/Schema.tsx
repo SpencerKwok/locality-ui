@@ -159,12 +159,15 @@ export interface DeleteFromWishListRequest {
 
 export type DeleteFromWishListResponse = BaseResponse;
 
-export interface HomepagesUpdateRequest {
-  id: number;
+export interface Homepages {
   homepage: string;
   etsyHomepage?: string;
   shopifyHomepage?: string;
   squareHomepage?: string;
+}
+
+export interface HomepagesUpdateRequest extends Homepages {
+  id: number;
 }
 
 export interface HomepagesUpdateResponse extends BaseResponse {}

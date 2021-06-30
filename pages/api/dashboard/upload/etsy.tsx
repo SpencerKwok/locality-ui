@@ -12,8 +12,8 @@ import type { NextApiResponse } from "next";
 import type { NextApiRequestWithLocals } from "lib/api/middleware";
 import type {
   BaseUploadTypeSettings,
+  Homepages,
   DatabaseProduct,
-  HomepagesUpdateResponse,
 } from "common/Schema";
 
 const currentUploadsRunning = new Set<number>();
@@ -77,9 +77,7 @@ export default async function handler(
   }
 
   let nextProductId = businessResponse.rows[0].next_product_id;
-  const homepages: HomepagesUpdateResponse = JSON.parse(
-    businessResponse.rows[0].homepages
-  );
+  const homepages: Homepages = JSON.parse(businessResponse.rows[0].homepages);
   const uploadSettings: BaseUploadTypeSettings =
     JSON.parse(businessResponse.rows[0].upload_settings).etsy ?? {};
   const includeTags: Set<string> = new Set(
