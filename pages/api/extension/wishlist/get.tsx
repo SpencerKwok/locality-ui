@@ -87,15 +87,16 @@ export default async function handler(
   }
 
   const results = Array<Product>();
-  for (let i = 0; i < wishlist.length; ++i) {
-    const product = products[i];
+  let wishlistIndex = 0;
+  for (const product of products) {
     if (product === null) {
       continue;
     }
     results.push({
       ...product,
-      variantIndex: wishlist[i].variantIndex,
+      variantIndex: wishlist[wishlistIndex].variantIndex,
     });
+    wishlistIndex += 1;
   }
 
   const body: WishListResponse = {

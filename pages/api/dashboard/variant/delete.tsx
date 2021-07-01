@@ -42,7 +42,7 @@ export default async function handler(
   const { id } = req.locals.user;
   const businessId = id === 0 ? reqBody.id : id;
   const productId = reqBody.product.id;
-  const variantIndex = reqBody.product.index;
+  const variantIndex = reqBody.product.variantIndex;
 
   const object = await Algolia.getObject(`${businessId}_${productId}`);
   if (!object) {

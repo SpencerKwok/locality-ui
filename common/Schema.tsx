@@ -341,14 +341,13 @@ export interface VariantAddRequest {
 
 export interface VariantAddResponse extends BaseResponse {
   variantImage: string;
-  variantTag: string;
 }
 
 export interface VariantUpdateRequest {
   id: number;
   product: {
     id: number;
-    index: number;
+    variantIndex: number;
     variantImage: string;
     variantTag: string;
   };
@@ -356,14 +355,13 @@ export interface VariantUpdateRequest {
 
 export interface VariantUpdateResponse extends BaseResponse {
   variantImage: string;
-  variantTag: string;
 }
 
 export interface VariantDeleteRequest {
   id: number;
   product: {
     id: number;
-    index: number;
+    variantIndex: number;
   };
 }
 

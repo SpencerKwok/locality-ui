@@ -209,6 +209,76 @@ describe("Update homepages", () => {
     expect(mockRes.statusCode).toBe(204);
   });
 
+  it("Ignore request id from non-admins, invalid inputs, valid response", async () => {
+    // Arrange
+    const homepages = {
+      homepage: faker.internet.url(),
+      etsyHomepage: `https://www.etsy.com/ca/shop/${encodeURIComponent(
+        faker.company.companyName()
+      )}`,
+      shopifyHomepage: faker.internet.url(),
+      squareHomepage: faker.internet.url(),
+    };
+    const resData = {
+      rowCount: 1,
+      rows: [
+        {
+          homepages: JSON.stringify({
+            homepage: faker.internet.url(),
+            etsyHomepage: faker.internet.url(),
+            shopifyHomepage: faker.internet.url(),
+            squareHomepage: faker.internet.url(),
+          }),
+        },
+      ],
+    };
+    const select = jest.fn().mockImplementation(async (params) => {
+      expect(params.table).toEqual("businesses");
+      expect(params.conditions).toEqual(`id=${userId}`);
+      return resData;
+    });
+    const update = jest.fn().mockImplementation(async (params) => {
+      expect(params.table).toEqual("businesses");
+      expect(params.conditions).toEqual(`id=${userId}`);
+      const obj = {};
+      Object.keys(homepages).map((k) => {
+        obj[k] = homepages[k].replace(/http(?!s)/g, "https");
+      });
+      expect(params.values).toContainEqual({
+        key: "homepages",
+        value: JSON.stringify(obj),
+      });
+      return null;
+    });
+    jest.doMock("lib/api/postgresql", () => ({
+      select,
+      update,
+    }));
+    const handler = require("pages/api/dashboard/homepages/update");
+    const httpMocks = require("node-mocks-http");
+    const mockReq = httpMocks.createRequest({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        charset: "utf-8",
+      },
+      body: {
+        id: faker.datatype.number(),
+        ...homepages,
+      },
+    });
+    const mockRes = httpMocks.createResponse();
+
+    // Act
+    void (await handler.default(mockReq, mockRes));
+
+    // Assert
+    expect(log).toHaveBeenCalledTimes(0);
+    expect(select).toHaveBeenCalledTimes(1);
+    expect(update).toHaveBeenCalledTimes(1);
+    expect(mockRes.statusCode).toBe(204);
+  });
+
   it("Invalid homepage type (number), invalid inputs, logged once + client error response", async () => {
     // Arrange
     const homepages = {
@@ -662,7 +732,7 @@ describe("Update homepages", () => {
       etsyHomepage: `https://www.etsy.com/ca/shop/${encodeURIComponent(
         faker.company.companyName()
       )}`,
-      shopifyHomepage: `${faker.internet.url()}/<script src=”${faker.internet.url()}”/></script>`,
+      shopifyHomepage: `${faker.internet.url()}/<script src=”${faker.internet.url()}”></script>`,
       squareHomepage: `www.google<script src=${faker.internet.url()}/>`,
     };
     const resData = {

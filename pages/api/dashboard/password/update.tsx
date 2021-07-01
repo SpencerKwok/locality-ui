@@ -74,6 +74,13 @@ export default async function handler(
   try {
     const result = await Bcrypt.compare(currentPassword, hashedPassword);
     if (!result) {
+      SumoLogic.log({
+        level: "warning",
+        method: "dashboard/password/update",
+        message:
+          "User attempted to change their password with invalid credentials",
+        params: { body: reqBody },
+      });
       res.status(403).json({ error: "Incorrect Password" });
       return;
     }

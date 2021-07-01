@@ -108,7 +108,12 @@ export const LogoUpdateSchema = yup.object().shape({
 });
 
 export const PasswordUpdateSchema = yup.object().shape({
-  currentPassword: yup.string().strict(true).required("Required"),
+  currentPassword: yup
+    .string()
+    .strict(true)
+    .required("Required")
+    .min(8, "Too short")
+    .max(255, "Too long"),
   newPassword1: yup
     .string()
     .required("Required")
@@ -284,7 +289,7 @@ export const VariantDeleteSchema = yup.object().shape({
       .required("Required")
       .integer("Must be integer")
       .min(0, "Must be non-negative"),
-    index: yup
+    variantIndex: yup
       .number()
       .required("Required")
       .integer("Must be integer")
@@ -304,7 +309,7 @@ export const VariantUpdateSchema = yup.object().shape({
       .required("Required")
       .integer("Must be integer")
       .min(0, "Must be non-negative"),
-    index: yup
+    variantIndex: yup
       .number()
       .required("Required")
       .integer("Must be integer")

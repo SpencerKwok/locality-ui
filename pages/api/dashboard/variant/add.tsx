@@ -108,8 +108,7 @@ export default async function handler(
   }
 
   const body: VariantAddResponse = {
-    variantImage: variantImage,
-    variantTag: variantTag,
+    variantImage: variantImageUrl,
   };
 
   res.status(200).json(body);

@@ -79,7 +79,7 @@ export interface ProductRequest {
 }
 
 export interface VariantRequest {
-  index: number;
+  variantIndex: number;
   variantTag: string;
   image: Base64;
   option: "add" | "delete" | "update";
@@ -114,7 +114,7 @@ const Inventory: FC<InventoryProps> = ({
   onUploadTypeChange,
 }) => {
   const [newVariant, setNewVariant] = useState<VariantRequest>({
-    index: -1,
+    variantIndex: -1,
     variantTag: "",
     image: "",
     option: "add",
@@ -720,7 +720,7 @@ const Inventory: FC<InventoryProps> = ({
                       enableReinitialize
                       initialValues={
                         {
-                          index: index + 1,
+                          variantIndex: index + 1,
                           variantTag: decode(variantTag),
                           image: product.variantImages[index + 1],
                           option: "update",

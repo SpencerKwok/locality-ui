@@ -465,7 +465,7 @@ const Dashboard: FC<DashboardProps> = ({
   };
 
   const onVariantSubmit = async ({
-    index,
+    variantIndex,
     variantTag,
     image,
     option,
@@ -481,7 +481,7 @@ const Dashboard: FC<DashboardProps> = ({
               variantTag,
             },
           })
-          .then(({ error, variantImage, variantTag }) => {
+          .then(({ error, variantImage }) => {
             if (typeof error === "string" && error) {
               setRequestStatus({ error, success: "" });
               return;
@@ -506,7 +506,7 @@ const Dashboard: FC<DashboardProps> = ({
             id: businesses[businessIndex].id,
             product: {
               id: parseInt(products[productIndex].objectId.split("_")[1]),
-              index: index,
+              variantIndex,
             },
           })
           .then(({ error }) => {
@@ -518,12 +518,12 @@ const Dashboard: FC<DashboardProps> = ({
             setProduct({
               ...product,
               variantImages: [
-                ...product.variantImages.slice(0, index),
-                ...product.variantImages.slice(index + 1),
+                ...product.variantImages.slice(0, variantIndex),
+                ...product.variantImages.slice(variantIndex + 1),
               ],
               variantTags: [
-                ...product.variantTags.slice(0, index),
-                ...product.variantTags.slice(index + 1),
+                ...product.variantTags.slice(0, variantIndex),
+                ...product.variantTags.slice(variantIndex + 1),
               ],
             });
             setRequestStatus({
@@ -541,12 +541,12 @@ const Dashboard: FC<DashboardProps> = ({
             id: businesses[businessIndex].id,
             product: {
               id: parseInt(products[productIndex].objectId.split("_")[1]),
-              index: index,
+              variantIndex,
               variantImage: image,
               variantTag,
             },
           })
-          .then(({ error, variantImage, variantTag }) => {
+          .then(({ error, variantImage }) => {
             if (typeof error === "string" && error) {
               setRequestStatus({ error, success: "" });
               return;
@@ -554,14 +554,14 @@ const Dashboard: FC<DashboardProps> = ({
             setProduct({
               ...product,
               variantImages: [
-                ...product.variantImages.slice(0, index),
+                ...product.variantImages.slice(0, variantIndex),
                 variantImage,
-                ...product.variantImages.slice(index + 1),
+                ...product.variantImages.slice(variantIndex + 1),
               ],
               variantTags: [
-                ...product.variantTags.slice(0, index),
+                ...product.variantTags.slice(0, variantIndex),
                 variantTag,
-                ...product.variantTags.slice(index + 1),
+                ...product.variantTags.slice(variantIndex + 1),
               ],
             });
             setRequestStatus({
