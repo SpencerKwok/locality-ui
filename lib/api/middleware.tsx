@@ -41,7 +41,7 @@ export async function runMiddlewareUser(
         SumoLogic.log({
           level: "warning",
           message: "Attempted user request with invalid credentials",
-          params: { req },
+          params: { headers: req.headers },
         });
         res.status(403).json({ error: "Invalid credentials" });
         return;
@@ -70,7 +70,7 @@ export async function runMiddlewareBusiness(
         SumoLogic.log({
           level: "warning",
           message: "Attempted business request with invalid credentials",
-          params: { req },
+          params: { headers: req.headers },
         });
         res.status(403).json({ error: "Invalid credentials" });
         return;
@@ -81,7 +81,7 @@ export async function runMiddlewareBusiness(
         SumoLogic.log({
           level: "warning",
           message: "Attempted business request with invalid credentials",
-          params: { req },
+          params: { headers: req.headers },
         });
         res.status(403).json({ error: "Invalid credentials" });
         return;
@@ -113,7 +113,7 @@ export async function runMiddlewareExtension(
         SumoLogic.log({
           level: "warning",
           message: "Attempted extension user request with invalid credentials",
-          params: { req },
+          params: { headers: req.headers },
         });
         res.status(403).json({ error: "Invalid credentials" });
         return;
@@ -132,7 +132,7 @@ export async function runMiddlewareExtension(
         SumoLogic.log({
           level: "warning",
           message: "Failed to SELECT from Heroku PSQL: Missing response",
-          params: { req },
+          params: { headers: req.headers },
         });
         res.status(403).json({ error: "Invalid credentials" });
         return;
@@ -141,7 +141,7 @@ export async function runMiddlewareExtension(
         SumoLogic.log({
           level: "warning",
           message: "Attempted extension user request with invalid credentials",
-          params: { req },
+          params: { headers: req.headers },
         });
         res.status(403).json({ error: "Invalid credentials" });
         return;

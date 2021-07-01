@@ -1,9 +1,9 @@
 const faker = require("faker");
 
-const userId = faker.datatype.number();
+const email = faker.internet.email();
 const log = jest.fn();
 const runMiddlewareUser = jest.fn().mockImplementation(async (req) => {
-  req.locals = { user: { id: userId } };
+  req.locals = { user: { email } };
 });
 describe("Get Wishlist", () => {
   beforeAll(() => {
@@ -28,7 +28,7 @@ describe("Get Wishlist", () => {
     const numObjects = faker.datatype.number({ min: 1, max: 5 });
     const select = jest.fn().mockImplementation(async (params) => {
       expect(params.table).toEqual("users");
-      expect(params.conditions).toEqual(`id=${userId}`);
+      expect(params.conditions).toEqual(`email=E'${email}'`);
       return null;
     });
     const getObjects = jest.fn();
@@ -75,7 +75,7 @@ describe("Get Wishlist", () => {
     const wishlist = objects.map((x, i) => `${x}_${variantIndices[i]}`);
     const select = jest.fn().mockImplementation(async (params) => {
       expect(params.table).toEqual("users");
-      expect(params.conditions).toEqual(`id=${userId}`);
+      expect(params.conditions).toEqual(`email=E'${email}'`);
       return {
         rowCount: 1,
         rows: [{ wishlist: JSON.stringify(wishlist) }],
@@ -221,7 +221,7 @@ describe("Get Wishlist", () => {
 
     const select = jest.fn().mockImplementation(async (params) => {
       expect(params.table).toEqual("users");
-      expect(params.conditions).toEqual(`id=${userId}`);
+      expect(params.conditions).toEqual(`email=E'${email}'`);
       return {
         rowCount: 1,
         rows: [{ wishlist: JSON.stringify(wishlist) }],
@@ -348,7 +348,7 @@ describe("Get Wishlist", () => {
 
     const select = jest.fn().mockImplementation(async (params) => {
       expect(params.table).toEqual("users");
-      expect(params.conditions).toEqual(`id=${userId}`);
+      expect(params.conditions).toEqual(`email=E'${email}'`);
       return {
         rowCount: 1,
         rows: [{ wishlist: JSON.stringify(wishlist) }],

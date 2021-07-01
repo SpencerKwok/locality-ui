@@ -25,20 +25,19 @@ export default async function handler(
     return;
   }
 
-  const { id } = req.locals.user;
+  const { email } = req.locals.user;
   const productIDs = await Psql.select<{
     wishlist: string;
   }>({
     table: "users",
     values: ["wishlist"],
-    conditions: SqlString.format("id=?", [id]),
+    conditions: SqlString.format("email=E?", [email]),
   });
   if (!productIDs) {
     SumoLogic.log({
       level: "error",
       method: "wishlist/get",
       message: "Failed to SELECT from Heroku PSQL: Empty response",
-      params: { req },
     });
     res.status(500).json({ error: "Internal server error" });
     return;
@@ -47,7 +46,6 @@ export default async function handler(
       level: "error",
       method: "wishlist/get",
       message: "Failed to SELECT from Heroku PSQL: User does not exist",
-      params: { req },
     });
     res.status(500).json({ error: "Internal server error" });
     return;
@@ -78,9 +76,8 @@ export default async function handler(
   if (!products) {
     SumoLogic.log({
       level: "error",
-      method: "wishlist/delete",
+      method: "wishlist/get",
       message: `Failed to get objects from Algolia Missing response`,
-      params: { req },
     });
     res.status(500).json({ error: "Internal server error" });
     return;

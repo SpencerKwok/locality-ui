@@ -38,7 +38,6 @@ export default async function handler(
       level: "error",
       method: "extension/wishlist/get",
       message: "Failed to SELECT from Heroku PSQL: Empty response",
-      params: { req },
     });
     res.status(500).json({ error: "Internal server error" });
     return;
@@ -47,7 +46,6 @@ export default async function handler(
       level: "error",
       method: "extension/wishlist/add",
       message: "Failed to SELECT from Heroku PSQL: User does not exist",
-      params: { req },
     });
     res.status(500).json({ error: "Internal server error" });
     return;
@@ -80,7 +78,6 @@ export default async function handler(
       level: "error",
       method: "extension/wishlist/get",
       message: `Failed to get objects from Algolia Missing response`,
-      params: { req },
     });
     res.status(500).json({ error: "Internal server error" });
     return;
