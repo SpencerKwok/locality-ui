@@ -1,3 +1,5 @@
+const faker = require("faker");
+
 const log = jest.fn();
 describe("Get departments", () => {
   beforeAll(() => {
@@ -16,6 +18,14 @@ describe("Get departments", () => {
 
   it("Health check, valid inputs, valid response", async () => {
     // Arrange
+    const departments = Array.from(
+      { length: faker.datatype.number({ min: 1, max: 100 }) },
+      () => faker.commerce.department()
+    );
+    const getTaxonomy = jest.fn().mockReturnValue(departments);
+    jest.doMock("lib/api/etsy", () => ({
+      getTaxonomy,
+    }));
     const handler = require("pages/api/departments/get");
     const httpMocks = require("node-mocks-http");
     const mockReq = httpMocks.createRequest({
@@ -37,14 +47,15 @@ describe("Get departments", () => {
     expect(log).toHaveBeenCalledTimes(0);
     expect(mockRes.statusCode).toBe(200);
     expect(Object.keys(actual)).toEqual(["departments"]);
-    expect(actual.departments).toBeInstanceOf(Array);
-    actual.departments.forEach((value) => {
-      expect(typeof value).toEqual("string");
-    });
+    expect(actual).toEqual({ departments });
   });
 
   it("Invalid method, valid inputs, logged once + client error response", async () => {
     // Arrange
+    const getTaxonomy = jest.fn();
+    jest.doMock("lib/api/etsy", () => ({
+      getTaxonomy,
+    }));
     const handler = require("pages/api/departments/get");
     const httpMocks = require("node-mocks-http");
     const mockReq = httpMocks.createRequest({
@@ -61,6 +72,7 @@ describe("Get departments", () => {
 
     // Assert
     expect(log).toHaveBeenCalledTimes(1);
+    expect(getTaxonomy).toHaveBeenCalledTimes(0);
     expect(mockRes.statusCode).toBe(400);
   });
 });
