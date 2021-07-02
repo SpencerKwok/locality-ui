@@ -70,20 +70,6 @@ export default async function handler(
     return;
   }
 
-  const deleteVariantImageError = await Cloudinary.deleteResources([
-    `${businessId}/${productId}/${variantIndex}`,
-  ]);
-  if (deleteVariantImageError !== null) {
-    SumoLogic.log({
-      level: "warning",
-      method: "dashboard/variant/delete",
-      message: `Failed to delete resources from Algolia: ${deleteVariantImageError.message}`,
-      params: { body: reqBody },
-    });
-    res.status(500).json({ error: "Internal server error" });
-    return;
-  }
-
   object.variantImages = [
     ...object.variantImages.slice(0, variantIndex),
     ...object.variantImages.slice(variantIndex + 1),
@@ -104,12 +90,27 @@ export default async function handler(
   if (uploadObjectError) {
     SumoLogic.log({
       level: "error",
-      method: "dashboard/variant/add",
+      method: "dashboard/variant/delete",
       message: `Failed to partial update object from Algolia: ${uploadObjectError.message}`,
       params: { body: reqBody },
     });
     res.status(500).json({ error: "Internal server error" });
     return;
+  }
+
+  // If we fail to delete the variant image, don't return an error.
+  // Having extra assets will still appear as a successful transaction
+  // on the client side
+  const deleteVariantImageError = await Cloudinary.deleteResources([
+    `${businessId}/${productId}/${variantIndex}`,
+  ]);
+  if (deleteVariantImageError !== null) {
+    SumoLogic.log({
+      level: "warning",
+      method: "dashboard/variant/delete",
+      message: `Failed to delete resources from Algolia: ${deleteVariantImageError.message}`,
+      params: { body: reqBody },
+    });
   }
 
   res.status(204).end();

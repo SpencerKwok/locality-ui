@@ -495,6 +495,7 @@ const Dashboard: FC<DashboardProps> = ({
               error: "",
               success: "Successfully added the variant!",
             });
+            setVariantTab(`${product.variantImages.length}`);
           })
           .catch((error) => {
             setRequestStatus({ error: error.message, success: "" });
@@ -530,6 +531,7 @@ const Dashboard: FC<DashboardProps> = ({
               error: "",
               success: "",
             });
+            setVariantTab("0");
           })
           .catch((error) => {
             setRequestStatus({ error: error.message, success: "" });
