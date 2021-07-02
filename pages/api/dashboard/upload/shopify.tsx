@@ -12,7 +12,7 @@ import type { NextApiResponse } from "next";
 import type { NextApiRequestWithLocals } from "lib/api/middleware";
 import type {
   DatabaseProduct,
-  HomepagesUpdateResponse,
+  Homepages,
   UploadTypeSettings,
 } from "common/Schema";
 
@@ -96,9 +96,7 @@ export default async function handler(
   }
 
   let nextProductId: number = businessResponse.rows[0].next_product_id;
-  const homepages: HomepagesUpdateResponse = JSON.parse(
-    businessResponse.rows[0].homepages
-  );
+  const homepages: Homepages = JSON.parse(businessResponse.rows[0].homepages);
   const uploadSettings: UploadTypeSettings =
     JSON.parse(businessResponse.rows[0].upload_settings).shopify ?? {};
   const includeTags = new Set<string>(

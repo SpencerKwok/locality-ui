@@ -6,7 +6,9 @@ const CommaListValidator = yup
   .max(255, "Too long")
   .matches(/^\s*[^,]*\s*(,(\s*[^,\s]\s*)+)*\s*$/g, "Must be a comma list");
 
-const StringArrayValidator = yup.array().of(yup.string().required("Required"));
+const StringArrayValidator = yup
+  .array()
+  .of(yup.string().strict(true).required("Required"));
 
 export const ContactSchema = yup.object().shape({
   email: yup
@@ -14,13 +16,17 @@ export const ContactSchema = yup.object().shape({
     .email("Invalid email address")
     .required("Required")
     .max(255, "Too long"),
-  name: yup.string().required("Required").max(255, "Too long"),
-  message: yup.string().required("Required").max(500, "Too long"),
+  name: yup.string().strict(true).required("Required").max(255, "Too long"),
+  message: yup.string().strict(true).required("Required").max(500, "Too long"),
 });
 
 export const UserSignUpSchema = yup.object().shape({
-  firstName: yup.string().required("Required").max(255, "Too long"),
-  lastName: yup.string().required("Required").max(255, "Too long"),
+  firstName: yup
+    .string()
+    .strict(true)
+    .required("Required")
+    .max(255, "Too long"),
+  lastName: yup.string().strict(true).required("Required").max(255, "Too long"),
   email: yup
     .string()
     .email("Invalid email address")
@@ -40,18 +46,26 @@ export const UserSignUpSchema = yup.object().shape({
 });
 
 export const BusinessSignUpSchema = yup.object().shape({
-  firstName: yup.string().required("Required").max(255, "Too long"),
-  lastName: yup.string().required("Required").max(255, "Too long"),
+  firstName: yup
+    .string()
+    .strict(true)
+    .required("Required")
+    .max(255, "Too long"),
+  lastName: yup.string().strict(true).required("Required").max(255, "Too long"),
   email: yup
     .string()
     .email("Invalid email address")
     .required("Required")
     .max(255, "Too long"),
-  businessName: yup.string().required("Required").max(255, "Too long"),
-  address: yup.string().required("Required").max(255, "Too long"),
-  city: yup.string().required("Required").max(255, "Too long"),
-  province: yup.string().required("Required").max(255, "Too long"),
-  country: yup.string().required("Required").max(255, "Too long"),
+  businessName: yup
+    .string()
+    .strict(true)
+    .required("Required")
+    .max(255, "Too long"),
+  address: yup.string().strict(true).required("Required").max(255, "Too long"),
+  city: yup.string().strict(true).required("Required").max(255, "Too long"),
+  province: yup.string().strict(true).required("Required").max(255, "Too long"),
+  country: yup.string().strict(true).required("Required").max(255, "Too long"),
   password1: yup
     .string()
     .required("Required")
@@ -66,11 +80,11 @@ export const BusinessSignUpSchema = yup.object().shape({
 });
 
 export const DepartmentsUpdateSchema = yup.object().shape({
-  departments: StringArrayValidator.optional(),
+  departments: StringArrayValidator.required("Required"),
 });
 
 export const HomepagesUpdateSchema = yup.object().shape({
-  homepage: yup.string().required("Required").max(255, "Too long"),
+  homepage: yup.string().strict(true).required("Required").max(255, "Too long"),
   etsyHomepage: yup
     .string()
     .optional()
@@ -78,23 +92,28 @@ export const HomepagesUpdateSchema = yup.object().shape({
       "EtsyFormat",
       "Must have the following format: etsy.com/shop/[SHOP_ID]",
       (page) => {
-        return (page?.length === 0 ||
+        return ((page?.length ?? 0) === 0 ||
           page?.match(
-            /^(http(s?):\/\/)?(www\.)?etsy\.com\/([^\/]+\/)*shop\/[a-zA-Z0-9_\-]+(\/?)(\?.*)*$/g
+            /^(http(s?):\/\/)?(www\.)?etsy\.com\/([a-zA-Z]+\/)*shop\/[a-zA-Z0-9_\-%']+(\/?)(\?.*)*$/g
           )) as boolean;
       }
     )
     .max(255, "Too long"),
-  shopifyHomepage: yup.string().optional().max(255, "Too long"),
-  squareHomepage: yup.string().optional().max(255, "Too long"),
+  shopifyHomepage: yup.string().strict(true).optional().max(255, "Too long"),
+  squareHomepage: yup.string().strict(true).optional().max(255, "Too long"),
 });
 
 export const LogoUpdateSchema = yup.object().shape({
-  logo: yup.string().required("Invalid image url or image file"),
+  logo: yup.string().strict(true).required("Invalid image url or image file"),
 });
 
 export const PasswordUpdateSchema = yup.object().shape({
-  currentPassword: yup.string().required("Required"),
+  currentPassword: yup
+    .string()
+    .strict(true)
+    .required("Required")
+    .min(8, "Too short")
+    .max(255, "Too long"),
   newPassword1: yup
     .string()
     .required("Required")
@@ -118,10 +137,10 @@ export const ProductAddSchema = yup.object().shape({
     .object()
     .required()
     .shape({
-      name: yup.string().required("Required").max(255, "Too long"),
+      name: yup.string().strict(true).required("Required").max(255, "Too long"),
       departments: StringArrayValidator.required("Required"),
-      description: yup.string().optional().max(2048, "Too long"),
-      link: yup.string().required("Required").max(255, "Too long"),
+      description: yup.string().strict(true).optional().max(2048, "Too long"),
+      link: yup.string().strict(true).required("Required").max(255, "Too long"),
       priceRange: yup
         .array()
         .of(yup.number().required("Required").min(0, "Must be non-negative"))
@@ -168,10 +187,10 @@ export const ProductUpdateSchema = yup.object().shape({
         .required("Required")
         .integer("Must be integer")
         .min(0, "Must be non-negative"),
-      name: yup.string().required("Required").max(255, "Too long"),
+      name: yup.string().strict(true).required("Required").max(255, "Too long"),
       departments: StringArrayValidator.required("Required"),
-      description: yup.string().optional().max(2048, "Too long"),
-      link: yup.string().required("Required").max(255, "Too long"),
+      description: yup.string().strict(true).optional().max(2048, "Too long"),
+      link: yup.string().strict(true).required("Required").max(255, "Too long"),
       priceRange: yup
         .array()
         .of(yup.number().required("Required").min(0, "Must be non-negative"))
@@ -186,15 +205,15 @@ export const ProductUpdateSchema = yup.object().shape({
 });
 
 export const ProductFormSchema = yup.object().shape({
-  name: yup.string().required("Required").max(255, "Too long"),
+  name: yup.string().strict(true).required("Required").max(255, "Too long"),
   tags: yup
     .string()
     .optional()
     .max(255, "Too long")
     .matches(/^\s*[^,]+\s*(,(\s*[^,\s]\s*)+)*\s*$/g, "Must be a comma list"),
-  variantTag: yup.string().optional().max(255, "Too long"),
+  variantTag: yup.string().strict(true).optional().max(255, "Too long"),
   departments: StringArrayValidator.required("Required"),
-  description: yup.string().optional().max(2048, "Too long"),
+  description: yup.string().strict(true).optional().max(2048, "Too long"),
   price: yup.mixed().when("isRange", {
     is: false,
     then: yup
@@ -234,8 +253,8 @@ export const ProductFormSchema = yup.object().shape({
       .max(255, "Too long")
       .matches(/^\s*[0-9]+(\.[0-9][0-9])?\s*$/g, "Invalid price"),
   }),
-  image: yup.string().required("Invalid image url or image file"),
-  link: yup.string().required("Required").max(255, "Too long"),
+  image: yup.string().strict(true).required("Invalid image url or image file"),
+  link: yup.string().strict(true).required("Required").max(255, "Too long"),
 });
 
 export const VariantAddSchema = yup.object().shape({
@@ -250,8 +269,11 @@ export const VariantAddSchema = yup.object().shape({
       .required("Required")
       .integer("Must be integer")
       .min(0, "Must be non-negative"),
-    variantImage: yup.string().required("Invalid image url or image file"),
-    variantTag: yup.string().required().max(255, "Too long"),
+    variantImage: yup
+      .string()
+      .strict(true)
+      .required("Invalid image url or image file"),
+    variantTag: yup.string().strict(true).required().max(255, "Too long"),
   }),
 });
 
@@ -267,7 +289,7 @@ export const VariantDeleteSchema = yup.object().shape({
       .required("Required")
       .integer("Must be integer")
       .min(0, "Must be non-negative"),
-    index: yup
+    variantIndex: yup
       .number()
       .required("Required")
       .integer("Must be integer")
@@ -287,13 +309,16 @@ export const VariantUpdateSchema = yup.object().shape({
       .required("Required")
       .integer("Must be integer")
       .min(0, "Must be non-negative"),
-    index: yup
+    variantIndex: yup
       .number()
       .required("Required")
       .integer("Must be integer")
       .min(0, "Must be non-negative"),
-    variantImage: yup.string().required("Invalid image url or image file"),
-    variantTag: yup.string().required().max(255, "Too long"),
+    variantImage: yup
+      .string()
+      .strict(true)
+      .required("Invalid image url or image file"),
+    variantTag: yup.string().strict(true).required().max(255, "Too long"),
   }),
 });
 
@@ -303,18 +328,24 @@ const departmentMappingSchema = yup
   .optional()
   .of(
     yup.object().shape({
-      key: yup.string().required(),
+      key: yup.string().strict(true).required(),
       departments: yup
         .array()
         .required()
-        .of(yup.string().required("Required").min(1, "Cannot be empty string"))
+        .of(
+          yup
+            .string()
+            .strict(true)
+            .required("Required")
+            .min(1, "Cannot be empty string")
+        )
         .length(1, "Cannot be empty array"),
     })
   );
 
 export const VariantFormSchema = yup.object().shape({
-  variantTag: yup.string().required().max(255, "Too long"),
-  image: yup.string().required("Invalid image url or image file"),
+  variantTag: yup.string().strict(true).required().max(255, "Too long"),
+  image: yup.string().strict(true).required("Invalid image url or image file"),
 });
 
 export const EtsyUpdateUploadSettingsSchema = yup.object().shape({
@@ -357,7 +388,11 @@ export const UpdateUploadSettingsSchema = yup.object().shape({
 });
 
 export const UploadSquareProductsSchema = yup.object().shape({
-  csv: yup.string().max(1000000, "File too large").required("Required"),
+  csv: yup
+    .string()
+    .strict(true)
+    .max(1000000, "File too large")
+    .required("Required"),
 });
 
 export const SignInSchema = yup.object().shape({
@@ -366,5 +401,10 @@ export const SignInSchema = yup.object().shape({
     .email("Invalid email")
     .required("Required")
     .max(255, "Too long"),
-  password: yup.string().required("Required").max(255, "Too long"),
+  password: yup
+    .string()
+    .strict(true)
+    .required("Required")
+    .min(8, "Too short")
+    .max(255, "Too long"),
 });

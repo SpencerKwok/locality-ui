@@ -465,7 +465,7 @@ const Dashboard: FC<DashboardProps> = ({
   };
 
   const onVariantSubmit = async ({
-    index,
+    variantIndex,
     variantTag,
     image,
     option,
@@ -481,7 +481,7 @@ const Dashboard: FC<DashboardProps> = ({
               variantTag,
             },
           })
-          .then(({ error, variantImage, variantTag }) => {
+          .then(({ error, variantImage }) => {
             if (typeof error === "string" && error) {
               setRequestStatus({ error, success: "" });
               return;
@@ -495,6 +495,7 @@ const Dashboard: FC<DashboardProps> = ({
               error: "",
               success: "Successfully added the variant!",
             });
+            setVariantTab(`${product.variantImages.length}`);
           })
           .catch((error) => {
             setRequestStatus({ error: error.message, success: "" });
@@ -506,7 +507,7 @@ const Dashboard: FC<DashboardProps> = ({
             id: businesses[businessIndex].id,
             product: {
               id: parseInt(products[productIndex].objectId.split("_")[1]),
-              index: index,
+              variantIndex,
             },
           })
           .then(({ error }) => {
@@ -518,18 +519,19 @@ const Dashboard: FC<DashboardProps> = ({
             setProduct({
               ...product,
               variantImages: [
-                ...product.variantImages.slice(0, index),
-                ...product.variantImages.slice(index + 1),
+                ...product.variantImages.slice(0, variantIndex),
+                ...product.variantImages.slice(variantIndex + 1),
               ],
               variantTags: [
-                ...product.variantTags.slice(0, index),
-                ...product.variantTags.slice(index + 1),
+                ...product.variantTags.slice(0, variantIndex),
+                ...product.variantTags.slice(variantIndex + 1),
               ],
             });
             setRequestStatus({
               error: "",
               success: "",
             });
+            setVariantTab("0");
           })
           .catch((error) => {
             setRequestStatus({ error: error.message, success: "" });
@@ -541,12 +543,12 @@ const Dashboard: FC<DashboardProps> = ({
             id: businesses[businessIndex].id,
             product: {
               id: parseInt(products[productIndex].objectId.split("_")[1]),
-              index: index,
+              variantIndex,
               variantImage: image,
               variantTag,
             },
           })
-          .then(({ error, variantImage, variantTag }) => {
+          .then(({ error, variantImage }) => {
             if (typeof error === "string" && error) {
               setRequestStatus({ error, success: "" });
               return;
@@ -554,14 +556,14 @@ const Dashboard: FC<DashboardProps> = ({
             setProduct({
               ...product,
               variantImages: [
-                ...product.variantImages.slice(0, index),
+                ...product.variantImages.slice(0, variantIndex),
                 variantImage,
-                ...product.variantImages.slice(index + 1),
+                ...product.variantImages.slice(variantIndex + 1),
               ],
               variantTags: [
-                ...product.variantTags.slice(0, index),
+                ...product.variantTags.slice(0, variantIndex),
                 variantTag,
-                ...product.variantTags.slice(index + 1),
+                ...product.variantTags.slice(variantIndex + 1),
               ],
             });
             setRequestStatus({
@@ -601,12 +603,11 @@ const Dashboard: FC<DashboardProps> = ({
         id: businesses[businessIndex].id,
         departments: departments.map((value) => value.trim()),
       })
-      .then(({ departments, error }) => {
+      .then(({ error }) => {
         if (typeof error === "string" && error) {
           setUpdateDepartmentsStatus({ error, successful: false });
           return;
         }
-
         businesses[businessIndex].departments = departments;
         setUpdateDepartmentsStatus({ error: "", successful: true });
       })
@@ -615,12 +616,11 @@ const Dashboard: FC<DashboardProps> = ({
       });
   };
 
-  const onSubmitHomepages = async ({
-    homepage,
-    etsyHomepage,
-    shopifyHomepage,
-    squareHomepage,
-  }: UpdateHomepagesRequest): Promise<void> => {
+  const onSubmitHomepages = async (
+    homepages: UpdateHomepagesRequest
+  ): Promise<void> => {
+    const { homepage, etsyHomepage, shopifyHomepage, squareHomepage } =
+      homepages;
     await PostRpcClient.getInstance()
       .call("HomepagesUpdate", {
         id: businesses[businessIndex].id,
@@ -629,12 +629,12 @@ const Dashboard: FC<DashboardProps> = ({
         shopifyHomepage,
         squareHomepage,
       })
-      .then((res) => {
-        if (typeof res.error === "string" && res.error) {
-          setUpdateHomepageStatus({ error: res.error, successful: false });
+      .then(({ error }) => {
+        if (typeof error === "string" && error) {
+          setUpdateHomepageStatus({ error, successful: false });
           return;
         }
-        businesses[businessIndex].homepages = res;
+        businesses[businessIndex].homepages = homepages;
         setUpdateHomepageStatus({ error: "", successful: true });
       })
       .catch((error) => {

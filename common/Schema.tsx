@@ -123,10 +123,6 @@ export interface UploadTypeSettings extends BaseUploadTypeSettings {
 export interface BaseBusiness {
   id: number;
   name: string;
-  address: string;
-  city: string;
-  province: string;
-  country: string;
   logo: string;
   departments: Array<string>;
   homepages: {
@@ -155,9 +151,7 @@ export interface DepartmentsUpdateRequest {
   departments: Array<string>;
 }
 
-export interface DepartmentsUpdateResponse extends BaseResponse {
-  departments: Array<string>;
-}
+export interface DepartmentsUpdateResponse extends BaseResponse {}
 
 export interface DeleteFromWishListRequest {
   id: string;
@@ -165,20 +159,18 @@ export interface DeleteFromWishListRequest {
 
 export type DeleteFromWishListResponse = BaseResponse;
 
-export interface HomepagesUpdateRequest {
-  id: number;
+export interface Homepages {
   homepage: string;
   etsyHomepage?: string;
   shopifyHomepage?: string;
   squareHomepage?: string;
 }
 
-export interface HomepagesUpdateResponse extends BaseResponse {
-  homepage: string;
-  etsyHomepage?: string;
-  shopifyHomepage?: string;
-  squareHomepage?: string;
+export interface HomepagesUpdateRequest extends Homepages {
+  id: number;
 }
+
+export interface HomepagesUpdateResponse extends BaseResponse {}
 
 export interface LogoUpdateRequest {
   id: number;
@@ -349,14 +341,13 @@ export interface VariantAddRequest {
 
 export interface VariantAddResponse extends BaseResponse {
   variantImage: string;
-  variantTag: string;
 }
 
 export interface VariantUpdateRequest {
   id: number;
   product: {
     id: number;
-    index: number;
+    variantIndex: number;
     variantImage: string;
     variantTag: string;
   };
@@ -364,14 +355,13 @@ export interface VariantUpdateRequest {
 
 export interface VariantUpdateResponse extends BaseResponse {
   variantImage: string;
-  variantTag: string;
 }
 
 export interface VariantDeleteRequest {
   id: number;
   product: {
     id: number;
-    index: number;
+    variantIndex: number;
   };
 }
 

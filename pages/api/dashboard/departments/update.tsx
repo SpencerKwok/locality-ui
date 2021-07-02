@@ -6,10 +6,7 @@ import SumoLogic from "lib/api/sumologic";
 import { runMiddlewareBusiness } from "lib/api/middleware";
 import { DepartmentsUpdateSchema } from "common/ValidationSchema";
 
-import type {
-  DepartmentsUpdateRequest,
-  DepartmentsUpdateResponse,
-} from "common/Schema";
+import type { DepartmentsUpdateRequest } from "common/Schema";
 import type { NextApiResponse } from "next";
 import type { NextApiRequestWithLocals } from "lib/api/middleware";
 
@@ -75,9 +72,5 @@ export default async function handler(
     return;
   }
 
-  const body: DepartmentsUpdateResponse = {
-    departments,
-  };
-
-  res.status(200).json(body);
+  res.status(204).end();
 }

@@ -23,8 +23,8 @@ import styles from "./Business.module.css";
 
 import type { FC } from "react";
 import type { FormikConfig } from "formik";
+import type { CSSObject } from "@emotion/serialize";
 import type { BaseBusiness } from "common/Schema";
-import { CSSObject } from "react-select/node_modules/@emotion/serialize";
 
 const BusinessList = dynamic(async () => import("./BusinessList"));
 const NewBusiness = dynamic(

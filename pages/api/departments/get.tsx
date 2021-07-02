@@ -1,31 +1,8 @@
-import { ETSY_API_KEY } from "lib/env";
+import Etsy from "lib/api/etsy";
 import SumoLogic from "lib/api/sumologic";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { DepartmentsResponse } from "common/Schema";
-
-type Tree = Array<{ name: string; children: Tree }>;
-const helper = (tree: Tree): Array<string> => {
-  if (tree.length === 0) {
-    return [];
-  }
-
-  let departments = Array<string>();
-  tree.forEach(({ name, children }) => {
-    departments.push(name);
-    departments = [...departments, ...helper(children)];
-  });
-
-  return Array.from(new Set(departments)).sort();
-};
-
-async function init(): Promise<Array<string>> {
-  return await fetch(
-    `http://openapi.etsy.com/v2/taxonomy/seller/get?api_key=${ETSY_API_KEY}`
-  )
-    .then(async (data) => data.json())
-    .then((tree) => helper(tree.results));
-}
 
 let departments: Array<string> = [];
 export default async function handler(
@@ -44,8 +21,9 @@ export default async function handler(
 
   if (departments.length <= 0) {
     try {
-      departments = await init();
+      departments = await Etsy.getTaxonomy();
     } catch (error: unknown) {
+      console.log(error);
       SumoLogic.log({
         level: "error",
         method: "departments/get",

@@ -1,0 +1,31 @@
+name: Lint
+
+on:
+  push:
+
+jobs:
+  run-lint:
+    name: Lint
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 15.8.0
+
+      - name: Get latest NPM version
+        run: npm install npm@latest -g
+
+      - name: Install Node.js dependencies
+        run: npm ci
+
+      - name: Run Lint
+        run: npm run lint

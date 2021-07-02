@@ -49,7 +49,8 @@ export default async function handler(
   const user = await Psql.select<{ id: number }>({
     table: "users",
     values: ["id"],
-    orderBy: "id DESC LIMIT 1",
+    orderBy: "id DESC",
+    limit: 1,
   });
   if (!user) {
     SumoLogic.log({
@@ -85,7 +86,7 @@ export default async function handler(
         "User attempted to sign up with an email that has already been used",
       params: { body: reqBody },
     });
-    res.status(500).json({ error: "Account already exists" });
+    res.status(400).json({ error: "Account already exists" });
     return;
   }
 
@@ -125,15 +126,16 @@ export default async function handler(
     MainListId
   );
 
+  // Don't respond with error on mailchimp subscription
+  // error, users should still be able to log in if a
+  // failure occured here
   if (mailchimpError) {
     SumoLogic.log({
       level: "error",
-      method: "signup/user",
+      method: "signup/business",
       message: `Failed to add subscriber to Mail Chimp: ${mailchimpError.message}`,
       params: user,
     });
-    res.status(500).json({ error: "Internal server error" });
-    return;
   }
 
   const uid: string = await uidgen.generate();
@@ -141,7 +143,7 @@ export default async function handler(
     table: "tokens",
     values: [
       { key: "token", value: uid },
-      { key: "id", value: user.rows[0].id },
+      { key: "id", value: userId },
     ],
   });
   if (insertTokenError) {

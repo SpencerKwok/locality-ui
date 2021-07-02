@@ -3,9 +3,6 @@ const withPWA = require("next-pwa");
 module.exports = withPWA({
   // Compression is done by the server
   compress: false,
-  future: {
-    webpack5: true,
-  },
   optimization: {
     runtimeChunk: "single",
     splitChunks: {

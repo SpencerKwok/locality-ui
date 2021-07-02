@@ -41,19 +41,28 @@ export default async function handler(
   }
   const objectId = body.id;
 
-  const { id } = req.locals.user;
+  const { email } = req.locals.user;
   const productIDs = await Psql.select<{
     wishlist: string;
   }>({
     table: "users",
     values: ["wishlist"],
-    conditions: SqlString.format("id=?", [id]),
+    conditions: SqlString.format("email=E?", [email]),
   });
   if (!productIDs) {
     SumoLogic.log({
       level: "error",
       method: "wishlist/delete",
       message: "Failed to SELECT from Heroku PSQL: Empty response",
+      params: body,
+    });
+    res.status(500).json({ error: "Internal server error" });
+    return;
+  } else if (productIDs.rowCount !== 1) {
+    SumoLogic.log({
+      level: "error",
+      method: "wishlist/delete",
+      message: "Failed to SELECT from Heroku PSQL: User does not exist",
       params: body,
     });
     res.status(500).json({ error: "Internal server error" });
@@ -67,7 +76,7 @@ export default async function handler(
   const removeProductIdError = await Psql.update({
     table: "users",
     values: [{ key: "wishlist", value: updatedWishlist }],
-    conditions: SqlString.format("id=?", [id]),
+    conditions: SqlString.format("email=E?", [email]),
   });
   if (removeProductIdError) {
     SumoLogic.log({

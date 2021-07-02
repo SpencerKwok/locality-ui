@@ -7,10 +7,7 @@ import { addHttpsProtocol } from "lib/api/dashboard";
 import { runMiddlewareBusiness } from "lib/api/middleware";
 import { HomepagesUpdateSchema } from "common/ValidationSchema";
 
-import type {
-  HomepagesUpdateRequest,
-  HomepagesUpdateResponse,
-} from "common/Schema";
+import type { HomepagesUpdateRequest } from "common/Schema";
 import type { NextApiResponse } from "next";
 import type { NextApiRequestWithLocals } from "lib/api/middleware";
 
@@ -64,11 +61,11 @@ export default async function handler(
       : "";
   const shopifyHomepage =
     typeof reqBody.shopifyHomepage === "string"
-      ? addHttpsProtocol(Xss(reqBody.shopifyHomepage))
+      ? addHttpsProtocol(Xss(reqBody.shopifyHomepage.replace(/\?.*$/g, "")))
       : "";
   const squareHomepage =
     typeof reqBody.squareHomepage === "string"
-      ? addHttpsProtocol(Xss(reqBody.squareHomepage))
+      ? addHttpsProtocol(Xss(reqBody.squareHomepage.replace(/\?.*$/g, "")))
       : "";
 
   const prevHomepages = await Psql.select<{
@@ -132,9 +129,5 @@ export default async function handler(
     return;
   }
 
-  const body: HomepagesUpdateResponse = {
-    ...homepages,
-  };
-
-  res.status(200).json(body);
+  res.status(204).end();
 }
