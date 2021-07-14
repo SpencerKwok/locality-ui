@@ -30,7 +30,7 @@ export default async function handler(
     "x-forwarded-for"?: string;
   } = req.headers as IncomingHttpHeaders & { "x-forwarded-for"?: string };
 
-  if (typeof query.q !== "string" || !query.q) {
+  if (typeof query.q !== "string") {
     SumoLogic.log({
       level: "warning",
       method: "search",
