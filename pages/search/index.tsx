@@ -32,7 +32,7 @@ async function fetcher(
 ): Promise<SearchResponse> {
   return GetRpcClient.getInstance().call("Search", url, {
     cookie,
-    "x-forwarded-for": ip,
+    //"x-forwarded-for": ip,
   });
 }
 
