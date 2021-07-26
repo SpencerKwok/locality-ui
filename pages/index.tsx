@@ -59,7 +59,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
   };
 };
 
-const Home: FC<HomeProps> = ({ businesses, session }) => {
+const Home: FC<HomeProps> = ({ session }) => {
   const { query } = useRouter();
   const size = useWindowSize();
   if (typeof size.width !== "number") {
@@ -69,11 +69,7 @@ const Home: FC<HomeProps> = ({ businesses, session }) => {
   const isNewUser = query.newUser === "true";
   return (
     <RootLayout session={session}>
-      <HomePage
-        businesses={businesses}
-        isNewUser={isNewUser}
-        width={size.width * 0.9}
-      />
+      <HomePage isNewUser={isNewUser} width={size.width} />
     </RootLayout>
   );
 };

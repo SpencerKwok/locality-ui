@@ -6,7 +6,7 @@ import { GetRpcClient, PostRpcClient } from "components/common/RpcClient";
 import SearchResultsDesktop from "components/search/SearchResultsDesktop";
 import SearchResultsMobile from "components/search/SearchResultsMobile";
 import RootLayout from "components/common/RootLayout";
-import { useMediaQuery } from "lib/common";
+import { useMediaQuery, useWindowSize } from "lib/common";
 
 import type { FC } from "react";
 import type { GetServerSideProps } from "next";
@@ -116,6 +116,7 @@ const Search: FC<SearchProps> = ({ query, results, session }) => {
   const [showAllDepartments, setShowAllDepartments] = useState(false);
   const [userInput, setUserInput] = useState(new UserInput(query));
   const router = useRouter();
+  const size = useWindowSize();
 
   const onReset = (): void => {
     const queryString = window.location.search;
@@ -139,7 +140,7 @@ const Search: FC<SearchProps> = ({ query, results, session }) => {
       });
   };
 
-  const isNarrow = useMediaQuery(42, "width");
+  const isNarrow = useMediaQuery(64, "width");
   const loggedIn = !(!session || !session.user);
 
   const onUserInputChange = (): void => {
@@ -272,6 +273,10 @@ const Search: FC<SearchProps> = ({ query, results, session }) => {
     }
   }, [data]);
 
+  if (typeof size.width !== "number") {
+    return <RootLayout session={session} />;
+  }
+
   return (
     <RootLayout session={session}>
       {isNarrow ? (
@@ -305,6 +310,7 @@ const Search: FC<SearchProps> = ({ query, results, session }) => {
             },
           }}
           userInput={userInput}
+          width={size.width}
           onUserInputChange={{
             business: createOnFacetClick("business"),
             departments: createOnFacetClick("departments"),

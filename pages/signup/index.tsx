@@ -1,9 +1,7 @@
 import { useRouter } from "next/router";
 
-import SignUpDesktop from "components/signup/SignupDesktop";
-import SignUpMobile from "components/signup/SignupMobile";
+import SignUpPage from "components/signup/Signup";
 import RootLayout from "components/common/RootLayout";
-import { useMediaQuery } from "lib/common";
 
 import type { FC } from "react";
 import type { Session } from "next-auth";
@@ -13,7 +11,6 @@ export interface SignUpProps {
 }
 
 const SignUp: FC<SignUpProps> = ({ session }) => {
-  const isNarrow = useMediaQuery(42, "width");
   const router = useRouter();
 
   if (session?.user) {
@@ -24,7 +21,7 @@ const SignUp: FC<SignUpProps> = ({ session }) => {
 
   return (
     <RootLayout session={session}>
-      {isNarrow ? <SignUpMobile /> : <SignUpDesktop />}
+      <SignUpPage />
     </RootLayout>
   );
 };

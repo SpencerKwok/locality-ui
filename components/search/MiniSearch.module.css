@@ -1,0 +1,16 @@
+.search {
+  border: 2px solid #112378;
+  box-sizing: border-box;
+  border-radius: 47px;
+  height: 41px;
+}
+
+.search-input {
+  background: none !important;
+  border: none !important;
+  outline: none !important;
+  border-radius: 47px;
+  height: 36px;
+  font-size: 13px;
+  margin-left: 16px;
+}

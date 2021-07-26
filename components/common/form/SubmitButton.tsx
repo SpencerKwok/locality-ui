@@ -1,6 +1,6 @@
 import { Fragment } from "react";
-import Button from "react-bootstrap/Button";
 
+import Button from "components/common/button/Button";
 import styles from "components/common/form/form.module.css";
 
 import type { FC } from "react";
@@ -23,6 +23,7 @@ const FormSubmitButton: FC<FormSubmitButtonProps> = ({
     <Button
       {...rest}
       className={styles.button}
+      variant="dark"
       type="submit"
       disabled={isSubmitting}
     >

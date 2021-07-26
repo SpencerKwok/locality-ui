@@ -1,10 +1,9 @@
-import NavigationDesktop from "components/common/navigation/NavigationDesktop";
-import NavigationMobile from "components/common/navigation/NavigationMobile";
+import Navigation from "components/common/navigation/Navigation";
+import Footer from "components/common/footer/Footer";
 import { useWindowSize } from "lib/common";
 
 import type { FC, ReactNode } from "react";
 import type { Session } from "next-auth";
-import type { NavigationType } from "components/common/navigation/NavigationProps";
 
 export interface RootLayoutProps {
   children?: ReactNode;
@@ -18,22 +17,11 @@ const RootLayout: FC<RootLayoutProps> = ({ children, session }) => {
     return null;
   }
 
-  let navigationType: NavigationType = "none";
-  let breakpoint = 680;
-  if (session?.user) {
-    const user: any = session.user;
-    navigationType = user.isBusiness === true ? "business" : "user";
-    breakpoint = user.isBusiness === true ? 800 : 680;
-  }
-
   return (
     <div>
-      {size.width <= breakpoint ? (
-        <NavigationMobile type={navigationType} />
-      ) : (
-        <NavigationDesktop type={navigationType} />
-      )}
-      <main style={{ marginTop: 24 }}>{children}</main>
+      <Navigation user={session?.user} width={size.width} />
+      <main>{children}</main>
+      <Footer width={size.width} />
     </div>
   );
 };

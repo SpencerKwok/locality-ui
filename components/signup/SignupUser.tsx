@@ -1,14 +1,14 @@
 import { Formik, FormikConfig } from "formik";
-import Form from "react-bootstrap/Form";
-import FormControl from "react-bootstrap/FormControl";
 
 import LocalityLogo from "components/common/images/LocalityLogo";
 import Stack from "components/common/Stack";
 import {
-  SubmitButton,
   ErrorMessage,
+  FormGroup,
   InputGroup,
+  Input,
   Label,
+  SubmitButton,
 } from "components/common/form";
 import { UserSignUpSchema } from "common/ValidationSchema";
 import styles from "./Signup.module.css";
@@ -30,7 +30,7 @@ export interface SignInProps {
 
 const Customer: FC<SignInProps> = ({ error, onSubmit }) => {
   return (
-    <Stack direction="row" columnAlign="center">
+    <Stack direction="row" columnAlign="center" style={{ margin: 24 }}>
       <Stack direction="column" rowAlign="center" style={{ width: 300 }}>
         <LocalityLogo width={200} style={{ padding: "12px 24px 24px 24px" }} />
         <Formik
@@ -53,11 +53,11 @@ const Customer: FC<SignInProps> = ({ error, onSubmit }) => {
             handleChange,
             handleSubmit,
           }): JSX.Element => (
-            <Form onSubmit={handleSubmit}>
-              <Form.Group>
+            <form onSubmit={handleSubmit}>
+              <FormGroup>
                 <Label required>First Name</Label>
                 <InputGroup>
-                  <FormControl
+                  <Input
                     aria-required
                     aria-label="First Name"
                     aria-details="Enter first name here"
@@ -70,11 +70,11 @@ const Customer: FC<SignInProps> = ({ error, onSubmit }) => {
                   />
                 </InputGroup>
                 <ErrorMessage name="firstName" />
-              </Form.Group>
-              <Form.Group>
+              </FormGroup>
+              <FormGroup>
                 <Label required>Last Name</Label>
                 <InputGroup>
-                  <FormControl
+                  <Input
                     aria-required
                     aria-label="Last Name"
                     aria-details="Enter last name here"
@@ -87,14 +87,14 @@ const Customer: FC<SignInProps> = ({ error, onSubmit }) => {
                   />
                 </InputGroup>
                 <ErrorMessage name="lastName" />
-              </Form.Group>
-              <Form.Group>
+              </FormGroup>
+              <FormGroup>
                 <Label required>Email</Label>
                 <InputGroup>
-                  <FormControl
+                  <Input
                     aria-required
                     aria-label="Email"
-                    aria-description="Enter email here"
+                    aria-details="Enter email here"
                     id="email"
                     onBlur={handleBlur}
                     onChange={handleChange}
@@ -104,14 +104,14 @@ const Customer: FC<SignInProps> = ({ error, onSubmit }) => {
                   />
                 </InputGroup>
                 <ErrorMessage name="email" />
-              </Form.Group>
-              <Form.Group>
+              </FormGroup>
+              <FormGroup>
                 <Label required>Password</Label>
                 <InputGroup>
-                  <FormControl
+                  <Input
                     aria-required
                     aria-label="Password"
-                    aria-description="Enter password here"
+                    aria-details="Enter password here"
                     id="password1"
                     onBlur={handleBlur}
                     onChange={handleChange}
@@ -121,14 +121,14 @@ const Customer: FC<SignInProps> = ({ error, onSubmit }) => {
                   />
                 </InputGroup>
                 <ErrorMessage name="password1" />
-              </Form.Group>
-              <Form.Group>
+              </FormGroup>
+              <FormGroup>
                 <Label required>Re-enter password</Label>
                 <InputGroup>
-                  <FormControl
+                  <Input
                     aria-required
                     aria-label="Re-enter Password"
-                    aria-description="Re-enter password here"
+                    aria-details="Re-enter password here"
                     id="password2"
                     onBlur={handleBlur}
                     onChange={handleChange}
@@ -138,7 +138,7 @@ const Customer: FC<SignInProps> = ({ error, onSubmit }) => {
                   />
                 </InputGroup>
                 <ErrorMessage name="password2" />
-              </Form.Group>
+              </FormGroup>
               <div className={styles.error}>{error}</div>
               <Stack direction="row-reverse">
                 <SubmitButton
@@ -147,7 +147,7 @@ const Customer: FC<SignInProps> = ({ error, onSubmit }) => {
                   isSubmitting={isSubmitting}
                 />
               </Stack>
-            </Form>
+            </form>
           )}
         </Formik>
       </Stack>

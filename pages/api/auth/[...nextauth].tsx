@@ -94,21 +94,13 @@ export default NextAuth({
           return {};
         }
 
-        if (businessData.rowCount === 1) {
-          return {
-            id: userData.rows[0].id,
-            email: email,
-            isBusiness: true,
-            firstName: userData.rows[0].first_name,
-            lastName: userData.rows[0].last_name,
-          };
-        } else {
-          return {
-            id: userData.rows[0].id,
-            email: email,
-            isBusiness: false,
-          };
-        }
+        return {
+          id: userData.rows[0].id,
+          email: email,
+          isBusiness: businessData.rowCount === 1,
+          firstName: userData.rows[0].first_name,
+          lastName: userData.rows[0].last_name,
+        };
       };
 
       if (typeof user?.email === "string" && user.email) {

@@ -45,6 +45,8 @@ export const UserSignUpSchema = yup.object().shape({
     .oneOf([yup.ref("password1")], "Passwords do not match"),
 });
 
+const phoneRegExp =
+  /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 export const BusinessSignUpSchema = yup.object().shape({
   firstName: yup
     .string()
@@ -57,26 +59,20 @@ export const BusinessSignUpSchema = yup.object().shape({
     .email("Invalid email address")
     .required("Required")
     .max(255, "Too long"),
+  phoneNumber: yup
+    .string()
+    .optional()
+    .matches(phoneRegExp, "Invalid phone number"),
   businessName: yup
     .string()
     .strict(true)
     .required("Required")
     .max(255, "Too long"),
-  address: yup.string().strict(true).required("Required").max(255, "Too long"),
-  city: yup.string().strict(true).required("Required").max(255, "Too long"),
-  province: yup.string().strict(true).required("Required").max(255, "Too long"),
-  country: yup.string().strict(true).required("Required").max(255, "Too long"),
-  password1: yup
+  businessHomepage: yup
     .string()
+    .strict(true)
     .required("Required")
-    .min(8, "Too short")
     .max(255, "Too long"),
-  password2: yup
-    .string()
-    .required("Required")
-    .min(8, "Too short")
-    .max(255, "Too long")
-    .oneOf([yup.ref("password1")], "New passwords do not match"),
 });
 
 export const DepartmentsUpdateSchema = yup.object().shape({

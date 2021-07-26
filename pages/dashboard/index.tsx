@@ -4,6 +4,7 @@ import { getSession } from "next-auth/client";
 import { useRouter } from "next/router";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 import AccountPage from "components/dashboard/Account";
 import BusinessPage from "components/dashboard/Business";
@@ -838,89 +839,91 @@ const Dashboard: FC<DashboardProps> = ({
   const lastName: string = user.lastName;
   return (
     <RootLayout session={session}>
-      <Tabs
-        defaultActiveKey={tab}
-        onSelect={(key): void => {
-          void router.replace(`/dashboard?tab=${key}`);
-          setTab(key ?? "inventory");
-        }}
-      >
-        <Tab className={styles.tab} eventKey="inventory" title="Inventory">
-          <InventoryPage
-            isNewItem={isNewItem}
-            businesses={businesses}
-            businessIndex={businessIndex}
-            departments={departments}
-            filter={filter}
-            products={
-              filter
-                ? productSearch.search(filter).map(({ item }) => item)
-                : products
-            }
-            productIndex={productIndex}
-            product={product}
-            requestStatus={requestStatus}
-            tab={variantTab}
-            uploadType={uploadStatus.uploadType}
-            uploadError={uploadStatus.error}
-            uploadOpen={uploadStatus.open}
-            uploadLoading={uploadStatus.loading}
-            uploadSuccessful={uploadStatus.successful}
-            height={size.height}
-            onAddProduct={onAddProduct}
-            onBusinessClick={onInventoryBusinessClick}
-            onFilterChange={onFilterChange}
-            onFilterClear={onFilterClear}
-            onProductClick={onProductClick}
-            onTabClick={(key): void => {
-              setRequestStatus({ error: "", success: "" });
-              setVariantTab(key);
-            }}
-            onUpload={onUpload}
-            onUploadTypeChange={onUploadTypeChange}
-            onProductSubmit={onProductSubmit}
-            onVariantSubmit={onVariantSubmit}
-          />
-        </Tab>
-        <Tab className={styles.tab} eventKey="business" title="Business">
-          <BusinessPage
-            isNewBusiness={isNewBusiness}
-            businesses={businesses}
-            businessIndex={businessIndex}
-            departments={departments}
-            updateDepartmentsStatus={updateDepartmentsStatus}
-            updateHomepagesStatus={updateHomepagesStatus}
-            updateLogoStatus={updateLogoStatus}
-            height={size.height}
-            onBusinessClick={onBusinessBusinessClick}
-            onSubmitDepartments={onSubmitDepartments}
-            onSubmitLogo={onSubmitLogo}
-            onSubmitHomepages={onSubmitHomepages}
-          />
-        </Tab>
-        <Tab className={styles.tab} eventKey="settings" title="Settings">
-          <SettingsPage
-            businesses={businesses}
-            businessIndex={businessIndex}
-            departments={departments}
-            updateUploadSettingsStatus={updateUploadSettingsStatus}
-            height={size.height}
-            onBusinessClick={onSettingsBusinessClick}
-            onSubmitEtsyUploadSettings={onSubmitEtsyUploadSettings}
-            onSubmitShopifyUploadSettings={onSubmitShopifyUploadSettings}
-            onSubmitSquareUploadSettings={onSubmitSquareUploadSettings}
-          />
-        </Tab>
-        <Tab className={styles.tab} eventKey="account" title="Account">
-          <AccountPage
-            error={updatePasswordStatus.error}
-            updatedPassword={updatePasswordStatus.updatedPassword}
-            firstName={firstName}
-            lastName={lastName}
-            onSubmitPassword={onSubmitPassword}
-          />
-        </Tab>
-      </Tabs>
+      <div style={{ margin: 12 }}>
+        <Tabs
+          defaultActiveKey={tab}
+          onSelect={(key): void => {
+            void router.replace(`/dashboard?tab=${key}`);
+            setTab(key ?? "inventory");
+          }}
+        >
+          <Tab className={styles.tab} eventKey="inventory" title="Inventory">
+            <InventoryPage
+              isNewItem={isNewItem}
+              businesses={businesses}
+              businessIndex={businessIndex}
+              departments={departments}
+              filter={filter}
+              products={
+                filter
+                  ? productSearch.search(filter).map(({ item }) => item)
+                  : products
+              }
+              productIndex={productIndex}
+              product={product}
+              requestStatus={requestStatus}
+              tab={variantTab}
+              uploadType={uploadStatus.uploadType}
+              uploadError={uploadStatus.error}
+              uploadOpen={uploadStatus.open}
+              uploadLoading={uploadStatus.loading}
+              uploadSuccessful={uploadStatus.successful}
+              height={size.height}
+              onAddProduct={onAddProduct}
+              onBusinessClick={onInventoryBusinessClick}
+              onFilterChange={onFilterChange}
+              onFilterClear={onFilterClear}
+              onProductClick={onProductClick}
+              onTabClick={(key): void => {
+                setRequestStatus({ error: "", success: "" });
+                setVariantTab(key);
+              }}
+              onUpload={onUpload}
+              onUploadTypeChange={onUploadTypeChange}
+              onProductSubmit={onProductSubmit}
+              onVariantSubmit={onVariantSubmit}
+            />
+          </Tab>
+          <Tab className={styles.tab} eventKey="business" title="Business">
+            <BusinessPage
+              isNewBusiness={isNewBusiness}
+              businesses={businesses}
+              businessIndex={businessIndex}
+              departments={departments}
+              updateDepartmentsStatus={updateDepartmentsStatus}
+              updateHomepagesStatus={updateHomepagesStatus}
+              updateLogoStatus={updateLogoStatus}
+              height={size.height}
+              onBusinessClick={onBusinessBusinessClick}
+              onSubmitDepartments={onSubmitDepartments}
+              onSubmitLogo={onSubmitLogo}
+              onSubmitHomepages={onSubmitHomepages}
+            />
+          </Tab>
+          <Tab className={styles.tab} eventKey="settings" title="Settings">
+            <SettingsPage
+              businesses={businesses}
+              businessIndex={businessIndex}
+              departments={departments}
+              updateUploadSettingsStatus={updateUploadSettingsStatus}
+              height={size.height}
+              onBusinessClick={onSettingsBusinessClick}
+              onSubmitEtsyUploadSettings={onSubmitEtsyUploadSettings}
+              onSubmitShopifyUploadSettings={onSubmitShopifyUploadSettings}
+              onSubmitSquareUploadSettings={onSubmitSquareUploadSettings}
+            />
+          </Tab>
+          <Tab className={styles.tab} eventKey="account" title="Account">
+            <AccountPage
+              error={updatePasswordStatus.error}
+              updatedPassword={updatePasswordStatus.updatedPassword}
+              firstName={firstName}
+              lastName={lastName}
+              onSubmitPassword={onSubmitPassword}
+            />
+          </Tab>
+        </Tabs>
+      </div>
     </RootLayout>
   );
 };

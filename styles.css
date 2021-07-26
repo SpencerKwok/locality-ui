@@ -1,0 +1,39 @@
+@font-face {
+  font-family: "HK Grotesk";
+  src: url("/fonts/hk-grotesk.woff2") format("woff2"),
+    url("/fonts/hk-grotesk.woff") format("woff"),
+    url("/fonts/hk-grotesk.ttf") format("truetype");
+}
+
+h1 {
+  font-size: 41.89px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 54.58px;
+  margin: 0;
+}
+
+h2 {
+  font-size: 25.89px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 33.73px;
+  margin: 0;
+}
+
+h3 {
+  font-family: HK Grotesk;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 21px;
+  margin: 0;
+}
+
+body {
+  font-family: "HK Grotesk", "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  margin: 0;
+  overflow-x: hidden;
+}

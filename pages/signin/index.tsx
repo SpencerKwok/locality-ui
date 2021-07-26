@@ -18,9 +18,9 @@ const Signin: FC<SignUpProps> = ({ session }) => {
   if (!error) {
     const urlParams = new URLSearchParams(window.location.search);
     const errorParam = urlParams.get("error");
-    if (typeof errorParam === "string" && !errorParam) {
+    if (typeof errorParam === "string" && errorParam) {
       setError(
-        "Account does not exist. Please sign up in the top right corner to continue."
+        "Account does not exist under that email. Please sign up to continue."
       );
     }
   }

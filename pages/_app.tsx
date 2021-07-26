@@ -2,7 +2,8 @@ import { Fragment, useEffect, useState } from "react";
 import { getSession } from "next-auth/client";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import "bootstrap/dist/css/bootstrap.min.css";
+import ThemeContext, { DefaultTheme } from "components/common/Theme";
+import "../styles.css";
 
 import type { AppProps } from "next/app";
 import type { Session } from "next-auth";
@@ -52,7 +53,9 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
         <title>Locality | Online Local Marketplace</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Component {...pageProps} session={session} />
+      <ThemeContext.Provider value={DefaultTheme}>
+        <Component {...pageProps} session={session} />
+      </ThemeContext.Provider>
     </Fragment>
   );
 };
