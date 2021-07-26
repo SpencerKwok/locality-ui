@@ -54,6 +54,8 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
               background: color.background.light,
               width: 1186,
               transform: `scale(${scale})`,
+              position: "relative",
+              zIndex: 1,
             }}
           >
             <Stack direction="row" spacing={29.75} rowAlign="center">
@@ -168,6 +170,7 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
                           style={{
                             border: "none",
                             background: "none",
+                            cursor: "pointer",
                           }}
                         >
                           <svg

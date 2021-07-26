@@ -45,7 +45,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
         <Stack
           direction="column"
           rowAlign="center"
-          style={{ width, position: "relative", zIndex: -1 }}
+          style={{ width, position: "relative", zIndex: 0 }}
         >
           {isNewUser && <NewUser />}
           <Stack
