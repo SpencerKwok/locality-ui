@@ -1,3 +1,9 @@
+.button {
+  border-radius: 11px;
+  cursor: pointer;
+  padding: 20px 24px;
+}
+
 .section {
   display: flex;
   justify-content: flex-start;
@@ -28,10 +34,4 @@
   box-shadow: 1px 1px 50px rgba(34, 34, 34, 0.1);
   backdrop-filter: blur(15px);
   border-radius: 21px;
-}
-
-.button {
-  border-radius: 11px;
-  cursor: pointer;
-  padding: 20px 24px;
 }

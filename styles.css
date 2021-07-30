@@ -5,6 +5,12 @@
     url("/fonts/hk-grotesk.ttf") format("truetype");
 }
 
+footer,
+nav,
+section {
+  display: flex;
+}
+
 h1 {
   font-size: 41.89px;
   font-style: normal;
@@ -35,5 +41,64 @@ body {
     "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   margin: 0;
-  overflow-x: hidden;
+}
+
+.top-left-column {
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.middle-left-column {
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.bottom-left-column {
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.top-middle-column {
+  align-items: center;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.middle-middle-column {
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.bottom-middle-column {
+  align-items: center;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.top-right-column {
+  align-items: flex-end;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.middle-right-column {
+  align-items: flex-end;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.bottom-right-column {
+  align-items: flex-end;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.middle-middle-row {
+  align-items: center;
+  flex-direction: row;
+  justify-content: center;
 }

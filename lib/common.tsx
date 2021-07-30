@@ -43,7 +43,7 @@ export function useWindowSize(): { height?: number; width?: number } {
   useEffect(() => {
     const handleResize = (): void => {
       setWindowSize({
-        width: document.body.clientWidth,
+        width: window.innerWidth,
         height: window.innerHeight,
       });
     };

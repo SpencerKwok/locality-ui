@@ -1,4 +1,5 @@
 import { forwardRef, useState } from "react";
+import styled from "styled-components";
 import { signOut } from "next-auth/client";
 import Link from "next/link";
 
@@ -16,6 +17,11 @@ export interface NavigationProps {
   width: number;
   user?: any;
 }
+
+// TODO: Make all divs flex
+const Div = styled.div`
+  display: flex;
+`;
 
 // LocalityLogo + ProfilePic is a functional component that
 // doesn't use ref so we leave it out using a wrapper
@@ -35,27 +41,27 @@ const ProfilePicWrapper = forwardRef<SVGSVGElement, SVGProps<SVGSVGElement>>(
 const Navigation: FC<NavigationProps> = ({ user, width }) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const scale = width / 1519;
+  const verticalScrollBarWidth =
+    window.innerWidth - window.visualViewport.width;
   return (
     <ThemeContext.Consumer>
       {({ color }): JSX.Element => (
-        <Stack
-          direction="column"
-          rowAlign="center"
-          columnAlign="center"
+        <Div
+          className="middle-middle-column"
           style={{
             background: color.background.light,
             height: 100 * scale,
-            width,
+            width: width - verticalScrollBarWidth,
           }}
         >
           <nav
             className={styles.nav}
             style={{
               background: color.background.light,
-              width: 1186,
-              transform: `scale(${scale})`,
+              width: 1268,
               position: "relative",
               zIndex: 1,
+              transform: `scale(${scale})`,
             }}
           >
             <Stack direction="row" spacing={29.75} rowAlign="center">
@@ -171,6 +177,7 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
                             border: "none",
                             background: "none",
                             cursor: "pointer",
+                            marginTop: 1,
                           }}
                         >
                           <svg
@@ -246,7 +253,7 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
               })()}
             </Stack>
           </nav>
-        </Stack>
+        </Div>
       )}
     </ThemeContext.Consumer>
   );
