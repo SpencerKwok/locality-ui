@@ -18,7 +18,10 @@ const RootLayout: FC<RootLayoutProps> = ({ children, session }) => {
   }
 
   return (
-    <div>
+    <div
+      className="top-middle-column"
+      style={{ display: "flex", width: size.width }}
+    >
       <Navigation user={session?.user} width={size.width} />
       <main>{children}</main>
       <Footer width={size.width} />

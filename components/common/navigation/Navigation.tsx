@@ -50,7 +50,6 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
             background: color.background.light,
             height: 100 * scale,
             width,
-            maxWidth: width,
           }}
         >
           <nav
