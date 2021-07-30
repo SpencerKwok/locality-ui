@@ -104,7 +104,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                 </Div>
                 <img
                   alt="Locality Extension Demo"
-                  src="images/locality-extension.png"
+                  src="images/locality-extension.jpg"
                   width={848 * 0.8}
                   height={676 * 0.8}
                   style={{
@@ -417,10 +417,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                   transform: `scale(${scale})`,
                 }}
               >
-                <h1
-                  className={styles.h1}
-                  style={{ color: color.text.dark, marginBottom: 65 }}
-                >
+                <h1 style={{ color: color.text.dark, marginBottom: 65 }}>
                   Meet the team
                 </h1>
                 <Stack

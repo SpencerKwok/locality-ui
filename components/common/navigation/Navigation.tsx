@@ -50,6 +50,7 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
             background: color.background.light,
             height: 100 * scale,
             width,
+            maxWidth: width,
           }}
         >
           <nav
@@ -62,8 +63,8 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
               transform: `scale(${scale})`,
             }}
           >
-            <Stack direction="row" spacing={29.75} rowAlign="center">
-              <div style={{ cursor: "pointer " }}>
+            <Div className="middle-middle-row">
+              <div style={{ cursor: "pointer", marginRight: 29.75 }}>
                 <Link href="/">
                   <LocalityLogoWrapper height={40} width={121.5} />
                 </Link>
@@ -92,9 +93,9 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
                   </span>
                 </Link>
               </Stack>
-            </Stack>
+            </Div>
             <div style={{ flexGrow: 1 }} />
-            <Stack direction="row" spacing={32}>
+            <Div className="middle-middle-row">
               {((): JSX.Element => {
                 if (user === undefined) {
                   return (
@@ -249,7 +250,7 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
                   );
                 }
               })()}
-            </Stack>
+            </Div>
           </nav>
         </Div>
       )}
