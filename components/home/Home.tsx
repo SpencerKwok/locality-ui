@@ -35,8 +35,6 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
   const [playSteps, setPlaySteps] = useState(true);
   const [howItWorksStep, setHowItWorksStep] = useState(1);
   const scale = width / 1519;
-  const verticalScrollBarWidth =
-    window.innerWidth - window.visualViewport.width;
   useEffect(() => {
     if (playSteps) {
       const intervalTimer = setInterval(() => {
@@ -60,7 +58,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
               style={{
                 background: color.background.light,
                 height: 800 * scale,
-                width: width - verticalScrollBarWidth,
+                width,
               }}
             >
               <Div
@@ -120,7 +118,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
               style={{
                 background: color.background.dark,
                 height: 800 * scale,
-                width: width - verticalScrollBarWidth,
+                width,
               }}
             >
               <Div
@@ -284,7 +282,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
               style={{
                 background: color.background.light,
                 height: 800 * scale,
-                width: width - verticalScrollBarWidth,
+                width,
               }}
             >
               <Div
@@ -355,7 +353,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
               style={{
                 background: color.background.dark,
                 height: 800 * scale,
-                width: width - verticalScrollBarWidth,
+                width,
               }}
             >
               <Div
@@ -410,7 +408,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
               style={{
                 background: color.background.light,
                 height: 800 * scale,
-                width: width - verticalScrollBarWidth,
+                width,
               }}
             >
               <Div

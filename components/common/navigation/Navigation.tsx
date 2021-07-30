@@ -41,8 +41,6 @@ const ProfilePicWrapper = forwardRef<SVGSVGElement, SVGProps<SVGSVGElement>>(
 const Navigation: FC<NavigationProps> = ({ user, width }) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const scale = width / 1519;
-  const verticalScrollBarWidth =
-    window.innerWidth - window.visualViewport.width;
   return (
     <ThemeContext.Consumer>
       {({ color }): JSX.Element => (
@@ -51,7 +49,7 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
           style={{
             background: color.background.light,
             height: 100 * scale,
-            width: width - verticalScrollBarWidth,
+            width,
           }}
         >
           <nav
