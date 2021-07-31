@@ -42,10 +42,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
     return (
       <Head>
         <title>Locality | Online Local Marketplace</title>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"
-        />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
     );
   }
@@ -54,10 +51,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
     <Fragment>
       <Head>
         <title>Locality | Online Local Marketplace</title>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"
-        />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <ThemeContext.Provider value={DefaultTheme}>
         <Component {...pageProps} session={session} />
