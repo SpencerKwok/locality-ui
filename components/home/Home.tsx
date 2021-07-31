@@ -234,6 +234,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                   <video
                     autoPlay
                     loop
+                    muted
                     className={styles["step-image"]}
                     style={{ width: 680, marginBottom: 24 }}
                     src="https://res.cloudinary.com/hcory49pf/video/upload/v1627699602/how-to-steps/all-steps.mp4"
