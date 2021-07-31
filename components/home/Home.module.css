@@ -23,15 +23,9 @@
 }
 
 .step-image {
-  height: 344px;
-  background: linear-gradient(
-    93.72deg,
-    rgba(255, 255, 255, 0.3657) 0.76%,
-    rgba(255, 255, 255, 0.212) 98.2%
-  );
   border: 0.5px solid rgba(255, 255, 255, 0.25);
   box-sizing: border-box;
-  box-shadow: 1px 1px 50px rgba(34, 34, 34, 0.1);
+  box-shadow: 0px 0px 24px rgba(34, 34, 34, 0.2);
   backdrop-filter: blur(15px);
   border-radius: 21px;
 }

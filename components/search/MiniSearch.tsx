@@ -1,5 +1,4 @@
 import { CSSProperties, useState } from "react";
-import { useRouter } from "next/router";
 
 import MagnifyingGlass from "components/common/images/MagnifyingGlass";
 import Stack from "components/common/Stack";
@@ -13,14 +12,10 @@ export interface MiniSearchProps {
 }
 
 const MiniSearch: FC<MiniSearchProps> = ({ style, width }) => {
-  const router = useRouter();
   const [query, setQuery] = useState("");
 
   const onEnter = (): void => {
-    void router.push({
-      pathname: "/search",
-      query: { q: encodeURIComponent(query) },
-    });
+    window.location.assign(`/search?q=${query}`);
   };
 
   return (
