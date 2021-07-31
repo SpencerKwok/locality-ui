@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import dynamic from "next/dynamic";
 import styled from "styled-components";
 import Link from "next/link";
@@ -100,14 +101,12 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                     <AddToChrome />
                   </button>
                 </Div>
-                <img
+                <Image
                   alt="Locality Extension Demo"
-                  src="images/locality-extension.jpg"
+                  layout="fixed"
+                  src="/images/locality-extension.jpg"
                   width={848 * 0.8}
                   height={676 * 0.8}
-                  style={{
-                    maxWidth: 848 * 0.8,
-                  }}
                 />
               </Div>
             </section>
