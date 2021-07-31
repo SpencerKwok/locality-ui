@@ -68,14 +68,6 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                 }}
               >
                 <Div className="middle-left-column">
-                  {((): number => {
-                    const viewportWidth = Math.max(
-                      document.documentElement.clientWidth,
-                      window.innerWidth || 0
-                    );
-                    const screenWidth = window.screen.width;
-                    return screenWidth / viewportWidth;
-                  })()}
                   <h1
                     style={{
                       color: color.text.dark,
