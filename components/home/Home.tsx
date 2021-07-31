@@ -5,6 +5,7 @@ import styled from "styled-components";
 import Link from "next/link";
 
 import AddToChrome from "components/common/images/AddToChrome";
+import LocalityExtensionDemo from "public/images/locality-extension.jpg";
 import StepArrow from "components/common/images/StepArrow";
 import MiniSearch from "components/search/MiniSearch";
 import ThemeContext from "components/common/Theme";
@@ -102,9 +103,12 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                   </button>
                 </Div>
                 <Image
+                  priority
                   alt="Locality Extension Demo"
                   layout="fixed"
-                  src="/images/locality-extension.jpg"
+                  loading="eager"
+                  placeholder="blur"
+                  src={LocalityExtensionDemo}
                   width={848 * 0.8}
                   height={676 * 0.8}
                 />
