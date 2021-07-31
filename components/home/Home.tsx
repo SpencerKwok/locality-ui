@@ -107,10 +107,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                   alt="Locality Extension Demo"
                   layout="fixed"
                   loading="eager"
-                  placeholder="blur"
                   src={LocalityExtensionDemo}
-                  width={848 * 0.8}
-                  height={676 * 0.8}
                 />
               </Div>
             </section>
