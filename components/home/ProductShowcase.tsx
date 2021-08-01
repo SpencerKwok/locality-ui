@@ -1,25 +1,14 @@
 import { useState } from "react";
-import dynamic from "next/dynamic";
+import Image from "next/image";
 
+import LocalGoodie1 from "public/images/home/local-goodie-1.jpg";
+import LocalGoodie2 from "public/images/home/local-goodie-2.jpg";
+import LocalGoodie3 from "public/images/home/local-goodie-3.jpg";
+import LocalGoodie4 from "public/images/home/local-goodie-4.jpg";
+import LocalGoodie5 from "public/images/home/local-goodie-5.jpg";
 import Stack from "components/common/Stack";
 
 import type { FC } from "react";
-
-const LocalGoodie1 = dynamic(
-  async () => import("components/common/images/home/LocalGoodie1")
-);
-const LocalGoodie2 = dynamic(
-  async () => import("components/common/images/home/LocalGoodie2")
-);
-const LocalGoodie3 = dynamic(
-  async () => import("components/common/images/home/LocalGoodie3")
-);
-const LocalGoodie4 = dynamic(
-  async () => import("components/common/images/home/LocalGoodie4")
-);
-const LocalGoodie5 = dynamic(
-  async () => import("components/common/images/home/LocalGoodie5")
-);
 
 interface ProductShowcaseProps {
   width: number;
@@ -50,7 +39,12 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
           rel="noopener noreferrer"
           style={{ textDecoration: "none", color: "#000000" }}
         >
-          <LocalGoodie1 />
+          <Image
+            alt="Local Goodie 1"
+            layout="fixed"
+            loading="eager"
+            src={LocalGoodie1}
+          />
           <h3>10 Snack Box</h3>
         </a>
         <a
@@ -60,7 +54,12 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
           rel="noopener noreferrer"
           style={{ textDecoration: "none", color: "#000000" }}
         >
-          <LocalGoodie2 />
+          <Image
+            alt="Local Goodie 2"
+            layout="fixed"
+            loading="eager"
+            src={LocalGoodie2}
+          />
           <h3>Herbal Bath Tea No 2: Ease</h3>
         </a>
         <a
@@ -70,7 +69,12 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
           rel="noopener noreferrer"
           style={{ textDecoration: "none", color: "#000000" }}
         >
-          <LocalGoodie3 />
+          <Image
+            alt="Local Goodie 3"
+            layout="fixed"
+            loading="eager"
+            src={LocalGoodie3}
+          />
           <h3>Bath and Body Aromatherapy Oil</h3>
         </a>
         <a
@@ -80,7 +84,12 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
           rel="noopener noreferrer"
           style={{ textDecoration: "none", color: "#000000" }}
         >
-          <LocalGoodie4 />
+          <Image
+            alt="Local Goodie 4"
+            layout="fixed"
+            loading="eager"
+            src={LocalGoodie4}
+          />
           <h3>Chonky (Sharky) Printed T-Shirt</h3>
         </a>
         <a
@@ -90,7 +99,12 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
           rel="noopener noreferrer"
           style={{ textDecoration: "none", color: "#000000" }}
         >
-          <LocalGoodie5 />
+          <Image
+            alt="Local Goodie 5"
+            layout="fixed"
+            loading="eager"
+            src={LocalGoodie5}
+          />
           <h3>12-pack Custom Assorted Case</h3>
         </a>
       </Stack>
