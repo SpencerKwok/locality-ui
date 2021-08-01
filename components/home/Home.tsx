@@ -5,7 +5,7 @@ import styled from "styled-components";
 import Link from "next/link";
 
 import AddToChrome from "components/common/images/AddToChrome";
-import LocalityExtensionDemo from "public/images/locality-extension.jpg";
+import LocalityExtensionDemo from "public/images/home/locality-extension.jpg";
 import StepArrow from "components/common/images/StepArrow";
 import MiniSearch from "components/search/MiniSearch";
 import ThemeContext from "components/common/Theme";
@@ -20,8 +20,8 @@ const Div = styled.div`
   display: flex;
 `;
 
-const ExploreLocalGoodiesPlaceholder = dynamic(
-  async () => import("components/common/images/ExploreLocalGoodiesPlaceholder")
+const ExploreLocalGoodies = dynamic(
+  async () => import("components/home/ProductShowcase")
 );
 const OurPartnersPlaceholder = dynamic(
   async () => import("components/common/images/OurPartnersPlaceholder")
@@ -328,7 +328,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                     </Div>
                   </Div>
                 </Div>
-                <ExploreLocalGoodiesPlaceholder width={1268} />
+                <ExploreLocalGoodies width={1268} />
               </Div>
             </section>
             <section

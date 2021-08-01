@@ -12,7 +12,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "node server.js",
-    "svg": "svgr --typescript -d components/common/images public/images",
+    "svg": "svgr --typescript -d components/common/images public/images && svgr --typescript -d components/common/images/home public/images/home",
     "format": "prettier --check ./**/*.tsx ./**/*.ts *.js ./tests/**/*.js",
     "format:fix": "prettier --write ./**/*.tsx ./**/*.ts *.js ./tests/**/*.js",
     "license": "license-checker-rseidelsohn --summary --excludePrivatePackages --excludePackages ';sq-ecosystem;sq-native;'",
