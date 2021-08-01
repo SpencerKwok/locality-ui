@@ -18,9 +18,9 @@ module.exports = withPWA({
   poweredByHeader: false,
   pwa: {
     dest: "public",
-    disable: process.env.NODE_ENV !== "production",
+    disable: true, //process.env.NODE_ENV !== "production",
     runtimeCaching: [],
-    dynamicStartUrl: false,
+    dynamicStartUrl: true,
   },
   reactStrictMode: true,
   headers: async () => {
