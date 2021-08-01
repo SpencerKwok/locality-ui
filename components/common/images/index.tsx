@@ -1,7 +1,6 @@
 export { default as AddToChrome } from './AddToChrome'
 export { default as Arrow } from './Arrow'
 export { default as Delete } from './Delete'
-export { default as ExploreLocalGoodiesPlaceholder } from './ExploreLocalGoodiesPlaceholder'
 export { default as FacebookLogo } from './FacebookLogo'
 export { default as GoogleLogo } from './GoogleLogo'
 export { default as HeartFilled } from './HeartFilled'

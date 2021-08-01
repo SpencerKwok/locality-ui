@@ -1,5 +1,0 @@
-export { default as LocalGoodie1 } from './LocalGoodie1'
-export { default as LocalGoodie2 } from './LocalGoodie2'
-export { default as LocalGoodie3 } from './LocalGoodie3'
-export { default as LocalGoodie4 } from './LocalGoodie4'
-export { default as LocalGoodie5 } from './LocalGoodie5'
