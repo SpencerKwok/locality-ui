@@ -42,7 +42,7 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
           <Image
             alt="Local Goodie 1"
             layout="fixed"
-            loading="eager"
+            loading="lazy"
             src={LocalGoodie1}
           />
           <h3>10 Snack Box</h3>
@@ -57,7 +57,7 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
           <Image
             alt="Local Goodie 2"
             layout="fixed"
-            loading="eager"
+            loading="lazy"
             src={LocalGoodie2}
           />
           <h3>Herbal Bath Tea No 2: Ease</h3>
@@ -72,7 +72,7 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
           <Image
             alt="Local Goodie 3"
             layout="fixed"
-            loading="eager"
+            loading="lazy"
             src={LocalGoodie3}
           />
           <h3>Bath and Body Aromatherapy Oil</h3>
@@ -87,7 +87,7 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
           <Image
             alt="Local Goodie 4"
             layout="fixed"
-            loading="eager"
+            loading="lazy"
             src={LocalGoodie4}
           />
           <h3>Chonky (Sharky) Printed T-Shirt</h3>
@@ -102,7 +102,7 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
           <Image
             alt="Local Goodie 5"
             layout="fixed"
-            loading="eager"
+            loading="lazy"
             src={LocalGoodie5}
           />
           <h3>12-pack Custom Assorted Case</h3>

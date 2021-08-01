@@ -23,8 +23,8 @@ const Div = styled.div`
 const ExploreLocalGoodies = dynamic(
   async () => import("components/home/ProductShowcase")
 );
-const OurPartnersPlaceholder = dynamic(
-  async () => import("components/common/images/OurPartnersPlaceholder")
+const OurPartners = dynamic(
+  async () => import("components/home/PartnersShowcase")
 );
 const NewUser = dynamic(async () => import("components/common/popups/NewUser"));
 
@@ -284,7 +284,6 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                   </h1>
                   <Div style={{ width: 1268 }}>
                     <h3
-                      className={styles.h3}
                       style={{
                         color: color.text.dark,
                         paddingLeft: 3,
@@ -302,7 +301,6 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                         style={{ marginRight: 32 }}
                       >
                         <h3
-                          className={styles.h3}
                           style={{
                             color: color.text.dark,
                             fontWeight: 700,
@@ -335,7 +333,6 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
               id="partners"
               className="middle-middle-column"
               style={{
-                background: color.background.dark,
                 height: 800 * scale,
                 width,
               }}
@@ -367,10 +364,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                     costs and minimal risks.
                   </h3>
                 </Stack>
-                <OurPartnersPlaceholder
-                  width={1268}
-                  style={{ marginBottom: 64 }}
-                />
+                <OurPartners style={{ marginBottom: 64 }} />
                 <Link href="/signup/business">
                   <button
                     style={{
