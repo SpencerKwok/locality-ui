@@ -1,3 +1,6 @@
+export { default as OurMission } from './OurMission'
+export { default as OurPurpose } from './OurPurpose'
+export { default as OurVision } from './OurVision'
 export { default as Partner11 } from './Partner11'
 export { default as Partner12 } from './Partner12'
 export { default as Partner13 } from './Partner13'

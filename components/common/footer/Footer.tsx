@@ -1,3 +1,5 @@
+import RoseHand from "public/images/home/rose-hand.jpg";
+import Image from "next/image";
 import styled from "styled-components";
 
 import FacebookLogo from "components/common/images/FacebookLogo";
@@ -40,35 +42,57 @@ const Footer: FC<FooterProps> = ({ width }) => {
             >
               <Stack direction="column" spacing={11}>
                 <h1
-                  className={styles.h1}
+                  className={styles.bold}
                   style={{ color: color.text.dark, width: 735 }}
                 >
                   Support your community and create positive change with your
                   purchase.
                 </h1>
-                <h2 className={styles.h2} style={{ color: color.text.dark }}>
+                <h2 style={{ color: color.text.dark }}>
                   Try us for free on the Chrome store.
                 </h2>
               </Stack>
               <div />
-              <button
-                onClick={(): void => {
-                  window.open(
-                    "https://chrome.google.com/webstore/detail/locality-local-shopping-m/cklipomamlgjpmihfhfdjmlhnbadnedl",
-                    "_blank"
-                  );
-                }}
-                style={{
-                  background: color.text.dark,
-                  borderRadius: 11,
-                  border: "none",
-                  color: color.text.light,
-                  cursor: "pointer",
-                  padding: "20px 24px",
-                }}
+              <Stack
+                direction="row"
+                columnAlign="center"
+                rowAlign="center"
+                spacing={22}
+                style={{ marginBottom: 72 }}
               >
-                Add to Chrome
-              </button>
+                <button
+                  onClick={(): void => {
+                    window.open(
+                      "https://chrome.google.com/webstore/detail/locality-local-shopping-m/cklipomamlgjpmihfhfdjmlhnbadnedl",
+                      "_blank"
+                    );
+                  }}
+                  style={{
+                    background: color.text.dark,
+                    borderRadius: 11,
+                    border: "none",
+                    color: color.text.light,
+                    cursor: "pointer",
+                    padding: "20px 24px",
+                  }}
+                >
+                  Add to Chrome
+                </button>
+                <div
+                  style={{
+                    height: 200,
+                    marginTop: 70,
+                    overflow: "hidden",
+                  }}
+                >
+                  <Image
+                    alt="Hand holding a rose"
+                    layout="fixed"
+                    loading="lazy"
+                    src={RoseHand}
+                  />
+                </div>
+              </Stack>
             </Stack>
           </Div>
           <Div

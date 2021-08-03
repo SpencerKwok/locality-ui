@@ -6,14 +6,15 @@ import Link from "next/link";
 
 import AddToChrome from "components/common/images/AddToChrome";
 import LocalityExtensionDemo from "public/images/home/locality-extension.jpg";
+import LocalityTeam from "public/images/home/locality-team.jpg";
 import StepArrow from "components/common/images/StepArrow";
 import MiniSearch from "components/search/MiniSearch";
 import ThemeContext from "components/common/Theme";
 import Stack from "components/common/Stack";
-import Values from "components/common/images/Values";
 import styles from "./Home.module.css";
 
 import type { FC } from "react";
+import ValuesShowcase from "./ValuesShowcase";
 
 // TODO: Make all divs flex
 const Div = styled.div`
@@ -404,14 +405,24 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                   rowAlign="center"
                   spacing={120}
                 >
-                  <img
-                    alt="Locality Team Photo"
-                    loading="lazy"
-                    height={388}
-                    width={581}
-                    src="/images/team.jpg"
-                  />
-                  <Values />
+                  <div
+                    style={{
+                      height: 388,
+                      width: 581,
+                      borderRadius: 12,
+                      overflow: "hidden",
+                    }}
+                  >
+                    <Image
+                      alt="Locality Team"
+                      layout="fixed"
+                      loading="lazy"
+                      src={LocalityTeam}
+                      height={388}
+                      width={581}
+                    />
+                  </div>
+                  <ValuesShowcase height={388} />
                 </Stack>
               </Div>
             </section>

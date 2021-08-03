@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Image from "next/image";
+import styled from "styled-components";
 
 import LocalGoodie1 from "public/images/home/local-goodie-1.jpg";
 import LocalGoodie2 from "public/images/home/local-goodie-2.jpg";
@@ -9,6 +10,13 @@ import LocalGoodie5 from "public/images/home/local-goodie-5.jpg";
 import Stack from "components/common/Stack";
 
 import type { FC } from "react";
+
+const ImageWrapper = styled.div`
+  border-radius: 16px;
+  height: 380px;
+  width: 281px;
+  overflow: hidden;
+`;
 
 interface ProductShowcaseProps {
   width: number;
@@ -33,78 +41,86 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
         style={{ width, overflow: "hidden" }}
       >
         <a
-          id="local-goodie-1"
           href="https://laidbacksnacks.com/"
           target="_blank"
           rel="noopener noreferrer"
-          style={{ textDecoration: "none", color: "#000000" }}
+          style={{
+            textDecoration: "none",
+            color: "#000000",
+          }}
         >
-          <Image
-            alt="Local Goodie 1"
-            layout="fixed"
-            loading="lazy"
-            src={LocalGoodie1}
-          />
+          <ImageWrapper id="local-goodie-1">
+            <Image
+              alt="Local Goodie 1"
+              layout="fixed"
+              loading="lazy"
+              src={LocalGoodie1}
+            />
+          </ImageWrapper>
           <h3>10 Snack Box</h3>
         </a>
         <a
-          id="local-goodie-2"
           href="https://www.liveeasyco.ca/"
           target="_blank"
           rel="noopener noreferrer"
           style={{ textDecoration: "none", color: "#000000" }}
         >
-          <Image
-            alt="Local Goodie 2"
-            layout="fixed"
-            loading="lazy"
-            src={LocalGoodie2}
-          />
+          <ImageWrapper id="local-goodie-2">
+            <Image
+              alt="Local Goodie 2"
+              layout="fixed"
+              loading="lazy"
+              src={LocalGoodie2}
+            />
+          </ImageWrapper>
           <h3>Herbal Bath Tea No 2: Ease</h3>
         </a>
         <a
-          id="local-goodie-3"
           href="https://shopcadine.com/"
           target="_blank"
           rel="noopener noreferrer"
           style={{ textDecoration: "none", color: "#000000" }}
         >
-          <Image
-            alt="Local Goodie 3"
-            layout="fixed"
-            loading="lazy"
-            src={LocalGoodie3}
-          />
+          <ImageWrapper id="local-goodie-3">
+            <Image
+              alt="Local Goodie 3"
+              layout="fixed"
+              loading="lazy"
+              src={LocalGoodie3}
+            />
+          </ImageWrapper>
           <h3>Bath and Body Aromatherapy Oil</h3>
         </a>
         <a
-          id="local-goodie-4"
           href="https://www.unimpressedofficial.com/"
           target="_blank"
           rel="noopener noreferrer"
           style={{ textDecoration: "none", color: "#000000" }}
         >
-          <Image
-            alt="Local Goodie 4"
-            layout="fixed"
-            loading="lazy"
-            src={LocalGoodie4}
-          />
+          <ImageWrapper id="local-goodie-4">
+            <Image
+              alt="Local Goodie 4"
+              layout="fixed"
+              loading="lazy"
+              src={LocalGoodie4}
+            />
+          </ImageWrapper>
           <h3>Chonky (Sharky) Printed T-Shirt</h3>
         </a>
         <a
-          id="local-goodie-5"
           href="https://www.talitykombucha.com/"
           target="_blank"
           rel="noopener noreferrer"
           style={{ textDecoration: "none", color: "#000000" }}
         >
-          <Image
-            alt="Local Goodie 5"
-            layout="fixed"
-            loading="lazy"
-            src={LocalGoodie5}
-          />
+          <ImageWrapper id="local-goodie-5">
+            <Image
+              alt="Local Goodie 5"
+              layout="fixed"
+              loading="lazy"
+              src={LocalGoodie5}
+            />
+          </ImageWrapper>
           <h3>12-pack Custom Assorted Case</h3>
         </a>
       </Stack>
