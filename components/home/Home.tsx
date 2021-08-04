@@ -242,6 +242,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                   <video
                     loop
                     muted
+                    playsInline
                     ref={howItWorksVideoRef}
                     preload="none"
                     className={styles["step-image"]}
