@@ -51,6 +51,10 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
     }
   }, [howItWorksStep]);
 
+  useEffect(() => {
+    howItWorksVideoRef.current?.play();
+  }, [howItWorksVideoRef]);
+
   return (
     <ThemeContext.Consumer>
       {({ color }): JSX.Element => (
@@ -112,9 +116,6 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                   layout="fixed"
                   loading="eager"
                   src={LocalityExtensionDemo}
-                  onLoad={(): void => {
-                    howItWorksVideoRef.current?.play();
-                  }}
                 />
               </Div>
             </section>

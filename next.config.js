@@ -90,14 +90,4 @@ module.exports = withPWA({
       },
     ];
   },
-  // Backwards compatibility for previously assigned redirect
-  redirects: async () => {
-    return [
-      {
-        source: "/dashboard/inventory",
-        destination: "/dashboard?tab=inventory",
-        permanent: true,
-      },
-    ];
-  },
 });
