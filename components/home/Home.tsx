@@ -36,8 +36,6 @@ interface HomeProps {
 
 const Home: FC<HomeProps> = ({ isNewUser, width }) => {
   const [howItWorksStep, setHowItWorksStep] = useState(0);
-
-  const howItWorksVideoRef = useRef<HTMLVideoElement>(null);
   const scale = width / 1519;
 
   useEffect(() => {
@@ -50,10 +48,6 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
       }, 14100);
     }
   }, [howItWorksStep]);
-
-  useEffect(() => {
-    howItWorksVideoRef.current?.play();
-  }, [howItWorksVideoRef]);
 
   return (
     <ThemeContext.Consumer>
@@ -240,10 +234,10 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                 </Div>
                 <Div className="middle-middle-column">
                   <video
+                    controls
                     loop
                     muted
                     playsInline
-                    ref={howItWorksVideoRef}
                     preload="none"
                     className={styles["step-image"]}
                     style={{ width: 680, marginBottom: 24 }}
