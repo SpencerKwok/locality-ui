@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import styled from "styled-components";
@@ -36,7 +36,10 @@ interface HomeProps {
 
 const Home: FC<HomeProps> = ({ isNewUser, width }) => {
   const [howItWorksStep, setHowItWorksStep] = useState(0);
+
+  const howItWorksVideoRef = useRef<HTMLVideoElement>(null);
   const scale = width / 1519;
+
   useEffect(() => {
     if (howItWorksStep === 1) {
       setTimeout(() => {
@@ -109,6 +112,9 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                   layout="fixed"
                   loading="eager"
                   src={LocalityExtensionDemo}
+                  onLoad={(): void => {
+                    howItWorksVideoRef.current?.play();
+                  }}
                 />
               </Div>
             </section>
@@ -233,9 +239,10 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                 </Div>
                 <Div className="middle-middle-column">
                   <video
-                    autoPlay
                     loop
                     muted
+                    ref={howItWorksVideoRef}
+                    preload="none"
                     className={styles["step-image"]}
                     style={{ width: 680, marginBottom: 24 }}
                     src="https://res.cloudinary.com/hcory49pf/video/upload/v1627699602/how-to-steps/all-steps.mp4"

@@ -57,6 +57,7 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
             style={{
               background: color.background.light,
               width: 1268,
+              paddingLeft: 25 * scale,
               position: "relative",
               zIndex: 1,
               transform: `scale(${scale})`,

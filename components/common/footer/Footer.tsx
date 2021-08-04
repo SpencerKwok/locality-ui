@@ -58,7 +58,6 @@ const Footer: FC<FooterProps> = ({ width }) => {
                 columnAlign="center"
                 rowAlign="center"
                 spacing={22}
-                style={{ marginBottom: 72 }}
               >
                 <button
                   onClick={(): void => {
@@ -74,6 +73,7 @@ const Footer: FC<FooterProps> = ({ width }) => {
                     color: color.text.light,
                     cursor: "pointer",
                     padding: "20px 24px",
+                    marginBottom: 72,
                   }}
                 >
                   Add to Chrome
@@ -81,8 +81,7 @@ const Footer: FC<FooterProps> = ({ width }) => {
                 <div
                   style={{
                     height: 200,
-                    marginTop: 70,
-                    overflow: "hidden",
+                    overflow: "clip",
                   }}
                 >
                   <Image
