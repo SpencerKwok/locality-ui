@@ -251,7 +251,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                     preload="none"
                     className={styles["step-image"]}
                     style={{ width: 680, marginBottom: 24 }}
-                    src="https://res.cloudinary.com/hcory49pf/video/upload/v1628134709/how-to-steps/all-steps.mp4"
+                    src="https://res.cloudinary.com/hcory49pf/video/upload/v1628135231/how-to-steps/all-steps.mp4"
                     onSeeked={(): void => {
                       setHowItWorksStep(1);
                     }}
