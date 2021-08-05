@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import styled from "styled-components";
@@ -36,6 +36,7 @@ interface HomeProps {
 
 const Home: FC<HomeProps> = ({ isNewUser, width }) => {
   const [howItWorksStep, setHowItWorksStep] = useState(0);
+  const howItWorksVideoRef = useRef<HTMLVideoElement>(null);
   const scale = width / 1519;
 
   useEffect(() => {
@@ -48,6 +49,12 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
       }, 14100);
     }
   }, [howItWorksStep]);
+
+  useEffect(() => {
+    if (howItWorksVideoRef.current) {
+      howItWorksVideoRef.current.playsInline = true;
+    }
+  }, [howItWorksVideoRef]);
 
   return (
     <ThemeContext.Consumer>
@@ -234,10 +241,10 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                 </Div>
                 <Div className="middle-middle-column">
                   <video
-                    controls
                     loop
                     muted
                     playsInline
+                    ref={howItWorksVideoRef}
                     preload="none"
                     className={styles["step-image"]}
                     style={{ width: 680, marginBottom: 24 }}

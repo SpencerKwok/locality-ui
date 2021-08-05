@@ -81,7 +81,7 @@ const Footer: FC<FooterProps> = ({ width }) => {
                 <div
                   style={{
                     height: 200,
-                    overflow: "clip",
+                    overflow: "hidden",
                   }}
                 >
                   <Image
