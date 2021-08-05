@@ -52,10 +52,14 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
 
   useEffect(() => {
     if (howItWorksVideoRef.current) {
-      howItWorksVideoRef.current.autoplay = true;
       howItWorksVideoRef.current.playsInline = true;
       howItWorksVideoRef.current.controls = false;
     }
+    setTimeout(() => {
+      if (howItWorksVideoRef.current) {
+        void howItWorksVideoRef.current.play();
+      }
+    }, 200);
   }, [howItWorksVideoRef]);
 
   return (
@@ -243,10 +247,8 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                 </Div>
                 <Div className="middle-middle-column">
                   <video
-                    autoPlay
                     loop
                     muted
-                    playsInline
                     ref={howItWorksVideoRef}
                     preload="none"
                     className={styles["step-image"]}
