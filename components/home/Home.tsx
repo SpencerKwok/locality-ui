@@ -241,6 +241,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                 </Div>
                 <Div className="middle-middle-column">
                   <video
+                    autoPlay
                     loop
                     muted
                     playsInline
