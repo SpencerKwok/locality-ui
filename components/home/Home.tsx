@@ -5,6 +5,7 @@ import styled from "styled-components";
 import Link from "next/link";
 
 import AddToChrome from "components/common/images/AddToChrome";
+import ExploreLocalGoodies from "components/home/ProductShowcase";
 import LocalityExtensionDemo from "public/images/home/locality-extension.jpg";
 import LocalityTeam from "public/images/home/locality-team.jpg";
 import StepArrow from "components/common/images/StepArrow";
@@ -21,9 +22,6 @@ const Div = styled.div`
   display: flex;
 `;
 
-const ExploreLocalGoodies = dynamic(
-  async () => import("components/home/ProductShowcase")
-);
 const OurPartners = dynamic(
   async () => import("components/home/PartnersShowcase")
 );
