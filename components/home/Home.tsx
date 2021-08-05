@@ -53,6 +53,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
   useEffect(() => {
     if (howItWorksVideoRef.current) {
       howItWorksVideoRef.current.playsInline = true;
+      howItWorksVideoRef.current.autoplay = true;
     }
   }, [howItWorksVideoRef]);
 
