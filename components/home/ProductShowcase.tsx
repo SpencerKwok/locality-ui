@@ -51,6 +51,7 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
         >
           <ImageWrapper id="local-goodie-1">
             <Image
+              placeholder="blur"
               alt="Local Goodie 1"
               layout="fixed"
               loading="eager"
@@ -67,6 +68,7 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
         >
           <ImageWrapper id="local-goodie-2">
             <Image
+              placeholder="blur"
               alt="Local Goodie 2"
               layout="fixed"
               loading="eager"
@@ -83,6 +85,7 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
         >
           <ImageWrapper id="local-goodie-3">
             <Image
+              placeholder="blur"
               alt="Local Goodie 3"
               layout="fixed"
               loading="eager"
@@ -99,6 +102,7 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
         >
           <ImageWrapper id="local-goodie-4">
             <Image
+              placeholder="blur"
               alt="Local Goodie 4"
               layout="fixed"
               loading="eager"
@@ -115,6 +119,7 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
         >
           <ImageWrapper id="local-goodie-5">
             <Image
+              placeholder="blur"
               alt="Local Goodie 5"
               layout="fixed"
               loading="lazy"

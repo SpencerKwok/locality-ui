@@ -113,6 +113,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                 </Div>
                 <Image
                   priority
+                  placeholder="blur"
                   alt="Locality Extension Demo"
                   layout="fixed"
                   loading="eager"
@@ -423,6 +424,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                     }}
                   >
                     <Image
+                      placeholder="blur"
                       alt="Locality Team"
                       layout="fixed"
                       loading="lazy"
