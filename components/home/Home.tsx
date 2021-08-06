@@ -116,8 +116,8 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                   placeholder="blur"
                   alt="Locality Extension Demo"
                   layout="fixed"
-                  loading="eager"
                   src={LocalityExtensionDemo}
+                  quality={100}
                 />
               </Div>
             </section>
