@@ -52,12 +52,8 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
     if (howItWorksVideoRef.current) {
       howItWorksVideoRef.current.playsInline = true;
       howItWorksVideoRef.current.controls = false;
+      void howItWorksVideoRef.current.play();
     }
-    setTimeout(() => {
-      if (howItWorksVideoRef.current) {
-        void howItWorksVideoRef.current.play();
-      }
-    }, 200);
   }, [howItWorksVideoRef]);
 
   return (
