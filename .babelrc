@@ -1,16 +1,17 @@
 {
   "presets": [
-    ["next/babel"],
     [
-      "@babel/preset-env",
+      "next/babel",
       {
-        "targets": {
-          "chrome": "90",
-          "edge": "89",
-          "firefox": "78",
-          "safari": "14",
-          "ie": "11",
-          "ios": "12"
+        "preset-env": {
+          "targets": {
+            "chrome": "90",
+            "edge": "89",
+            "firefox": "78",
+            "safari": "14",
+            "ie": "11",
+            "ios": "12"
+          }
         }
       }
     ]
