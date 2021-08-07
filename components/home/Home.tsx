@@ -6,8 +6,6 @@ import Link from "next/link";
 
 import AddToChrome from "components/common/images/AddToChrome";
 import ExploreLocalGoodies from "components/home/ProductShowcase";
-import LocalityExtensionDemo from "public/images/home/locality-extension.jpg";
-import LocalityTeam from "public/images/home/locality-team.jpg";
 import StepArrow from "components/common/images/StepArrow";
 import MiniSearch from "components/search/MiniSearch";
 import ThemeContext from "components/common/Theme";
@@ -113,11 +111,12 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                 </Div>
                 <Image
                   priority
-                  placeholder="blur"
                   alt="Locality Extension Demo"
+                  src="https://res.cloudinary.com/hcory49pf/image/upload/v1628289720/home/locality-extension.jpg"
                   layout="fixed"
-                  src={LocalityExtensionDemo}
                   quality={100}
+                  height={540}
+                  width={678}
                 />
               </Div>
             </section>
@@ -244,11 +243,11 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                   <video
                     loop
                     muted
-                    ref={howItWorksVideoRef}
                     preload="none"
                     className={styles["step-image"]}
                     style={{ width: 680, marginBottom: 24 }}
                     src="https://res.cloudinary.com/hcory49pf/video/upload/v1628135231/how-to-steps/all-steps.mp4"
+                    ref={howItWorksVideoRef}
                     onSeeked={(): void => {
                       setHowItWorksStep(1);
                     }}
@@ -424,11 +423,9 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                     }}
                   >
                     <Image
-                      placeholder="blur"
                       alt="Locality Team"
                       layout="fixed"
-                      loading="lazy"
-                      src={LocalityTeam}
+                      src="https://res.cloudinary.com/hcory49pf/image/upload/v1628294191/home/locality-team.webp"
                       height={388}
                       width={581}
                     />

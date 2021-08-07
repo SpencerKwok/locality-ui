@@ -2,11 +2,6 @@ import { useState } from "react";
 import Image from "next/image";
 import styled from "styled-components";
 
-import LocalGoodie1 from "public/images/home/local-goodie-1.jpg";
-import LocalGoodie2 from "public/images/home/local-goodie-2.jpg";
-import LocalGoodie3 from "public/images/home/local-goodie-3.jpg";
-import LocalGoodie4 from "public/images/home/local-goodie-4.jpg";
-import LocalGoodie5 from "public/images/home/local-goodie-5.jpg";
 import Stack from "components/common/Stack";
 
 import type { FC } from "react";
@@ -51,10 +46,12 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
         >
           <ImageWrapper id="local-goodie-1">
             <Image
-              placeholder="blur"
+              priority
               alt="Local Goodie 1"
               layout="fixed"
-              src={LocalGoodie1}
+              src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291241/home/local-goodie-1.webp"
+              height={380}
+              width={281}
             />
           </ImageWrapper>
           <h3>10 Snack Box</h3>
@@ -67,10 +64,12 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
         >
           <ImageWrapper id="local-goodie-2">
             <Image
-              placeholder="blur"
+              priority
               alt="Local Goodie 2"
               layout="fixed"
-              src={LocalGoodie2}
+              src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291607/home/local-goodie-2.webp"
+              height={380}
+              width={281}
             />
           </ImageWrapper>
           <h3>Herbal Bath Tea No 2: Ease</h3>
@@ -83,10 +82,12 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
         >
           <ImageWrapper id="local-goodie-3">
             <Image
-              placeholder="blur"
+              priority
               alt="Local Goodie 3"
               layout="fixed"
-              src={LocalGoodie3}
+              src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291664/home/local-goodie-3.webp"
+              height={380}
+              width={281}
             />
           </ImageWrapper>
           <h3>Bath and Body Aromatherapy Oil</h3>
@@ -99,10 +100,12 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
         >
           <ImageWrapper id="local-goodie-4">
             <Image
-              placeholder="blur"
+              priority
               alt="Local Goodie 4"
               layout="fixed"
-              src={LocalGoodie4}
+              src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291707/home/local-goodie-4.webp"
+              height={380}
+              width={281}
             />
           </ImageWrapper>
           <h3>Chonky (Sharky) Printed T-Shirt</h3>
@@ -115,11 +118,11 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
         >
           <ImageWrapper id="local-goodie-5">
             <Image
-              placeholder="blur"
               alt="Local Goodie 5"
               layout="fixed"
-              loading="lazy"
-              src={LocalGoodie5}
+              src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291750/home/local-goodie-5.webp"
+              height={380}
+              width={281}
             />
           </ImageWrapper>
           <h3>12-pack Custom Assorted Case</h3>

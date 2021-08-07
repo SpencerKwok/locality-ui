@@ -1,48 +1,8 @@
-import dynamic from "next/dynamic";
+import Image from "next/image";
 
 import Stack from "components/common/Stack";
 
 import type { CSSProperties, FC } from "react";
-
-const Partner_1_1 = dynamic(
-  async () => import("components/common/images/home/Partner11")
-);
-const Partner_1_2 = dynamic(
-  async () => import("components/common/images/home/Partner12")
-);
-const Partner_1_3 = dynamic(
-  async () => import("components/common/images/home/Partner13")
-);
-const Partner_1_4 = dynamic(
-  async () => import("components/common/images/home/Partner14")
-);
-const Partner_1_5 = dynamic(
-  async () => import("components/common/images/home/Partner15")
-);
-const Partner_1_6 = dynamic(
-  async () => import("components/common/images/home/Partner16")
-);
-const Partner_2_1 = dynamic(
-  async () => import("components/common/images/home/Partner21")
-);
-const Partner_2_2 = dynamic(
-  async () => import("components/common/images/home/Partner22")
-);
-const Partner_2_3 = dynamic(
-  async () => import("components/common/images/home/Partner23")
-);
-const Partner_2_4 = dynamic(
-  async () => import("components/common/images/home/Partner24")
-);
-const Partner_2_5 = dynamic(
-  async () => import("components/common/images/home/Partner25")
-);
-const Partner_2_6 = dynamic(
-  async () => import("components/common/images/home/Partner26")
-);
-const Partner_2_7 = dynamic(
-  async () => import("components/common/images/home/Partner27")
-);
 
 interface PartnersShowcaseProps {
   style?: CSSProperties;
@@ -68,38 +28,74 @@ const PartnersShowcase: FC<PartnersShowcaseProps> = ({ style }) => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Partner_1_1 />
+          <Image
+            alt="Ruoravaan Logo"
+            layout="fixed"
+            src="https://res.cloudinary.com/hcory49pf/image/upload/v1628292816/home/partner-1-1.webp"
+            height={176}
+            width={176}
+          />
         </a>
         <a href="https://nusnus.ca/" target="_blank" rel="noopener noreferrer">
-          <Partner_1_2 />
+          <Image
+            alt="Nusnus Logo"
+            layout="fixed"
+            src="https://res.cloudinary.com/hcory49pf/image/upload/v1628292891/home/partner-1-2.webp"
+            height={176}
+            width={176}
+          />
         </a>
         <a
           href="https://www.liveeasyco.ca/"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Partner_1_3 />
+          <Image
+            alt="Liv'ez Logo"
+            layout="fixed"
+            src="https://res.cloudinary.com/hcory49pf/image/upload/v1628292891/home/partner-1-3.webp"
+            height={176}
+            width={176}
+          />
         </a>
         <a
           href="https://www.loopedbyalli.com/"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Partner_1_4 />
+          <Image
+            alt="Looped by Alli Logo"
+            layout="fixed"
+            src="https://res.cloudinary.com/hcory49pf/image/upload/v1628292891/home/partner-1-4.webp"
+            height={176}
+            width={176}
+          />
         </a>
         <a
           href="https://www.raincity.games/"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Partner_1_5 />
+          <Image
+            alt="Rain City Games Logo"
+            layout="fixed"
+            src="https://res.cloudinary.com/hcory49pf/image/upload/v1628292891/home/partner-1-5.webp"
+            height={176}
+            width={176}
+          />
         </a>
         <a
           href="https://primpnproper.com/"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Partner_1_6 />
+          <Image
+            alt="Primp & Proper Logo"
+            layout="fixed"
+            src="https://res.cloudinary.com/hcory49pf/image/upload/v1628292891/home/partner-1-6.webp"
+            height={176}
+            width={176}
+          />
         </a>
       </Stack>
       <Stack
@@ -113,49 +109,91 @@ const PartnersShowcase: FC<PartnersShowcaseProps> = ({ style }) => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Partner_2_1 />
+          <Image
+            alt="Drooler Treats Logo"
+            layout="fixed"
+            src="https://res.cloudinary.com/hcory49pf/image/upload/v1628292891/home/partner-2-1.webp"
+            height={176}
+            width={176}
+          />
         </a>
         <a
           href="https://www.cantiqliving.com/"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Partner_2_2 />
+          <Image
+            alt="Cantiq Living Logo"
+            layout="fixed"
+            src="https://res.cloudinary.com/hcory49pf/image/upload/v1628292891/home/partner-2-2.webp"
+            height={176}
+            width={176}
+          />
         </a>
         <a
           href="https://shopcadine.com/"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Partner_2_3 />
+          <Image
+            alt="Cadine Logo"
+            layout="fixed"
+            src="https://res.cloudinary.com/hcory49pf/image/upload/v1628292891/home/partner-2-3.webp"
+            height={176}
+            width={176}
+          />
         </a>
         <a
           href="https://www.lemonjarz.com/"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Partner_2_4 />
+          <Image
+            alt="Lemonjarz Logo"
+            layout="fixed"
+            src="https://res.cloudinary.com/hcory49pf/image/upload/v1628292891/home/partner-2-4.webp"
+            height={176}
+            width={176}
+          />
         </a>
         <a
           href="https://www.etsy.com/shop/BambooBirdie"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Partner_2_5 />
+          <Image
+            alt="Bamboo Birdie Logo"
+            layout="fixed"
+            src="https://res.cloudinary.com/hcory49pf/image/upload/v1628292891/home/partner-2-5.webp"
+            height={176}
+            width={176}
+          />
         </a>
         <a
           href="https://www.thealfajorcompany.ca/"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Partner_2_6 />
+          <Image
+            alt="The Alfajor Company Logo"
+            layout="fixed"
+            src="https://res.cloudinary.com/hcory49pf/image/upload/v1628292891/home/partner-2-6.webp"
+            height={176}
+            width={176}
+          />
         </a>
         <a
           href="https://www.unimpressedofficial.com/"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Partner_2_7 />
+          <Image
+            alt="Unimpressed Official Logo"
+            layout="fixed"
+            src="https://res.cloudinary.com/hcory49pf/image/upload/v1628292891/home/partner-2-7.webp"
+            height={176}
+            width={176}
+          />
         </a>
       </Stack>
     </Stack>

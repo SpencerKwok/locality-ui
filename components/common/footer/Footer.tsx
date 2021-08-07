@@ -1,4 +1,3 @@
-import RoseHand from "public/images/home/rose-hand.jpg";
 import Image from "next/image";
 import styled from "styled-components";
 
@@ -87,8 +86,9 @@ const Footer: FC<FooterProps> = ({ width }) => {
                   <Image
                     alt="Hand holding a rose"
                     layout="fixed"
-                    loading="lazy"
-                    src={RoseHand}
+                    src="https://res.cloudinary.com/hcory49pf/image/upload/v1628294359/home/rose-hand.webp"
+                    width={256}
+                    height={338}
                   />
                 </div>
               </Stack>

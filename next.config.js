@@ -13,6 +13,9 @@ module.exports = {
       },
     },
   },
+  images: {
+    domains: ["res.cloudinary.com"],
+  },
   poweredByHeader: false,
   reactStrictMode: true,
   headers: async () => {
