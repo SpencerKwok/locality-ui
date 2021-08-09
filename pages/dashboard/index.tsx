@@ -1,10 +1,11 @@
+import "bootstrap/dist/css/bootstrap.min.css";
+
 import { useEffect, useState } from "react";
 import Fuse from "fuse.js";
 import { getSession } from "next-auth/client";
 import { useRouter } from "next/router";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
-import "bootstrap/dist/css/bootstrap.min.css";
 
 import AccountPage from "components/dashboard/Account";
 import BusinessPage from "components/dashboard/Business";
@@ -839,7 +840,7 @@ const Dashboard: FC<DashboardProps> = ({
   const lastName: string = user.lastName;
   return (
     <RootLayout session={session}>
-      <div style={{ margin: 12 }}>
+      <div style={{ margin: 12, width: size.width }}>
         <Tabs
           defaultActiveKey={tab}
           onSelect={(key): void => {

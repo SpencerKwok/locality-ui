@@ -12,15 +12,15 @@ export interface RootLayoutProps {
 
 const RootLayout: FC<RootLayoutProps> = ({ children, session }) => {
   const size = useWindowSize();
-
   if (typeof size.width !== "number") {
     return null;
   }
 
+  const scale = Math.round((size.width / 1519) * 10) / 10;
   return (
     <div className="top-middle-column" style={{ display: "flex" }}>
       <Navigation user={session?.user} width={size.width} />
-      <main>{children}</main>
+      <main style={{ marginTop: 100 * scale }}>{children}</main>
       <Footer width={size.width} />
     </div>
   );

@@ -1,5 +1,6 @@
 export { default as AddToChrome } from './AddToChrome'
 export { default as Arrow } from './Arrow'
+export { default as Chrome } from './Chrome'
 export { default as Delete } from './Delete'
 export { default as FacebookLogo } from './FacebookLogo'
 export { default as GoogleLogo } from './GoogleLogo'

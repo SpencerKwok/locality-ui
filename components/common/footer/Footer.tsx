@@ -19,7 +19,7 @@ interface FooterProps {
 }
 
 const Footer: FC<FooterProps> = ({ width }) => {
-  const scale = width / 1519;
+  const scale = Math.round((width / 1519) * 10) / 10;
   return (
     <ThemeContext.Consumer>
       {({ color }): JSX.Element => (
@@ -58,25 +58,25 @@ const Footer: FC<FooterProps> = ({ width }) => {
                 rowAlign="center"
                 spacing={22}
               >
-                <button
-                  onClick={(): void => {
-                    window.open(
-                      "https://chrome.google.com/webstore/detail/locality-local-shopping-m/cklipomamlgjpmihfhfdjmlhnbadnedl",
-                      "_blank"
-                    );
-                  }}
-                  style={{
-                    background: color.text.dark,
-                    borderRadius: 11,
-                    border: "none",
-                    color: color.text.light,
-                    cursor: "pointer",
-                    padding: "20px 24px",
-                    marginBottom: 72,
-                  }}
+                <a
+                  href="https://chrome.google.com/webstore/detail/locality-local-shopping-m/cklipomamlgjpmihfhfdjmlhnbadnedl"
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                  Add to Chrome
-                </button>
+                  <button
+                    style={{
+                      background: color.text.dark,
+                      borderRadius: 11,
+                      border: "none",
+                      color: color.text.light,
+                      cursor: "pointer",
+                      padding: "20px 24px",
+                      marginBottom: 72,
+                    }}
+                  >
+                    Add to Chrome
+                  </button>
+                </a>
                 <div
                   style={{
                     height: 200,
@@ -117,30 +117,28 @@ const Footer: FC<FooterProps> = ({ width }) => {
                 spacing={33 * scale}
                 style={{ transform: `scaleY(${scale})` }}
               >
-                <FacebookLogo
-                  onClick={(): void => {
-                    window.open(
-                      "https://www.facebook.com/locality.info",
-                      "_blank"
-                    );
-                  }}
-                  style={{
-                    cursor: "pointer",
-                    transform: `scaleX(${scale})`,
-                  }}
-                />
-                <InstagramLogo
-                  onClick={(): void => {
-                    window.open(
-                      "https://www.instagram.com/mylocality.shop/",
-                      "_blank"
-                    );
-                  }}
-                  style={{
-                    cursor: "pointer",
-                    transform: `scaleX(${scale})`,
-                  }}
-                />
+                <a
+                  href="https://www.facebook.com/locality.info"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FacebookLogo
+                    style={{
+                      transform: `scaleX(${scale})`,
+                    }}
+                  />
+                </a>
+                <a
+                  href="https://www.instagram.com/mylocality.shop"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <InstagramLogo
+                    style={{
+                      transform: `scaleX(${scale})`,
+                    }}
+                  />
+                </a>
               </Stack>
               <div />
               <Stack direction="row" rowAlign="center" columnAlign="center">

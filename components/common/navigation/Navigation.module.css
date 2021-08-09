@@ -1,3 +1,21 @@
+.button {
+  border-radius: 11px;
+  cursor: pointer;
+  padding: 11px 16px;
+}
+
+.link {
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 20.85px;
+}
+.link:hover {
+  text-decoration: none;
+}
+
 .nav {
   display: flex;
   flex-direction: row;
@@ -13,11 +31,4 @@
 
 .navbar {
   background-color: #449ed7;
-}
-
-.span {
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 20.85px;
 }

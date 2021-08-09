@@ -33,7 +33,7 @@ interface HomeProps {
 const Home: FC<HomeProps> = ({ isNewUser, width }) => {
   const [howItWorksStep, setHowItWorksStep] = useState(0);
   const howItWorksVideoRef = useRef<HTMLVideoElement>(null);
-  const scale = width / 1519;
+  const scale = Math.round((width / 1519) * 10) / 10;
 
   useEffect(() => {
     if (howItWorksStep === 1) {
@@ -93,26 +93,26 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                   >
                     Explore local offerings and support local businesses
                   </h2>
-                  <button
-                    className={styles.button}
-                    onClick={(): void => {
-                      window.open(
-                        "https://chrome.google.com/webstore/detail/locality-local-shopping-m/cklipomamlgjpmihfhfdjmlhnbadnedl",
-                        "_blank"
-                      );
-                    }}
-                    style={{
-                      background: color.text.dark,
-                      color: color.text.light,
-                    }}
+                  <a
+                    href="https://chrome.google.com/webstore/detail/locality-local-shopping-m/cklipomamlgjpmihfhfdjmlhnbadnedl"
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
-                    <AddToChrome />
-                  </button>
+                    <button
+                      className={styles.button}
+                      style={{
+                        background: color.text.dark,
+                        color: color.text.light,
+                      }}
+                    >
+                      <AddToChrome />
+                    </button>
+                  </a>
                 </Div>
                 <Image
                   priority
                   alt="Locality Extension Demo"
-                  src="https://res.cloudinary.com/hcory49pf/image/upload/v1628289720/home/locality-extension.jpg"
+                  src="https://res.cloudinary.com/hcory49pf/image/upload/v1628473871/home/locality-extension.webp"
                   layout="fixed"
                   quality={100}
                   height={540}
@@ -376,17 +376,19 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                 </Stack>
                 <OurPartners style={{ marginBottom: 64 }} />
                 <Link href="/signup/business">
-                  <button
-                    style={{
-                      background: color.text.dark,
-                      borderRadius: 11,
-                      color: color.text.light,
-                      cursor: "pointer",
-                      padding: "20px 24px",
-                    }}
-                  >
-                    Become a Partner
-                  </button>
+                  <a>
+                    <button
+                      style={{
+                        background: color.text.dark,
+                        borderRadius: 11,
+                        color: color.text.light,
+                        cursor: "pointer",
+                        padding: "20px 24px",
+                      }}
+                    >
+                      Become a Partner
+                    </button>
+                  </a>
                 </Link>
               </Div>
             </section>
