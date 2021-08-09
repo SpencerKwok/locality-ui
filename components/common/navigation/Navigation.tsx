@@ -114,22 +114,25 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
                     href="https://chrome.google.com/webstore/detail/locality-local-shopping-m/cklipomamlgjpmihfhfdjmlhnbadnedl"
                     target="_blank"
                     rel="noopener noreferrer"
+                    style={{
+                      opacity: transitionValue,
+                      visibility: transitionValue === 0 ? "hidden" : "visible",
+                    }}
                   >
                     <button
                       className={styles.button}
                       style={{
                         background: color.text.dark,
                         color: color.text.light,
-                        opacity: transitionValue,
                       }}
                     >
                       <Stack direction="row" rowAlign="center" spacing={7}>
-                        <Chrome />
+                        <Chrome width={21} />
                         <span
                           style={{
                             fontSize: 16,
                             fontStyle: "normal",
-                            fontWeight: 800,
+                            fontWeight: 700,
                           }}
                         >
                           Get Extension
@@ -186,33 +189,29 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
                         style={{ paddingRight: 40 }}
                       >
                         <MiniSearch width={247} />
-                        <Stack direction="row" spacing={8} rowAlign="center">
-                          <Link href="/signin">
-                            <a
-                              className={styles.link}
-                              style={{
-                                color: color.text.dark,
-                              }}
-                            >
-                              <Stack
-                                direction="row"
-                                spacing={8}
-                                rowAlign="center"
-                                style={{
-                                  cursor: "pointer",
-                                }}
-                              >
-                                <ProfilePic
-                                  height={41}
-                                  width={41}
-                                  style={{ marginTop: 5 }}
-                                />
-                                <span>
-                                  {`Hi ${user.firstName} ${user.lastName}!`}
-                                </span>
-                              </Stack>
-                            </a>
-                          </Link>
+
+                        <Stack
+                          direction="row"
+                          spacing={8}
+                          rowAlign="center"
+                          onClick={(): void => {
+                            setMenuVisible(!menuVisible);
+                          }}
+                          style={{
+                            cursor: "pointer",
+                          }}
+                        >
+                          <ProfilePic
+                            height={41}
+                            width={41}
+                            style={{ marginTop: 5 }}
+                          />
+                          <span
+                            className={styles.link}
+                            style={{
+                              color: color.text.dark,
+                            }}
+                          >{`Hi ${user.firstName} ${user.lastName}!`}</span>
                         </Stack>
                         <Stack direction="column" rowAlign="flex-end">
                           <button

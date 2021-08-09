@@ -3,10 +3,9 @@ import * as React from "react";
 function SvgChrome(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
-      width={21}
-      height={21}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 21 21"
       {...props}
     >
       <path

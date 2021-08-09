@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import styled from "styled-components";
 import Link from "next/link";
 
-import AddToChrome from "components/common/images/AddToChrome";
+import Chrome from "components/common/images/Chrome";
 import ExploreLocalGoodies from "components/home/ProductShowcase";
 import StepArrow from "components/common/images/StepArrow";
 import MiniSearch from "components/search/MiniSearch";
@@ -105,7 +105,30 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                         color: color.text.light,
                       }}
                     >
-                      <AddToChrome />
+                      <Stack direction="row" rowAlign="center" spacing={16}>
+                        <Chrome width={21} />
+                        <Stack direction="row" rowAlign="center" spacing={8}>
+                          <span
+                            style={{
+                              fontSize: 16,
+                              fontStyle: "normal",
+                              fontWeight: 600,
+                            }}
+                          >
+                            Add to Chrome
+                          </span>
+                          <span
+                            style={{
+                              fontSize: 16,
+                              fontStyle: "normal",
+                              fontWeight: 600,
+                              opacity: 0.8,
+                            }}
+                          >
+                            It's free!
+                          </span>
+                        </Stack>
+                      </Stack>
                     </button>
                   </a>
                 </Div>
