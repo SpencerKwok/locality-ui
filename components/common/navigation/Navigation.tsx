@@ -32,7 +32,7 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
   useEffect(() => {
     const onScroll = (): void => {
       const newTransitionValue =
-        window.scrollY >= 900 ? 1 : window.scrollY / 900;
+        window.scrollY >= 900 * scale ? 1 : window.scrollY / (900 * scale);
       if (newTransitionValue !== transitionValue) {
         setTransitionValue(newTransitionValue);
       }
