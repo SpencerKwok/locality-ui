@@ -1,6 +1,7 @@
 import Image from "next/image";
 import styled from "styled-components";
 
+import Button from "components/common/button/Button";
 import FacebookLogo from "components/common/images/FacebookLogo";
 import InstagramLogo from "components/common/images/InstagramLogo";
 import ThemeContext from "components/common/Theme";
@@ -63,19 +64,15 @@ const Footer: FC<FooterProps> = ({ width }) => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <button
+                  <Button
+                    variant="dark"
                     style={{
-                      background: color.text.dark,
-                      borderRadius: 11,
-                      border: "none",
-                      color: color.text.light,
-                      cursor: "pointer",
                       padding: "20px 24px",
                       marginBottom: 72,
                     }}
                   >
                     Add to Chrome
-                  </button>
+                  </Button>
                 </a>
                 <div
                   style={{

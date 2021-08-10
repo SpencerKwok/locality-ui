@@ -25,7 +25,7 @@ export const DefaultTheme: ThemeObject = {
     },
     hover: {
       light: "#EEEEEE",
-      dark: "#27388c",
+      dark: "linear-gradient(0deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.28)), #112378;",
     },
     text: {
       light: "#FFFFFF",

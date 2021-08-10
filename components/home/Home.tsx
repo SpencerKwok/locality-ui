@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import styled from "styled-components";
 import Link from "next/link";
 
+import Button from "components/common/button/Button";
 import Chrome from "components/common/images/Chrome";
 import ExploreLocalGoodies from "components/home/ProductShowcase";
 import StepArrow from "components/common/images/StepArrow";
@@ -98,13 +99,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <button
-                      className={styles.button}
-                      style={{
-                        background: color.text.dark,
-                        color: color.text.light,
-                      }}
-                    >
+                    <Button className={styles.button} variant="dark">
                       <Stack direction="row" rowAlign="center" spacing={16}>
                         <Chrome width={21} />
                         <Stack direction="row" rowAlign="center" spacing={8}>
@@ -129,7 +124,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                           </span>
                         </Stack>
                       </Stack>
-                    </button>
+                    </Button>
                   </a>
                 </Div>
                 <Image
@@ -400,17 +395,14 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                 <OurPartners style={{ marginBottom: 64 }} />
                 <Link href="/signup/business">
                   <a>
-                    <button
+                    <Button
+                      variant="dark"
                       style={{
-                        background: color.text.dark,
-                        borderRadius: 11,
-                        color: color.text.light,
-                        cursor: "pointer",
                         padding: "20px 24px",
                       }}
                     >
                       Become a Partner
-                    </button>
+                    </Button>
                   </a>
                 </Link>
               </Div>
