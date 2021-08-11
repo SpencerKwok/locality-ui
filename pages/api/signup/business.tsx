@@ -48,7 +48,7 @@ export default async function handler(
   const firstName = Xss(body.firstName);
   const lastName = Xss(body.lastName);
   const email = Xss(body.email);
-  const phoneNumber = Xss(body.phoneNumber);
+  const phoneNumber = Xss(body.phoneNumber ?? "");
   const businessName = Xss(body.businessName);
   const businessHomepage = Xss(body.businessHomepage);
   const subscribe = body.subscribe;
