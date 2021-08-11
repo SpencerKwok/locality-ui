@@ -8,7 +8,6 @@ import {
   FormGroup,
   InputGroup,
   Input,
-  Label,
   SubmitButton,
 } from "components/common/form";
 
@@ -21,6 +20,7 @@ export interface SignUpRequest {
   phoneNumber: string;
   businessName: string;
   businessHomepage: string;
+  subscribe: boolean;
 }
 
 export interface SignupBusinessProps {
@@ -71,6 +71,7 @@ const SignupBusiness: FC<SignupBusinessProps> = ({ error, sent, onSubmit }) => {
               phoneNumber: "",
               businessName: "",
               businessHomepage: "",
+              subscribe: true,
             } as SignUpRequest
           }
           onSubmit={onSubmit}
@@ -86,16 +87,16 @@ const SignupBusiness: FC<SignupBusinessProps> = ({ error, sent, onSubmit }) => {
             <form onSubmit={handleSubmit}>
               <Stack direction="row" spacing={12} priority={[1, 1]}>
                 <FormGroup>
-                  <Label required>First Name</Label>
                   <InputGroup>
                     <Input
+                      required
                       aria-required
                       aria-label="First Name"
                       aria-details="Enter first name here"
                       id="firstName"
                       onBlur={handleBlur}
                       onChange={handleChange}
-                      placeholder="Enter first name"
+                      placeholder="First Name"
                       type="text"
                       value={values.firstName}
                     />
@@ -103,16 +104,16 @@ const SignupBusiness: FC<SignupBusinessProps> = ({ error, sent, onSubmit }) => {
                   <ErrorMessage name="firstName" />
                 </FormGroup>
                 <FormGroup>
-                  <Label required>Last Name</Label>
                   <InputGroup>
                     <Input
+                      required
                       aria-required
                       aria-label="Last Name"
                       aria-details="Enter last name here"
                       id="lastName"
                       onBlur={handleBlur}
                       onChange={handleChange}
-                      placeholder="Enter last name"
+                      placeholder="Last Name"
                       type="text"
                       value={values.lastName}
                     />
@@ -122,16 +123,16 @@ const SignupBusiness: FC<SignupBusinessProps> = ({ error, sent, onSubmit }) => {
               </Stack>
               <Stack direction="row" spacing={12} priority={[1, 1]}>
                 <FormGroup>
-                  <Label required>Email</Label>
                   <InputGroup>
                     <Input
+                      required
                       aria-required
                       aria-label="Email"
                       aria-details="Enter email here"
                       id="email"
                       onBlur={handleBlur}
                       onChange={handleChange}
-                      placeholder="Enter email"
+                      placeholder="Email"
                       type="email"
                       value={values.email}
                     />
@@ -139,7 +140,6 @@ const SignupBusiness: FC<SignupBusinessProps> = ({ error, sent, onSubmit }) => {
                   <ErrorMessage name="email" />
                 </FormGroup>
                 <FormGroup>
-                  <Label>Phone Number</Label>
                   <InputGroup>
                     <Input
                       aria-label="Phone number"
@@ -147,7 +147,7 @@ const SignupBusiness: FC<SignupBusinessProps> = ({ error, sent, onSubmit }) => {
                       id="phoneNumber"
                       onBlur={handleBlur}
                       onChange={handleChange}
-                      placeholder="Enter phone number"
+                      placeholder="Enter Phone Number"
                       type="text"
                       value={values.phoneNumber}
                     />
@@ -156,16 +156,16 @@ const SignupBusiness: FC<SignupBusinessProps> = ({ error, sent, onSubmit }) => {
                 </FormGroup>
               </Stack>
               <FormGroup>
-                <Label required>Business Name</Label>
                 <InputGroup>
                   <Input
+                    required
                     aria-required
                     aria-label="Business Name"
                     aria-details="Enter business name here"
                     id="businessName"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="Enter business name"
+                    placeholder="Business Name"
                     type="text"
                     value={values.businessName}
                   />
@@ -173,21 +173,42 @@ const SignupBusiness: FC<SignupBusinessProps> = ({ error, sent, onSubmit }) => {
                 <ErrorMessage name="businessName" />
               </FormGroup>
               <FormGroup>
-                <Label required>Business Website</Label>
                 <InputGroup>
                   <Input
+                    required
                     aria-required
                     aria-label="Business Homepage"
                     aria-details="Enter business homepage here"
                     id="businessHomepage"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="Enter business homepage"
+                    placeholder="Business Homepage"
                     type="text"
                     value={values.businessHomepage}
                   />
                 </InputGroup>
                 <ErrorMessage name="businessHomepage" />
+              </FormGroup>
+              <FormGroup>
+                <InputGroup>
+                  <Stack direction="row" rowAlign="center" spacing={24}>
+                    <Input
+                      defaultChecked
+                      aria-label="Occassional marketing email checkbox"
+                      aria-details="Checkbox to opt in to occassional marketing emails"
+                      id="subscribe"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      type="checkbox"
+                      value={values.subscribe ? "true" : "false"}
+                    />
+                    <p style={{ fontSize: 12 }}>
+                      I'd like to receive occasional marketing emails from
+                      Locality.
+                    </p>
+                  </Stack>
+                </InputGroup>
+                <ErrorMessage name="subscribe" />
               </FormGroup>
               <div
                 color="red"
@@ -197,11 +218,12 @@ const SignupBusiness: FC<SignupBusinessProps> = ({ error, sent, onSubmit }) => {
               >
                 {error}
               </div>
-              <Stack direction="row-reverse">
+              <Stack direction="row-reverse" priority={[1]}>
                 <SubmitButton
-                  text="Sign up"
-                  submittingText="Signing up..."
+                  text="Get Started"
+                  submittingText="Getting started..."
                   isSubmitting={isSubmitting}
+                  style={{ width: "100%" }}
                 />
               </Stack>
             </form>

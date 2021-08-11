@@ -4,6 +4,7 @@ import { signOut } from "next-auth/client";
 import Image from "next/image";
 import Link from "next/link";
 
+import Button from "components/common/button/Button";
 import Chrome from "components/common/images/Chrome";
 import ProfilePic from "components/common/images/ProfilePic";
 import ThemeContext from "components/common/Theme";
@@ -119,11 +120,10 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
                       visibility: transitionValue === 0 ? "hidden" : "visible",
                     }}
                   >
-                    <button
-                      className={styles.button}
+                    <Button
+                      variant="dark"
                       style={{
-                        background: color.text.dark,
-                        color: color.text.light,
+                        padding: "11px 16px",
                       }}
                     >
                       <Stack direction="row" rowAlign="center" spacing={7}>
@@ -138,7 +138,7 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
                           Get Extension
                         </span>
                       </Stack>
-                    </button>
+                    </Button>
                   </a>
                 </Stack>
               </Div>

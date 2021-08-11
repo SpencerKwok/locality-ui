@@ -13,7 +13,7 @@ const FormErrorMessage: FC<FormErrorMessageProps> = ({ name }) => {
       ): ReactElement<
         HTMLProps<HTMLDivElement>,
         JSXElementConstructor<HTMLDivElement>
-      > => <div style={{ color: "red" }}>{msg}</div>}
+      > => <div style={{ color: "red", fontSize: 12 }}>{msg}</div>}
     />
   );
 };

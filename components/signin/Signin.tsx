@@ -127,7 +127,7 @@ const SignIn: FC<SignInProps> = ({ error, onProviderSignIn, onSubmit }) => {
                       <ErrorMessage name="password" />
                     </FormGroup>
                     <Link href="/signup">
-                      Don't have an account? Sign up here
+                      Don't have an account? Get started here
                     </Link>
                     <div className={styles.error}>{error}</div>
                     <Stack direction="row-reverse">

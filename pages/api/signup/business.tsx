@@ -1,6 +1,7 @@
 import NodeMailer from "nodemailer";
 import Xss from "xss";
 
+import MailChimp, { MainListId } from "lib/api/mailchimp";
 import { BusinessSignUpSchema } from "common/ValidationSchema";
 import { EMAIL_SERVICE, EMAIL_USER, EMAIL_PASSWORD } from "lib/env";
 import SumoLogic from "lib/api/sumologic";
@@ -50,6 +51,7 @@ export default async function handler(
   const phoneNumber = Xss(body.phoneNumber);
   const businessName = Xss(body.businessName);
   const businessHomepage = Xss(body.businessHomepage);
+  const subscribe = body.subscribe;
 
   if (
     firstName !== body.firstName ||
@@ -84,7 +86,6 @@ export default async function handler(
   try {
     await transporter.sendMail(customerMailOptions);
     await transporter.sendMail(selfMailOptions);
-    res.status(204).end();
   } catch (error: unknown) {
     SumoLogic.log({
       level: "error",
@@ -93,5 +94,31 @@ export default async function handler(
       params: { body, error },
     });
     res.status(500).json({ error: "Internal server error" });
+    return;
   }
+
+  if (subscribe) {
+    const mailchimpError = await MailChimp.addSubscriber(
+      {
+        email,
+        firstName,
+        lastName,
+      },
+      MainListId
+    );
+
+    // Don't respond with error on mailchimp subscription
+    // error, users should still be able to log in if a
+    // failure occured here
+    if (mailchimpError) {
+      SumoLogic.log({
+        level: "error",
+        method: "signup/user",
+        message: "Failed to add subscriber to Mail Chimp",
+        params: { body, mailchimpError },
+      });
+    }
+  }
+
+  res.status(204).end();
 }

@@ -106,6 +106,7 @@ export interface BusinessSignUpRequest {
   phoneNumber: string;
   businessName: string;
   businessHomepage: string;
+  subscribe: boolean;
 }
 
 export type BusinessSignUpResponse = SignUpResponse;
@@ -298,6 +299,7 @@ export interface UserSignUpRequest {
   email: string;
   password1: string;
   password2: string;
+  subscribe: boolean;
 }
 
 export type UserSignUpResponse = SignUpResponse;

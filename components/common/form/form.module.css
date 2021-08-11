@@ -7,10 +7,15 @@
   border-radius: 0.25rem;
   outline: none;
   width: 100%;
-  padding: 8px;
+  padding: 9px;
+  margin: 1px 0px 0px 0px;
 }
 .input:focus {
   box-shadow: 0 0 5px #80bdff;
+}
+.input-wrapper {
+  outline: none;
+  width: 100%;
 }
 
 .input-group {

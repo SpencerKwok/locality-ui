@@ -1,14 +1,32 @@
+import Stack from "components/common/Stack";
 import styles from "./form.module.css";
 
 import type { FC, HTMLProps } from "react";
 
-export type FormInputProps = HTMLProps<HTMLInputElement>;
+export interface FormInputProps extends HTMLProps<HTMLInputElement> {
+  required?: boolean;
+}
 
-const FormInputGroup: FC<FormInputProps> = ({ children, ...rest }) => {
+const FormInputGroup: FC<FormInputProps> = ({ required, type, ...rest }) => {
+  if (type === "checkbox") {
+    return <input type={type} {...rest} />;
+  }
+
   return (
-    <input className={styles.input} {...rest}>
-      {children}
-    </input>
+    <Stack
+      direction="row"
+      rowAlign="center"
+      columnAlign="center"
+      className={styles["input-wrapper"]}
+      priority={[1, 0]}
+      spacing={8}
+      style={{ border: type === "checkbox" ? "none" : "" }}
+    >
+      <input className={styles.input} type={type} {...rest} />
+      <div style={{ color: "red", width: 10 }}>
+        {required === true ? "*" : ""}
+      </div>
+    </Stack>
   );
 };
 
