@@ -29,3 +29,16 @@
   backdrop-filter: blur(15px);
   border-radius: 21px;
 }
+
+.partner-logo-wrapper {
+  border-radius: 50%;
+  box-shadow: "0px 0px 24px 0px #A4A2A226";
+  filter: drop-shadow(0px 0px 24px rgba(164, 162, 162, 0.15));
+  height: 128px;
+  width: 128px;
+}
+
+.partner-logo-wrapper:hover {
+  background: #00000008;
+  filter: brightness(0.92) drop-shadow(0px 0px 24px rgba(164, 162, 162, 0.15));
+}
