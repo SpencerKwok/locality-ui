@@ -1,17 +1,10 @@
 import { useState } from "react";
 import Image from "next/image";
-import styled from "styled-components";
 
 import Stack from "components/common/Stack";
+import styles from "components/home/Home.module.css";
 
 import type { FC } from "react";
-
-const ImageWrapper = styled.div`
-  border-radius: 16px;
-  height: 380px;
-  width: 281px;
-  overflow: hidden;
-`;
 
 interface ProductShowcaseProps {
   width: number;
@@ -44,16 +37,18 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
             color: "#000000",
           }}
         >
-          <ImageWrapper id="local-goodie-1">
-            <Image
-              priority
-              alt="Local Goodie 1"
-              layout="fixed"
-              src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291241/home/local-goodie-1.webp"
-              height={380}
-              width={281}
-            />
-          </ImageWrapper>
+          <div className={styles["product-wrapper-wrapper"]}>
+            <div id="local-goodie-1" className={styles["product-wrapper"]}>
+              <Image
+                priority
+                alt="Local Goodie 1"
+                layout="fixed"
+                src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291241/home/local-goodie-1.webp"
+                height={380}
+                width={281}
+              />
+            </div>
+          </div>
           <h3>10 Snack Box</h3>
         </a>
         <a
@@ -62,16 +57,18 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
           rel="noopener noreferrer"
           style={{ textDecoration: "none", color: "#000000" }}
         >
-          <ImageWrapper id="local-goodie-2">
-            <Image
-              priority
-              alt="Local Goodie 2"
-              layout="fixed"
-              src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291607/home/local-goodie-2.webp"
-              height={380}
-              width={281}
-            />
-          </ImageWrapper>
+          <div className={styles["product-wrapper-wrapper"]}>
+            <div id="local-goodie-2" className={styles["product-wrapper"]}>
+              <Image
+                priority
+                alt="Local Goodie 2"
+                layout="fixed"
+                src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291607/home/local-goodie-2.webp"
+                height={380}
+                width={281}
+              />
+            </div>
+          </div>
           <h3>Herbal Bath Tea No 2: Ease</h3>
         </a>
         <a
@@ -80,16 +77,18 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
           rel="noopener noreferrer"
           style={{ textDecoration: "none", color: "#000000" }}
         >
-          <ImageWrapper id="local-goodie-3">
-            <Image
-              priority
-              alt="Local Goodie 3"
-              layout="fixed"
-              src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291664/home/local-goodie-3.webp"
-              height={380}
-              width={281}
-            />
-          </ImageWrapper>
+          <div className={styles["product-wrapper-wrapper"]}>
+            <div id="local-goodie-3" className={styles["product-wrapper"]}>
+              <Image
+                priority
+                alt="Local Goodie 3"
+                layout="fixed"
+                src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291664/home/local-goodie-3.webp"
+                height={380}
+                width={281}
+              />
+            </div>
+          </div>
           <h3>Bath and Body Aromatherapy Oil</h3>
         </a>
         <a
@@ -98,16 +97,18 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
           rel="noopener noreferrer"
           style={{ textDecoration: "none", color: "#000000" }}
         >
-          <ImageWrapper id="local-goodie-4">
-            <Image
-              priority
-              alt="Local Goodie 4"
-              layout="fixed"
-              src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291707/home/local-goodie-4.webp"
-              height={380}
-              width={281}
-            />
-          </ImageWrapper>
+          <div className={styles["product-wrapper-wrapper"]}>
+            <div id="local-goodie-4" className={styles["product-wrapper"]}>
+              <Image
+                priority
+                alt="Local Goodie 4"
+                layout="fixed"
+                src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291707/home/local-goodie-4.webp"
+                height={380}
+                width={281}
+              />
+            </div>
+          </div>
           <h3>Chonky (Sharky) Printed T-Shirt</h3>
         </a>
         <a
@@ -116,15 +117,17 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
           rel="noopener noreferrer"
           style={{ textDecoration: "none", color: "#000000" }}
         >
-          <ImageWrapper id="local-goodie-5">
-            <Image
-              alt="Local Goodie 5"
-              layout="fixed"
-              src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291750/home/local-goodie-5.webp"
-              height={380}
-              width={281}
-            />
-          </ImageWrapper>
+          <div className={styles["product-wrapper-wrapper"]}>
+            <div id="local-goodie-5" className={styles["product-wrapper"]}>
+              <Image
+                alt="Local Goodie 5"
+                layout="fixed"
+                src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291750/home/local-goodie-5.webp"
+                height={380}
+                width={281}
+              />
+            </div>
+          </div>
           <h3>12-pack Custom Assorted Case</h3>
         </a>
       </Stack>

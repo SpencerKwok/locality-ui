@@ -30,6 +30,18 @@
   border-radius: 21px;
 }
 
+.product-wrapper-wrapper {
+  border-radius: 16px;
+  height: 380px;
+  width: 281px;
+  overflow: hidden;
+}
+
+.product-wrapper:hover {
+  filter: brightness(1.05);
+  transform: scale(1.02);
+}
+
 .partner-logo-wrapper {
   border-radius: 50%;
   box-shadow: "0px 0px 24px 0px #A4A2A226";
