@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
+import Lottie from "react-lottie";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import styled from "styled-components";
@@ -6,6 +7,7 @@ import Link from "next/link";
 
 import Button from "components/common/button/Button";
 import Chrome from "components/common/images/Chrome";
+import LocalityDemoLottie from "public/images/home/locality-extension-lottie.json";
 import ExploreLocalGoodies from "components/home/ProductShowcase";
 import StepArrow from "components/common/images/StepArrow";
 import MiniSearch from "components/search/MiniSearch";
@@ -33,27 +35,9 @@ interface HomeProps {
 
 const Home: FC<HomeProps> = ({ isNewUser, width }) => {
   const [howItWorksStep, setHowItWorksStep] = useState(0);
+  const [loadOffscreenContent, setLoadOffscreenContent] = useState(false);
   const howItWorksVideoRef = useRef<HTMLVideoElement>(null);
   const scale = Math.round((width / 1519) * 10) / 10;
-
-  useEffect(() => {
-    if (howItWorksStep === 1) {
-      setTimeout(() => {
-        setHowItWorksStep(2);
-      }, 3580);
-      setTimeout(() => {
-        setHowItWorksStep(3);
-      }, 14100);
-    }
-  }, [howItWorksStep]);
-
-  useEffect(() => {
-    if (howItWorksVideoRef.current) {
-      howItWorksVideoRef.current.playsInline = true;
-      howItWorksVideoRef.current.controls = false;
-      void howItWorksVideoRef.current.play();
-    }
-  }, [howItWorksVideoRef]);
 
   return (
     <ThemeContext.Consumer>
@@ -127,12 +111,25 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                     </Button>
                   </a>
                 </Div>
-                <Image
-                  priority
-                  alt="Locality Extension Demo"
-                  src="https://res.cloudinary.com/hcory49pf/image/upload/v1628473871/home/locality-extension.webp"
-                  layout="fixed"
-                  quality={100}
+                <Lottie
+                  options={{
+                    autoplay: true,
+                    loop: false,
+                    animationData: LocalityDemoLottie,
+                  }}
+                  eventListeners={[
+                    {
+                      eventName: "DOMLoaded",
+                      callback: (): void => {
+                        if (howItWorksVideoRef.current) {
+                          howItWorksVideoRef.current.autoplay = true;
+                          howItWorksVideoRef.current.playsInline = true;
+                          howItWorksVideoRef.current.controls = false;
+                          void howItWorksVideoRef.current.play();
+                        }
+                      },
+                    },
+                  ]}
                   height={540}
                   width={678}
                 />
@@ -163,7 +160,16 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                     We make it effortless to shop local
                     <br />- It's as easy as 1, 2, 3
                   </h3>
-                  <Stack direction="row" rowAlign="center">
+                  <Stack
+                    direction="row"
+                    rowAlign="center"
+                    style={{ cursor: "pointer" }}
+                    onClick={(): void => {
+                      if (howItWorksVideoRef.current) {
+                        howItWorksVideoRef.current.currentTime = 0;
+                      }
+                    }}
+                  >
                     <StepArrow
                       {...(howItWorksStep !== 1 && { visibility: "hidden" })}
                     />
@@ -194,7 +200,16 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                       Add to Chrome
                     </h3>
                   </Stack>
-                  <Stack direction="row" rowAlign="center">
+                  <Stack
+                    direction="row"
+                    rowAlign="center"
+                    style={{ cursor: "pointer" }}
+                    onClick={(): void => {
+                      if (howItWorksVideoRef.current) {
+                        howItWorksVideoRef.current.currentTime = 3.6;
+                      }
+                    }}
+                  >
                     <StepArrow
                       {...(howItWorksStep !== 2 && { visibility: "hidden" })}
                     />
@@ -225,7 +240,16 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                       Shop as usual on big box retailers
                     </h3>
                   </Stack>
-                  <Stack direction="row" rowAlign="center">
+                  <Stack
+                    direction="row"
+                    rowAlign="center"
+                    style={{ cursor: "pointer" }}
+                    onClick={(): void => {
+                      if (howItWorksVideoRef.current) {
+                        howItWorksVideoRef.current.currentTime = 14.2;
+                      }
+                    }}
+                  >
                     <StepArrow
                       {...(howItWorksStep !== 3 && { visibility: "hidden" })}
                     />
@@ -266,11 +290,22 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                     style={{ width: 680, marginBottom: 24 }}
                     src="https://res.cloudinary.com/hcory49pf/video/upload/v1628135231/how-to-steps/all-steps.mp4"
                     ref={howItWorksVideoRef}
-                    onSeeked={(): void => {
-                      setHowItWorksStep(1);
+                    onTimeUpdate={(e): void => {
+                      const t = e.currentTarget.currentTime;
+                      if (t <= 3.5) {
+                        if (howItWorksStep !== 1) {
+                          setHowItWorksStep(1);
+                        }
+                      } else if (t <= 14.1) {
+                        if (howItWorksStep !== 2) {
+                          setHowItWorksStep(2);
+                        }
+                      } else if (howItWorksStep !== 3) {
+                        setHowItWorksStep(3);
+                      }
                     }}
-                    onPlay={(): void => {
-                      setHowItWorksStep(1);
+                    onLoad={(): void => {
+                      setLoadOffscreenContent(true);
                     }}
                   />
                   <h3 className={styles.h3} style={{ color: color.text.dark }}>
@@ -354,7 +389,10 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                     </Div>
                   </Div>
                 </Div>
-                <ExploreLocalGoodies width={1268} />
+                <ExploreLocalGoodies
+                  preload={loadOffscreenContent}
+                  width={1268}
+                />
               </Div>
             </section>
             <section
@@ -392,7 +430,10 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                     costs and minimal risks.
                   </h3>
                 </Stack>
-                <OurPartners style={{ marginBottom: 64 }} />
+                <OurPartners
+                  preload={loadOffscreenContent}
+                  style={{ marginBottom: 64 }}
+                />
                 <Link href="/signup/business">
                   <a>
                     <Button
@@ -440,6 +481,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                     }}
                   >
                     <Image
+                      priority={loadOffscreenContent}
                       alt="Locality Team"
                       layout="fixed"
                       src="https://res.cloudinary.com/hcory49pf/image/upload/v1628294191/home/locality-team.webp"

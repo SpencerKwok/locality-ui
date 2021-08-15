@@ -6,6 +6,7 @@ import Link from "next/link";
 
 import Button from "components/common/button/Button";
 import Chrome from "components/common/images/Chrome";
+import LocalityLogo from "public/images/locality-logo.svg";
 import ProfilePic from "components/common/images/ProfilePic";
 import ThemeContext from "components/common/Theme";
 import MiniSearch from "components/search/MiniSearch";
@@ -81,7 +82,7 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
                       <Image
                         priority
                         alt="Locality Logo"
-                        src="https://res.cloudinary.com/hcory49pf/image/upload/v1628470011/home/locality-logo.svg"
+                        src={LocalityLogo}
                         layout="fixed"
                         quality={100}
                         height={40}

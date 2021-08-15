@@ -7,10 +7,11 @@ import styles from "components/home/Home.module.css";
 import type { FC } from "react";
 
 interface ProductShowcaseProps {
+  preload: boolean;
   width: number;
 }
 
-const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
+const ProductShowcase: FC<ProductShowcaseProps> = ({ preload, width }) => {
   const [arrowOpacity, setArrowOpacity] = useState([0.3, 1]);
   return (
     <Stack
@@ -40,7 +41,7 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
           <div className={styles["product-wrapper-wrapper"]}>
             <div id="local-goodie-1" className={styles["product-wrapper"]}>
               <Image
-                priority
+                priority={preload}
                 alt="Local Goodie 1"
                 layout="fixed"
                 src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291241/home/local-goodie-1.webp"
@@ -60,7 +61,7 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
           <div className={styles["product-wrapper-wrapper"]}>
             <div id="local-goodie-2" className={styles["product-wrapper"]}>
               <Image
-                priority
+                priority={preload}
                 alt="Local Goodie 2"
                 layout="fixed"
                 src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291607/home/local-goodie-2.webp"
@@ -80,7 +81,7 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
           <div className={styles["product-wrapper-wrapper"]}>
             <div id="local-goodie-3" className={styles["product-wrapper"]}>
               <Image
-                priority
+                priority={preload}
                 alt="Local Goodie 3"
                 layout="fixed"
                 src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291664/home/local-goodie-3.webp"
@@ -100,7 +101,7 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
           <div className={styles["product-wrapper-wrapper"]}>
             <div id="local-goodie-4" className={styles["product-wrapper"]}>
               <Image
-                priority
+                priority={preload}
                 alt="Local Goodie 4"
                 layout="fixed"
                 src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291707/home/local-goodie-4.webp"
@@ -120,6 +121,7 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ width }) => {
           <div className={styles["product-wrapper-wrapper"]}>
             <div id="local-goodie-5" className={styles["product-wrapper"]}>
               <Image
+                priority={preload}
                 alt="Local Goodie 5"
                 layout="fixed"
                 src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291750/home/local-goodie-5.webp"
