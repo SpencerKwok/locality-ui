@@ -7,12 +7,13 @@ import styles from "components/home/Home.module.css";
 import type { FC } from "react";
 
 interface ProductShowcaseProps {
-  preload: boolean;
+  loading?: "eager" | "lazy";
   width: number;
 }
 
-const ProductShowcase: FC<ProductShowcaseProps> = ({ preload, width }) => {
+const ProductShowcase: FC<ProductShowcaseProps> = ({ loading, width }) => {
   const [arrowOpacity, setArrowOpacity] = useState([0.3, 1]);
+  console.log(loading);
   return (
     <Stack
       direction="column"
@@ -41,10 +42,10 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ preload, width }) => {
           <div className={styles["product-wrapper-wrapper"]}>
             <div id="local-goodie-1" className={styles["product-wrapper"]}>
               <Image
-                priority={preload}
                 alt="Local Goodie 1"
                 layout="fixed"
                 src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291241/home/local-goodie-1.webp"
+                loading={loading}
                 height={380}
                 width={281}
               />
@@ -61,9 +62,9 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ preload, width }) => {
           <div className={styles["product-wrapper-wrapper"]}>
             <div id="local-goodie-2" className={styles["product-wrapper"]}>
               <Image
-                priority={preload}
                 alt="Local Goodie 2"
                 layout="fixed"
+                loading={loading}
                 src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291607/home/local-goodie-2.webp"
                 height={380}
                 width={281}
@@ -81,9 +82,9 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ preload, width }) => {
           <div className={styles["product-wrapper-wrapper"]}>
             <div id="local-goodie-3" className={styles["product-wrapper"]}>
               <Image
-                priority={preload}
                 alt="Local Goodie 3"
                 layout="fixed"
+                loading={loading}
                 src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291664/home/local-goodie-3.webp"
                 height={380}
                 width={281}
@@ -101,9 +102,9 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ preload, width }) => {
           <div className={styles["product-wrapper-wrapper"]}>
             <div id="local-goodie-4" className={styles["product-wrapper"]}>
               <Image
-                priority={preload}
                 alt="Local Goodie 4"
                 layout="fixed"
+                loading={loading}
                 src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291707/home/local-goodie-4.webp"
                 height={380}
                 width={281}
@@ -121,9 +122,9 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ preload, width }) => {
           <div className={styles["product-wrapper-wrapper"]}>
             <div id="local-goodie-5" className={styles["product-wrapper"]}>
               <Image
-                priority={preload}
                 alt="Local Goodie 5"
                 layout="fixed"
+                loading={loading}
                 src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291750/home/local-goodie-5.webp"
                 height={380}
                 width={281}

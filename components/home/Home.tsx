@@ -304,7 +304,8 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                         setHowItWorksStep(3);
                       }
                     }}
-                    onLoad={(): void => {
+                    onLoadedData={(): void => {
+                      console.log("hi");
                       setLoadOffscreenContent(true);
                     }}
                   />
@@ -390,7 +391,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                   </Div>
                 </Div>
                 <ExploreLocalGoodies
-                  preload={loadOffscreenContent}
+                  loading={loadOffscreenContent ? "eager" : "lazy"}
                   width={1268}
                 />
               </Div>
@@ -431,7 +432,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                   </h3>
                 </Stack>
                 <OurPartners
-                  preload={loadOffscreenContent}
+                  loading={loadOffscreenContent ? "eager" : "lazy"}
                   style={{ marginBottom: 64 }}
                 />
                 <Link href="/signup/business">
