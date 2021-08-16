@@ -49,7 +49,9 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
               className="middle-middle-column"
               style={{
                 background: color.background.light,
-                height: 800 * scale,
+                height: 670 * scale,
+                paddingTop: 65 * scale,
+                paddingBottom: 65 * scale,
                 width,
               }}
             >
@@ -139,7 +141,9 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
               className="middle-middle-column"
               style={{
                 background: color.background.dark,
-                height: 800 * scale,
+                height: 670 * scale,
+                paddingTop: 65 * scale,
+                paddingBottom: 65 * scale,
                 width,
               }}
             >
