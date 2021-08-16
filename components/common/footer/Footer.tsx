@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Image from "next/image";
 import styled from "styled-components";
 
 import Button from "components/common/button/Button";
