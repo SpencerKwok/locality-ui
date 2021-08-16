@@ -42,9 +42,13 @@ export function useWindowSize(): { height?: number; width?: number } {
 
   useEffect(() => {
     const handleResize = (): void => {
+      const isMobile =
+        /Android|webOS|iPhone|iPad|Mac|Macintosh|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent
+        );
       setWindowSize({
-        width: document.body.clientWidth,
-        height: document.body.clientHeight,
+        width: isMobile ? screen.width : document.body.clientWidth,
+        height: isMobile ? screen.height : document.body.clientHeight,
       });
     };
 
