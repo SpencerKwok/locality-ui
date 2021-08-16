@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { useState } from "react";
 
 import Stack from "components/common/Stack";
 import styles from "components/home/Home.module.css";
@@ -13,6 +13,7 @@ interface PartnerLogoProps {
 }
 
 const PartnerLogo: FC<PartnerLogoProps> = ({ loading, alt, href, src }) => {
+  const [useFallback, setUseFallback] = useState(false);
   return (
     <a href={href} target="_blank" rel="noopener noreferrer">
       <Stack
@@ -21,13 +22,17 @@ const PartnerLogo: FC<PartnerLogoProps> = ({ loading, alt, href, src }) => {
         rowAlign="center"
         columnAlign="center"
       >
-        <Image
+        <img
           alt={alt}
-          layout="fixed"
           loading={loading}
-          src={src}
+          src={useFallback ? src.replace(".webp", ".jpg") : src}
           height={176}
           width={176}
+          onError={(): void => {
+            if (!useFallback) {
+              setUseFallback(true);
+            }
+          }}
         />
       </Stack>
     </a>

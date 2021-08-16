@@ -1,6 +1,5 @@
 import React, { useRef, useState } from "react";
 import Lottie from "react-lottie";
-import Image from "next/image";
 import dynamic from "next/dynamic";
 import styled from "styled-components";
 import Link from "next/link";
@@ -36,6 +35,7 @@ interface HomeProps {
 const Home: FC<HomeProps> = ({ isNewUser, width }) => {
   const [howItWorksStep, setHowItWorksStep] = useState(0);
   const [loadOffscreenContent, setLoadOffscreenContent] = useState(false);
+  const [useFallback, setUseFallback] = useState(false);
   const howItWorksVideoRef = useRef<HTMLVideoElement>(null);
   const scale = Math.round((width / 1519) * 10) / 10;
 
@@ -480,13 +480,21 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                       overflow: "hidden",
                     }}
                   >
-                    <Image
-                      priority={loadOffscreenContent}
+                    <img
                       alt="Locality Team"
-                      layout="fixed"
-                      src="https://res.cloudinary.com/hcory49pf/image/upload/v1628294191/home/locality-team.webp"
+                      loading={loadOffscreenContent ? "eager" : "lazy"}
                       height={388}
                       width={581}
+                      src={
+                        useFallback
+                          ? "https://res.cloudinary.com/hcory49pf/image/upload/v1628294191/home/locality-team.jpg"
+                          : "https://res.cloudinary.com/hcory49pf/image/upload/v1628294191/home/locality-team.webp"
+                      }
+                      onError={(): void => {
+                        if (!useFallback) {
+                          setUseFallback(true);
+                        }
+                      }}
                     />
                   </div>
                   <ValuesShowcase height={388} />

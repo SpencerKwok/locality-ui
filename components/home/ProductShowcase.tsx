@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Image from "next/image";
 
 import Stack from "components/common/Stack";
 import styles from "components/home/Home.module.css";
@@ -10,6 +9,55 @@ interface ProductShowcaseProps {
   loading?: "eager" | "lazy";
   width: number;
 }
+
+interface ProductLogoProps {
+  loading?: "eager" | "lazy";
+  alt: string;
+  details: string;
+  id: string;
+  href: string;
+  src: string;
+}
+
+const ProductLogo: FC<ProductLogoProps> = ({
+  loading,
+  alt,
+  details,
+  id,
+  href,
+  src,
+}) => {
+  const [useFallback, setUseFallback] = useState(false);
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{
+        textDecoration: "none",
+        color: "#000000",
+      }}
+    >
+      <div className={styles["product-wrapper-wrapper"]}>
+        <div id={id} className={styles["product-wrapper"]}>
+          <img
+            alt={alt}
+            loading={loading}
+            height={380}
+            width={281}
+            src={useFallback ? src.replace(".webp", ".jpg") : src}
+            onError={(): void => {
+              if (!useFallback) {
+                setUseFallback(true);
+              }
+            }}
+          />
+        </div>
+      </div>
+      <h3>{details}</h3>
+    </a>
+  );
+};
 
 const ProductShowcase: FC<ProductShowcaseProps> = ({ loading, width }) => {
   const [arrowOpacity, setArrowOpacity] = useState([0.3, 1]);
@@ -29,109 +77,46 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ loading, width }) => {
         spacing={45}
         style={{ width, overflow: "hidden" }}
       >
-        <a
-          href="https://laidbacksnacks.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            textDecoration: "none",
-            color: "#000000",
-          }}
-        >
-          <div className={styles["product-wrapper-wrapper"]}>
-            <div id="local-goodie-1" className={styles["product-wrapper"]}>
-              <Image
-                alt="Local Goodie 1"
-                layout="fixed"
-                src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291241/home/local-goodie-1.webp"
-                loading={loading}
-                height={380}
-                width={281}
-              />
-            </div>
-          </div>
-          <h3>10 Snack Box</h3>
-        </a>
-        <a
-          href="https://www.liveeasyco.ca/"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ textDecoration: "none", color: "#000000" }}
-        >
-          <div className={styles["product-wrapper-wrapper"]}>
-            <div id="local-goodie-2" className={styles["product-wrapper"]}>
-              <Image
-                alt="Local Goodie 2"
-                layout="fixed"
-                loading={loading}
-                src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291607/home/local-goodie-2.webp"
-                height={380}
-                width={281}
-              />
-            </div>
-          </div>
-          <h3>Herbal Bath Tea No 2: Ease</h3>
-        </a>
-        <a
-          href="https://shopcadine.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ textDecoration: "none", color: "#000000" }}
-        >
-          <div className={styles["product-wrapper-wrapper"]}>
-            <div id="local-goodie-3" className={styles["product-wrapper"]}>
-              <Image
-                alt="Local Goodie 3"
-                layout="fixed"
-                loading={loading}
-                src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291664/home/local-goodie-3.webp"
-                height={380}
-                width={281}
-              />
-            </div>
-          </div>
-          <h3>Bath and Body Aromatherapy Oil</h3>
-        </a>
-        <a
-          href="https://www.unimpressedofficial.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ textDecoration: "none", color: "#000000" }}
-        >
-          <div className={styles["product-wrapper-wrapper"]}>
-            <div id="local-goodie-4" className={styles["product-wrapper"]}>
-              <Image
-                alt="Local Goodie 4"
-                layout="fixed"
-                loading={loading}
-                src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291707/home/local-goodie-4.webp"
-                height={380}
-                width={281}
-              />
-            </div>
-          </div>
-          <h3>Chonky (Sharky) Printed T-Shirt</h3>
-        </a>
-        <a
-          href="https://www.talitykombucha.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ textDecoration: "none", color: "#000000" }}
-        >
-          <div className={styles["product-wrapper-wrapper"]}>
-            <div id="local-goodie-5" className={styles["product-wrapper"]}>
-              <Image
-                alt="Local Goodie 5"
-                layout="fixed"
-                loading={loading}
-                src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291750/home/local-goodie-5.webp"
-                height={380}
-                width={281}
-              />
-            </div>
-          </div>
-          <h3>12-pack Custom Assorted Case</h3>
-        </a>
+        <ProductLogo
+          loading={loading}
+          alt="Local Goodie 1"
+          details="10 Snack Box"
+          id="local-goodie-1"
+          href="https://laidbacksnacks.com"
+          src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291241/home/local-goodie-1.webp"
+        />
+        <ProductLogo
+          loading={loading}
+          alt="Local Goodie 2"
+          details="Herbal Bath Tea No 2: Ease"
+          id="local-goodie-2"
+          href="https://www.liveeasyco.ca"
+          src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291607/home/local-goodie-2.webp"
+        />
+        <ProductLogo
+          loading={loading}
+          alt="Local Goodie 3"
+          details="Bath and Body Aromatherapy Oil"
+          id="local-goodie-3"
+          href="https://shopcadine.com"
+          src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291664/home/local-goodie-3.webp"
+        />
+        <ProductLogo
+          loading={loading}
+          alt="Local Goodie 4"
+          details="Chonky (Sharky) Printed T-Shirt"
+          id="local-goodie-4"
+          href="https://www.unimpressedofficial.com"
+          src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291707/home/local-goodie-4.webp"
+        />
+        <ProductLogo
+          loading={loading}
+          alt="Local Goodie 5"
+          details="12-pack Custom Assorted Case"
+          id="local-goodie-5"
+          href="https://www.talitykombucha.com"
+          src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291750/home/local-goodie-5.webp"
+        />
       </Stack>
       <Stack
         direction="row"

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Image from "next/image";
 import styled from "styled-components";
 
@@ -20,6 +21,7 @@ interface FooterProps {
 }
 
 const Footer: FC<FooterProps> = ({ width }) => {
+  const [useFallback, setUseFallback] = useState(false);
   const scale = Math.round((width / 1519) * 10) / 10;
   return (
     <ThemeContext.Consumer>
@@ -80,12 +82,20 @@ const Footer: FC<FooterProps> = ({ width }) => {
                     overflow: "hidden",
                   }}
                 >
-                  <Image
+                  <img
                     alt="Hand holding a rose"
-                    layout="fixed"
-                    src="https://res.cloudinary.com/hcory49pf/image/upload/v1628294359/home/rose-hand.webp"
                     width={256}
                     height={338}
+                    src={
+                      useFallback
+                        ? "https://res.cloudinary.com/hcory49pf/image/upload/v1628294359/home/rose-hand.jpg"
+                        : "https://res.cloudinary.com/hcory49pf/image/upload/v1628294359/home/rose-hand.webp"
+                    }
+                    onError={(): void => {
+                      if (!useFallback) {
+                        setUseFallback(true);
+                      }
+                    }}
                   />
                 </div>
               </Stack>
