@@ -328,7 +328,6 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
               className="middle-middle-column"
               style={{
                 background: color.background.light,
-                height: 800 * scale,
                 width,
               }}
             >
@@ -336,6 +335,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                 className="middle-middle-column"
                 style={{
                   transform: `scale(${scale})`,
+                  height: 800 * scale,
                 }}
               >
                 <Div
@@ -399,7 +399,6 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
               id="partners"
               className="middle-middle-column"
               style={{
-                height: 800 * scale,
                 width,
               }}
             >
@@ -407,6 +406,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                 className="middle-middle-column"
                 style={{
                   transform: `scale(${scale})`,
+                  height: 800 * scale,
                 }}
               >
                 <Stack
@@ -453,7 +453,6 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
               className="middle-middle-column"
               style={{
                 background: color.background.light,
-                height: 800 * scale,
                 width,
               }}
             >
@@ -461,6 +460,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                 className="middle-middle-column"
                 style={{
                   transform: `scale(${scale})`,
+                  height: 800 * scale,
                 }}
               >
                 <h1 style={{ color: color.text.dark, marginBottom: 65 }}>
