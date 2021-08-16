@@ -305,7 +305,6 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                       }
                     }}
                     onLoadedData={(): void => {
-                      console.log("hi");
                       setLoadOffscreenContent(true);
                     }}
                   />

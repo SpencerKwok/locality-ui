@@ -13,7 +13,6 @@ interface ProductShowcaseProps {
 
 const ProductShowcase: FC<ProductShowcaseProps> = ({ loading, width }) => {
   const [arrowOpacity, setArrowOpacity] = useState([0.3, 1]);
-  console.log(loading);
   return (
     <Stack
       direction="column"
