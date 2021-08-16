@@ -119,7 +119,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                   }}
                   eventListeners={[
                     {
-                      eventName: "DOMLoaded",
+                      eventName: "loaded_images",
                       callback: (): void => {
                         if (howItWorksVideoRef.current) {
                           howItWorksVideoRef.current.autoplay = true;
