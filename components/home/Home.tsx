@@ -331,6 +331,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
             <section
               className="middle-middle-column"
               style={{
+                overflow: "hidden",
                 background: color.background.light,
                 height: 670 * scale,
                 paddingTop: 65 * scale,
@@ -338,68 +339,70 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                 width,
               }}
             >
-              <Div
-                className="middle-middle-column"
-                style={{
-                  transform: `scale(${scale})`,
-                }}
-              >
+              <div style={{ height: 670 }}>
                 <Div
-                  className="middle-left-column"
-                  style={{ marginBottom: 58 }}
+                  className="middle-middle-column"
+                  style={{
+                    transform: `scale(${scale})`,
+                  }}
                 >
-                  <h1 style={{ color: color.text.dark, marginBottom: 24 }}>
-                    Explore local goodies
-                  </h1>
-                  <Div style={{ width: 1268 }}>
-                    <h3
-                      style={{
-                        color: color.text.dark,
-                        paddingLeft: 3,
-                        width: 448,
-                      }}
-                    >
-                      We care about creating meaningful impact in our
-                      communities. Each of your purchases promotes positive
-                      social, economical, and environmental change.
-                    </h3>
-                    <Div style={{ flexGrow: 1 }} />
-                    <Div className="middle-middle-row">
-                      <Div
-                        className="middle-middle-row"
-                        style={{ marginRight: 32 }}
+                  <Div
+                    className="middle-left-column"
+                    style={{ marginBottom: 58 }}
+                  >
+                    <h1 style={{ color: color.text.dark, marginBottom: 24 }}>
+                      Explore local goodies
+                    </h1>
+                    <Div style={{ width: 1268 }}>
+                      <h3
+                        style={{
+                          color: color.text.dark,
+                          paddingLeft: 3,
+                          width: 448,
+                        }}
                       >
-                        <h3
-                          style={{
-                            color: color.text.dark,
-                            fontWeight: 700,
-                            marginRight: 6,
-                          }}
+                        We care about creating meaningful impact in our
+                        communities. Each of your purchases promotes positive
+                        social, economical, and environmental change.
+                      </h3>
+                      <Div style={{ flexGrow: 1 }} />
+                      <Div className="middle-middle-row">
+                        <Div
+                          className="middle-middle-row"
+                          style={{ marginRight: 32 }}
                         >
-                          Browse more
-                        </h3>
-                        <svg
-                          width={12}
-                          height={11}
-                          viewBox="0 0 12 11"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M11.7629 5.27283L11.4324 4.95608L11.1953 4.72891L6.26043 0L5.45576 0.771088L9.8197 4.95608H0V6.04392H9.8197L5.45576 10.2289L6.26043 11L12 5.5L11.7629 5.27283Z"
-                            fill="#112378"
-                          />
-                        </svg>
+                          <h3
+                            style={{
+                              color: color.text.dark,
+                              fontWeight: 700,
+                              marginRight: 6,
+                            }}
+                          >
+                            Browse more
+                          </h3>
+                          <svg
+                            width={12}
+                            height={11}
+                            viewBox="0 0 12 11"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M11.7629 5.27283L11.4324 4.95608L11.1953 4.72891L6.26043 0L5.45576 0.771088L9.8197 4.95608H0V6.04392H9.8197L5.45576 10.2289L6.26043 11L12 5.5L11.7629 5.27283Z"
+                              fill="#112378"
+                            />
+                          </svg>
+                        </Div>
+                        <MiniSearch width={247} />
                       </Div>
-                      <MiniSearch width={247} />
                     </Div>
                   </Div>
+                  <ExploreLocalGoodies
+                    loading={loadOffscreenContent ? "eager" : "lazy"}
+                    width={1268}
+                  />
                 </Div>
-                <ExploreLocalGoodies
-                  loading={loadOffscreenContent ? "eager" : "lazy"}
-                  width={1268}
-                />
-              </Div>
+              </div>
             </section>
             <section
               id="partners"

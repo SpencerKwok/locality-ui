@@ -1,3 +1,5 @@
+export { default as LeftArrow } from './LeftArrow'
 export { default as OurMission } from './OurMission'
 export { default as OurPurpose } from './OurPurpose'
 export { default as OurVision } from './OurVision'
+export { default as RightArrow } from './RightArrow'
