@@ -123,9 +123,12 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                     }}
                     eventListeners={[
                       {
-                        eventName: "loaded_images",
+                        eventName: "enterFrame",
                         callback: (): void => {
-                          if (howItWorksVideoRef.current) {
+                          if (
+                            howItWorksVideoRef.current &&
+                            howItWorksVideoRef.current.paused === true
+                          ) {
                             howItWorksVideoRef.current.autoplay = true;
                             howItWorksVideoRef.current.playsInline = true;
                             howItWorksVideoRef.current.controls = false;
