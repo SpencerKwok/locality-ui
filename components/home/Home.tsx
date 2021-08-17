@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import Lottie from "react-lottie";
+import Lottie from "react-lottie-player";
 import dynamic from "next/dynamic";
 import styled from "styled-components";
 import Link from "next/link";
@@ -116,29 +116,24 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                     </a>
                   </Div>
                   <Lottie
-                    options={{
-                      autoplay: true,
-                      loop: false,
-                      animationData: LocalityDemoLottie,
+                    play={true}
+                    loop={false}
+                    animationData={LocalityDemoLottie}
+                    style={{
+                      height: 540,
+                      width: 678,
                     }}
-                    eventListeners={[
-                      {
-                        eventName: "enterFrame",
-                        callback: (): void => {
-                          if (
-                            howItWorksVideoRef.current &&
-                            howItWorksVideoRef.current.paused === true
-                          ) {
-                            howItWorksVideoRef.current.autoplay = true;
-                            howItWorksVideoRef.current.playsInline = true;
-                            howItWorksVideoRef.current.controls = false;
-                            void howItWorksVideoRef.current.play();
-                          }
-                        },
-                      },
-                    ]}
-                    height={540}
-                    width={678}
+                    onEnterFrame={(): void => {
+                      if (
+                        howItWorksVideoRef.current &&
+                        howItWorksVideoRef.current.paused === true
+                      ) {
+                        howItWorksVideoRef.current.autoplay = true;
+                        howItWorksVideoRef.current.playsInline = true;
+                        howItWorksVideoRef.current.controls = false;
+                        void howItWorksVideoRef.current.play();
+                      }
+                    }}
                   />
                 </Div>
               </div>

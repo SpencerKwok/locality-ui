@@ -24,6 +24,7 @@ const PartnerLogo: FC<PartnerLogoProps> = ({ loading, alt, href, src }) => {
       >
         <img
           alt={alt}
+          className={styles["partner-logo"]}
           loading={loading}
           src={useFallback ? src.replace(".webp", ".jpg") : src}
           height={176}
