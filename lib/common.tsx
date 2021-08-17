@@ -51,8 +51,12 @@ export function useWindowSize(): { height?: number; width?: number } {
           screen.orientation.type === "portrait-primary" ||
           screen.orientation.type === "portrait-secondary";
         setWindowSize({
-          width: isPortrait ? screen.availWidth : screen.availHeight,
-          height: isPortrait ? screen.availHeight : screen.availWidth,
+          width: isPortrait
+            ? screen.availWidth || screen.width
+            : screen.availHeight || screen.height,
+          height: isPortrait
+            ? screen.availHeight || screen.height
+            : screen.availWidth || screen.width,
         });
       } else {
         setWindowSize({
