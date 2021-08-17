@@ -46,10 +46,20 @@ export function useWindowSize(): { height?: number; width?: number } {
         /Android|webOS|iPhone|iPad|Mac|Macintosh|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
           navigator.userAgent
         );
-      setWindowSize({
-        width: isMobile ? screen.width : document.body.clientWidth,
-        height: isMobile ? screen.height : document.body.clientHeight,
-      });
+      if (isMobile) {
+        const isPortrait =
+          screen.orientation.type === "portrait-primary" ||
+          screen.orientation.type === "portrait-secondary";
+        setWindowSize({
+          width: isPortrait ? screen.availWidth : screen.availHeight,
+          height: isPortrait ? screen.availHeight : screen.availWidth,
+        });
+      } else {
+        setWindowSize({
+          width: document.body.clientWidth,
+          height: document.body.clientHeight,
+        });
+      }
     };
 
     // Initialize window size on mount

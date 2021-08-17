@@ -12,9 +12,6 @@ import type { FC } from "react";
 
 // TODO: Make all divs flex
 const Div = styled.div`
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
   display: flex;
 `;
 
