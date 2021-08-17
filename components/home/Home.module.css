@@ -4,12 +4,6 @@
   padding: 20px 24px;
 }
 
-.section {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-}
-
 .step-number {
   margin-left: -29px;
   margin-top: -5px;
