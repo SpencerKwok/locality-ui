@@ -16,26 +16,23 @@ const PartnerLogo: FC<PartnerLogoProps> = ({ loading, alt, href, src }) => {
   const [useFallback, setUseFallback] = useState(false);
   return (
     <a href={href} target="_blank" rel="noopener noreferrer">
-      <Stack
-        className={styles["partner-logo-wrapper"]}
-        direction="row"
-        rowAlign="center"
-        columnAlign="center"
-      >
-        <img
-          alt={alt}
-          className={styles["partner-logo"]}
-          loading={loading}
-          src={useFallback ? src.replace(".webp", ".jpg") : src}
-          height={176}
-          width={176}
-          onError={(): void => {
-            if (!useFallback) {
-              setUseFallback(true);
-            }
-          }}
-        />
-      </Stack>
+      <div className={styles["partner-logo-wrapper-wrapper"]}>
+        <div className={styles["partner-logo-wrapper"]}>
+          <img
+            alt={alt}
+            className={styles["partner-logo"]}
+            loading={loading}
+            src={useFallback ? src.replace(".webp", ".jpg") : src}
+            height={176}
+            width={176}
+            onError={(): void => {
+              if (!useFallback) {
+                setUseFallback(true);
+              }
+            }}
+          />
+        </div>
+      </div>
     </a>
   );
 };

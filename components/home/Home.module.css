@@ -35,21 +35,23 @@
   transform: scale(1.02);
 }
 
-.partner-logo {
-  overflow: hidden;
-  border-radius: 50%;
-}
-
-.partner-logo-wrapper {
+.partner-logo-wrapper,
+.partner-logo-wrapper-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
   border-radius: 50%;
   height: 128px;
   width: 128px;
+}
+
+.partner-logo-wrapper-wrapper {
   box-shadow: 0px 0px 24px 0px #a4a2a226;
   filter: drop-shadow(0px 0px 24px rgba(164, 162, 162, 0.15));
 }
 
-.partner-logo-wrapper:hover {
+.partner-logo-wrapper-wrapper:hover {
   background: #00000008;
   filter: brightness(0.92) drop-shadow(0px 0px 24px rgba(164, 162, 162, 0.15));
 }
