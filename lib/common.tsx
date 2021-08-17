@@ -41,15 +41,15 @@ export function useWindowSize(): { height?: number; width?: number } {
   });
 
   useEffect(() => {
+    const isMobile =
+      /Android|webOS|iPhone|iPad|Mac|Macintosh|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
+
     const handleResize = (): void => {
-      const isMobile =
-        /Android|webOS|iPhone|iPad|Mac|Macintosh|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-          navigator.userAgent
-        );
       if (isMobile) {
         const isPortrait =
-          screen.orientation.type === "portrait-primary" ||
-          screen.orientation.type === "portrait-secondary";
+          window.orientation === 0 || window.orientation === 180;
         setWindowSize({
           width: isPortrait
             ? screen.availWidth || screen.width
