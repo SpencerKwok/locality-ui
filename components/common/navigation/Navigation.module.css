@@ -40,9 +40,11 @@
 }
 .menu > *:first-child {
   padding-top: 6px;
+  border-radius: 11px 11px 0px 0px;
 }
 .menu > *:last-child {
   padding-bottom: 6px;
+  border-radius: 0px 0px 11px 11px;
 }
 .menu-button {
   border: none;
