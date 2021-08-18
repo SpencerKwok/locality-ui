@@ -1,6 +1,5 @@
-import { Fragment } from "react";
-
 import Button from "components/common/button/Button";
+import Stack from "components/common/Stack";
 import styles from "components/common/form/form.module.css";
 
 import type { FC } from "react";
@@ -28,17 +27,24 @@ const FormSubmitButton: FC<FormSubmitButtonProps> = ({
       disabled={isSubmitting}
     >
       {isSubmitting === true && disabled !== true ? (
-        <Fragment>
+        <Stack direction="row" rowAlign="center" columnAlign="center">
           <span
-            className="spinner-border spinner-border-sm"
+            className={`${styles["spinner-border"]} ${styles["spinner-border-sm"]}`}
             role="status"
             aria-hidden="true"
-            style={{ marginBottom: 2, marginRight: 12 }}
+            style={{ marginRight: 12 }}
           ></span>
           {submittingText}
-        </Fragment>
+        </Stack>
       ) : (
-        <Fragment>{text}</Fragment>
+        <Stack
+          direction="row"
+          rowAlign="center"
+          columnAlign="center"
+          style={{ height: 18 }}
+        >
+          {text}
+        </Stack>
       )}
     </Button>
   );

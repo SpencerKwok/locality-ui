@@ -27,6 +27,9 @@ const Button: FC<ButtonProps> = ({ children, className, variant, ...rest }) => {
           &:active {
             background: ${variantFocusColor};
           }
+          &:disabled {
+            background: ${variantFocusColor};
+          }
           &:hover {
             background: ${variantFocusColor};
           }

@@ -39,3 +39,27 @@
   content: " *";
   color: red;
 }
+
+@keyframes spinner-border {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.spinner-border {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  vertical-align: text-bottom;
+  border: 0.25em solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spinner-border 0.75s linear infinite;
+}
+.spinner-border-sm {
+  width: 12px;
+  height: 12px;
+  border-width: 3px;
+}
