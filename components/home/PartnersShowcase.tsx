@@ -16,8 +16,8 @@ const PartnerLogo: FC<PartnerLogoProps> = ({ loading, alt, href, src }) => {
   const [useFallback, setUseFallback] = useState(false);
   return (
     <a href={href} target="_blank" rel="noopener noreferrer">
-      <div className={styles["partner-logo-wrapper-wrapper"]}>
-        <div className={styles["partner-logo-wrapper"]}>
+      <div className={styles["partner-logo-container-container"]}>
+        <div className={styles["partner-logo-container"]}>
           <img
             alt={alt}
             className={styles["partner-logo"]}

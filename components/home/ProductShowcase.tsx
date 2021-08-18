@@ -40,8 +40,8 @@ const ProductLogo: FC<ProductLogoProps> = ({
         color: "#000000",
       }}
     >
-      <div className={styles["product-wrapper-wrapper"]}>
-        <div id={id} className={styles["product-wrapper"]}>
+      <div className={styles["product-container-container"]}>
+        <div id={id} className={styles["product-container"]}>
           <img
             alt={alt}
             loading={loading}

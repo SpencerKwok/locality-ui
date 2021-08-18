@@ -191,7 +191,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                       </Div>
                       <h3
                         className={
-                          howItWorksStep === 1 ? styles["step-wrapper"] : ""
+                          howItWorksStep === 1 ? styles["step-container"] : ""
                         }
                         style={{
                           color: color.text.dark,
@@ -231,7 +231,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                       </Div>
                       <h3
                         className={
-                          howItWorksStep === 2 ? styles["step-wrapper"] : ""
+                          howItWorksStep === 2 ? styles["step-container"] : ""
                         }
                         style={{
                           color: color.text.dark,
@@ -271,7 +271,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                       </Div>
                       <h3
                         className={
-                          howItWorksStep === 3 ? styles["step-wrapper"] : ""
+                          howItWorksStep === 3 ? styles["step-container"] : ""
                         }
                         style={{
                           color: color.text.dark,

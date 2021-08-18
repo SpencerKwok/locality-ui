@@ -28,7 +28,6 @@ const Div = styled.div`
 
 const Navigation: FC<NavigationProps> = ({ user, width }) => {
   const [transitionValue, setTransitionValue] = useState(0);
-  const [menuVisible, setMenuVisible] = useState(false);
   const scale = Math.round((width / 1519) * 10) / 10;
 
   useEffect(() => {
@@ -190,18 +189,7 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
                         style={{ paddingRight: 40 }}
                       >
                         <MiniSearch width={247} />
-
-                        <Stack
-                          direction="row"
-                          spacing={8}
-                          rowAlign="center"
-                          onClick={(): void => {
-                            setMenuVisible(!menuVisible);
-                          }}
-                          style={{
-                            cursor: "pointer",
-                          }}
-                        >
+                        <Stack direction="row" spacing={8} rowAlign="center">
                           <ProfilePic
                             height={41}
                             width={41}
@@ -210,22 +198,17 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
                           <span
                             className={styles.link}
                             style={{
+                              cursor: "none",
                               color: color.text.dark,
                             }}
                           >{`Hi ${user.firstName} ${user.lastName}!`}</span>
                         </Stack>
-                        <Stack direction="column" rowAlign="flex-end">
-                          <button
-                            onClick={(): void => {
-                              setMenuVisible(!menuVisible);
-                            }}
-                            style={{
-                              border: "none",
-                              background: "none",
-                              cursor: "pointer",
-                              marginTop: 1,
-                            }}
-                          >
+                        <Stack
+                          className={styles["menu-container"]}
+                          direction="column"
+                          rowAlign="flex-end"
+                        >
+                          <div className={styles["menu-button"]}>
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               width="30"
@@ -240,18 +223,13 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
                                 d="M4 7h22M4 15h22M4 23h22"
                               />
                             </svg>
-                          </button>
+                          </div>
                           <Stack
+                            className={styles.menu}
                             direction="column"
                             rowAlign="flex-end"
                             style={{
-                              borderRadius: 11,
                               background: color.text.light,
-                              padding: "6px 12px 6px 12px",
-                              position: "absolute",
-                              visibility: menuVisible ? "visible" : "hidden",
-                              overflow: "visible",
-                              right: 42,
                             }}
                           >
                             {user.isBusiness === true && (
@@ -284,7 +262,6 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
                               }}
                               style={{
                                 color: color.text.dark,
-                                cursor: "pointer",
                               }}
                             >
                               Log out
