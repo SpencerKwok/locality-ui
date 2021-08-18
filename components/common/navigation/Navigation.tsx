@@ -198,7 +198,7 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
                           <span
                             className={styles.link}
                             style={{
-                              cursor: "none",
+                              cursor: "default",
                               color: color.text.dark,
                             }}
                           >{`Hi ${user.firstName} ${user.lastName}!`}</span>

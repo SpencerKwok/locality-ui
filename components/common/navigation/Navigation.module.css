@@ -50,5 +50,6 @@
   margin-top: 1px;
 }
 .menu-container:hover * {
+  cursor: pointer;
   visibility: visible;
 }
