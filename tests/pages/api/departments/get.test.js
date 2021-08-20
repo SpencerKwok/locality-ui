@@ -1,3 +1,11 @@
+/**
+ * Get Departments Unit Tests
+ *
+ * @group unit
+ * @group website
+ * @group departments
+ */
+
 const faker = require("faker");
 
 const log = jest.fn();

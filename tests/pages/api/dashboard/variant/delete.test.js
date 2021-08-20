@@ -1,3 +1,13 @@
+/**
+ * Delete Variant to Product Unit Tests
+ *
+ * @group unit
+ * @group website
+ * @group dashboard
+ * @group variant
+ * @group variant-delete
+ */
+
 const faker = require("faker");
 const xss = require("xss");
 

@@ -28,8 +28,8 @@
   height: 380px;
   width: 281px;
   overflow: hidden;
+  margin-bottom: 11px;
 }
-
 .product-container:hover {
   filter: brightness(1.05);
   transform: scale(1.02);

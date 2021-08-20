@@ -1,3 +1,13 @@
+/**
+ * Update Password Unit Tests
+ *
+ * @group unit
+ * @group website
+ * @group dashboard
+ * @group password
+ * @group password-update
+ */
+
 const bcrypt = require("bcryptjs");
 const faker = require("faker");
 

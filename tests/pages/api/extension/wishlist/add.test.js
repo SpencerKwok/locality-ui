@@ -1,3 +1,12 @@
+/**
+ * Add to Wishlist Unit Tests
+ *
+ * @group unit
+ * @group extension
+ * @group wishlist
+ * @group wishlist-add
+ */
+
 const faker = require("faker");
 
 const userId = faker.datatype.number();

@@ -1,3 +1,11 @@
+/**
+ * Contact Unit Tests
+ *
+ * @group unit
+ * @group website
+ * @group contact
+ */
+
 const faker = require("faker");
 
 // Setup

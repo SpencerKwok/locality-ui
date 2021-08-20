@@ -1,3 +1,11 @@
+/**
+ * Signout Unit Tests
+ *
+ * @group unit
+ * @group extension
+ * @group signout
+ */
+
 const faker = require("faker");
 
 const userId = faker.datatype.number();

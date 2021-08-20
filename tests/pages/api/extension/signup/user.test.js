@@ -1,3 +1,12 @@
+/**
+ * User Signup Unit Tests
+ *
+ * @group unit
+ * @group extension
+ * @group signup
+ * @group signup-user
+ */
+
 const bcrypt = require("bcryptjs");
 const faker = require("faker");
 const xss = require("xss");

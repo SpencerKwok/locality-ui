@@ -1,3 +1,12 @@
+/**
+ * Credentials Signin Unit Tests
+ *
+ * @group unit
+ * @group extension
+ * @group signin
+ * @group signin-credentials
+ */
+
 const bcrypt = require("bcryptjs");
 const faker = require("faker");
 const { SALT } = require("lib/env");

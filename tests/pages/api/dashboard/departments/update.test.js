@@ -1,3 +1,13 @@
+/**
+ * Update Departments Unit Tests
+ *
+ * @group unit
+ * @group website
+ * @group dashboard
+ * @group departments
+ * @group departments-update
+ */
+
 const faker = require("faker");
 const xss = require("xss");
 

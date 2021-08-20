@@ -1,3 +1,13 @@
+/**
+ * Update Homepages Unit Tests
+ *
+ * @group unit
+ * @group website
+ * @group dashboard
+ * @group homepages
+ * @group homepages-update
+ */
+
 const faker = require("faker");
 const xss = require("xss");
 

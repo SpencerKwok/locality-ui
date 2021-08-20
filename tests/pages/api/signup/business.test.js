@@ -1,3 +1,12 @@
+/**
+ * Business Signup Unit Tests
+ *
+ * @group unit
+ * @group website
+ * @group signup
+ * @group signup-business
+ */
+
 const bcrypt = require("bcryptjs");
 const faker = require("faker");
 const xss = require("xss");

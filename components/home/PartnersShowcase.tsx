@@ -116,7 +116,7 @@ const PartnersShowcase: FC<PartnersShowcaseProps> = ({ loading, style }) => {
           loading={loading}
           alt="Cadine Logo"
           href="https://shopcadine.com"
-          src="https://res.cloudinary.com/hcory49pf/image/upload/v1628955614/home/partner-2-3.webp"
+          src="https://res.cloudinary.com/hcory49pf/image/upload/v1629430269/home/partner-2-3.webp"
         />
         <PartnerLogo
           loading={loading}
