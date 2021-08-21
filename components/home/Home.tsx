@@ -439,6 +439,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                   </Div>
                   <ExploreLocalGoodies
                     loading={loadOffscreenContent ? "eager" : "lazy"}
+                    scale={scale}
                     width={1268}
                   />
                 </Div>

@@ -9,6 +9,7 @@ import type { FC } from "react";
 
 interface ProductShowcaseProps {
   loading?: "eager" | "lazy";
+  scale: number;
   width: number;
 }
 
@@ -55,7 +56,11 @@ const ProductLogo = forwardRef<HTMLDivElement, ProductLogoProps>(
   }
 );
 
-const ProductShowcase: FC<ProductShowcaseProps> = ({ loading, width }) => {
+const ProductShowcase: FC<ProductShowcaseProps> = ({
+  loading,
+  scale,
+  width,
+}) => {
   const [arrowOpacity, setArrowOpacity] = useState([0.3, 1]);
   const productShowcaseRef = useRef<HTMLDivElement>(null);
 
@@ -131,9 +136,10 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ loading, width }) => {
           opacity={arrowOpacity[1]}
           style={{ cursor: "pointer" }}
           onClick={(): void => {
+            console.log(productShowcaseRef.current?.scrollWidth);
             productShowcaseRef.current?.scrollTo({
               behavior: "smooth",
-              left: productShowcaseRef.current.scrollWidth,
+              left: productShowcaseRef.current.scrollWidth * scale,
             });
             setArrowOpacity([1, 0.3]);
           }}
