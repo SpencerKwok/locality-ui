@@ -19,10 +19,6 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
   const router = useRouter();
 
   useEffect(() => {
-    // Add polyfill to support smooth
-    // scroll behaviour on Safari
-    SmoothScroll.polyfill();
-
     // By-pass waiting if user is transitioning
     // within session protected pages
     if (
@@ -50,6 +46,12 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
     );
+  }
+
+  // Add polyfill to support smooth
+  // scroll behaviour on Safari
+  if (typeof window !== "undefined") {
+    SmoothScroll.polyfill();
   }
 
   return (
