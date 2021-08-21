@@ -134,7 +134,8 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ loading, width }) => {
             if (elem) {
               elem.scrollIntoView({
                 behavior: "smooth",
-                block: "nearest",
+                block: "center",
+                inline: "center",
               });
               setArrowOpacity([0.3, 1]);
             }
@@ -148,7 +149,8 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ loading, width }) => {
             if (elem) {
               elem.scrollIntoView({
                 behavior: "smooth",
-                block: "nearest",
+                block: "center",
+                inline: "center",
               });
               setArrowOpacity([1, 0.3]);
             }
