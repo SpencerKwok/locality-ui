@@ -57,8 +57,7 @@ const ProductLogo = forwardRef<HTMLDivElement, ProductLogoProps>(
 
 const ProductShowcase: FC<ProductShowcaseProps> = ({ loading, width }) => {
   const [arrowOpacity, setArrowOpacity] = useState([0.3, 1]);
-  const firstProductRef = useRef<HTMLDivElement>(null);
-  const lastProductRef = useRef<HTMLDivElement>(null);
+  const productShowcaseRef = useRef<HTMLDivElement>(null);
 
   return (
     <Stack
@@ -66,10 +65,9 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ loading, width }) => {
       columnAlign="center"
       rowAlign="center"
       spacing={40}
-      style={{ scrollBehavior: "smooth" }}
     >
       <Stack
-        id="explore-local-goodies-showcase"
+        ref={productShowcaseRef}
         direction="row"
         columnAlign="flex-start"
         rowAlign="center"
@@ -78,7 +76,6 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ loading, width }) => {
       >
         <ProductLogo
           loading={loading}
-          ref={firstProductRef}
           alt="Local Goodie 1"
           details="10 Snack Box"
           href="https://laidbacksnacks.com"
@@ -107,7 +104,6 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ loading, width }) => {
         />
         <ProductLogo
           loading={loading}
-          ref={lastProductRef}
           alt="Local Goodie 5"
           details="12-pack Custom Assorted Case"
           href="https://www.talitykombucha.com"
@@ -124,10 +120,9 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ loading, width }) => {
           opacity={arrowOpacity[0]}
           style={{ cursor: "pointer" }}
           onClick={(): void => {
-            firstProductRef.current?.scrollIntoView({
+            productShowcaseRef.current?.scrollTo({
               behavior: "smooth",
-              block: "nearest",
-              inline: "end",
+              left: 0,
             });
             setArrowOpacity([0.3, 1]);
           }}
@@ -136,10 +131,9 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ loading, width }) => {
           opacity={arrowOpacity[1]}
           style={{ cursor: "pointer" }}
           onClick={(): void => {
-            lastProductRef.current?.scrollIntoView({
+            productShowcaseRef.current?.scrollTo({
               behavior: "smooth",
-              block: "nearest",
-              inline: "end",
+              left: productShowcaseRef.current.scrollWidth,
             });
             setArrowOpacity([1, 0.3]);
           }}
