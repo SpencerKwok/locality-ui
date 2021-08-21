@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { signOut } from "next-auth/client";
-import Image from "next/image";
 import Link from "next/link";
 
 import Button from "components/common/button/Button";
 import Chrome from "components/common/images/Chrome";
-import LocalityLogo from "public/images/locality-logo.svg";
 import ProfilePic from "components/common/images/ProfilePic";
 import ThemeContext from "components/common/Theme";
 import MiniSearch from "components/search/MiniSearch";
@@ -27,6 +25,7 @@ const Div = styled.div`
 `;
 
 const Navigation: FC<NavigationProps> = ({ user, width }) => {
+  const [useFallback, setUseFallback] = useState(false);
   const [transitionValue, setTransitionValue] = useState(0);
   const scale = Math.round((width / 1519) * 10) / 10;
 
@@ -78,14 +77,21 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
                 <div style={{ cursor: "pointer", marginRight: 29.75 }}>
                   <Link href="/">
                     <a>
-                      <Image
-                        priority
+                      <img
+                        loading="eager"
                         alt="Locality Logo"
-                        src={LocalityLogo}
-                        layout="fixed"
-                        quality={100}
-                        height={40}
-                        width={123}
+                        src={
+                          useFallback
+                            ? "https://res.cloudinary.com/hcory49pf/image/upload/v1629522033/home/locality-logo.jpg"
+                            : "https://res.cloudinary.com/hcory49pf/image/upload/v1629522033/home/locality-logo.webp"
+                        }
+                        height={30}
+                        width={115}
+                        onError={(): void => {
+                          if (!useFallback) {
+                            setUseFallback(true);
+                          }
+                        }}
                       />
                     </a>
                   </Link>

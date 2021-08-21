@@ -85,7 +85,7 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ loading, width }) => {
           details="10 Snack Box"
           id="local-goodie-1"
           href="https://laidbacksnacks.com"
-          src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291241/home/local-goodie-1.webp"
+          src="https://res.cloudinary.com/hcory49pf/image/upload/v1629517880/home/local-goodie-1.webp"
         />
         <ProductLogo
           loading={loading}
@@ -93,7 +93,7 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ loading, width }) => {
           details="Herbal Bath Tea No 2: Ease"
           id="local-goodie-2"
           href="https://www.liveeasyco.ca"
-          src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291607/home/local-goodie-2.webp"
+          src="https://res.cloudinary.com/hcory49pf/image/upload/v1629517460/home/local-goodie-2.webp"
         />
         <ProductLogo
           loading={loading}
@@ -101,7 +101,7 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ loading, width }) => {
           details="Bath and Body Aromatherapy Oil"
           id="local-goodie-3"
           href="https://shopcadine.com"
-          src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291664/home/local-goodie-3.webp"
+          src="https://res.cloudinary.com/hcory49pf/image/upload/v1629517499/home/local-goodie-3.webp"
         />
         <ProductLogo
           loading={loading}
@@ -109,7 +109,7 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ loading, width }) => {
           details="Chonky (Sharky) Printed T-Shirt"
           id="local-goodie-4"
           href="https://www.unimpressedofficial.com"
-          src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291707/home/local-goodie-4.webp"
+          src="https://res.cloudinary.com/hcory49pf/image/upload/v1629517044/home/local-goodie-4.webp"
         />
         <ProductLogo
           loading={loading}
@@ -117,7 +117,7 @@ const ProductShowcase: FC<ProductShowcaseProps> = ({ loading, width }) => {
           details="12-pack Custom Assorted Case"
           id="local-goodie-5"
           href="https://www.talitykombucha.com"
-          src="https://res.cloudinary.com/hcory49pf/image/upload/v1628291750/home/local-goodie-5.webp"
+          src="https://res.cloudinary.com/hcory49pf/image/upload/v1629519473/home/local-goodie-5.webp"
         />
       </Stack>
       <Stack

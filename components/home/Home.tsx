@@ -71,7 +71,8 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                         width: 582,
                       }}
                     >
-                      Your Online Marketplace for High Quality Local Products
+                      Your Online Marketplace for High Quality Local Products in
+                      British Columbia
                     </h1>
                     <h2
                       style={{
@@ -512,8 +513,8 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                         width={581}
                         src={
                           useFallback
-                            ? "https://res.cloudinary.com/hcory49pf/image/upload/v1628294191/home/locality-team.jpg"
-                            : "https://res.cloudinary.com/hcory49pf/image/upload/v1628294191/home/locality-team.webp"
+                            ? "https://res.cloudinary.com/hcory49pf/image/upload/v1629521499/home/locality-team.jpg"
+                            : "https://res.cloudinary.com/hcory49pf/image/upload/v1629521499/home/locality-team.webp"
                         }
                         onError={(): void => {
                           if (!useFallback) {

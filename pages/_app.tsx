@@ -3,6 +3,7 @@ import { getSession } from "next-auth/client";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import ThemeContext, { DefaultTheme } from "components/common/Theme";
+import SmoothScroll from "smoothscroll-polyfill";
 import "../styles.css";
 
 import type { AppProps } from "next/app";
@@ -18,6 +19,10 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
   const router = useRouter();
 
   useEffect(() => {
+    // Add polyfill to support smooth
+    // scroll behaviour on Safari
+    SmoothScroll.polyfill();
+
     // By-pass waiting if user is transitioning
     // within session protected pages
     if (

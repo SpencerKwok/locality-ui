@@ -75,28 +75,20 @@ const Footer: FC<FooterProps> = ({ width }) => {
                     Add to Chrome
                   </Button>
                 </a>
-                <div
-                  style={{
-                    height: 200,
-                    overflow: "hidden",
-                  }}
-                >
-                  <img
-                    alt="Hand holding a rose"
-                    width={256}
-                    height={338}
-                    src={
-                      useFallback
-                        ? "https://res.cloudinary.com/hcory49pf/image/upload/v1628294359/home/rose-hand.jpg"
-                        : "https://res.cloudinary.com/hcory49pf/image/upload/v1628294359/home/rose-hand.webp"
+                <img
+                  alt="Hand holding a rose"
+                  width={256}
+                  src={
+                    useFallback
+                      ? "https://res.cloudinary.com/hcory49pf/image/upload/v1629521899/home/rose-hand.jpg"
+                      : "https://res.cloudinary.com/hcory49pf/image/upload/v1629521899/home/rose-hand.webp"
+                  }
+                  onError={(): void => {
+                    if (!useFallback) {
+                      setUseFallback(true);
                     }
-                    onError={(): void => {
-                      if (!useFallback) {
-                        setUseFallback(true);
-                      }
-                    }}
-                  />
-                </div>
+                  }}
+                />
               </Stack>
             </Stack>
           </Div>
