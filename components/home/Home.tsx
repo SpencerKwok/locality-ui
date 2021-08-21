@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Lottie from "react-lottie-player";
 import dynamic from "next/dynamic";
 import styled from "styled-components";
@@ -33,11 +33,43 @@ interface HomeProps {
 }
 
 const Home: FC<HomeProps> = ({ isNewUser, width }) => {
+  const [hash, setHash] = useState("");
   const [howItWorksStep, setHowItWorksStep] = useState(0);
   const [loadOffscreenContent, setLoadOffscreenContent] = useState(false);
   const [useFallback, setUseFallback] = useState(false);
   const howItWorksVideoRef = useRef<HTMLVideoElement>(null);
   const scale = Math.round((width / 1519) * 10) / 10;
+
+  useEffect(() => {
+    const hashchangeEventListener = (): void => {
+      switch (hash) {
+        case "#how-it-works":
+          window.scrollTo({ behavior: "smooth", top: 800 * scale });
+          break;
+        case "#explore-goodies":
+          window.scrollTo({ behavior: "smooth", top: 1600 * scale });
+          break;
+        case "#our-partners":
+          window.scrollTo({ behavior: "smooth", top: 2400 * scale });
+          break;
+        case "#meet-the-team":
+          window.scrollTo({ behavior: "smooth", top: 3200 * scale });
+          break;
+      }
+    };
+
+    // Initialize hash
+    hashchangeEventListener();
+
+    window.addEventListener("hashchange", hashchangeEventListener);
+    return (): void => {
+      window.removeEventListener("hashchange", hashchangeEventListener);
+    };
+  }, [hash]);
+
+  if (location.hash !== hash) {
+    setHash(location.hash);
+  }
 
   return (
     <ThemeContext.Consumer>
@@ -413,7 +445,6 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
               </div>
             </section>
             <section
-              id="partners"
               className="middle-middle-column"
               style={{
                 overflow: "hidden",
@@ -471,7 +502,6 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
               </div>
             </section>
             <section
-              id="meet-the-team"
               className="middle-middle-column"
               style={{
                 overflow: "hidden",

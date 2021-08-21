@@ -3,8 +3,13 @@ import styled from "styled-components";
 import { signOut } from "next-auth/client";
 import Link from "next/link";
 
-import Button from "components/common/button/Button";
-import Chrome from "components/common/images/Chrome";
+/*
+  Removing button for now, it occupies too much space in navigation
+
+  import Button from "components/common/button/Button";
+  import Chrome from "components/common/images/Chrome";
+*/
+
 import ProfilePic from "components/common/images/ProfilePic";
 import ThemeContext from "components/common/Theme";
 import MiniSearch from "components/search/MiniSearch";
@@ -97,55 +102,91 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
                   </Link>
                 </div>
                 <Stack direction="row" rowAlign="center" spacing={22}>
+                  <Link href="/#how-it-works">
+                    <a
+                      className={styles.link}
+                      onClick={(): void => {
+                        window.dispatchEvent(new Event("hashchange"));
+                      }}
+                      style={{
+                        color: color.text.dark,
+                      }}
+                    >
+                      How it works
+                    </a>
+                  </Link>
+                  <Link href="/#explore-goodies">
+                    <a
+                      className={styles.link}
+                      onClick={(): void => {
+                        window.dispatchEvent(new Event("hashchange"));
+                      }}
+                      style={{
+                        color: color.text.dark,
+                      }}
+                    >
+                      Explore goodies
+                    </a>
+                  </Link>
+                  <Link href="/#our-partners">
+                    <a
+                      className={styles.link}
+                      onClick={(): void => {
+                        window.dispatchEvent(new Event("hashchange"));
+                      }}
+                      style={{
+                        color: color.text.dark,
+                      }}
+                    >
+                      Our partners
+                    </a>
+                  </Link>
                   <Link href="/#meet-the-team">
                     <a
                       className={styles.link}
+                      onClick={(): void => {
+                        window.dispatchEvent(new Event("hashchange"));
+                      }}
                       style={{
                         color: color.text.dark,
                       }}
                     >
-                      About us
+                      Meet the team
                     </a>
                   </Link>
-                  <Link href="/#partners">
+                  {/*
+                    Removing button for now, it occupies too much space in navigation
+
                     <a
-                      className={styles.link}
+                      href="https://chrome.google.com/webstore/detail/locality-local-shopping-m/cklipomamlgjpmihfhfdjmlhnbadnedl"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       style={{
-                        color: color.text.dark,
+                        opacity: transitionValue,
+                        visibility: transitionValue === 0 ? "hidden" : "visible",
                       }}
                     >
-                      Partners
+                      <Button
+                        variant="dark"
+                        style={{
+                          padding: "11px 16px",
+                        }}
+                      >
+                        <Stack direction="row" rowAlign="center" spacing={7}>
+                          <Chrome width={21} />
+                          <span
+                            style={{
+                              fontSize: 16,
+                              fontStyle: "normal",
+                              fontWeight: 700,
+                            }}
+                          >
+                            Get Extension
+                          </span>
+                        </Stack>
+                      </Button>
                     </a>
-                  </Link>
-                  <a
-                    href="https://chrome.google.com/webstore/detail/locality-local-shopping-m/cklipomamlgjpmihfhfdjmlhnbadnedl"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      opacity: transitionValue,
-                      visibility: transitionValue === 0 ? "hidden" : "visible",
-                    }}
-                  >
-                    <Button
-                      variant="dark"
-                      style={{
-                        padding: "11px 16px",
-                      }}
-                    >
-                      <Stack direction="row" rowAlign="center" spacing={7}>
-                        <Chrome width={21} />
-                        <span
-                          style={{
-                            fontSize: 16,
-                            fontStyle: "normal",
-                            fontWeight: 700,
-                          }}
-                        >
-                          Get Extension
-                        </span>
-                      </Stack>
-                    </Button>
-                  </a>
+                  */}
                 </Stack>
               </Div>
               <div style={{ flexGrow: 1 }} />
@@ -207,7 +248,7 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
                               cursor: "default",
                               color: color.text.dark,
                             }}
-                          >{`Hi ${user.firstName} ${user.lastName}!`}</span>
+                          >{`Hi ${user.firstName}!`}</span>
                         </Stack>
                         <Stack
                           className={styles["menu-container"]}
@@ -223,9 +264,9 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
                             >
                               <path
                                 stroke={color.text.dark}
-                                stroke-linecap="round"
-                                stroke-miterlimit="10"
-                                stroke-width="2"
+                                strokeLinecap="round"
+                                strokeMiterlimit="10"
+                                strokeWidth="2"
                                 d="M4 7h22M4 15h22M4 23h22"
                               />
                             </svg>
