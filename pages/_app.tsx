@@ -3,7 +3,7 @@ import { getSession } from "next-auth/client";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import ThemeContext, { DefaultTheme } from "components/common/Theme";
-import SmoothScroll from "smoothscroll-polyfill";
+import { polyfill } from "seamless-scroll-polyfill";
 import "../styles.css";
 
 import type { AppProps } from "next/app";
@@ -51,7 +51,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
   // Add polyfill to support smooth
   // scroll behaviour on Safari
   if (typeof window !== "undefined") {
-    SmoothScroll.polyfill();
+    polyfill();
   }
 
   return (
