@@ -118,7 +118,7 @@ export async function runMiddlewareExtension(
         return;
       }
 
-      const email = parseInt(req.headers["email"]);
+      const email = req.headers["email"];
       const token = await Psql.select<never>({
         table: "tokens",
         values: ["*"],

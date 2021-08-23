@@ -31,7 +31,7 @@ export default async function handler(
   }>({
     table: "users",
     values: ["wishlist"],
-    conditions: SqlString.format("email=?", [email]),
+    conditions: SqlString.format("email=E?", [email]),
   });
   if (!productIDs) {
     SumoLogic.log({
