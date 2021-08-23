@@ -185,7 +185,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                 width,
               }}
             >
-              <div style={{ height: 670 }}>
+              <Div className="middle-middle-column" style={{ height: 670 }}>
                 <Div
                   className="middle-middle-row"
                   style={{
@@ -369,7 +369,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                     </h3>
                   </Div>
                 </Div>
-              </div>
+              </Div>
             </section>
             <section
               className="middle-middle-column"
@@ -382,7 +382,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                 width,
               }}
             >
-              <div style={{ height: 670 }}>
+              <Div className="middle-middle-column" style={{ height: 670 }}>
                 <Div
                   className="middle-middle-column"
                   style={{
@@ -445,7 +445,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                     width={1268}
                   />
                 </Div>
-              </div>
+              </Div>
             </section>
             <section
               className="middle-middle-column"
@@ -515,7 +515,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                 width,
               }}
             >
-              <div style={{ height: 670 }}>
+              <Div className="middle-middle-column" style={{ height: 670 }}>
                 <Div
                   className="middle-middle-column"
                   style={{
@@ -559,7 +559,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                     <ValuesShowcase height={388} />
                   </Stack>
                 </Div>
-              </div>
+              </Div>
             </section>
           </Div>
         </Div>
