@@ -81,7 +81,11 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
               <Div className="middle-middle-row">
                 <div style={{ cursor: "pointer", marginRight: 29.75 }}>
                   <Link href="/">
-                    <a>
+                    <a
+                      onClick={(): void => {
+                        window.dispatchEvent(new Event("hashchange"));
+                      }}
+                    >
                       <img
                         loading="eager"
                         alt="Locality Logo"

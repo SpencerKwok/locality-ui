@@ -43,7 +43,7 @@ export const UserSignUpSchema = yup.object().shape({
     .min(8, "Too short")
     .max(255, "Too long")
     .oneOf([yup.ref("password1")], "Passwords do not match"),
-  subscribe: yup.boolean().strict(true),
+  subscribe: yup.boolean().strict(true).required("Required"),
 });
 
 const optionalPhoneRegExp =
@@ -74,7 +74,7 @@ export const BusinessSignUpSchema = yup.object().shape({
     .strict(true)
     .required("Required")
     .max(255, "Too long"),
-  subscribe: yup.boolean().strict(true),
+  subscribe: yup.boolean().strict(true).required("Requred"),
 });
 
 export const DepartmentsUpdateSchema = yup.object().shape({

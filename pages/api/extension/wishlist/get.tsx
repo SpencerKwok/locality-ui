@@ -25,13 +25,13 @@ export default async function handler(
     return;
   }
 
-  const { id } = req.locals.user;
+  const { email } = req.locals.user;
   const productIDs = await Psql.select<{
     wishlist: string;
   }>({
     table: "users",
     values: ["wishlist"],
-    conditions: SqlString.format("id=?", [id]),
+    conditions: SqlString.format("email=?", [email]),
   });
   if (!productIDs) {
     SumoLogic.log({
@@ -44,7 +44,7 @@ export default async function handler(
   } else if (productIDs.rowCount !== 1) {
     SumoLogic.log({
       level: "error",
-      method: "extension/wishlist/add",
+      method: "extension/wishlist/get",
       message: "Failed to SELECT from Heroku PSQL: User does not exist",
     });
     res.status(500).json({ error: "Internal server error" });

@@ -41,13 +41,13 @@ export default async function handler(
   }
   const objectId = body.id;
 
-  const { id } = req.locals.user;
+  const { email } = req.locals.user;
   const productIDs = await Psql.select<{
     wishlist: string;
   }>({
     table: "users",
     values: ["wishlist"],
-    conditions: SqlString.format("id=?", [id]),
+    conditions: SqlString.format("email=?", [email]),
   });
   if (!productIDs) {
     SumoLogic.log({
@@ -76,7 +76,7 @@ export default async function handler(
   const addProductIdError = await Psql.update({
     table: "users",
     values: [{ key: "wishlist", value: updatedWishlist }],
-    conditions: SqlString.format("id=?", [id]),
+    conditions: SqlString.format("email=?", [email]),
   });
   if (addProductIdError) {
     SumoLogic.log({

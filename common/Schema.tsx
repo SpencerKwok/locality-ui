@@ -436,6 +436,6 @@ export interface SignInRequest {
 }
 
 export interface SignInResponse extends BaseResponse {
-  id: number;
+  email: string;
   token: string;
 }

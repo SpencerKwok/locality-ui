@@ -32,7 +32,6 @@ const directionToMargin = (direction: StackDirection): string => {
 const Stack = forwardRef<HTMLDivElement, StackProps>(
   ({ direction, columnAlign, rowAlign, ...rest }, ref) => {
     void direction, columnAlign, rowAlign;
-    console.log(ref);
     return (
       <div ref={ref} {...rest}>
         {Children.map(rest.children, (child, index) => {

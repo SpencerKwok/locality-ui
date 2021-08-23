@@ -45,6 +45,7 @@ export default async function handler(
   const lastName = Xss(reqBody.lastName || "");
   const email = Xss(reqBody.email || "");
   const password = reqBody.password1;
+  const subscribe = reqBody.subscribe;
 
   const user = await Psql.select<{ id: number }>({
     table: "users",
@@ -117,25 +118,27 @@ export default async function handler(
     return;
   }
 
-  const mailchimpError = await MailChimp.addSubscriber(
-    {
-      email,
-      firstName,
-      lastName,
-    },
-    MainListId
-  );
+  if (subscribe) {
+    const mailchimpError = await MailChimp.addSubscriber(
+      {
+        email,
+        firstName,
+        lastName,
+      },
+      MainListId
+    );
 
-  // Don't respond with error on mailchimp subscription
-  // error, users should still be able to log in if a
-  // failure occured here
-  if (mailchimpError) {
-    SumoLogic.log({
-      level: "error",
-      method: "signup/business",
-      message: `Failed to add subscriber to Mail Chimp: ${mailchimpError.message}`,
-      params: user,
-    });
+    // Don't respond with error on mailchimp subscription
+    // error, users should still be able to sign up if a
+    // failure occured here
+    if (mailchimpError) {
+      SumoLogic.log({
+        level: "error",
+        method: "signup/business",
+        message: `Failed to add subscriber to Mail Chimp: ${mailchimpError.message}`,
+        params: user,
+      });
+    }
   }
 
   const uid: string = await uidgen.generate();
@@ -143,7 +146,7 @@ export default async function handler(
     table: "tokens",
     values: [
       { key: "token", value: uid },
-      { key: "id", value: userId },
+      { key: "email", value: email },
     ],
   });
   if (insertTokenError) {
@@ -158,7 +161,7 @@ export default async function handler(
   }
 
   const body: SignInResponse = {
-    id: userId,
+    email: email,
     token: uid,
   };
 

@@ -55,6 +55,9 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
         case "#meet-the-team":
           window.scrollTo({ behavior: "smooth", top: 3200 * scale });
           break;
+        default:
+          window.scrollTo({ behavior: "smooth", top: 0 });
+          break;
       }
     };
 

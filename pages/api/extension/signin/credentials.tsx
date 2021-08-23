@@ -48,7 +48,7 @@ export default async function handler(
     password: string;
   }>({
     table: "users",
-    values: ["email", "id", "password"],
+    values: ["email", "password"],
     conditions: SqlString.format("email=E?", [email]),
   });
   if (!user) {
@@ -84,7 +84,7 @@ export default async function handler(
 
   const deleteIdError = await Psql.delete({
     table: "tokens",
-    conditions: SqlString.format("id=?", [user.rows[0].id]),
+    conditions: SqlString.format("email=?", [user.rows[0].email]),
   });
   if (deleteIdError) {
     SumoLogic.log({
@@ -102,7 +102,7 @@ export default async function handler(
     table: "tokens",
     values: [
       { key: "token", value: uid },
-      { key: "id", value: user.rows[0].id },
+      { key: "email", value: user.rows[0].email },
     ],
   });
   if (insertTokenError) {
@@ -117,7 +117,7 @@ export default async function handler(
   }
 
   const body: SignInResponse = {
-    id: user.rows[0].id,
+    email: user.rows[0].email,
     token: uid,
   };
 

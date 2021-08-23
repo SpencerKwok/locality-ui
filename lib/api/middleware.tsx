@@ -106,9 +106,8 @@ export async function runMiddlewareExtension(
       next: (err?: any) => void
     ) => {
       if (
-        typeof req.headers["id"] !== "string" ||
-        typeof req.headers["token"] !== "string" ||
-        !req.headers["id"].match(/\d+/g)
+        typeof req.headers["email"] !== "string" ||
+        typeof req.headers["token"] !== "string"
       ) {
         SumoLogic.log({
           level: "warning",
@@ -119,13 +118,13 @@ export async function runMiddlewareExtension(
         return;
       }
 
-      const id = parseInt(req.headers["id"]);
+      const email = parseInt(req.headers["email"]);
       const token = await Psql.select<never>({
         table: "tokens",
         values: ["*"],
-        conditions: SqlString.format("token=E? AND id=?", [
+        conditions: SqlString.format("token=E? AND email=E?", [
           req.headers["token"],
-          id,
+          email,
         ]),
       });
       if (!token) {
@@ -147,7 +146,7 @@ export async function runMiddlewareExtension(
         return;
       }
 
-      req.locals = { user: { id: id } };
+      req.locals = { user: { email: email } };
       next();
     }
   );
