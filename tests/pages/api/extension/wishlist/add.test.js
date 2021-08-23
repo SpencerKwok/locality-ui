@@ -9,10 +9,10 @@
 
 const faker = require("faker");
 
-const userId = faker.datatype.number();
+const email = faker.internet.email();
 const log = jest.fn();
 const runMiddlewareExtension = jest.fn().mockImplementation(async (req) => {
-  req.locals = { user: { id: userId } };
+  req.locals = { user: { email: email } };
 });
 describe("Add to Wishlist", () => {
   beforeAll(() => {
@@ -37,7 +37,7 @@ describe("Add to Wishlist", () => {
     const objectId = `${faker.datatype.number()}_${faker.datatype.number()}_${faker.datatype.number()}`;
     const select = jest.fn().mockImplementation(async (params) => {
       expect(params.table).toEqual("users");
-      expect(params.conditions).toEqual(`id=${userId}`);
+      expect(params.conditions).toEqual(`email=E'${email}'`);
       return null;
     });
     const update = jest.fn();
@@ -83,7 +83,7 @@ describe("Add to Wishlist", () => {
     );
     const select = jest.fn().mockImplementation(async (params) => {
       expect(params.table).toEqual("users");
-      expect(params.conditions).toEqual(`id=${userId}`);
+      expect(params.conditions).toEqual(`email=E'${email}'`);
       return {
         rowCount: 1,
         rows: [{ wishlist: JSON.stringify(wishlist) }],
@@ -91,7 +91,7 @@ describe("Add to Wishlist", () => {
     });
     const update = jest.fn().mockImplementation(async (params) => {
       expect(params.table).toEqual("users");
-      expect(params.conditions).toEqual(`id=${userId}`);
+      expect(params.conditions).toEqual(`email=E'${email}'`);
       expect(params.values[0].key).toEqual("wishlist");
       expect(params.values[0].value).toEqual(
         JSON.stringify([...wishlist, objectId])
@@ -230,7 +230,7 @@ describe("Add to Wishlist", () => {
     );
     const select = jest.fn().mockImplementation(async (params) => {
       expect(params.table).toEqual("users");
-      expect(params.conditions).toEqual(`id=${userId}`);
+      expect(params.conditions).toEqual(`email=E'${email}'`);
       return {
         rowCount: 1,
         rows: [{ wishlist: JSON.stringify(wishlist) }],
@@ -238,7 +238,7 @@ describe("Add to Wishlist", () => {
     });
     const update = jest.fn().mockImplementation(async (params) => {
       expect(params.table).toEqual("users");
-      expect(params.conditions).toEqual(`id=${userId}`);
+      expect(params.conditions).toEqual(`email=E'${email}'`);
       expect(params.values[0].key).toEqual("wishlist");
       expect(params.values[0].value).toEqual(
         JSON.stringify([...wishlist, objectId])

@@ -84,7 +84,7 @@ export default async function handler(
 
   const deleteIdError = await Psql.delete({
     table: "tokens",
-    conditions: SqlString.format("email=?", [user.rows[0].email]),
+    conditions: SqlString.format("email=E?", [user.rows[0].email]),
   });
   if (deleteIdError) {
     SumoLogic.log({

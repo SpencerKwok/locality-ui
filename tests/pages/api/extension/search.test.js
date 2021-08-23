@@ -27,7 +27,7 @@ describe("Search", () => {
 
   it("Database error, valid inputs, logged once + valid response with no wishlist", async () => {
     // Arrange
-    const userId = faker.datatype.number();
+    const email = faker.internet.email();
     const token = faker.datatype.uuid();
     const query = faker.random.words();
     const filters = `departments:${faker.commerce.department()} OR business:${faker.company.companyName()}`;
@@ -111,7 +111,7 @@ describe("Search", () => {
     });
     const select = jest.fn().mockImplementation(async (params) => {
       expect(params.table).toEqual("users");
-      expect(params.conditions).toEqual(`id=${userId}`);
+      expect(params.conditions).toEqual(`email=E'${email}'`);
       return null;
     });
     jest.doMock("lib/api/algolia", () => ({
@@ -130,7 +130,7 @@ describe("Search", () => {
       headers: {
         "content-type": "application/json",
         charset: "utf-8",
-        id: userId,
+        email: email,
         token: token,
       },
       query: {
@@ -158,7 +158,7 @@ describe("Search", () => {
 
   it("Health check, valid inputs, valid response", async () => {
     // Arrange
-    const userId = faker.datatype.number();
+    const email = faker.internet.email();
     const token = faker.datatype.uuid();
     const query = faker.random.words();
     const filters = `departments:${faker.commerce.department()} OR business:${faker.company.companyName()}`;
@@ -246,7 +246,7 @@ describe("Search", () => {
     });
     const select = jest.fn().mockImplementationOnce(async (params) => {
       expect(params.table).toEqual("users");
-      expect(params.conditions).toEqual(`id=${userId}`);
+      expect(params.conditions).toEqual(`email=E'${email}'`);
       return wishlistResData;
     });
     jest.doMock("lib/api/algolia", () => ({
@@ -265,7 +265,7 @@ describe("Search", () => {
       headers: {
         "content-type": "application/json",
         charset: "utf-8",
-        id: userId,
+        email: email,
         token: token,
       },
       query: {
@@ -375,7 +375,7 @@ describe("Search", () => {
 
   it("Invalid filters (number), invalid filters, valid response with filters ignored", async () => {
     // Arrange
-    const userId = faker.datatype.number();
+    const email = faker.internet.email();
     const token = faker.datatype.uuid();
     const query = faker.random.words();
     const filters = faker.datatype.number();
@@ -461,7 +461,7 @@ describe("Search", () => {
     });
     const select = jest.fn().mockImplementationOnce(async (params) => {
       expect(params.table).toEqual("users");
-      expect(params.conditions).toEqual(`id=${userId}`);
+      expect(params.conditions).toEqual(`email=E'${email}'`);
       return wishlistResData;
     });
     jest.doMock("lib/api/search", () => ({
@@ -480,7 +480,7 @@ describe("Search", () => {
       headers: {
         "content-type": "application/json",
         charset: "utf-8",
-        id: userId,
+        email: email,
         token: token,
       },
       query: {
@@ -507,7 +507,7 @@ describe("Search", () => {
 
   it("Invalid page (number), invalid page, valid response with page ignored", async () => {
     // Arrange
-    const userId = faker.datatype.number();
+    const email = faker.internet.email();
     const token = faker.datatype.uuid();
     const query = faker.random.words();
     const wishlistResData = {
@@ -593,7 +593,7 @@ describe("Search", () => {
     });
     const select = jest.fn().mockImplementationOnce(async (params) => {
       expect(params.table).toEqual("users");
-      expect(params.conditions).toEqual(`id=${userId}`);
+      expect(params.conditions).toEqual(`email=E'${email}'`);
       return wishlistResData;
     });
     jest.doMock("lib/api/search", () => ({
@@ -612,7 +612,7 @@ describe("Search", () => {
       headers: {
         "content-type": "application/json",
         charset: "utf-8",
-        id: userId,
+        email: email,
         token: token,
       },
       query: {
@@ -680,7 +680,7 @@ describe("Search", () => {
 
   it("With IP, valid inputs, valid response", async () => {
     // Arrange
-    const userId = faker.datatype.number();
+    const email = faker.internet.email();
     const token = faker.datatype.uuid();
     const query = faker.random.words();
     const ip = faker.internet.ip();
@@ -773,7 +773,7 @@ describe("Search", () => {
     });
     const select = jest.fn().mockImplementationOnce(async (params) => {
       expect(params.table).toEqual("users");
-      expect(params.conditions).toEqual(`id=${userId}`);
+      expect(params.conditions).toEqual(`email=E'${email}'`);
       return wishlistResData;
     });
     jest.doMock("lib/api/search", () => ({
@@ -793,7 +793,7 @@ describe("Search", () => {
         "content-type": "application/json",
         charset: "utf-8",
         "x-forwarded-for": ip,
-        id: userId,
+        email: email,
         token: token,
       },
       query: {
@@ -823,7 +823,7 @@ describe("Search", () => {
     // Arrange
     const query = faker.random.words();
     const token = faker.datatype.uuid();
-    const userId = faker.datatype.number();
+    const email = faker.internet.email();
     const businessId = faker.datatype.number();
     const productId = faker.datatype.number();
     const variantIndex = faker.datatype.number();
@@ -907,7 +907,7 @@ describe("Search", () => {
     });
     const select = jest.fn().mockImplementation(async (params) => {
       expect(params.table).toEqual("users");
-      expect(params.conditions).toEqual(`id=${userId}`);
+      expect(params.conditions).toEqual(`email=E'${email}'`);
       return wishlist;
     });
     jest.doMock("lib/api/search", () => ({
@@ -926,7 +926,7 @@ describe("Search", () => {
       headers: {
         "content-type": "application/json",
         charset: "utf-8",
-        id: userId,
+        email: email,
         token: token,
       },
       query: {

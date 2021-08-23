@@ -46,8 +46,6 @@ export const UserSignUpSchema = yup.object().shape({
   subscribe: yup.boolean().strict(true).required("Required"),
 });
 
-const optionalPhoneRegExp =
-  /^(\s*|((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?)$/;
 export const BusinessSignUpSchema = yup.object().shape({
   firstName: yup
     .string()
@@ -60,10 +58,7 @@ export const BusinessSignUpSchema = yup.object().shape({
     .email("Invalid email address")
     .required("Required")
     .max(255, "Too long"),
-  phoneNumber: yup
-    .string()
-    .optional()
-    .matches(optionalPhoneRegExp, "Invalid phone number"),
+  phoneNumber: yup.string().optional().max(255, "Too long"),
   businessName: yup
     .string()
     .strict(true)

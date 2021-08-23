@@ -92,14 +92,14 @@ describe("Credentials sign in", () => {
     const compare = jest.fn().mockImplementation(bcrypt.compare);
     const deleteFn = jest.fn().mockImplementation(async (params) => {
       expect(params.table).toEqual("tokens");
-      expect(params.conditions).toEqual(`id=${id}`);
+      expect(params.conditions).toEqual(`email=E'${email}'`);
       return new Error("Yikes, something went wrong");
     });
     const insert = jest.fn().mockImplementation(async (params) => {
       expect(params.table).toEqual("tokens");
       expect(params.values).toContainEqual({
-        key: "id",
-        value: id,
+        key: "email",
+        value: email,
       });
       expect(params.values.length).toEqual(2);
       let numTokens = 0;
@@ -169,14 +169,14 @@ describe("Credentials sign in", () => {
     const compare = jest.fn().mockImplementation(bcrypt.compare);
     const deleteFn = jest.fn().mockImplementation(async (params) => {
       expect(params.table).toEqual("tokens");
-      expect(params.conditions).toEqual(`id=${id}`);
+      expect(params.conditions).toEqual(`email=E'${email}'`);
       return null;
     });
     const insert = jest.fn().mockImplementation(async (params) => {
       expect(params.table).toEqual("tokens");
       expect(params.values).toContainEqual({
-        key: "id",
-        value: id,
+        key: "email",
+        value: email,
       });
       expect(params.values.length).toEqual(2);
       let numTokens = 0;
@@ -246,14 +246,14 @@ describe("Credentials sign in", () => {
     const compare = jest.fn().mockImplementation(bcrypt.compare);
     const deleteFn = jest.fn().mockImplementation(async (params) => {
       expect(params.table).toEqual("tokens");
-      expect(params.conditions).toEqual(`id=${id}`);
+      expect(params.conditions).toEqual(`email=E'${email}'`);
       return null;
     });
     const insert = jest.fn().mockImplementation(async (params) => {
       expect(params.table).toEqual("tokens");
       expect(params.values).toContainEqual({
-        key: "id",
-        value: id,
+        key: "email",
+        value: email,
       });
       expect(params.values.length).toEqual(2);
       let numTokens = 0;
@@ -305,8 +305,8 @@ describe("Credentials sign in", () => {
     expect(insert).toHaveBeenCalledTimes(1);
     expect(select).toHaveBeenCalledTimes(1);
     expect(mockRes.statusCode).toBe(200);
-    expect(Object.keys(actual)).toEqual(["id", "token"]);
-    expect(actual.id).toEqual(id);
+    expect(Object.keys(actual)).toEqual(["email", "token"]);
+    expect(actual.email).toEqual(email);
     expect(actual.token).toMatch(/[a-zA-Z0-9]+/g);
   });
 
@@ -316,16 +316,6 @@ describe("Credentials sign in", () => {
     const email = faker.internet.email();
     const password = faker.internet.password();
     const passwordHash = await bcrypt.hash(password, parseInt(SALT));
-    const existingUserRes = {
-      rowCount: 1,
-      rows: [
-        {
-          id,
-          email,
-          password: passwordHash,
-        },
-      ],
-    };
     const compare = jest.fn();
     const deleteFn = jest.fn();
     const insert = jest.fn();

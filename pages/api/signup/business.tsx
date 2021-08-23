@@ -84,8 +84,8 @@ export default async function handler(
   };
 
   try {
-    await transporter.sendMail(customerMailOptions);
     await transporter.sendMail(selfMailOptions);
+    await transporter.sendMail(customerMailOptions);
   } catch (error: unknown) {
     SumoLogic.log({
       level: "error",
