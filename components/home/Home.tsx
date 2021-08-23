@@ -382,7 +382,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                 width,
               }}
             >
-              <Div className="middle-middle-column" style={{ height: 670 }}>
+              <div style={{ height: 670 }}>
                 <Div
                   className="middle-middle-column"
                   style={{
@@ -445,7 +445,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                     width={1268}
                   />
                 </Div>
-              </Div>
+              </div>
             </section>
             <section
               className="middle-middle-column"
