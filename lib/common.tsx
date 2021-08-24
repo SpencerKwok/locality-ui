@@ -41,11 +41,29 @@ export function useWindowSize(): { height?: number; width?: number } {
   });
 
   useEffect(() => {
+    const isMobile =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
+
     const handleResize = (): void => {
-      setWindowSize({
-        width: document.body.clientWidth,
-        height: window.innerHeight,
-      });
+      if (isMobile) {
+        const isPortrait =
+          window.orientation === 0 || window.orientation === 180;
+        setWindowSize({
+          width: isPortrait
+            ? screen.availWidth || screen.width
+            : screen.availHeight || screen.height,
+          height: isPortrait
+            ? screen.availHeight || screen.height
+            : screen.availWidth || screen.width,
+        });
+      } else {
+        setWindowSize({
+          width: document.body.clientWidth,
+          height: document.body.clientHeight,
+        });
+      }
     };
 
     // Initialize window size on mount

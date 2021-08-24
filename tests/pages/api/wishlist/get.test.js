@@ -1,3 +1,12 @@
+/**
+ * Get Wishlist Unit Tests
+ *
+ * @group unit
+ * @group website
+ * @group wishlist
+ * @group wishlist-get
+ */
+
 const faker = require("faker");
 
 const email = faker.internet.email();

@@ -1,3 +1,13 @@
+/**
+ * Update Variant of Product Unit Tests
+ *
+ * @group unit
+ * @group website
+ * @group dashboard
+ * @group variant
+ * @group variant-update
+ */
+
 const faker = require("faker");
 const xss = require("xss");
 const fs = require("fs");

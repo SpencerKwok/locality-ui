@@ -99,14 +99,14 @@ interface SignUpResponse extends BaseResponse {
   redirectTo: string;
 }
 
-export interface BusinessSignUpRequest extends UserSignUpRequest {
+export interface BusinessSignUpRequest {
   firstName: string;
   lastName: string;
-  address: string;
+  email: string;
+  phoneNumber: string;
   businessName: string;
-  city: string;
-  province: string;
-  country: string;
+  businessHomepage: string;
+  subscribe: boolean;
 }
 
 export type BusinessSignUpResponse = SignUpResponse;
@@ -299,6 +299,7 @@ export interface UserSignUpRequest {
   email: string;
   password1: string;
   password2: string;
+  subscribe: boolean;
 }
 
 export type UserSignUpResponse = SignUpResponse;
@@ -435,6 +436,6 @@ export interface SignInRequest {
 }
 
 export interface SignInResponse extends BaseResponse {
-  id: number;
+  email: string;
   token: string;
 }

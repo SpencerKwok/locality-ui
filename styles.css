@@ -1,0 +1,124 @@
+@font-face {
+  font-family: "HK Grotesk";
+  src: url("/fonts/hk-grotesk-bold.woff2") format("woff2"),
+    url("/fonts/hk-grotesk-bold.woff") format("woff"),
+    url("/fonts/hk-grotesk-boldt.ttf") format("truetype");
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "HK Grotesk";
+  src: url("/fonts/hk-grotesk.woff2") format("woff2"),
+    url("/fonts/hk-grotesk.woff") format("woff"),
+    url("/fonts/hk-grotesk.ttf") format("truetype");
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "HK Grotesk";
+  src: url("/fonts/hk-grotesk-light.woff2") format("woff2"),
+    url("/fonts/hk-grotesk-light.woff") format("woff"),
+    url("/fonts/hk-grotesk-light.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+footer,
+nav,
+section {
+  display: flex;
+}
+
+h1 {
+  font-size: 41.89px;
+  font-style: normal;
+  font-weight: 800;
+  margin: 0;
+}
+
+h2 {
+  font-size: 25.89px;
+  font-style: normal;
+  font-weight: 400;
+  margin: 0;
+}
+
+h3,
+p {
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  margin: 0;
+}
+
+body {
+  font-family: "HK Grotesk", "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.top-left-column {
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.middle-left-column {
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.bottom-left-column {
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.top-middle-column {
+  align-items: center;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.middle-middle-column {
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.bottom-middle-column {
+  align-items: center;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.top-right-column {
+  align-items: flex-end;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.middle-right-column {
+  align-items: flex-end;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.bottom-right-column {
+  align-items: flex-end;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.middle-middle-row {
+  align-items: center;
+  flex-direction: row;
+  justify-content: center;
+}

@@ -1,3 +1,11 @@
+/**
+ * Products Unit Tests
+ *
+ * @group unit
+ * @group website
+ * @group products
+ */
+
 const faker = require("faker");
 
 const log = jest.fn();

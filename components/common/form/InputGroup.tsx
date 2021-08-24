@@ -1,14 +1,15 @@
-import InputGroup, { InputGroupProps } from "react-bootstrap/InputGroup";
+import styles from "./form.module.css";
 
-import type { FC } from "react";
+import type { FC, HTMLProps } from "react";
 
-export type FormInputGroupProps = InputGroupProps;
+export type FormInputGroupProps = HTMLProps<HTMLDivElement>;
 
-const FormInputGroup: FC<FormInputGroupProps> = ({
-  children,
-  ...rest
-}: FormInputGroupProps) => {
-  return <InputGroup {...rest}>{children}</InputGroup>;
+const FormInputGroup: FC<FormInputGroupProps> = ({ children, ...rest }) => {
+  return (
+    <div className={styles["input-group"]} {...rest}>
+      {children}
+    </div>
+  );
 };
 
 export default FormInputGroup;

@@ -32,8 +32,9 @@ const NewUser: FC<{}> = () => {
           >
             <h2>Welcome to Locality!</h2>
             <p>
-              Use the search bar to find products from locally owned small
-              businesses near you!
+              Use the search bar in the top right corner to start searching for
+              local products! Also, make sure to download our Chrome extension
+              to stay local wherever you go!
             </p>
           </Stack>
         </Stack>

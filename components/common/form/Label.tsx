@@ -35,8 +35,8 @@ const FormLabel: FC<FormLabelProps> = ({
 
   const finalClassName =
     required === true
-      ? `${className ?? ""} ${styles.label}`
-      : `${className ?? ""}`;
+      ? `${className ?? ""} ${styles["label-required"]}`
+      : `${className ?? ""} ${styles.label}`;
   return (
     <Stack direction="row" columnAlign="flex-start" spacing={8}>
       <Form.Label className={finalClassName} {...rest}></Form.Label>

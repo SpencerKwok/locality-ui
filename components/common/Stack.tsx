@@ -1,7 +1,5 @@
-import { Children } from "react";
+import { Children, forwardRef } from "react";
 import styled from "styled-components";
-
-import type { FC, JSXElementConstructor, ReactElement } from "react";
 
 export type StackDirection =
   | "column-reverse"
@@ -31,48 +29,37 @@ const directionToMargin = (direction: StackDirection): string => {
   }
 };
 
-const Stack: FC<StackProps> = (props) => {
-  return (
-    <div {...props}>
-      {Children.map(props.children, (child, index) => {
-        return (
-          <div
-            className="stackitem"
-            {...(props.priority && {
-              style: { flexGrow: props.priority[index] },
-            })}
-          >
-            {child}
-          </div>
-        );
-      })}
-    </div>
-  );
-};
-
-export default styled(
-  ({
-    columnAlign,
-    rowAlign,
-    ...rest
-  }: StackProps): ReactElement<
-    StackProps,
-    JSXElementConstructor<StackProps>
-  > => {
-    // Refer to unused variables to stop
-    // typescript from complaining
-    void columnAlign, rowAlign;
-    return <Stack {...rest} />;
+const Stack = forwardRef<HTMLDivElement, StackProps>(
+  ({ direction, columnAlign, rowAlign, ...rest }, ref) => {
+    void direction, columnAlign, rowAlign;
+    return (
+      <div ref={ref} {...rest}>
+        {Children.map(rest.children, (child, index) => {
+          return (
+            <div
+              className="stackitem"
+              {...(rest.priority && {
+                style: { flexGrow: rest.priority[index] },
+              })}
+            >
+              {child}
+            </div>
+          );
+        })}
+      </div>
+    );
   }
-)`
-    align-items: ${({ rowAlign }): string | undefined => rowAlign};
-    display: flex;
-    flex-wrap: ${({ wrap }): string | undefined => wrap};
-    flex-direction: ${({ direction }): string | undefined => direction};
-    justify-content: ${({ columnAlign }): string | undefined => columnAlign};
-    > .stackitem {
-        margin-${({ direction }): string | undefined =>
-          directionToMargin(direction)}: ${({ spacing }): number | undefined =>
+);
+
+export default styled(Stack)`
+  align-items: ${({ rowAlign }): string | undefined => rowAlign};
+  display: flex;
+  flex-wrap: ${({ wrap }): string | undefined => wrap};
+  flex-direction: ${({ direction }): string | undefined => direction};
+  justify-content: ${({ columnAlign }): string | undefined => columnAlign};
+  > .stackitem {
+      margin-${({ direction }): string | undefined =>
+        directionToMargin(direction)}: ${({ spacing }): number | undefined =>
   spacing}px;
         &:last-child {
             margin-${({ direction }): string | undefined =>

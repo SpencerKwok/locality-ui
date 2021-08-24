@@ -1,3 +1,13 @@
+/**
+ * Update Logo Unit Tests
+ *
+ * @group unit
+ * @group website
+ * @group dashboard
+ * @group logo
+ * @group logo-update
+ */
+
 const faker = require("faker");
 const xss = require("xss");
 const fs = require("fs");

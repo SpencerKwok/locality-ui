@@ -1,3 +1,12 @@
+/**
+ * Analytic Event Capture Unit Tests
+ *
+ * @group unit
+ * @group extension
+ * @group analytics
+ * @group analytics-events
+ */
+
 const faker = require("faker");
 const xss = require("xss");
 

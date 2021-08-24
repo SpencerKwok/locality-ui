@@ -63,8 +63,13 @@ const FacetList: FC<FacetListProps> = ({
   };
 
   return (
-    <Stack direction="column" rowAlign="flex-start" style={{ width: 260 }}>
-      <h4>{name}</h4>
+    <Stack
+      direction="column"
+      rowAlign="flex-start"
+      spacing={4}
+      style={{ width: 260 }}
+    >
+      <h3 style={{ marginBottom: 4 }}>{name}</h3>
       <ListGroup>
         {sortedFacets
           .slice(0, showAll ? sortedFacets.length : 8)

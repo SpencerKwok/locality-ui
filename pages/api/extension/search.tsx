@@ -72,13 +72,13 @@ export default async function handler(
   ];
 
   let wishlist: Set<string> | null = null;
-  const id: string = (req.headers["id"] ?? "") as string;
+  const email: string = (req.headers["email"] ?? "") as string;
   const token: string = (req.headers["token"] ?? "") as string;
-  if (id && token) {
+  if (email && token) {
     const productIDs = await Psql.select<{ wishlist: string }>({
       table: "users",
       values: ["wishlist"],
-      conditions: SqlString.format("id=?", [parseInt(id)]),
+      conditions: SqlString.format("email=E?", [email]),
     });
     if (!productIDs) {
       // Don't error out because we failed

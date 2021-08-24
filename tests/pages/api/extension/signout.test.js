@@ -1,9 +1,17 @@
+/**
+ * Signout Unit Tests
+ *
+ * @group unit
+ * @group extension
+ * @group signout
+ */
+
 const faker = require("faker");
 
-const userId = faker.datatype.number();
+const email = faker.internet.email();
 const log = jest.fn();
 const runMiddlewareExtension = jest.fn().mockImplementation(async (req) => {
-  req.locals = { user: { id: userId } };
+  req.locals = { user: { email: email } };
 });
 describe("Signout", () => {
   beforeAll(() => {
@@ -27,7 +35,7 @@ describe("Signout", () => {
     // Arrange
     const deleteFn = jest.fn().mockImplementation(async (params) => {
       expect(params.table).toEqual("tokens");
-      expect(params.conditions).toEqual(`id=${userId}`);
+      expect(params.conditions).toEqual(`email=E'${email}'`);
       return new Error("Failed to delete authentication tokens, sad");
     });
     jest.doMock("lib/api/postgresql", () => ({
@@ -57,7 +65,7 @@ describe("Signout", () => {
     // Arrange
     const deleteFn = jest.fn().mockImplementation(async (params) => {
       expect(params.table).toEqual("tokens");
-      expect(params.conditions).toEqual(`id=${userId}`);
+      expect(params.conditions).toEqual(`email=E'${email}'`);
       return null;
     });
     jest.doMock("lib/api/postgresql", () => ({

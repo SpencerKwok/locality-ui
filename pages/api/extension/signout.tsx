@@ -23,10 +23,10 @@ export default async function handler(
     return;
   }
 
-  const { id } = req.locals.user;
+  const { email } = req.locals.user;
   const deleteIdError = await Psql.delete({
     table: "tokens",
-    conditions: SqlString.format("id=?", [id]),
+    conditions: SqlString.format("email=E?", [email]),
   });
 
   // If delete fails, just log it...

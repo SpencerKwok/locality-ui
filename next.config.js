@@ -1,6 +1,4 @@
-const withPWA = require("next-pwa");
-
-module.exports = withPWA({
+module.exports = {
   // Compression is done by the server
   compress: false,
   optimization: {
@@ -15,13 +13,10 @@ module.exports = withPWA({
       },
     },
   },
-  poweredByHeader: false,
-  pwa: {
-    dest: "public",
-    disable: process.env.NODE_ENV !== "production",
-    runtimeCaching: [],
-    dynamicStartUrl: false,
+  images: {
+    domains: ["res.cloudinary.com"],
   },
+  poweredByHeader: false,
   reactStrictMode: true,
   headers: async () => {
     return [
@@ -90,14 +85,4 @@ module.exports = withPWA({
       },
     ];
   },
-  // Backwards compatibility for previously assigned redirect
-  redirects: async () => {
-    return [
-      {
-        source: "/dashboard/inventory",
-        destination: "/dashboard?tab=inventory",
-        permanent: true,
-      },
-    ];
-  },
-});
+};

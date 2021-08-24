@@ -1,3 +1,11 @@
+/**
+ * Search Unit Tests
+ *
+ * @group unit
+ * @group website
+ * @group search
+ */
+
 const { decode } = require("html-entities");
 const faker = require("faker");
 

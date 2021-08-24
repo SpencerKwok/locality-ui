@@ -6,6 +6,7 @@ import SearchBar from "./SearchBar";
 import Stack from "components/common/Stack";
 import { Product } from "common/Schema";
 import LocalityLogo from "components/common/images/LocalityLogo";
+import ThemeContext from "components/common/Theme";
 
 import type { FC } from "react";
 
@@ -60,28 +61,37 @@ const Search: FC<SearchProps> = ({
   }, []);
 
   return (
-    <Stack direction="column" rowAlign="center" spacing={12}>
-      <Link href="/">
-        <div>
-          <LocalityLogo
-            width={200}
-            style={{
-              padding: "16px 16px 16px 16px",
-              cursor: "pointer",
-            }}
+    <ThemeContext.Consumer>
+      {(): JSX.Element => (
+        <Stack direction="column" rowAlign="center" spacing={12}>
+          <Link href="/">
+            <div>
+              <LocalityLogo
+                width={200}
+                style={{
+                  padding: "16px 16px 16px 16px",
+                  cursor: "pointer",
+                }}
+              />
+            </div>
+          </Link>
+          <SearchBar
+            autoFocus
+            defaultQuery={query}
+            width={280}
+            onEnter={onEnter}
           />
-        </div>
-      </Link>
-      <SearchBar autoFocus defaultQuery={query} width={280} onEnter={onEnter} />
-      <ProductShowcase
-        loggedIn={loggedIn}
-        align="center"
-        hits={searchResults.hits}
-        numEagerLoad={6}
-        onToggleWishList={onToggleWishList}
-        style={{ marginRight: -12 }}
-      />
-    </Stack>
+          <ProductShowcase
+            loggedIn={loggedIn}
+            align="center"
+            hits={searchResults.hits}
+            numEagerLoad={6}
+            onToggleWishList={onToggleWishList}
+            style={{ marginRight: -12 }}
+          />
+        </Stack>
+      )}
+    </ThemeContext.Consumer>
   );
 };
 

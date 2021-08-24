@@ -56,15 +56,15 @@ export default async function handler(
 
   const homepage = addHttpsProtocol(Xss(reqBody.homepage));
   const etsyHomepage =
-    typeof reqBody.etsyHomepage === "string"
+    typeof reqBody.etsyHomepage === "string" && reqBody.etsyHomepage
       ? addHttpsProtocol(Xss(reqBody.etsyHomepage.replace(/\?.*$/g, "")))
       : "";
   const shopifyHomepage =
-    typeof reqBody.shopifyHomepage === "string"
+    typeof reqBody.shopifyHomepage === "string" && reqBody.shopifyHomepage
       ? addHttpsProtocol(Xss(reqBody.shopifyHomepage.replace(/\?.*$/g, "")))
       : "";
   const squareHomepage =
-    typeof reqBody.squareHomepage === "string"
+    typeof reqBody.squareHomepage === "string" && reqBody.squareHomepage
       ? addHttpsProtocol(Xss(reqBody.squareHomepage.replace(/\?.*$/g, "")))
       : "";
 

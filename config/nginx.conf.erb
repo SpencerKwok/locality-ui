@@ -35,7 +35,7 @@ http {
     }
 
     # Setup cache
-    proxy_cache_path /tmp/nginx.cache levels=1:2 keys_zone=cache:10m inactive=60m use_temp_path=off;
+    proxy_cache_path /tmp/nginx.cache levels=1:2 keys_zone=cache:10m inactive=1y use_temp_path=off;
 
     # Setup rate-limiting
     limit_req_zone $binary_remote_addr zone=ip:10m rate=10r/s;
@@ -52,7 +52,7 @@ http {
             }
 
             add_header Access-Control-Allow-Credentials "true";
-            add_header Access-Control-Allow-Headers "Cache-Control, Content-Type, DNT, If-Modified-Since, Origin, User-Agent, X-Requested-With, id, token";
+            add_header Access-Control-Allow-Headers "Cache-Control, Content-Type, DNT, If-Modified-Since, Origin, User-Agent, X-Requested-With, email, token";
             add_header Access-Control-Allow-Methods "GET, POST";
             add_header Expect-Ct "max-age=3600, enforce";
             add_header Origin-Agent-Cluster "?1";

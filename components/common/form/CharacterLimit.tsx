@@ -8,7 +8,7 @@ export interface FormCharacterLimitProps {
 const FormCharacterLimit: FC<FormCharacterLimitProps> = ({
   message,
   maxCharacters,
-}: FormCharacterLimitProps) => {
+}) => {
   return (
     <div
       style={{

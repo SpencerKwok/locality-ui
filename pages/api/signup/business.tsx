@@ -1,16 +1,21 @@
-import Bcrypt from "bcryptjs";
-import SqlString from "sqlstring";
+import NodeMailer from "nodemailer";
 import Xss from "xss";
 
-import { BusinessSignUpSchema } from "common/ValidationSchema";
-import MapQuest from "lib/api/mapquest";
 import MailChimp, { MainListId } from "lib/api/mailchimp";
-import Psql from "lib/api/postgresql";
+import { BusinessSignUpSchema } from "common/ValidationSchema";
+import { EMAIL_SERVICE, EMAIL_USER, EMAIL_PASSWORD } from "lib/env";
 import SumoLogic from "lib/api/sumologic";
-import { SALT } from "lib/env";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { BusinessSignUpRequest } from "common/Schema";
+
+const transporter = NodeMailer.createTransport({
+  service: EMAIL_SERVICE,
+  auth: {
+    user: EMAIL_USER,
+    pass: EMAIL_PASSWORD,
+  },
+});
 
 export default async function handler(
   req: NextApiRequest,
@@ -19,7 +24,7 @@ export default async function handler(
   if (req.method !== "POST") {
     SumoLogic.log({
       level: "info",
-      method: "signup/business",
+      method: "contact",
       message: "Incorrect method",
     });
     res.status(400).json({ error: "Must be POST method" });
@@ -32,7 +37,7 @@ export default async function handler(
   } catch (error: unknown) {
     SumoLogic.log({
       level: "warning",
-      method: "signup/business",
+      method: "contact",
       message: "Invalid payload",
       params: { body, error },
     });
@@ -43,142 +48,76 @@ export default async function handler(
   const firstName = Xss(body.firstName);
   const lastName = Xss(body.lastName);
   const email = Xss(body.email);
+  const phoneNumber = Xss(body.phoneNumber);
   const businessName = Xss(body.businessName);
-  const address = Xss(body.address);
-  const city = Xss(body.city);
-  const province = Xss(body.province);
-  const country = Xss(body.country);
-  const password = body.password1;
+  const businessHomepage = Xss(body.businessHomepage);
+  const subscribe = body.subscribe;
 
-  const latLng = await MapQuest.getLatLng({
-    streetAddress: address,
-    city,
-    province,
-    country,
-  });
-  if (!latLng) {
-    SumoLogic.log({
-      level: "error",
-      method: "signup/business",
-      message: "Failed to convert address to lat/lng: Missing response",
-      params: { body },
-    });
-    res.status(500).json({ error: "Internal server error" });
-    return;
-  }
-
-  const user = await Psql.select<{ id: number }>({
-    table: "users",
-    values: ["id"],
-    orderBy: "id DESC",
-    limit: 1,
-  });
-  if (!user) {
-    SumoLogic.log({
-      level: "error",
-      method: "signup/business",
-      message: "Failed to SELECT from Heroku PSQL: Missing response",
-      params: { body },
-    });
-    res.status(500).json({ error: "Internal server error" });
-    return;
-  }
-
-  const existingUser = await Psql.select<{
-    id: number;
-  }>({
-    table: "users",
-    values: ["id"],
-    conditions: SqlString.format("email=E?", [email]),
-  });
-  if (!existingUser) {
-    SumoLogic.log({
-      level: "error",
-      method: "signup/business",
-      message: "Failed to SELECT from Heroku PSQL: Missing response",
-      params: { body },
-    });
-    res.status(500).json({ error: "Internal server error" });
-    return;
-  } else if (existingUser.rowCount > 0) {
+  if (
+    firstName !== body.firstName ||
+    lastName !== body.lastName ||
+    email !== body.email ||
+    phoneNumber !== body.phoneNumber ||
+    businessName !== body.businessName ||
+    businessHomepage !== body.businessHomepage
+  ) {
     SumoLogic.log({
       level: "warning",
-      method: "signup/business",
-      message:
-        "User attempted to sign up with an email that has already been used",
+      method: "contact",
+      message: "XSS attack",
       params: { body },
     });
-    res.status(500).json({ error: "Account already exists" });
-    return;
   }
 
-  const userId = (user.rows[0] ?? { id: 0 }).id + 1;
-  const psqlErrorAddBusiness = await Psql.insert({
-    table: "businesses",
-    values: [
-      { key: "id", value: userId },
-      { key: "name", value: businessName },
-      { key: "address", value: address },
-      { key: "city", value: city },
-      { key: "province", value: province },
-      { key: "country", value: country },
-      { key: "latitude", value: latLng.lat.toString() },
-      { key: "longitude", value: latLng.lng.toString() },
-    ],
-  });
-  if (psqlErrorAddBusiness) {
+  const selfMailOptions = {
+    from: EMAIL_USER,
+    to: EMAIL_USER,
+    subject: "New Customer!",
+    html: `Name: ${firstName} ${lastName}<br/>Email: ${email}<br/>Phone Number: ${phoneNumber}<br/>Business Name: ${businessName}<br/>Business Homepage: ${businessHomepage}`,
+  };
+
+  const customerMailOptions = {
+    from: EMAIL_USER,
+    to: email,
+    subject: "Welcome to Locality!",
+    html: `<html><head><style type="text/css">.localityTable {border-collapse: collapse;}.localityBody {height: 100%;margin: 0;padding: 0;width: 100%;}.localityGreeting {display: block;margin: 0;margin-top: -24px;padding: 0;color: #444444;font-family: Helvetica;font-size: 22px;font-style: normal;font-weight: bold;line-height: 150%;letter-spacing: normal;text-align: left;}.localityContent {background-color: #ffffff;color: #757575;font-family: Helvetica;font-size: 16px;line-height: 150%;width: 60%;padding: 36px;}.localityFooter{background-color: #333333;color: #ffffff;font-family: Helvetica;font-size: 12px;line-height: 150%;padding-top: 36px;padding-bottom: 36px;text-align: center;}</style></head><body class="localityBody"><table class="localityTable" width="100%"><tr><td><center><img alt="Locality Logo" src="https://res.cloudinary.com/hcory49pf/image/upload/v1613266097/email/locality-logo.png" style="width: 400px" /></center></td></tr><tr><td class="localityContent"><center><table><tr><td><h3 class="localityGreeting">Hi ${firstName} ${lastName},</h3><br />Thank you for reaching out! We will get back to you as soon as we can.<br /><br />- The Locality Team</td></tr></table></center></td></tr><tr><td class="localityFooter"><em>Copyright © 2021 Locality, All rights reserved.</em></td></tr></table></body></html>`,
+  };
+
+  try {
+    await transporter.sendMail(selfMailOptions);
+    await transporter.sendMail(customerMailOptions);
+  } catch (error: unknown) {
     SumoLogic.log({
       level: "error",
-      method: "signup/business",
-      message: `Failed to INSERT into Heroku PSQL: ${psqlErrorAddBusiness.message}`,
-      params: { body },
+      method: "contact",
+      message: "Failed to send mail",
+      params: { body, error },
     });
     res.status(500).json({ error: "Internal server error" });
     return;
   }
 
-  const hash = await Bcrypt.hash(password, parseInt(SALT ?? "12"));
-  const psqlErrorAddUser = await Psql.insert({
-    table: "users",
-    values: [
-      { key: "id", value: userId },
-      { key: "username", value: email },
-      { key: "email", value: email },
-      { key: "password", value: hash },
-      { key: "first_name", value: firstName },
-      { key: "last_name", value: lastName },
-    ],
-  });
-  if (psqlErrorAddUser) {
-    SumoLogic.log({
-      level: "error",
-      method: "signup/business",
-      message: `Failed to INSERT into Heroku PSQL: ${psqlErrorAddUser.message}`,
-      params: { body },
-    });
-    res.status(500).json({ error: "Internal server error" });
-    return;
-  }
+  if (subscribe) {
+    const mailchimpError = await MailChimp.addSubscriber(
+      {
+        email,
+        firstName,
+        lastName,
+      },
+      MainListId
+    );
 
-  const mailchimpError = await MailChimp.addSubscriber(
-    {
-      email,
-      firstName,
-      lastName,
-    },
-    MainListId
-  );
-
-  // Don't respond with error on mailchimp subscription
-  // error, users should still be able to log in if a
-  // failure occured here
-  if (mailchimpError) {
-    SumoLogic.log({
-      level: "error",
-      method: "signup/business",
-      message: `Failed to add subscriber to Mail Chimp: ${mailchimpError.message}`,
-      params: user,
-    });
+    // Don't respond with error on mailchimp subscription
+    // error, users should still be able to log in if a
+    // failure occured here
+    if (mailchimpError) {
+      SumoLogic.log({
+        level: "error",
+        method: "signup/user",
+        message: "Failed to add subscriber to Mail Chimp",
+        params: { body, mailchimpError },
+      });
+    }
   }
 
   res.status(204).end();

@@ -171,7 +171,7 @@ const Inventory: FC<InventoryProps> = ({
             onFilterClear={onFilterClear}
             onProductClick={onProductClick}
             products={products}
-            height={height - 240}
+            height={600}
             index={productIndex}
             width={500}
           />

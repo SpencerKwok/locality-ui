@@ -1,23 +1,13 @@
-import dynamic from "next/dynamic";
-import Link from "next/link";
-
 import FacetList from "./FacetList";
 import ProductShowcase from "./ProductShowcase";
 import SearchBar from "./SearchBar";
 import Stack from "components/common/Stack";
-
-import LocalityLogo from "components/common/images/LocalityLogo";
+import ThemeContext from "components/common/Theme";
 import { useWindowSize } from "lib/common";
+import styles from "./SearchResultsDesktop.module.css";
 
-import type { Ellipsis } from "react-bootstrap/PageItem";
 import type { FC } from "react";
 import type { Product } from "common/Schema";
-
-const Pagination = dynamic(async () => import("react-bootstrap/Pagination"));
-const PaginationItem = dynamic(async () => import("react-bootstrap/PageItem"));
-const PaginationEllipsis = dynamic(async () =>
-  import("react-bootstrap/PageItem").then((module) => module.Ellipsis)
-) as typeof Ellipsis;
 
 export type UserInputChange = {
   page: (value: number) => void;
@@ -48,6 +38,7 @@ export interface SearchProps {
   searchResults: SearchResults;
   userInput: UserInput;
   onUserInputChange: UserInputChange;
+  width: number;
   onEnter: (query: string) => void;
   onToggleWishList: (objectId: string, value: boolean) => void;
   onToggleShowAllBusinesses: () => void;
@@ -62,6 +53,7 @@ const Search: FC<SearchProps> = ({
   searchResults,
   userInput,
   onUserInputChange,
+  width,
   onEnter,
   onToggleWishList,
   onToggleShowAllBusinesses,
@@ -75,20 +67,27 @@ const Search: FC<SearchProps> = ({
 
   const PaginationDisplay = (): JSX.Element => {
     return (
-      <Pagination>
+      <ul className={styles.pagination}>
         {((): Array<JSX.Element> => {
           const numPages = Math.ceil(searchResults.nbHits / 24);
           if (numPages < 12) {
             return Array.from(Array(numPages).keys()).map((index) => (
-              <PaginationItem
-                active={userInput.page === index}
+              <li
                 key={index}
                 onClick={(): void => {
                   onUserInputChange.page(index);
                 }}
               >
-                {index + 1}
-              </PaginationItem>
+                <span
+                  className={
+                    styles[
+                      `page-link${userInput.page === index ? "-active" : ""}`
+                    ]
+                  }
+                >
+                  {index + 1}
+                </span>
+              </li>
             ));
           }
 
@@ -97,174 +96,212 @@ const Search: FC<SearchProps> = ({
             const maxPageBeforeEllipsis = userInput.page === 6 ? 11 : 10;
             for (let index = 0; index < maxPageBeforeEllipsis; ++index) {
               pages.push(
-                <PaginationItem
-                  active={userInput.page === index}
+                <li
                   key={index}
                   onClick={(): void => {
                     onUserInputChange.page(index);
                   }}
                 >
-                  {index + 1}
-                </PaginationItem>
+                  <span
+                    className={
+                      styles[
+                        `page-link${userInput.page === index ? "-active" : ""}`
+                      ]
+                    }
+                  >
+                    {index + 1}
+                  </span>
+                </li>
               );
             }
-            pages.push(<PaginationEllipsis key="ellipsis_1" />);
             pages.push(
-              <PaginationItem
-                active={userInput.page === numPages - 1}
+              <li>
+                <span className={styles["page-link"]}>...</span>
+              </li>
+            );
+            pages.push(
+              <li
                 key={numPages - 1}
                 onClick={(): void => {
                   onUserInputChange.page(numPages - 1);
                 }}
               >
-                {numPages}
-              </PaginationItem>
+                <span className={styles["page-link"]}>{numPages}</span>
+              </li>
             );
           } else if (userInput.page <= numPages - 8) {
             pages.push(
-              <PaginationItem
-                active={userInput.page === 0}
+              <li
                 key={0}
                 onClick={(): void => {
                   onUserInputChange.page(0);
                 }}
               >
-                1
-              </PaginationItem>
+                <span className={styles["page-link"]}>1</span>
+              </li>
             );
-            pages.push(<PaginationEllipsis key="ellipsis_1" />);
+            pages.push(
+              <li>
+                <span className={styles["page-link"]}>...</span>
+              </li>
+            );
             for (
               let index = userInput.page - 5;
               index <= userInput.page + 5;
               ++index
             ) {
               pages.push(
-                <PaginationItem
-                  active={userInput.page === index}
+                <li
                   key={index}
                   onClick={(): void => {
                     onUserInputChange.page(index);
                   }}
                 >
-                  {index + 1}
-                </PaginationItem>
+                  <span
+                    className={
+                      styles[
+                        `page-link${userInput.page === index ? "-active" : ""}`
+                      ]
+                    }
+                  >
+                    {index + 1}
+                  </span>
+                </li>
               );
             }
-            pages.push(<PaginationEllipsis key="ellipsis_2" />);
             pages.push(
-              <PaginationItem
-                active={userInput.page === numPages - 1}
+              <li>
+                <span className={styles["page-link"]}>...</span>
+              </li>
+            );
+            pages.push(
+              <li
                 key={numPages - 1}
                 onClick={(): void => {
                   onUserInputChange.page(numPages - 1);
                 }}
               >
-                {numPages}
-              </PaginationItem>
+                <span className={styles["page-link"]}>{numPages}</span>
+              </li>
             );
           } else {
             pages.push(
-              <PaginationItem
-                active={userInput.page === 0}
+              <li
                 key={0}
                 onClick={(): void => {
                   onUserInputChange.page(0);
                 }}
               >
-                1
-              </PaginationItem>
+                <span className={styles["page-link"]}>1</span>
+              </li>
             );
-            pages.push(<PaginationEllipsis key="ellipsis_1" />);
+            pages.push(
+              <li>
+                <span className={styles["page-link"]}>...</span>
+              </li>
+            );
             const minPageBeforeEllipsis =
               userInput.page === numPages - 7 ? numPages - 11 : numPages - 10;
             for (let index = minPageBeforeEllipsis; index < numPages; ++index) {
               pages.push(
-                <PaginationItem
-                  active={userInput.page === index}
+                <li
                   key={index}
                   onClick={(): void => {
                     onUserInputChange.page(index);
                   }}
                 >
-                  {index + 1}
-                </PaginationItem>
+                  <span
+                    className={
+                      styles[
+                        `page-link${userInput.page === index ? "-active" : ""}`
+                      ]
+                    }
+                  >
+                    {index + 1}
+                  </span>
+                </li>
               );
             }
           }
-
           return pages;
         })()}
-      </Pagination>
+      </ul>
     );
   };
 
   return (
-    <Stack direction="column" rowAlign="flex-start">
-      <Stack direction="row" columnAlign="flex-start" rowAlign="center">
-        <Link href="/">
-          <div>
-            <LocalityLogo
-              width={200}
-              style={{
-                marginTop: 6,
-                padding: "16px 16px 16px 16px",
-                cursor: "pointer",
-              }}
-            />
-          </div>
-        </Link>
-        <SearchBar
-          autoFocus
-          defaultQuery={query}
-          width={400}
-          onEnter={onEnter}
-        />
-      </Stack>
-      <Stack direction="column" rowAlign="flex-start">
-        <Stack
-          direction="row"
-          columnAlign="flex-start"
-          style={{ marginLeft: 14 }}
-        >
-          <Stack direction="column" rowAlign="flex-start" spacing={12}>
-            <FacetList
-              name="Departments"
-              showAll={showAllDepartments}
-              facets={searchResults.facets.departments}
-              selectedFacets={userInput.departments}
-              onFacetClick={(value): void => {
-                onUserInputChange.departments(value);
-              }}
-              toggleShowAll={onToggleShowAllDepartments}
-            />
-            <FacetList
-              name="Businesses"
-              showAll={showAllBusinesses}
-              facets={searchResults.facets.business}
-              selectedFacets={userInput.business}
-              onFacetClick={(value): void => {
-                onUserInputChange.business(value);
-              }}
-              toggleShowAll={onToggleShowAllBusinesses}
-            />
-          </Stack>
-          <Stack direction="column" rowAlign="center">
-            <ProductShowcase
-              loggedIn={loggedIn}
-              hits={searchResults.hits}
-              numEagerLoad={12}
-              query={query}
-              onToggleWishList={onToggleWishList}
-            />
-          </Stack>
+    <ThemeContext.Consumer>
+      {({ color }): JSX.Element => (
+        <Stack direction="column" rowAlign="center">
+          <section
+            style={{
+              color: color.text.dark,
+              marginTop: 38,
+            }}
+          >
+            <Stack direction="column">
+              <Stack direction="column" spacing={60}>
+                <Stack direction="column" rowAlign="center" spacing={40}>
+                  <h1 style={{ textAlign: "center" }}>
+                    Online marketpace for high quality local goods
+                  </h1>
+                  <h2 style={{ textAlign: "center" }}>
+                    <b>Explore</b> local offerings, <b>Support</b> local
+                    businesses
+                  </h2>
+                  <SearchBar
+                    autoFocus
+                    defaultQuery={query}
+                    width={width * 0.8}
+                    onEnter={onEnter}
+                  />
+                </Stack>
+                <Stack
+                  direction="row"
+                  columnAlign="center"
+                  style={{ padding: "0px 48px" }}
+                >
+                  <Stack direction="column" rowAlign="flex-start" spacing={12}>
+                    <FacetList
+                      name="Departments"
+                      showAll={showAllDepartments}
+                      facets={searchResults.facets.departments}
+                      selectedFacets={userInput.departments}
+                      onFacetClick={(value): void => {
+                        onUserInputChange.departments(value);
+                      }}
+                      toggleShowAll={onToggleShowAllDepartments}
+                    />
+                    <FacetList
+                      name="Businesses"
+                      showAll={showAllBusinesses}
+                      facets={searchResults.facets.business}
+                      selectedFacets={userInput.business}
+                      onFacetClick={(value): void => {
+                        onUserInputChange.business(value);
+                      }}
+                      toggleShowAll={onToggleShowAllBusinesses}
+                    />
+                  </Stack>
+                  <Stack direction="column" rowAlign="center">
+                    <ProductShowcase
+                      loggedIn={loggedIn}
+                      hits={searchResults.hits}
+                      numEagerLoad={12}
+                      query={query}
+                      onToggleWishList={onToggleWishList}
+                    />
+                  </Stack>
+                </Stack>
+              </Stack>
+              <Stack direction="row" columnAlign="center">
+                <PaginationDisplay />
+              </Stack>
+            </Stack>
+          </section>
         </Stack>
-      </Stack>
-      <Stack direction="row" columnAlign="center" style={{ width: size.width }}>
-        <Pagination>
-          <PaginationDisplay />
-        </Pagination>
-      </Stack>
-    </Stack>
+      )}
+    </ThemeContext.Consumer>
   );
 };
 

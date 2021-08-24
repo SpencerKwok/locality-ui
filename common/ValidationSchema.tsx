@@ -43,6 +43,7 @@ export const UserSignUpSchema = yup.object().shape({
     .min(8, "Too short")
     .max(255, "Too long")
     .oneOf([yup.ref("password1")], "Passwords do not match"),
+  subscribe: yup.boolean().strict(true).required("Required"),
 });
 
 export const BusinessSignUpSchema = yup.object().shape({
@@ -57,26 +58,18 @@ export const BusinessSignUpSchema = yup.object().shape({
     .email("Invalid email address")
     .required("Required")
     .max(255, "Too long"),
+  phoneNumber: yup.string().optional().max(255, "Too long"),
   businessName: yup
     .string()
     .strict(true)
     .required("Required")
     .max(255, "Too long"),
-  address: yup.string().strict(true).required("Required").max(255, "Too long"),
-  city: yup.string().strict(true).required("Required").max(255, "Too long"),
-  province: yup.string().strict(true).required("Required").max(255, "Too long"),
-  country: yup.string().strict(true).required("Required").max(255, "Too long"),
-  password1: yup
+  businessHomepage: yup
     .string()
+    .strict(true)
     .required("Required")
-    .min(8, "Too short")
     .max(255, "Too long"),
-  password2: yup
-    .string()
-    .required("Required")
-    .min(8, "Too short")
-    .max(255, "Too long")
-    .oneOf([yup.ref("password1")], "New passwords do not match"),
+  subscribe: yup.boolean().strict(true).required("Requred"),
 });
 
 export const DepartmentsUpdateSchema = yup.object().shape({
