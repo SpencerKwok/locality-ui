@@ -41,13 +41,8 @@ export function useWindowSize(): { height?: number; width?: number } {
   });
 
   useEffect(() => {
-    const isMobile =
-      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-      );
-
     const handleResize = (): void => {
-      if (isMobile) {
+      if (IsMobile()) {
         const isPortrait =
           window.orientation === 0 || window.orientation === 180;
         setWindowSize({
@@ -84,3 +79,9 @@ export function useWindowSize(): { height?: number; width?: number } {
 
   return windowSize;
 }
+
+export const IsMobile = (): boolean => {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
+};

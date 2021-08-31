@@ -25,7 +25,7 @@ const Footer: FC<FooterProps> = ({ width }) => {
   return (
     <ThemeContext.Consumer>
       {({ color }): JSX.Element => (
-        <footer className="top-middle-column" style={{ display: "flex" }}>
+        <footer className="top-middle-column">
           <Div
             className="middle-middle-column"
             style={{

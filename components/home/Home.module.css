@@ -22,6 +22,17 @@
   border-radius: 21px;
 }
 
+@keyframes animateProductShowcase {
+  from {
+    transform: translateX(0px);
+  }
+  to {
+    transform: translateX(-1630px);
+  }
+}
+.product-showcase {
+  animation: animateProductShowcase 120s linear infinite;
+}
 .product-container-container {
   border-radius: 16px;
   height: 380px;
@@ -34,6 +45,17 @@
   transform: scale(1.02);
 }
 
+@keyframes animatePartnerShowcase {
+  from {
+    transform: translateX(0px);
+  }
+  to {
+    transform: translateX(-1296px);
+  }
+}
+.partner-showcase {
+  animation: animatePartnerShowcase 95.411s linear infinite;
+}
 .partner-logo-container,
 .partner-logo-container-container {
   display: flex;
@@ -44,12 +66,10 @@
   height: 128px;
   width: 128px;
 }
-
 .partner-logo-container-container {
   box-shadow: 0px 0px 24px 0px #a4a2a226;
   filter: drop-shadow(0px 0px 24px rgba(164, 162, 162, 0.15));
 }
-
 .partner-logo-container-container:hover {
   background: #00000008;
   filter: brightness(0.92) drop-shadow(0px 0px 24px rgba(164, 162, 162, 0.15));

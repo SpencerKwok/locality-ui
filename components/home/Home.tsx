@@ -56,7 +56,6 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
           window.scrollTo({ behavior: "smooth", top: 3200 * scale });
           break;
         default:
-          window.scrollTo({ behavior: "smooth", top: 0 });
           break;
       }
     };
@@ -339,7 +338,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                           if (howItWorksStep !== 1) {
                             setHowItWorksStep(1);
                           }
-                        } else if (t <= 14.1) {
+                        } else if (t <= 14) {
                           if (howItWorksStep !== 2) {
                             setHowItWorksStep(2);
                           }
@@ -436,7 +435,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                             />
                           </svg>
                         </Div>
-                        <MiniSearch width={247} />
+                        <MiniSearch width={236} />
                       </Div>
                     </Div>
                   </Div>

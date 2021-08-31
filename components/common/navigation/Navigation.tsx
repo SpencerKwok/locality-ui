@@ -20,8 +20,9 @@ import type { FC } from "react";
 
 export type NavigationType = "business" | "none" | "user";
 export interface NavigationProps {
-  width: number;
   user?: any;
+  scale: number;
+  width: number;
 }
 
 // TODO: Make all divs flex
@@ -29,10 +30,9 @@ const Div = styled.div`
   display: flex;
 `;
 
-const Navigation: FC<NavigationProps> = ({ user, width }) => {
+const Navigation: FC<NavigationProps> = ({ user, scale, width }) => {
   const [useFallback, setUseFallback] = useState(false);
   const [transitionValue, setTransitionValue] = useState(0);
-  const scale = Math.round((width / 1519) * 10) / 10;
 
   useEffect(() => {
     const onScroll = (): void => {
@@ -204,7 +204,7 @@ const Navigation: FC<NavigationProps> = ({ user, width }) => {
                         rowAlign="center"
                         style={{ paddingRight: 40 }}
                       >
-                        <MiniSearch width={247} />
+                        <MiniSearch width={236} />
                         <Link href="/signin">
                           <a
                             className={styles.link}

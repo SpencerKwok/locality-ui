@@ -1,0 +1,52 @@
+.link {
+  cursor: pointer;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  text-decoration: none;
+}
+.link:hover {
+  text-decoration: none;
+}
+
+.nav {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding-top: 25px;
+  padding-bottom: 25px;
+}
+.navbar {
+  background-color: #449ed7;
+}
+.navlink {
+  cursor: pointer;
+  color: white !important;
+}
+
+.menu {
+  border-radius: 11px;
+  visibility: collapse;
+}
+.menu > *:hover {
+  background-color: #eeeeee;
+}
+.menu > * {
+  padding: 0px 12px;
+  width: 113px;
+  text-align: end;
+}
+.menu > *:first-child {
+  padding-top: 6px;
+  border-radius: 11px 11px 0px 0px;
+}
+.menu > *:last-child {
+  padding-bottom: 6px;
+  border-radius: 0px 0px 11px 11px;
+}
+.menu-button {
+  display: flex;
+  border: none;
+  background: none;
+  margin-top: 1px;
+}

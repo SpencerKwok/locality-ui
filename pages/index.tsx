@@ -1,8 +1,9 @@
 import { useRouter } from "next/router";
 
 import HomePage from "components/home/Home";
+import HomeMobilePage from "components/home/HomeMobile";
 import RootLayout from "components/common/RootLayout";
-import { useWindowSize } from "lib/common";
+import { IsMobile, useWindowSize } from "lib/common";
 
 import type { FC } from "react";
 import type { BaseBusiness } from "../common/Schema";
@@ -21,9 +22,14 @@ const Home: FC<HomeProps> = ({ session }) => {
   }
 
   const isNewUser = query.newUser === "true";
+  const isMobile = IsMobile() || size.width <= 840;
   return (
     <RootLayout session={session}>
-      <HomePage isNewUser={isNewUser} width={size.width} />
+      {isMobile ? (
+        <HomeMobilePage width={size.width} />
+      ) : (
+        <HomePage isNewUser={isNewUser} width={size.width} />
+      )}
     </RootLayout>
   );
 };

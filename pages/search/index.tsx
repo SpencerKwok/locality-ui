@@ -6,7 +6,7 @@ import { GetRpcClient, PostRpcClient } from "components/common/RpcClient";
 import SearchResultsDesktop from "components/search/SearchResultsDesktop";
 import SearchResultsMobile from "components/search/SearchResultsMobile";
 import RootLayout from "components/common/RootLayout";
-import { useMediaQuery, useWindowSize } from "lib/common";
+import { IsMobile, useWindowSize } from "lib/common";
 
 import type { FC } from "react";
 import type { GetServerSideProps } from "next";
@@ -140,7 +140,11 @@ const Search: FC<SearchProps> = ({ query, results, session }) => {
       });
   };
 
-  const isNarrow = useMediaQuery(64, "width");
+  if (typeof size.width !== "number") {
+    return <RootLayout session={session} />;
+  }
+
+  const isNarrow = IsMobile() || size.width <= 840;
   const loggedIn = !(!session || !session.user);
 
   const onUserInputChange = (): void => {
@@ -272,10 +276,6 @@ const Search: FC<SearchProps> = ({ query, results, session }) => {
       window.scroll(0, 0);
     }
   }, [data]);
-
-  if (typeof size.width !== "number") {
-    return <RootLayout session={session} />;
-  }
 
   return (
     <RootLayout session={session}>
