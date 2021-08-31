@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { signOut } from "next-auth/client";
 import Link from "next/link";
 
 import ProfilePic from "components/common/images/ProfilePic";
@@ -9,9 +10,11 @@ import styles from "components/common/navigation/NavigationMobile.module.css";
 import type { FC } from "react";
 
 export type NavigationType = "business" | "none" | "user";
-export interface NavigationProps {}
+export interface NavigationProps {
+  user?: any;
+}
 
-const Navigation: FC<NavigationProps> = ({}) => {
+const Navigation: FC<NavigationProps> = ({ user }) => {
   const [openMenu, setOpenMenu] = useState(false);
   const [useFallback, setUseFallback] = useState(false);
   const [transitionValue, setTransitionValue] = useState(0);
@@ -93,15 +96,39 @@ const Navigation: FC<NavigationProps> = ({}) => {
                   rowAlign="center"
                   style={{ marginTop: -8 }}
                 >
-                  <Link href="/signin">
-                    <a>
+                  <Stack
+                    direction="row"
+                    spacing={4}
+                    columnAlign="center"
+                    rowAlign="center"
+                  >
+                    {user !== undefined ? (
                       <ProfilePic
                         height={41}
                         width={41}
                         style={{ marginTop: 7 }}
                       />
-                    </a>
-                  </Link>{" "}
+                    ) : (
+                      <Link href="/signin">
+                        <a>
+                          <ProfilePic
+                            height={41}
+                            width={41}
+                            style={{ marginTop: 7 }}
+                          />
+                        </a>
+                      </Link>
+                    )}
+                    {user !== undefined && (
+                      <span
+                        className={styles.link}
+                        style={{
+                          cursor: "default",
+                          color: color.text.dark,
+                        }}
+                      >{`Hi ${user.firstName}!`}</span>
+                    )}
+                  </Stack>
                   <div
                     className={styles["menu-button"]}
                     onClick={(): void => {
@@ -133,11 +160,24 @@ const Navigation: FC<NavigationProps> = ({}) => {
                     marginTop: 6,
                   }}
                 >
+                  {user !== undefined && (
+                    <Link href="/wishlist">
+                      <a
+                        className={styles.link}
+                        style={{
+                          color: color.text.dark,
+                        }}
+                      >
+                        Wishlist
+                      </a>
+                    </Link>
+                  )}
                   <Link href="/#how-it-works">
                     <a
                       className={styles.link}
                       onClick={(): void => {
                         window.dispatchEvent(new Event("hashchange"));
+                        setOpenMenu(false);
                       }}
                       style={{
                         color: color.text.dark,
@@ -151,6 +191,7 @@ const Navigation: FC<NavigationProps> = ({}) => {
                       className={styles.link}
                       onClick={(): void => {
                         window.dispatchEvent(new Event("hashchange"));
+                        setOpenMenu(false);
                       }}
                       style={{
                         color: color.text.dark,
@@ -164,6 +205,7 @@ const Navigation: FC<NavigationProps> = ({}) => {
                       className={styles.link}
                       onClick={(): void => {
                         window.dispatchEvent(new Event("hashchange"));
+                        setOpenMenu(false);
                       }}
                       style={{
                         color: color.text.dark,
@@ -177,6 +219,7 @@ const Navigation: FC<NavigationProps> = ({}) => {
                       className={styles.link}
                       onClick={(): void => {
                         window.dispatchEvent(new Event("hashchange"));
+                        setOpenMenu(false);
                       }}
                       style={{
                         color: color.text.dark,
@@ -185,6 +228,20 @@ const Navigation: FC<NavigationProps> = ({}) => {
                       Meet the team
                     </a>
                   </Link>
+                  {user !== undefined && (
+                    <span
+                      className={styles.link}
+                      onClick={async (): Promise<void> => {
+                        await signOut({ redirect: false });
+                        window.location.assign("/signin");
+                      }}
+                      style={{
+                        color: color.text.dark,
+                      }}
+                    >
+                      Log out
+                    </span>
+                  )}
                 </Stack>
               </Stack>
             </Stack>

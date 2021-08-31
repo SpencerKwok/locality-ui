@@ -24,7 +24,7 @@ const RootLayout: FC<RootLayoutProps> = ({ children, session }) => {
   return (
     <div className="top-middle-column" style={{ display: "flex" }}>
       {isMobile ? (
-        <NavigationMobile />
+        <NavigationMobile user={session?.user} />
       ) : (
         <Navigation user={session?.user} scale={scale} width={size.width} />
       )}
