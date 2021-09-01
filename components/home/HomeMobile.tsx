@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import Lottie from "react-lottie-player";
 import Link from "next/link";
 
@@ -13,56 +13,13 @@ import styles from "./Home.module.css";
 
 import type { FC } from "react";
 
-interface HomeProps {
-  width: number;
-}
+interface HomeProps {}
 
-const Home: FC<HomeProps> = ({ width }) => {
-  const [hash, setHash] = useState("");
+const Home: FC<HomeProps> = ({}) => {
   const [howItWorksStep, setHowItWorksStep] = useState(0);
   const [loadOffscreenContent, setLoadOffscreenContent] = useState(false);
   const [useFallback, setUseFallback] = useState(false);
-  const howItWorksRef = useRef<HTMLDivElement>(null);
   const howItWorksVideoRef = useRef<HTMLVideoElement>(null);
-  const scale = Math.round((width / 1519) * 10) / 10;
-
-  useEffect(() => {
-    const hashchangeEventListener = (): void => {
-      switch (hash) {
-        case "#how-it-works":
-          if (howItWorksRef.current) {
-            window.scrollTo({
-              behavior: "smooth",
-              top: howItWorksRef.current.getBoundingClientRect().y - 60,
-            });
-          }
-          break;
-        case "#explore-goodies":
-          window.scrollTo({ behavior: "smooth", top: 1600 * scale });
-          break;
-        case "#our-partners":
-          window.scrollTo({ behavior: "smooth", top: 2400 * scale });
-          break;
-        case "#meet-the-team":
-          window.scrollTo({ behavior: "smooth", top: 3200 * scale });
-          break;
-        default:
-          break;
-      }
-    };
-
-    // Initialize hash
-    hashchangeEventListener();
-
-    window.addEventListener("hashchange", hashchangeEventListener);
-    return (): void => {
-      window.removeEventListener("hashchange", hashchangeEventListener);
-    };
-  }, [hash]);
-
-  if (location.hash !== hash) {
-    setHash(location.hash);
-  }
 
   return (
     <ThemeContext.Consumer>
@@ -116,7 +73,7 @@ const Home: FC<HomeProps> = ({ width }) => {
           </section>
           <section
             className="middle-middle-column"
-            ref={howItWorksRef}
+            id="#how-it-works"
             style={{
               background: color.background.dark,
               paddingTop: 60,
@@ -173,6 +130,7 @@ const Home: FC<HomeProps> = ({ width }) => {
           </section>
           <section
             className="middle-middle-column"
+            id="#explore-goodies"
             style={{
               background: color.background.light,
               paddingTop: 60,
@@ -205,12 +163,12 @@ const Home: FC<HomeProps> = ({ width }) => {
               </Stack>
               <ExploreLocalGoodiesMobile
                 loading={loadOffscreenContent ? "eager" : "lazy"}
-                width={width}
               />
             </Stack>
           </section>
           <section
             className="middle-middle-column"
+            id="#our-partners"
             style={{
               paddingTop: 60,
               paddingBottom: 60,
@@ -245,7 +203,6 @@ const Home: FC<HomeProps> = ({ width }) => {
               </Stack>
               <OurPartnersMobile
                 loading={loadOffscreenContent ? "eager" : "lazy"}
-                width={width}
               />
               <Link href="/signup/business">
                 <a>
@@ -263,6 +220,7 @@ const Home: FC<HomeProps> = ({ width }) => {
           </section>
           <section
             className="middle-middle-column"
+            id="#meet-the-team"
             style={{
               background: color.background.light,
               paddingTop: 60,

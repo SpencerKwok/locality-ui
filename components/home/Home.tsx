@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import Lottie from "react-lottie-player";
 import dynamic from "next/dynamic";
 import styled from "styled-components";
@@ -7,7 +7,7 @@ import Link from "next/link";
 import Button from "components/common/button/Button";
 import Chrome from "components/common/images/Chrome";
 import LocalityDemoLottie from "public/images/home/locality-extension-lottie.json";
-import ExploreLocalGoodies from "components/home/ProductShowcase";
+import ProductShowcase from "components/home/ProductShowcase";
 import StepArrow from "components/common/images/StepArrow";
 import MiniSearch from "components/search/MiniSearch";
 import ThemeContext from "components/common/Theme";
@@ -29,53 +29,17 @@ const NewUser = dynamic(async () => import("components/common/popups/NewUser"));
 
 interface HomeProps {
   isNewUser: boolean;
-  width: number;
 }
 
-const Home: FC<HomeProps> = ({ isNewUser, width }) => {
-  const [hash, setHash] = useState("");
+const Home: FC<HomeProps> = ({ isNewUser }) => {
   const [howItWorksStep, setHowItWorksStep] = useState(0);
   const [loadOffscreenContent, setLoadOffscreenContent] = useState(false);
   const [useFallback, setUseFallback] = useState(false);
   const howItWorksVideoRef = useRef<HTMLVideoElement>(null);
-  const scale = Math.round((width / 1519) * 10) / 10;
-
-  useEffect(() => {
-    const hashchangeEventListener = (): void => {
-      switch (hash) {
-        case "#how-it-works":
-          window.scrollTo({ behavior: "smooth", top: 800 * scale });
-          break;
-        case "#explore-goodies":
-          window.scrollTo({ behavior: "smooth", top: 1600 * scale });
-          break;
-        case "#our-partners":
-          window.scrollTo({ behavior: "smooth", top: 2400 * scale });
-          break;
-        case "#meet-the-team":
-          window.scrollTo({ behavior: "smooth", top: 3200 * scale });
-          break;
-        default:
-          break;
-      }
-    };
-
-    // Initialize hash
-    hashchangeEventListener();
-
-    window.addEventListener("hashchange", hashchangeEventListener);
-    return (): void => {
-      window.removeEventListener("hashchange", hashchangeEventListener);
-    };
-  }, [hash]);
-
-  if (location.hash !== hash) {
-    setHash(location.hash);
-  }
 
   return (
     <ThemeContext.Consumer>
-      {({ color }): JSX.Element => (
+      {({ color, size, scale }): JSX.Element => (
         <Div className="top-middle-column">
           {isNewUser && <NewUser />}
           <Div className="top-middle-column">
@@ -87,7 +51,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                 height: 670 * scale,
                 paddingTop: 65 * scale,
                 paddingBottom: 65 * scale,
-                width,
+                width: size.width,
               }}
             >
               <div style={{ height: 670 }}>
@@ -181,7 +145,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                 height: 670 * scale,
                 paddingTop: 65 * scale,
                 paddingBottom: 65 * scale,
-                width,
+                width: size.width,
               }}
             >
               <Div className="middle-middle-column" style={{ height: 670 }}>
@@ -378,7 +342,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                 height: 670 * scale,
                 paddingTop: 65 * scale,
                 paddingBottom: 65 * scale,
-                width,
+                width: size.width,
               }}
             >
               <div style={{ height: 670 }}>
@@ -439,7 +403,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                       </Div>
                     </Div>
                   </Div>
-                  <ExploreLocalGoodies
+                  <ProductShowcase
                     loading={loadOffscreenContent ? "eager" : "lazy"}
                     width={1268}
                   />
@@ -453,7 +417,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                 height: 670 * scale,
                 paddingTop: 65 * scale,
                 paddingBottom: 65 * scale,
-                width,
+                width: size.width,
               }}
             >
               <div style={{ height: 670 }}>
@@ -511,7 +475,7 @@ const Home: FC<HomeProps> = ({ isNewUser, width }) => {
                 height: 670 * scale,
                 paddingTop: 65 * scale,
                 paddingBottom: 65 * scale,
-                width,
+                width: size.width,
               }}
             >
               <Div className="middle-middle-column" style={{ height: 670 }}>

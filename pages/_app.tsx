@@ -9,6 +9,7 @@ import "../styles.css";
 import type { AppProps } from "next/app";
 import type { Session } from "next-auth";
 import type { FC } from "react";
+import { IsMobile, useWindowSize } from "lib/common";
 
 const protectedPagesRegex = /^\/(dashboard|signin|signup|wishlist)/g;
 
@@ -17,6 +18,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
   const [prevPath, setPrevPath] = useState("/");
   const [session, setSession] = useState<Session | null>(null);
   const router = useRouter();
+  const size = useWindowSize();
 
   useEffect(() => {
     // By-pass waiting if user is transitioning
@@ -54,13 +56,23 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
     polyfill();
   }
 
+  const scale =
+    size.width !== undefined ? Math.round((size.width / 1519) * 10) / 10 : 0;
+  const clientSize = {
+    height: size.height !== undefined ? size.height : 0,
+    width: size.width !== undefined ? size.width : 0,
+  };
+  const isMobile =
+    size.width !== undefined ? IsMobile() || size.width <= 840 : false;
   return (
     <Fragment>
       <Head>
         <title>Locality | Online Local Marketplace</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <ThemeContext.Provider value={DefaultTheme}>
+      <ThemeContext.Provider
+        value={{ ...DefaultTheme, size: clientSize, scale, isMobile }}
+      >
         <Component {...pageProps} session={session} />
       </ThemeContext.Provider>
     </Fragment>

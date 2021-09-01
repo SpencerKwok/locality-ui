@@ -9,6 +9,7 @@ import SignUpUser from "components/signup/SignupUser";
 import type { FC } from "react";
 import type { Session } from "next-auth";
 import type { SignUpRequest } from "components/signup/SignupUser";
+import { useWindowSize } from "lib/common";
 
 export interface UserSignUpProps {
   session: Session | null;
@@ -17,6 +18,7 @@ export interface UserSignUpProps {
 const UserSignUp: FC<UserSignUpProps> = ({ session }) => {
   const [error, setError] = useState("");
   const router = useRouter();
+  const size = useWindowSize();
 
   const onSubmit = async (values: SignUpRequest): Promise<void> => {
     await PostRpcClient.getInstance()
@@ -52,7 +54,9 @@ const UserSignUp: FC<UserSignUpProps> = ({ session }) => {
 
     // Need to refresh CSP
     window.location.assign(
-      user.isBusiness === true ? "/dashboard?tab=inventory" : "/"
+      user.isBusiness === true && (size.width ?? 0) > 840
+        ? "/dashboard?tab=inventory"
+        : "/"
     );
     return null;
   }

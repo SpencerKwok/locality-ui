@@ -7,6 +7,7 @@ import RootLayout from "components/common/RootLayout";
 import type { FC } from "react";
 import type { Session } from "next-auth";
 import type { SignInRequest } from "components/signin/Signin";
+import { useWindowSize } from "lib/common";
 
 export interface SignUpProps {
   session: Session | null;
@@ -14,6 +15,7 @@ export interface SignUpProps {
 
 const Signin: FC<SignUpProps> = ({ session }) => {
   const [error, setError] = useState("");
+  const size = useWindowSize();
 
   if (!error) {
     const urlParams = new URLSearchParams(window.location.search);
@@ -42,8 +44,11 @@ const Signin: FC<SignUpProps> = ({ session }) => {
     const user: any = newSession.user;
 
     // Need to refresh CSP
+
     window.location.assign(
-      user.isBusiness === true ? "/dashboard?tab=inventory" : "/"
+      user.isBusiness === true && (size.width ?? 0) > 840
+        ? "/dashboard?tab=inventory"
+        : "/"
     );
   };
 
@@ -57,7 +62,9 @@ const Signin: FC<SignUpProps> = ({ session }) => {
 
     // Need to refresh CSP
     window.location.assign(
-      user.isBusiness === true ? "/dashboard?tab=inventory" : "/"
+      user.isBusiness === true && (size.width ?? 0) > 840
+        ? "/dashboard?tab=inventory"
+        : "/"
     );
     return null;
   }

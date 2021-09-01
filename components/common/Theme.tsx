@@ -15,6 +15,12 @@ export interface ThemeObject {
       dark: string;
     };
   };
+  size: {
+    height: number;
+    width: number;
+  };
+  scale: number;
+  isMobile: boolean;
 }
 
 export const DefaultTheme: ThemeObject = {
@@ -32,6 +38,12 @@ export const DefaultTheme: ThemeObject = {
       dark: "#112378",
     },
   },
+  size: {
+    height: 0,
+    width: 0,
+  },
+  scale: 0,
+  isMobile: false,
 };
 
 const ThemeContext = createContext<ThemeObject>(DefaultTheme);

@@ -12,6 +12,7 @@ import type { FC } from "react";
 import type { GetServerSideProps } from "next";
 import type { Session } from "next-auth";
 import type { SearchResponse } from "common/Schema";
+import { ThemeContext } from "styled-components";
 
 function onToggleWishList(objectId: string, value: boolean): void {
   if (value) {
@@ -144,7 +145,7 @@ const Search: FC<SearchProps> = ({ query, results, session }) => {
     return <RootLayout session={session} />;
   }
 
-  const isNarrow = IsMobile() || size.width <= 840;
+  const isMobile = IsMobile() || size.width <= 840;
   const loggedIn = !(!session || !session.user);
 
   const onUserInputChange = (): void => {
@@ -269,60 +270,64 @@ const Search: FC<SearchProps> = ({ query, results, session }) => {
 
   useEffect(() => {
     onReset();
-  }, [isNarrow]);
+  }, [isMobile]);
 
   useEffect(() => {
-    if (!isNarrow) {
+    if (!isMobile) {
       window.scroll(0, 0);
     }
   }, [data]);
 
   return (
-    <RootLayout session={session}>
-      {isNarrow ? (
-        <SearchResultsMobile
-          loggedIn={loggedIn}
-          query={userInput.query}
-          searchResults={{
-            hits: data.hits,
-            nbHits: data.nbHits,
-            facets: {
-              business,
-              departments,
-            },
-          }}
-          onBottom={onBottom}
-          onEnter={onEnter}
-          onToggleWishList={onToggleWishList}
-        />
-      ) : (
-        <SearchResultsDesktop
-          loggedIn={loggedIn}
-          showAllBusinesses={showAllBusinesses}
-          showAllDepartments={showAllDepartments}
-          query={userInput.query}
-          searchResults={{
-            hits: data.hits,
-            nbHits: data.nbHits,
-            facets: {
-              business,
-              departments,
-            },
-          }}
-          userInput={userInput}
-          width={size.width}
-          onUserInputChange={{
-            business: createOnFacetClick("business"),
-            departments: createOnFacetClick("departments"),
-            page: onPageClick,
-          }}
-          onEnter={onEnter}
-          onToggleWishList={onToggleWishList}
-          onToggleShowAllBusinesses={onToggleShowAllBusinesses}
-          onToggleShowAllDepartments={onToggleShowAllDepartments}
-        />
+    <ThemeContext.Consumer>
+      {({ size, isMobile }): JSX.Element => (
+        <RootLayout session={session}>
+          {isMobile === true ? (
+            <SearchResultsMobile
+              loggedIn={loggedIn}
+              query={userInput.query}
+              searchResults={{
+                hits: data.hits,
+                nbHits: data.nbHits,
+                facets: {
+                  business,
+                  departments,
+                },
+              }}
+              onBottom={onBottom}
+              onEnter={onEnter}
+              onToggleWishList={onToggleWishList}
+            />
+          ) : (
+            <SearchResultsDesktop
+              loggedIn={loggedIn}
+              showAllBusinesses={showAllBusinesses}
+              showAllDepartments={showAllDepartments}
+              query={userInput.query}
+              searchResults={{
+                hits: data.hits,
+                nbHits: data.nbHits,
+                facets: {
+                  business,
+                  departments,
+                },
+              }}
+              userInput={userInput}
+              width={size.width}
+              onUserInputChange={{
+                business: createOnFacetClick("business"),
+                departments: createOnFacetClick("departments"),
+                page: onPageClick,
+              }}
+              onEnter={onEnter}
+              onToggleWishList={onToggleWishList}
+              onToggleShowAllBusinesses={onToggleShowAllBusinesses}
+              onToggleShowAllDepartments={onToggleShowAllDepartments}
+            />
+          )}
+        </RootLayout>
       )}
-    </RootLayout>
+    </ThemeContext.Consumer>
   );
 };
 

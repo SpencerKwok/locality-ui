@@ -91,7 +91,7 @@ const Navigation: FC<NavigationProps> = ({ user, scale, width }) => {
                         alt="Locality Logo"
                         src={
                           useFallback
-                            ? "https://res.cloudinary.com/hcory49pf/image/upload/v1629522033/home/locality-logo.jpg"
+                            ? "https://res.cloudinary.com/hcory49pf/image/upload/v1629522033/home/locality-logo.png"
                             : "https://res.cloudinary.com/hcory49pf/image/upload/v1629522033/home/locality-logo.webp"
                         }
                         height={30}

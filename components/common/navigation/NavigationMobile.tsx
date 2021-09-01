@@ -73,7 +73,7 @@ const Navigation: FC<NavigationProps> = ({ user }) => {
                     alt="Locality Logo"
                     src={
                       useFallback
-                        ? "https://res.cloudinary.com/hcory49pf/image/upload/v1629522033/home/locality-logo.jpg"
+                        ? "https://res.cloudinary.com/hcory49pf/image/upload/v1629522033/home/locality-logo.png"
                         : "https://res.cloudinary.com/hcory49pf/image/upload/v1629522033/home/locality-logo.webp"
                     }
                     height={30}
@@ -96,39 +96,52 @@ const Navigation: FC<NavigationProps> = ({ user }) => {
                   rowAlign="center"
                   style={{ marginTop: -8 }}
                 >
-                  <Stack
-                    direction="row"
-                    spacing={4}
-                    columnAlign="center"
-                    rowAlign="center"
-                  >
-                    {user !== undefined ? (
+                  {user !== undefined ? (
+                    <Stack
+                      direction="row"
+                      spacing={4}
+                      columnAlign="center"
+                      rowAlign="center"
+                    >
                       <ProfilePic
                         height={41}
                         width={41}
                         style={{ marginTop: 7 }}
                       />
-                    ) : (
-                      <Link href="/signin">
-                        <a>
-                          <ProfilePic
-                            height={41}
-                            width={41}
-                            style={{ marginTop: 7 }}
-                          />
-                        </a>
-                      </Link>
-                    )}
-                    {user !== undefined && (
                       <span
                         className={styles.link}
                         style={{
                           cursor: "default",
                           color: color.text.dark,
                         }}
-                      >{`Hi ${user.firstName}!`}</span>
-                    )}
-                  </Stack>
+                      >
+                        {`Hi ${user.firstName}!`}
+                      </span>
+                    </Stack>
+                  ) : (
+                    <Link href="/signin">
+                      <a
+                        className={styles.link}
+                        style={{
+                          color: color.text.dark,
+                        }}
+                      >
+                        <Stack
+                          direction="row"
+                          spacing={4}
+                          columnAlign="center"
+                          rowAlign="center"
+                        >
+                          <ProfilePic
+                            height={41}
+                            width={41}
+                            style={{ marginTop: 7 }}
+                          />
+                          <span>Sign in</span>
+                        </Stack>
+                      </a>
+                    </Link>
+                  )}
                   <div
                     className={styles["menu-button"]}
                     onClick={(): void => {

@@ -1,5 +1,6 @@
 import { forwardRef, useState } from "react";
 
+import ThemeContext from "components/common/Theme";
 import Stack from "components/common/Stack";
 import styles from "components/home/Home.module.css";
 
@@ -7,7 +8,6 @@ import type { FC } from "react";
 
 interface ProductShowcaseProps {
   loading?: "eager" | "lazy";
-  width: number;
 }
 
 interface ProductLogoProps {
@@ -53,88 +53,92 @@ const ProductLogo = forwardRef<HTMLDivElement, ProductLogoProps>(
   }
 );
 
-const ProductShowcase: FC<ProductShowcaseProps> = ({ loading, width }) => {
+const ProductShowcase: FC<ProductShowcaseProps> = ({ loading }) => {
   return (
-    <div style={{ overflow: "hidden", width: width }}>
-      <Stack
-        className={styles["product-showcase"]}
-        direction="row"
-        columnAlign="flex-start"
-        rowAlign="center"
-        spacing={45}
-      >
-        <ProductLogo
-          loading={loading}
-          alt="Local Goodie 1"
-          details="10 Snack Box"
-          href="https://laidbacksnacks.com"
-          src="https://res.cloudinary.com/hcory49pf/image/upload/v1629517880/home/local-goodie-1.webp"
-        />
-        <ProductLogo
-          loading={loading}
-          alt="Local Goodie 2"
-          details="Herbal Bath Tea No 2: Ease"
-          href="https://www.liveeasyco.ca"
-          src="https://res.cloudinary.com/hcory49pf/image/upload/v1629517460/home/local-goodie-2.webp"
-        />
-        <ProductLogo
-          loading={loading}
-          alt="Local Goodie 3"
-          details="Bath and Body Aromatherapy Oil"
-          href="https://shopcadine.com"
-          src="https://res.cloudinary.com/hcory49pf/image/upload/v1629517499/home/local-goodie-3.webp"
-        />
-        <ProductLogo
-          loading={loading}
-          alt="Local Goodie 4"
-          details="Chonky (Sharky) Printed T-Shirt"
-          href="https://www.unimpressedofficial.com"
-          src="https://res.cloudinary.com/hcory49pf/image/upload/v1629517044/home/local-goodie-4.webp"
-        />
-        <ProductLogo
-          loading={loading}
-          alt="Local Goodie 5"
-          details="12-pack Custom Assorted Case"
-          href="https://www.talitykombucha.com"
-          src="https://res.cloudinary.com/hcory49pf/image/upload/v1629519473/home/local-goodie-5.webp"
-        />
-        <ProductLogo
-          loading={loading}
-          alt="Local Goodie 1"
-          details="10 Snack Box"
-          href="https://laidbacksnacks.com"
-          src="https://res.cloudinary.com/hcory49pf/image/upload/v1629517880/home/local-goodie-1.webp"
-        />
-        <ProductLogo
-          loading={loading}
-          alt="Local Goodie 2"
-          details="Herbal Bath Tea No 2: Ease"
-          href="https://www.liveeasyco.ca"
-          src="https://res.cloudinary.com/hcory49pf/image/upload/v1629517460/home/local-goodie-2.webp"
-        />
-        <ProductLogo
-          loading={loading}
-          alt="Local Goodie 3"
-          details="Bath and Body Aromatherapy Oil"
-          href="https://shopcadine.com"
-          src="https://res.cloudinary.com/hcory49pf/image/upload/v1629517499/home/local-goodie-3.webp"
-        />
-        <ProductLogo
-          loading={loading}
-          alt="Local Goodie 4"
-          details="Chonky (Sharky) Printed T-Shirt"
-          href="https://www.unimpressedofficial.com"
-          src="https://res.cloudinary.com/hcory49pf/image/upload/v1629517044/home/local-goodie-4.webp"
-        />
-        <ProductLogo
-          loading={loading}
-          alt="Local Goodie 5"
-          details="12-pack Custom Assorted Case"
-          href="https://www.talitykombucha.com"
-          src="https://res.cloudinary.com/hcory49pf/image/upload/v1629519473/home/local-goodie-5.webp"
-        />
-      </Stack>
-    </div>
+    <ThemeContext.Consumer>
+      {({ size }): JSX.Element => (
+        <div style={{ overflow: "hidden", width: size.width }}>
+          <Stack
+            className={styles["product-showcase"]}
+            direction="row"
+            columnAlign="flex-start"
+            rowAlign="center"
+            spacing={45}
+          >
+            <ProductLogo
+              loading={loading}
+              alt="Local Goodie 1"
+              details="10 Snack Box"
+              href="https://laidbacksnacks.com"
+              src="https://res.cloudinary.com/hcory49pf/image/upload/v1629517880/home/local-goodie-1.webp"
+            />
+            <ProductLogo
+              loading={loading}
+              alt="Local Goodie 2"
+              details="Herbal Bath Tea No 2: Ease"
+              href="https://www.liveeasyco.ca"
+              src="https://res.cloudinary.com/hcory49pf/image/upload/v1629517460/home/local-goodie-2.webp"
+            />
+            <ProductLogo
+              loading={loading}
+              alt="Local Goodie 3"
+              details="Bath and Body Aromatherapy Oil"
+              href="https://shopcadine.com"
+              src="https://res.cloudinary.com/hcory49pf/image/upload/v1629517499/home/local-goodie-3.webp"
+            />
+            <ProductLogo
+              loading={loading}
+              alt="Local Goodie 4"
+              details="Chonky (Sharky) Printed T-Shirt"
+              href="https://www.unimpressedofficial.com"
+              src="https://res.cloudinary.com/hcory49pf/image/upload/v1629517044/home/local-goodie-4.webp"
+            />
+            <ProductLogo
+              loading={loading}
+              alt="Local Goodie 5"
+              details="12-pack Custom Assorted Case"
+              href="https://www.talitykombucha.com"
+              src="https://res.cloudinary.com/hcory49pf/image/upload/v1629519473/home/local-goodie-5.webp"
+            />
+            <ProductLogo
+              loading={loading}
+              alt="Local Goodie 1"
+              details="10 Snack Box"
+              href="https://laidbacksnacks.com"
+              src="https://res.cloudinary.com/hcory49pf/image/upload/v1629517880/home/local-goodie-1.webp"
+            />
+            <ProductLogo
+              loading={loading}
+              alt="Local Goodie 2"
+              details="Herbal Bath Tea No 2: Ease"
+              href="https://www.liveeasyco.ca"
+              src="https://res.cloudinary.com/hcory49pf/image/upload/v1629517460/home/local-goodie-2.webp"
+            />
+            <ProductLogo
+              loading={loading}
+              alt="Local Goodie 3"
+              details="Bath and Body Aromatherapy Oil"
+              href="https://shopcadine.com"
+              src="https://res.cloudinary.com/hcory49pf/image/upload/v1629517499/home/local-goodie-3.webp"
+            />
+            <ProductLogo
+              loading={loading}
+              alt="Local Goodie 4"
+              details="Chonky (Sharky) Printed T-Shirt"
+              href="https://www.unimpressedofficial.com"
+              src="https://res.cloudinary.com/hcory49pf/image/upload/v1629517044/home/local-goodie-4.webp"
+            />
+            <ProductLogo
+              loading={loading}
+              alt="Local Goodie 5"
+              details="12-pack Custom Assorted Case"
+              href="https://www.talitykombucha.com"
+              src="https://res.cloudinary.com/hcory49pf/image/upload/v1629519473/home/local-goodie-5.webp"
+            />
+          </Stack>
+        </div>
+      )}
+    </ThemeContext.Consumer>
   );
 };
 
