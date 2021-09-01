@@ -180,6 +180,7 @@ const Home: FC<HomeProps> = ({}) => {
               columnAlign="center"
               rowAlign="center"
               spacing={64}
+              style={{ width: "90%" }}
             >
               <Stack
                 direction="column"
