@@ -186,7 +186,6 @@ const Home: FC<HomeProps> = ({}) => {
                 columnAlign="center"
                 rowAlign="center"
                 spacing={14}
-                style={{ width: "90%" }}
               >
                 <h1 style={{ color: color.text.dark }}>Our partners</h1>
                 <h3
