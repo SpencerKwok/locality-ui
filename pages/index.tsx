@@ -22,11 +22,10 @@ const Home: FC<HomeProps> = ({ session }) => {
   const size = useWindowSize();
 
   const hashchangeEventListener = (): void => {
-    // @ts-expect-error size should always be available on the client side
-    const width: number = size.width;
+    const width: number = size.width ?? 0;
     const isMobile = IsMobile() || width <= 840;
     if (isMobile) {
-      let section = document.getElementById(location.hash);
+      let section = document.getElementById(hash);
       if (section) {
         const sectionPos = section.getBoundingClientRect().top - 85;
         window.scrollTo({
@@ -41,7 +40,7 @@ const Home: FC<HomeProps> = ({ session }) => {
       }
     } else {
       const scale = Math.round((width / 1519) * 10) / 10;
-      switch (location.hash) {
+      switch (hash) {
         case "#how-it-works":
           window.scrollTo({ behavior: "smooth", top: 800 * scale });
           break;
@@ -66,7 +65,7 @@ const Home: FC<HomeProps> = ({ session }) => {
     return (): void => {
       window.removeEventListener("hashchange", hashchangeEventListener);
     };
-  }, []);
+  }, [hash, size]);
 
   useEffect(() => {
     hashchangeEventListener();
@@ -76,11 +75,11 @@ const Home: FC<HomeProps> = ({ session }) => {
     return <RootLayout session={session} />;
   }
 
-  const isNewUser = query.newUser === "true";
   if (hash !== location.hash) {
     setHash(location.hash);
   }
 
+  const isNewUser = query.newUser === "true";
   return (
     <ThemeContext.Consumer>
       {({ isMobile }): JSX.Element => (
