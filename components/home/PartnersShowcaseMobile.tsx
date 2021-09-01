@@ -51,7 +51,7 @@ const PartnersShowcase: FC<PartnersShowcaseProps> = ({ loading }) => {
             className={styles["partner-showcase"]}
             direction="column"
             spacing={8}
-            style={{ paddingTop: 12, paddingBottom: 12 }}
+            style={{ paddingTop: 24, paddingBottom: 24 }}
           >
             <Stack direction="row" spacing={88} style={{ marginLeft: -108 }}>
               <PartnerLogo
