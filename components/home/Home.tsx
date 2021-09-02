@@ -37,6 +37,18 @@ const Home: FC<HomeProps> = ({ isNewUser }) => {
   const [useFallback, setUseFallback] = useState(false);
   const howItWorksVideoRef = useRef<HTMLVideoElement>(null);
 
+  const startVideo = (): void => {
+    if (
+      howItWorksVideoRef.current &&
+      howItWorksVideoRef.current.paused === true
+    ) {
+      howItWorksVideoRef.current.autoplay = true;
+      howItWorksVideoRef.current.playsInline = true;
+      howItWorksVideoRef.current.controls = false;
+      void howItWorksVideoRef.current.play();
+    }
+  };
+
   return (
     <ThemeContext.Consumer>
       {({ color, size, scale }): JSX.Element => (
@@ -122,17 +134,8 @@ const Home: FC<HomeProps> = ({ isNewUser }) => {
                       height: 540,
                       width: 678,
                     }}
-                    onEnterFrame={(): void => {
-                      if (
-                        howItWorksVideoRef.current &&
-                        howItWorksVideoRef.current.paused === true
-                      ) {
-                        howItWorksVideoRef.current.autoplay = true;
-                        howItWorksVideoRef.current.playsInline = true;
-                        howItWorksVideoRef.current.controls = false;
-                        void howItWorksVideoRef.current.play();
-                      }
-                    }}
+                    onLoad={startVideo}
+                    onComplete={startVideo}
                   />
                 </Div>
               </div>
@@ -288,32 +291,41 @@ const Home: FC<HomeProps> = ({ isNewUser }) => {
                     </Stack>
                   </Div>
                   <Div className="middle-middle-column">
-                    <video
-                      loop
-                      muted
-                      preload="none"
+                    <div
                       className={styles["step-image"]}
-                      style={{ width: 680, marginBottom: 24 }}
-                      src="https://res.cloudinary.com/hcory49pf/video/upload/v1628135231/how-to-steps/all-steps.mp4"
-                      ref={howItWorksVideoRef}
-                      onTimeUpdate={(e): void => {
-                        const t = e.currentTarget.currentTime;
-                        if (t <= 3.5) {
-                          if (howItWorksStep !== 1) {
-                            setHowItWorksStep(1);
-                          }
-                        } else if (t <= 14) {
-                          if (howItWorksStep !== 2) {
-                            setHowItWorksStep(2);
-                          }
-                        } else if (howItWorksStep !== 3) {
-                          setHowItWorksStep(3);
-                        }
+                      style={{
+                        overflow: "hidden",
+                        height: 337,
+                        width: 680,
+                        marginBottom: 24,
                       }}
-                      onLoadedData={(): void => {
-                        setLoadOffscreenContent(true);
-                      }}
-                    />
+                    >
+                      <video
+                        loop
+                        muted
+                        preload="none"
+                        style={{ height: 340, width: 680, marginTop: -3 }}
+                        src="https://res.cloudinary.com/hcory49pf/video/upload/v1630555305/home/all-steps.mp4"
+                        ref={howItWorksVideoRef}
+                        onTimeUpdate={(e): void => {
+                          const t = e.currentTarget.currentTime;
+                          if (t <= 3.5) {
+                            if (howItWorksStep !== 1) {
+                              setHowItWorksStep(1);
+                            }
+                          } else if (t <= 14) {
+                            if (howItWorksStep !== 2) {
+                              setHowItWorksStep(2);
+                            }
+                          } else if (howItWorksStep !== 3) {
+                            setHowItWorksStep(3);
+                          }
+                        }}
+                        onLoadedData={(): void => {
+                          setLoadOffscreenContent(true);
+                        }}
+                      />
+                    </div>
                     <h3
                       className={styles.h3}
                       style={{ color: color.text.dark }}
