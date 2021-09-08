@@ -13,14 +13,13 @@ const Faq: FC<FaqProps> = ({}) => {
     <ThemeContext.Consumer>
       {({ size }): JSX.Element => (
         <Stack direction="column" rowAlign="center" style={{ margin: 24 }}>
-          <h1 style={{ marginBottom: 24, marginTop: 24 }}>
+          <h1 style={{ marginBottom: 36, marginTop: 24 }}>
             {size.width > 600 ? "Frequently Asked Questions" : "FAQ"}
           </h1>
           <Stack direction="column" rowAlign="center" spacing={24}>
             <Stack
               direction="row"
               columnAlign="center"
-              rowAlign="center"
               wrap="wrap"
               spacing={24}
               style={{
@@ -30,7 +29,7 @@ const Faq: FC<FaqProps> = ({}) => {
             >
               <FaqComponent
                 style={{
-                  marginBottom: 12,
+                  marginBottom: 24,
                   width: size.width > 600 ? 480 : size.width * 0.8,
                 }}
                 question="What is Locality?"
@@ -42,7 +41,7 @@ const Faq: FC<FaqProps> = ({}) => {
               />
               <FaqComponent
                 style={{
-                  marginBottom: 12,
+                  marginBottom: 24,
                   width: size.width > 600 ? 480 : size.width * 0.8,
                 }}
                 question="Is Locality only available in British Columbia?"
@@ -59,7 +58,7 @@ const Faq: FC<FaqProps> = ({}) => {
               />
               <FaqComponent
                 style={{
-                  marginBottom: 12,
+                  marginBottom: 24,
                   width: size.width > 600 ? 480 : size.width * 0.8,
                 }}
                 question="What does Locality cost?"
@@ -67,7 +66,7 @@ const Faq: FC<FaqProps> = ({}) => {
               />
               <FaqComponent
                 style={{
-                  marginBottom: 12,
+                  marginBottom: 24,
                   width: size.width > 600 ? 480 : size.width * 0.8,
                 }}
                 question="How does Locality make money?"
@@ -77,7 +76,7 @@ const Faq: FC<FaqProps> = ({}) => {
               />
               <FaqComponent
                 style={{
-                  marginBottom: 12,
+                  marginBottom: 24,
                   width: size.width > 600 ? 480 : size.width * 0.8,
                 }}
                 question="What does Locality cost?"
@@ -85,7 +84,7 @@ const Faq: FC<FaqProps> = ({}) => {
               />
               <FaqComponent
                 style={{
-                  marginBottom: 12,
+                  marginBottom: 24,
                   width: size.width > 600 ? 480 : size.width * 0.8,
                 }}
                 question="How do I add my business and products to Locality?"
@@ -101,7 +100,7 @@ const Faq: FC<FaqProps> = ({}) => {
               />
               <FaqComponent
                 style={{
-                  marginBottom: 12,
+                  marginBottom: 24,
                   width: size.width > 600 ? 480 : size.width * 0.8,
                 }}
                 question="Is my business eligible to be added to Locality?"
@@ -120,7 +119,7 @@ const Faq: FC<FaqProps> = ({}) => {
               />
               <FaqComponent
                 style={{
-                  marginBottom: 12,
+                  marginBottom: 24,
                   marginRight: 24,
                   width: size.width > 600 ? 480 : size.width * 0.8,
                 }}
