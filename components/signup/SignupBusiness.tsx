@@ -142,12 +142,12 @@ const SignupBusiness: FC<SignupBusinessProps> = ({ error, sent, onSubmit }) => {
                 <FormGroup>
                   <InputGroup>
                     <Input
-                      aria-label="Phone number"
+                      aria-label="Phone Number"
                       aria-details="Enter phone number here"
                       id="phoneNumber"
                       onBlur={handleBlur}
                       onChange={handleChange}
-                      placeholder="Enter Phone Number"
+                      placeholder="Phone Number"
                       type="text"
                       value={values.phoneNumber}
                     />

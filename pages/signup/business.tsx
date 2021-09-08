@@ -8,6 +8,7 @@ import SignUpBusiness, {
 
 import type { FC } from "react";
 import type { Session } from "next-auth";
+import { useWindowSize } from "lib/common";
 
 export interface BusinessSignUpProps {
   session: Session | null;
@@ -16,6 +17,7 @@ export interface BusinessSignUpProps {
 const BusinessSignUp: FC<BusinessSignUpProps> = ({ session }) => {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
+  const size = useWindowSize();
 
   const onSubmit = async (values: SignUpRequest): Promise<void> => {
     await PostRpcClient.getInstance()
@@ -37,7 +39,9 @@ const BusinessSignUp: FC<BusinessSignUpProps> = ({ session }) => {
 
     // Need to refresh CSP
     window.location.assign(
-      user.isBusiness === true ? "/dashboard?tab=inventory" : "/"
+      user.isBusiness === true && (size.width ?? 0) > 840
+        ? "/dashboard?tab=inventory"
+        : "/"
     );
     return null;
   }

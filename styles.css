@@ -1,8 +1,8 @@
 @font-face {
   font-family: "HK Grotesk";
-  src: url("/fonts/hk-grotesk-bold.woff2") format("woff2"),
-    url("/fonts/hk-grotesk-bold.woff") format("woff"),
-    url("/fonts/hk-grotesk-boldt.ttf") format("truetype");
+  src: url("/fonts/hk-grotesk-extra-bold.woff2") format("woff2"),
+    url("/fonts/hk-grotesk-extra-bold.woff") format("woff"),
+    url("/fonts/hk-grotesk-extra-bold.ttf") format("truetype");
   font-weight: 800;
   font-style: normal;
 }
@@ -17,9 +17,9 @@
 
 @font-face {
   font-family: "HK Grotesk";
-  src: url("/fonts/hk-grotesk-light.woff2") format("woff2"),
-    url("/fonts/hk-grotesk-light.woff") format("woff"),
-    url("/fonts/hk-grotesk-light.ttf") format("truetype");
+  src: url("/fonts/hk-grotesk-medium.woff2") format("woff2"),
+    url("/fonts/hk-grotesk-medium.woff") format("woff"),
+    url("/fonts/hk-grotesk-medium.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
 }

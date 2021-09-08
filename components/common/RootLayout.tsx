@@ -1,6 +1,8 @@
 import Navigation from "components/common/navigation/Navigation";
+import NavigationMobile from "components/common/navigation/NavigationMobile";
 import Footer from "components/common/footer/Footer";
-import { useWindowSize } from "lib/common";
+import FooterMobile from "components/common/footer/FooterMobile";
+import { useWindowSize, IsMobile } from "lib/common";
 
 import type { FC, ReactNode } from "react";
 import type { Session } from "next-auth";
@@ -17,11 +19,17 @@ const RootLayout: FC<RootLayoutProps> = ({ children, session }) => {
   }
 
   const scale = Math.round((size.width / 1519) * 10) / 10;
+  const isMobile = IsMobile() || size.width <= 840;
+
   return (
     <div className="top-middle-column" style={{ display: "flex" }}>
-      <Navigation user={session?.user} width={size.width} />
-      <main style={{ marginTop: 100 * scale }}>{children}</main>
-      <Footer width={size.width} />
+      {isMobile ? (
+        <NavigationMobile user={session?.user} />
+      ) : (
+        <Navigation user={session?.user} scale={scale} width={size.width} />
+      )}
+      <main style={{ marginTop: isMobile ? 80 : 100 * scale }}>{children}</main>
+      {isMobile ? <FooterMobile /> : <Footer width={size.width} />}
     </div>
   );
 };
