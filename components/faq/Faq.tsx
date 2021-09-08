@@ -105,7 +105,18 @@ const Faq: FC<FaqProps> = ({}) => {
                   width: size.width > 600 ? 480 : size.width * 0.8,
                 }}
                 question="Is my business eligible to be added to Locality?"
-                answer={["Everything is free! No hidden fees of any kind"]}
+                answer={[
+                  <div>
+                    <div>Our criteria:</div>
+                    <ol style={{ margin: 0 }}>
+                      <li>BC-based</li>
+                      <li>
+                        Locally owned small business (even if you’re a 1 person
+                        show we’d love to have you!)
+                      </li>
+                    </ol>
+                  </div>,
+                ]}
               />
               <FaqComponent
                 style={{
