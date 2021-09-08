@@ -18,16 +18,19 @@ const FaqComponent: FC<FaqComponentProps> = ({ style, question, answer }) => {
   return (
     <ThemeContext.Consumer>
       {({}): JSX.Element => (
-        <Stack direction="column" style={style}>
+        <Stack
+          direction="column"
+          style={style}
+          onClick={(): void => {
+            setOpen(!open);
+          }}
+        >
           <Stack direction="column" className={styles["faq-component"]}>
             <Stack
               direction="row"
               columnAlign="center"
               rowAlign="center"
               priority={[0, 1, 0]}
-              onClick={(): void => {
-                setOpen(!open);
-              }}
             >
               <div className={styles["faq-text"]}>{question}</div>
               <div />

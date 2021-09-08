@@ -12,7 +12,11 @@ const Faq: FC<FaqProps> = ({}) => {
   return (
     <ThemeContext.Consumer>
       {({ size }): JSX.Element => (
-        <Stack direction="column" rowAlign="center" style={{ margin: 24 }}>
+        <Stack
+          direction="column"
+          rowAlign="center"
+          style={{ marginTop: 24, marginBottom: 24 }}
+        >
           <h1 style={{ marginBottom: 36, marginTop: 24 }}>
             {size.width > 600 ? "Frequently Asked Questions" : "FAQ"}
           </h1>
@@ -20,11 +24,12 @@ const Faq: FC<FaqProps> = ({}) => {
             <Stack
               direction="row"
               columnAlign="center"
+              rowAlign="flex-start"
               wrap="wrap"
               spacing={24}
               style={{
                 marginLeft: 24,
-                width: Math.min(1008, size.width),
+                width: Math.min(1008, size.width * 0.9),
               }}
             >
               <FaqComponent
@@ -79,14 +84,6 @@ const Faq: FC<FaqProps> = ({}) => {
                   marginBottom: 24,
                   width: size.width > 600 ? 480 : size.width * 0.8,
                 }}
-                question="What does Locality cost?"
-                answer={["Everything is free! No hidden fees of any kind"]}
-              />
-              <FaqComponent
-                style={{
-                  marginBottom: 24,
-                  width: size.width > 600 ? 480 : size.width * 0.8,
-                }}
                 question="How do I add my business and products to Locality?"
                 answer={[
                   <div>
@@ -120,7 +117,6 @@ const Faq: FC<FaqProps> = ({}) => {
               <FaqComponent
                 style={{
                   marginBottom: 24,
-                  marginRight: 24,
                   width: size.width > 600 ? 480 : size.width * 0.8,
                 }}
                 question="Where can I contact you further?"
@@ -133,6 +129,13 @@ const Faq: FC<FaqProps> = ({}) => {
                     and we’ll respond within 24 hours
                   </div>,
                 ]}
+              />
+              <div
+                style={{
+                  marginBottom: 24,
+                  marginRight: 24,
+                  width: size.width > 600 ? 480 : size.width * 0.8,
+                }}
               />
             </Stack>
           </Stack>
