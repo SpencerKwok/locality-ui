@@ -26,9 +26,9 @@ const Faq: FC<FaqProps> = ({}) => {
               columnAlign="center"
               rowAlign="flex-start"
               wrap="wrap"
-              spacing={24}
+              spacing={size.width > 600 ? 24 : 0}
               style={{
-                marginLeft: 24,
+                marginLeft: size.width > 600 ? 24 : 0,
                 width: Math.min(1008, size.width * 0.9),
               }}
             >
