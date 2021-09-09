@@ -158,6 +158,19 @@ const Navigation: FC<NavigationProps> = ({ user, scale, width }) => {
                       Meet the team
                     </a>
                   </Link>
+                  <Link href="/faq">
+                    <a
+                      className={styles.link}
+                      onClick={(): void => {
+                        window.dispatchEvent(new Event("hashchange"));
+                      }}
+                      style={{
+                        color: color.text.dark,
+                      }}
+                    >
+                      FAQ
+                    </a>
+                  </Link>
                   {/*
                     Removing button for now, it occupies too much space in navigation
 

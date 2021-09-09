@@ -10,6 +10,7 @@ import LocalityDemoLottie from "public/images/home/locality-extension-lottie.jso
 import ProductShowcase from "components/home/ProductShowcase";
 import StepArrow from "components/common/images/StepArrow";
 import MiniSearch from "components/search/MiniSearch";
+import OurPartners from "components/home/PartnersShowcase";
 import ThemeContext from "components/common/Theme";
 import Stack from "components/common/Stack";
 import styles from "./Home.module.css";
@@ -22,9 +23,6 @@ const Div = styled.div`
   display: flex;
 `;
 
-const OurPartners = dynamic(
-  async () => import("components/home/PartnersShowcase")
-);
 const NewUser = dynamic(async () => import("components/common/popups/NewUser"));
 
 interface HomeProps {

@@ -22,7 +22,6 @@ const Home: FC<HomeProps> = ({}) => {
   const howItWorksVideoRef = useRef<HTMLVideoElement>(null);
 
   const startVideo = (): void => {
-    console.log("hi");
     if (
       howItWorksVideoRef.current &&
       howItWorksVideoRef.current.paused === true

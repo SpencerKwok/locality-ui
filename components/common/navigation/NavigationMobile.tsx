@@ -241,6 +241,20 @@ const Navigation: FC<NavigationProps> = ({ user }) => {
                       Meet the team
                     </a>
                   </Link>
+                  <Link href="/faq">
+                    <a
+                      className={styles.link}
+                      onClick={(): void => {
+                        window.dispatchEvent(new Event("hashchange"));
+                        setOpenMenu(false);
+                      }}
+                      style={{
+                        color: color.text.dark,
+                      }}
+                    >
+                      FAQ
+                    </a>
+                  </Link>
                   {user !== undefined && (
                     <span
                       className={styles.link}
