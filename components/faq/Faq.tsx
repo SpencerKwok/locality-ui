@@ -37,6 +37,7 @@ const Faq: FC<FaqProps> = ({}) => {
                   marginBottom: 24,
                   width: size.width > 600 ? 480 : size.width * 0.8,
                 }}
+                id={1}
                 question="What is Locality?"
                 answer={[
                   "Locality provides a search tool and online marketplace for local products.",
@@ -49,6 +50,7 @@ const Faq: FC<FaqProps> = ({}) => {
                   marginBottom: 24,
                   width: size.width > 600 ? 480 : size.width * 0.8,
                 }}
+                id={2}
                 question="Is Locality only available in British Columbia?"
                 answer={[
                   "At the moment, we only list businesses and products that are based in British Columbia.",
@@ -66,6 +68,7 @@ const Faq: FC<FaqProps> = ({}) => {
                   marginBottom: 24,
                   width: size.width > 600 ? 480 : size.width * 0.8,
                 }}
+                id={3}
                 question="What does Locality cost?"
                 answer={["Everything is free! No hidden fees of any kind"]}
               />
@@ -74,6 +77,7 @@ const Faq: FC<FaqProps> = ({}) => {
                   marginBottom: 24,
                   width: size.width > 600 ? 480 : size.width * 0.8,
                 }}
+                id={4}
                 question="How does Locality make money?"
                 answer={[
                   "Currently, we don’t make any revenue. If we introduce a pricing structure, we will be fully communicative and transparent about it.",
@@ -84,6 +88,7 @@ const Faq: FC<FaqProps> = ({}) => {
                   marginBottom: 24,
                   width: size.width > 600 ? 480 : size.width * 0.8,
                 }}
+                id={5}
                 question="How do I add my business and products to Locality?"
                 answer={[
                   <div>
@@ -100,6 +105,7 @@ const Faq: FC<FaqProps> = ({}) => {
                   marginBottom: 24,
                   width: size.width > 600 ? 480 : size.width * 0.8,
                 }}
+                id={6}
                 question="Is my business eligible to be added to Locality?"
                 answer={[
                   <div>
@@ -119,6 +125,7 @@ const Faq: FC<FaqProps> = ({}) => {
                   marginBottom: 24,
                   width: size.width > 600 ? 480 : size.width * 0.8,
                 }}
+                id={7}
                 question="Where can I contact you further?"
                 answer={[
                   <div>

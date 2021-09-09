@@ -6,13 +6,19 @@ import styles from "./FaqComponent.module.css";
 
 import type { CSSProperties, FC } from "react";
 
-interface FaqComponentProps {
+export interface FaqComponentProps {
   style?: CSSProperties;
+  id: number;
   question: string;
   answer: Array<JSX.Element | string>;
 }
 
-const FaqComponent: FC<FaqComponentProps> = ({ style, question, answer }) => {
+const FaqComponent: FC<FaqComponentProps> = ({
+  style,
+  id,
+  question,
+  answer,
+}) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -24,6 +30,10 @@ const FaqComponent: FC<FaqComponentProps> = ({ style, question, answer }) => {
           onClick={(): void => {
             setOpen(!open);
           }}
+          onTouchStart={(): void => {}}
+          onTouchEnd={(): void => {}}
+          onTouchCancel={(): void => {}}
+          onTouchMove={(): void => {}}
         >
           <Stack direction="column" className={styles["faq-component"]}>
             <Stack
@@ -51,8 +61,8 @@ const FaqComponent: FC<FaqComponentProps> = ({ style, question, answer }) => {
             </Stack>
             {open && (
               <Stack direction="column" spacing={12} style={{ marginTop: 24 }}>
-                {answer.map((line) => (
-                  <div>{line}</div>
+                {answer.map((line, index) => (
+                  <div key={`${id}_${index}`}>{line}</div>
                 ))}
               </Stack>
             )}
