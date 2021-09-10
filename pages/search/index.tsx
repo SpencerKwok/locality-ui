@@ -12,7 +12,6 @@ import type { FC } from "react";
 import type { GetServerSideProps } from "next";
 import type { Session } from "next-auth";
 import type { SearchResponse } from "common/Schema";
-import { ThemeContext } from "styled-components";
 
 function onToggleWishList(objectId: string, value: boolean): void {
   if (value) {
