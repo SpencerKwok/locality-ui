@@ -746,7 +746,8 @@ const Dashboard: FC<DashboardProps> = ({
       });
   };
 
-  const onSettingsBusinessClick = (): void => {
+  const onSettingsBusinessClick = (index: number): void => {
+    setBusinessIndex(index);
     setUpdateUploadSettingsStatus({
       error: "",
       successful: false,
