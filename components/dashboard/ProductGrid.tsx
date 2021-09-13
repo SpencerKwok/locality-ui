@@ -1,10 +1,8 @@
-import Button from "react-bootstrap/Button";
-import FormControl from "react-bootstrap/FormControl";
-import InputGroup from "react-bootstrap/InputGroup";
 import { Grid } from "react-virtualized";
 import { CSSProperties, ReactNode } from "react";
 import { decode } from "html-entities";
 
+import { InputGroup, Input } from "components/common/form";
 import { BaseProduct } from "common/Schema";
 import DescriptionImage from "components/common/description-image/DescriptionImage";
 import Stack from "components/common/Stack";
@@ -96,7 +94,7 @@ const ProductGrid: FC<ProductGridProps> = (props) => {
       >
         <span>Filter:</span>
         <InputGroup className={styles["input-group"]}>
-          <FormControl
+          <Input
             aria-label="Product Filter"
             aria-describedby="Enter product filter here"
             onChange={props.onFilterChange}
@@ -104,16 +102,6 @@ const ProductGrid: FC<ProductGridProps> = (props) => {
             type="text"
             value={props.filter}
           />
-          {props.filter.length > 0 && (
-            <InputGroup.Append>
-              <Button
-                className={styles["clear-button"]}
-                onClick={props.onFilterClear}
-              >
-                ×
-              </Button>
-            </InputGroup.Append>
-          )}
         </InputGroup>
       </Stack>
       <Grid

@@ -1,12 +1,17 @@
-import ListGroupItem, {
-  ListGroupItemProps,
-} from "react-bootstrap/ListGroupItem";
 import styled from "styled-components";
 import styles from "components/common/list/VirtualList.module.css";
 
 import type { FC } from "react";
 
-export type VirtualListItemProps = ListGroupItemProps;
+export interface VirtualListItemProps
+  extends Omit<React.HTMLAttributes<HTMLElement>, "onSelect"> {
+  action?: boolean;
+  active?: boolean;
+  disabled?: boolean;
+  eventKey?: number | string;
+  href?: string;
+  onClick?: React.MouseEventHandler;
+}
 
 const VirtualListItem: FC<VirtualListItemProps> = ({
   className,
@@ -14,7 +19,7 @@ const VirtualListItem: FC<VirtualListItemProps> = ({
   ...rest
 }) => {
   return (
-    <ListGroupItem
+    <div
       {...rest}
       className={`${styles["virtual-list-item"]} ${className}`}
       style={style}
@@ -25,7 +30,7 @@ const VirtualListItem: FC<VirtualListItemProps> = ({
 export default styled(VirtualListItem)`
   ${({ active }): string => {
     if (active === true) {
-      return "background-color: #449ed7 !important; border-color: #449ed7 !important";
+      return "background-color: #112378; color: #ffffff;";
     }
     return "";
   }}

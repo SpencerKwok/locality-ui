@@ -1,12 +1,12 @@
 import { Formik, FormikConfig } from "formik";
-import Form from "react-bootstrap/Form";
-import FormControl from "react-bootstrap/FormControl";
 
 import {
+  ErrorMessage,
+  FormGroup,
   InputGroup,
+  Input,
   Label,
   SubmitButton,
-  ErrorMessage,
 } from "components/common/form";
 import { PasswordUpdateSchema } from "common/ValidationSchema";
 import Stack from "components/common/Stack";
@@ -61,11 +61,11 @@ const Account: FC<AccountProps> = ({
             handleChange,
             handleSubmit,
           }): JSX.Element => (
-            <Form onSubmit={handleSubmit}>
-              <Form.Group>
+            <form onSubmit={handleSubmit}>
+              <FormGroup>
                 <Label required>Current password</Label>
                 <InputGroup>
-                  <FormControl
+                  <Input
                     aria-required
                     aria-label="Current password"
                     aria-details="Enter current password here"
@@ -77,11 +77,11 @@ const Account: FC<AccountProps> = ({
                   />
                 </InputGroup>
                 <ErrorMessage name="currentPassword" />
-              </Form.Group>
-              <Form.Group>
+              </FormGroup>
+              <FormGroup>
                 <Label required>New password</Label>
                 <InputGroup>
-                  <FormControl
+                  <Input
                     aria-required
                     aria-label="New password"
                     aria-details="Enter new password here"
@@ -93,11 +93,11 @@ const Account: FC<AccountProps> = ({
                   />
                 </InputGroup>
                 <ErrorMessage name="newPassword1" />
-              </Form.Group>
-              <Form.Group>
+              </FormGroup>
+              <FormGroup>
                 <Label required>Re-enter new password</Label>
                 <InputGroup>
-                  <FormControl
+                  <Input
                     aria-required
                     aria-label="Re-enter new password"
                     aria-details="Re-enter new password here"
@@ -109,7 +109,7 @@ const Account: FC<AccountProps> = ({
                   />
                 </InputGroup>
                 <ErrorMessage name="newPassword2" />
-              </Form.Group>
+              </FormGroup>
               <div style={{ color: "red" }}>{error}</div>
               {updatedPassword && (
                 <div style={{ color: "green" }}>
@@ -123,7 +123,7 @@ const Account: FC<AccountProps> = ({
                   isSubmitting={isSubmitting}
                 />
               </Stack>
-            </Form>
+            </form>
           )}
         </Formik>
       </Stack>

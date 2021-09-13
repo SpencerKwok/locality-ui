@@ -20,8 +20,9 @@ const Button: FC<ButtonProps> = ({ children, className, variant, ...rest }) => {
           variant === "dark" ? color.text.dark : color.text.light;
         const variantFocusColor =
           variant === "dark" ? color.hover.dark : color.hover.light;
+        const border = variant === "dark" ? "none" : "";
         const StyledButton = styled.button`
-          border: none;
+          border: ${border};
           background: ${variantColor};
           color: ${inverseVariantColor};
           &:active {
@@ -29,6 +30,7 @@ const Button: FC<ButtonProps> = ({ children, className, variant, ...rest }) => {
           }
           &:disabled {
             background: ${variantFocusColor};
+            cursor: default;
           }
           &:hover {
             background: ${variantFocusColor};

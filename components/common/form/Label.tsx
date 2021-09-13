@@ -1,4 +1,3 @@
-import Form from "react-bootstrap/Form";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 
@@ -38,8 +37,13 @@ const FormLabel: FC<FormLabelProps> = ({
       ? `${className ?? ""} ${styles["label-required"]}`
       : `${className ?? ""} ${styles.label}`;
   return (
-    <Stack direction="row" columnAlign="flex-start" spacing={8}>
-      <Form.Label className={finalClassName} {...rest}></Form.Label>
+    <Stack
+      direction="row"
+      columnAlign="flex-start"
+      rowAlign="center"
+      spacing={8}
+    >
+      <label className={finalClassName} {...rest}></label>
       {typeof description === "string" &&
         description &&
         createTooltip(description)}

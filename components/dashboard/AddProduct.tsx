@@ -1,20 +1,23 @@
 import { Formik } from "formik";
-import Button from "react-bootstrap/Button";
-import Dropdown from "react-bootstrap/Dropdown";
-import Form from "react-bootstrap/Form";
+import Button from "components/common/button/Button";
 import Papa from "papaparse";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 
-import { InputGroup, SubmitButton, ErrorMessage } from "components/common/form";
+import {
+  ErrorMessage,
+  FormGroup,
+  InputGroup,
+  Input,
+  SubmitButton,
+} from "components/common/form";
 import { UploadSquareProductsSchema } from "common/ValidationSchema";
 import Stack, { StackProps } from "components/common/Stack";
 import styles from "components/dashboard/AddProduct.module.css";
 
 import type { FC, JSXElementConstructor, ReactElement } from "react";
-import type { DropdownItemProps } from "react-bootstrap/esm/DropdownItem";
 
-export type UploadType = "" | "Etsy" | "Shopify" | "Square";
+export type UploadType = "" | "etsy" | "shopify" | "square";
 
 export interface UploadSquareProductsRequest {
   csv: string;
@@ -64,14 +67,24 @@ const AddProduct: FC<AddProductProps> = ({
     <Stack
       direction="row"
       columnAlign="flex-start"
+      rowAlign="center"
       priority={[0, 1, 0]}
       spacing={24}
     >
-      <Button className={styles.button} onClick={onAddProduct}>
+      <Button
+        variant="dark"
+        className={styles["button"]}
+        onClick={onAddProduct}
+      >
         Add +
       </Button>
       <div />
-      <Stack direction="row-reverse" columnAlign="flex-start" spacing={8}>
+      <Stack
+        direction="row-reverse"
+        columnAlign="flex-start"
+        rowAlign="flex-start"
+        spacing={8}
+      >
         <Popup
           modal
           closeOnDocumentClick={!!error || !loading}
@@ -79,7 +92,8 @@ const AddProduct: FC<AddProductProps> = ({
           open={open}
           trigger={
             <Button
-              className={styles.button}
+              variant="dark"
+              className={styles["button"]}
               disabled={!uploadType}
               style={{ width: "100%" }}
             >
@@ -87,7 +101,7 @@ const AddProduct: FC<AddProductProps> = ({
             </Button>
           }
           onOpen={(): void => {
-            if (uploadType === "Etsy" || uploadType === "Shopify") {
+            if (uploadType === "etsy" || uploadType === "shopify") {
               onUpload(uploadType);
             }
           }}
@@ -102,7 +116,7 @@ const AddProduct: FC<AddProductProps> = ({
               height={400}
               style={{ margin: 24 }}
             >
-              {uploadType === "Square" && !loading && !successful && (
+              {uploadType === "square" && !loading && !successful && (
                 <Formik
                   enableReinitialize
                   initialValues={{} as UploadSquareProductsRequest}
@@ -118,7 +132,7 @@ const AddProduct: FC<AddProductProps> = ({
                     handleSubmit,
                     setFieldValue,
                   }): JSX.Element => (
-                    <Form onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit}>
                       <h3>Instructions</h3>
                       <p>
                         1. Export a CSV file of your Square products as seen{" "}
@@ -130,14 +144,15 @@ const AddProduct: FC<AddProductProps> = ({
                           here
                         </a>
                       </p>
-                      <Form.Group>
+                      <FormGroup>
                         <InputGroup>
-                          <Form.File
+                          <Input
                             required
                             aria-required
                             aria-label="2. Upload your CSV file here:"
                             aria-details='Click the "Choose File" button to upload your CSV file'
                             id="csv"
+                            type="file"
                             label="2. Upload your CSV file here:"
                             accept=".csv"
                             onBlur={handleBlur}
@@ -162,7 +177,7 @@ const AddProduct: FC<AddProductProps> = ({
                           />
                         </InputGroup>
                         <ErrorMessage name="csv" />
-                      </Form.Group>
+                      </FormGroup>
                       <p>3. Click upload</p>
                       <Stack direction="row-reverse">
                         <SubmitButton
@@ -174,7 +189,7 @@ const AddProduct: FC<AddProductProps> = ({
                           }}
                         />
                       </Stack>
-                    </Form>
+                    </form>
                   )}
                 </Formik>
               )}
@@ -206,35 +221,45 @@ const AddProduct: FC<AddProductProps> = ({
             </Stack>
           )}
         </Popup>
-        <Dropdown>
-          <Dropdown.Toggle
-            className={styles.dropdown}
-            variant="primary"
-            style={{ width: "100%" }}
+        <select
+          className={styles["select"]}
+          onClick={(ev): void => {
+            onUploadTypeChange(ev.currentTarget.value as UploadType);
+          }}
+        >
+          <option
+            value=""
+            onClick={(): void => {
+              onUploadTypeChange("");
+            }}
           >
-            {uploadType === "" ? "Select Upload Type" : uploadType}
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
-            {(["Etsy", "Shopify", "Square"] as Array<UploadType>).map(
-              (
-                value
-              ): ReactElement<
-                DropdownItemProps,
-                JSXElementConstructor<DropdownItemProps>
-              > => (
-                <Dropdown.Item
-                  key={value}
-                  className={styles["dropdown-item"]}
-                  onClick={(): void => {
-                    onUploadTypeChange(value);
-                  }}
-                >
-                  {value}
-                </Dropdown.Item>
-              )
-            )}
-          </Dropdown.Menu>
-        </Dropdown>
+            Select Upload Type
+          </option>
+          <option
+            value="etsy"
+            onClick={(): void => {
+              onUploadTypeChange("etsy");
+            }}
+          >
+            Etsy
+          </option>
+          <option
+            value="shopify"
+            onClick={(): void => {
+              onUploadTypeChange("shopify");
+            }}
+          >
+            Shopify
+          </option>
+          <option
+            value="square"
+            onClick={(): void => {
+              onUploadTypeChange("square");
+            }}
+          >
+            Square
+          </option>
+        </select>
       </Stack>
     </Stack>
   );

@@ -1,12 +1,11 @@
-import ListGroup from "react-bootstrap/ListGroup";
 import { decode } from "html-entities";
+import { HTMLAttributes } from "react";
 
 import Arrow from "components/common/images/Arrow";
 import Stack from "components/common/Stack";
 import styles from "components/search/FacetList.module.css";
 
 import type { FC, JSXElementConstructor, ReactElement } from "react";
-import type { ListGroupItemProps } from "react-bootstrap/ListGroupItem";
 
 export interface FacetListProps {
   showAll: boolean;
@@ -43,11 +42,11 @@ const FacetList: FC<FacetListProps> = ({
     name: string;
     value: number;
   }): ReactElement<
-    ListGroupItemProps,
-    JSXElementConstructor<ListGroupItemProps>
+    HTMLAttributes<HTMLDivElement>,
+    JSXElementConstructor<HTMLAttributes<HTMLDivElement>>
   > => {
     return (
-      <ListGroup.Item className={styles["list-item"]} key={name}>
+      <div className={styles["list-item"]} key={name}>
         <Stack direction="row" spacing={12}>
           <input
             type="checkbox"
@@ -58,7 +57,7 @@ const FacetList: FC<FacetListProps> = ({
           />
           <span>{`${decode(name)} (${value})`}</span>
         </Stack>
-      </ListGroup.Item>
+      </div>
     );
   };
 
@@ -70,11 +69,11 @@ const FacetList: FC<FacetListProps> = ({
       style={{ width: 260 }}
     >
       <h3 style={{ marginBottom: 4 }}>{name}</h3>
-      <ListGroup>
+      <div>
         {sortedFacets
           .slice(0, showAll ? sortedFacets.length : 8)
           .map((facet) => facetRowRenderer(facet))}
-      </ListGroup>
+      </div>
       {sortedFacets.length > 8 && (
         <Stack direction="row" spacing={8}>
           <Arrow

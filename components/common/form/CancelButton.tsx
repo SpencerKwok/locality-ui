@@ -4,7 +4,7 @@ import styles from "components/common/form/form.module.css";
 
 import type { FC, HTMLAttributes } from "react";
 
-export interface FormSubmitButtonProps
+export interface FormCancelButtonProps
   extends HTMLAttributes<HTMLButtonElement> {
   text: string;
   submittingText: string;
@@ -12,7 +12,7 @@ export interface FormSubmitButtonProps
   disabled?: boolean;
 }
 
-const FormSubmitButton: FC<FormSubmitButtonProps> = ({
+const FormCancelButton: FC<FormCancelButtonProps> = ({
   text,
   submittingText,
   isSubmitting,
@@ -23,7 +23,7 @@ const FormSubmitButton: FC<FormSubmitButtonProps> = ({
     <Button
       {...rest}
       className={styles.button}
-      variant="dark"
+      variant="light"
       type="submit"
       disabled={disabled}
     >
@@ -51,4 +51,4 @@ const FormSubmitButton: FC<FormSubmitButtonProps> = ({
   );
 };
 
-export default FormSubmitButton;
+export default FormCancelButton;

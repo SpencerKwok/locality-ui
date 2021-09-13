@@ -26,10 +26,10 @@ const RootLayout: FC<RootLayoutProps> = ({ children, session }) => {
       {isMobile ? (
         <NavigationMobile user={session?.user} />
       ) : (
-        <Navigation user={session?.user} scale={scale} width={size.width} />
+        <Navigation user={session?.user} scale={scale} />
       )}
       <main style={{ marginTop: isMobile ? 80 : 100 * scale }}>{children}</main>
-      {isMobile ? <FooterMobile /> : <Footer width={size.width} />}
+      {isMobile ? <FooterMobile /> : <Footer />}
     </div>
   );
 };

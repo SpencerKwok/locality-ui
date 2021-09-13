@@ -15,23 +15,20 @@ const Div = styled.div`
   display: flex;
 `;
 
-interface FooterProps {
-  width: number;
-}
+interface FooterProps {}
 
-const Footer: FC<FooterProps> = ({ width }) => {
+const Footer: FC<FooterProps> = ({}) => {
   const [useFallback, setUseFallback] = useState(false);
-  const scale = Math.round((width / 1519) * 10) / 10;
   return (
     <ThemeContext.Consumer>
-      {({ color }): JSX.Element => (
+      {({ color, scale, size }): JSX.Element => (
         <footer className="top-middle-column">
           <Div
             className="middle-middle-column"
             style={{
               background: color.background.dark,
               height: 200 * scale,
-              width,
+              width: size.width,
             }}
           >
             <Stack
@@ -97,7 +94,7 @@ const Footer: FC<FooterProps> = ({ width }) => {
             style={{
               background: color.background.light,
               height: 100 * scale,
-              width,
+              width: size.width,
             }}
           >
             <Stack

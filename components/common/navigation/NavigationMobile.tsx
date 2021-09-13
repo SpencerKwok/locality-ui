@@ -174,6 +174,18 @@ const Navigation: FC<NavigationProps> = ({ user }) => {
                   }}
                 >
                   {user !== undefined && (
+                    <Link href="/dashboard">
+                      <a
+                        className={styles.link}
+                        style={{
+                          color: color.text.dark,
+                        }}
+                      >
+                        Dashboard
+                      </a>
+                    </Link>
+                  )}
+                  {user !== undefined && (
                     <Link href="/wishlist">
                       <a
                         className={styles.link}

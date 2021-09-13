@@ -2,15 +2,15 @@ import { createRef, Fragment } from "react";
 import dynamic from "next/dynamic";
 import { Formik } from "formik";
 import { decode } from "html-entities";
-import Form from "react-bootstrap/Form";
-import FormControl from "react-bootstrap/FormControl";
 
 import { Base64, fileToBase64 } from "./ImageHelpers";
 import {
+  ErrorMessage,
+  FormGroup,
   InputGroup,
+  Input,
   Label,
   SubmitButton,
-  ErrorMessage,
 } from "components/common/form";
 import {
   DepartmentsUpdateSchema,
@@ -59,7 +59,6 @@ export interface BusinessProps {
   updateDepartmentsStatus: UpdateStatus;
   updateHomepagesStatus: UpdateStatus;
   updateLogoStatus: UpdateStatus;
-  height: number;
   onBusinessClick: (index: number) => void;
   onSubmitDepartments: FormikConfig<UpdateDepartmentsRequest>["onSubmit"];
   onSubmitLogo: FormikConfig<UpdateLogoRequest>["onSubmit"];
@@ -74,7 +73,6 @@ const Business: FC<BusinessProps> = ({
   updateDepartmentsStatus,
   updateHomepagesStatus,
   updateLogoStatus,
-  height,
   onBusinessClick,
   onSubmitLogo,
   onSubmitHomepages,
@@ -95,7 +93,7 @@ const Business: FC<BusinessProps> = ({
           <BusinessList
             onBusinessClick={onBusinessClick}
             businesses={businesses}
-            height={height - 200}
+            height={600}
             index={businessIndex}
             width={260}
             style={{ marginRight: 32 }}
@@ -129,8 +127,8 @@ const Business: FC<BusinessProps> = ({
                       handleSubmit,
                       setFieldValue,
                     }): JSX.Element => (
-                      <Form onSubmit={handleSubmit}>
-                        <Form.Group>
+                      <form onSubmit={handleSubmit}>
+                        <FormGroup>
                           <InputGroup>
                             <Select
                               isClearable
@@ -182,7 +180,7 @@ const Business: FC<BusinessProps> = ({
                             />
                           </InputGroup>
                           <ErrorMessage name="departments" />
-                        </Form.Group>
+                        </FormGroup>
                         {updateDepartmentsStatus.error && (
                           <div style={{ color: "red" }}>
                             {updateDepartmentsStatus.error}
@@ -200,7 +198,7 @@ const Business: FC<BusinessProps> = ({
                             isSubmitting={isSubmitting}
                           />
                         </Stack>
-                      </Form>
+                      </form>
                     )}
                   </Formik>
                 </div>
@@ -224,7 +222,7 @@ const Business: FC<BusinessProps> = ({
                     handleSubmit,
                     setFieldValue,
                   }): JSX.Element => (
-                    <Form onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit}>
                       <Stack
                         direction="column"
                         columnAlign="center"
@@ -238,14 +236,14 @@ const Business: FC<BusinessProps> = ({
                             onError={(): void => {
                               setFieldValue("logo", "", true);
                             }}
-                            style={{ maxHeight: 250, maxWidth: 300 }}
+                            style={{ maxHeight: 250, maxWidth: 250 }}
                           />
                         </picture>
                       </Stack>
-                      <Form.Group>
+                      <FormGroup>
                         <Label required>Image URL or Image File</Label>
                         <InputGroup>
-                          <FormControl
+                          <Input
                             aria-label="Image URL"
                             aria-details="Enter image url here"
                             id="logo"
@@ -265,14 +263,14 @@ const Business: FC<BusinessProps> = ({
                             }}
                             placeholder="e.g. www.mywebsite.com/images/wooden-cutlery"
                             ref={logoUrlRef}
-                            style={{ width: 300 }}
                           />
                         </InputGroup>
                         <InputGroup>
-                          <Form.File
+                          <Input
                             aria-label="Image file"
                             aria-details="Enter image file here"
                             id="logo"
+                            type="file"
                             onBlur={handleBlur}
                             onChange={async (
                               event: React.ChangeEvent<HTMLInputElement>
@@ -299,8 +297,7 @@ const Business: FC<BusinessProps> = ({
                           />
                         </InputGroup>
                         <ErrorMessage name="logo" />
-                      </Form.Group>
-
+                      </FormGroup>
                       <div style={{ color: "red" }}>
                         {updateLogoStatus.error}
                       </div>
@@ -316,7 +313,7 @@ const Business: FC<BusinessProps> = ({
                           isSubmitting={isSubmitting}
                         />
                       </Stack>
-                    </Form>
+                    </form>
                   )}
                 </Formik>
               </div>
@@ -349,8 +346,8 @@ const Business: FC<BusinessProps> = ({
                       handleChange,
                       handleSubmit,
                     }): JSX.Element => (
-                      <Form onSubmit={handleSubmit}>
-                        <Form.Group>
+                      <form onSubmit={handleSubmit}>
+                        <FormGroup>
                           <Label
                             required
                             description="This is the website you want new customers to land on!"
@@ -358,7 +355,7 @@ const Business: FC<BusinessProps> = ({
                             Homepage
                           </Label>
                           <InputGroup>
-                            <FormControl
+                            <Input
                               aria-required
                               aria-label="Homepage"
                               aria-details="Enter homepage here"
@@ -371,8 +368,8 @@ const Business: FC<BusinessProps> = ({
                             />
                           </InputGroup>
                           <ErrorMessage name="homepage" />
-                        </Form.Group>
-                        <Form.Group>
+                        </FormGroup>
+                        <FormGroup>
                           <Label
                             description={
                               'Adding your Etsy storefront (if applicable) will enable you to upload your products to Locality from your Etsy storefront in the "Inventory" tab.'
@@ -381,7 +378,7 @@ const Business: FC<BusinessProps> = ({
                             Etsy Storefront
                           </Label>
                           <InputGroup>
-                            <FormControl
+                            <Input
                               aria-label="Etsy Storefront"
                               aria-details="Enter Etsy storefront here"
                               id="etsyHomepage"
@@ -393,8 +390,8 @@ const Business: FC<BusinessProps> = ({
                             />
                           </InputGroup>
                           <ErrorMessage name="etsyHomepage" />
-                        </Form.Group>
-                        <Form.Group>
+                        </FormGroup>
+                        <FormGroup>
                           <Label
                             description={
                               'Adding your Shopify website (if applicable) will enable you to upload your products to Locality from your Shopify website in the "Inventory" tab.'
@@ -403,7 +400,7 @@ const Business: FC<BusinessProps> = ({
                             Shopify Website
                           </Label>
                           <InputGroup>
-                            <FormControl
+                            <Input
                               aria-label="Shopify Homepage"
                               aria-details="Enter Shopify homepage here"
                               id="shopifyHomepage"
@@ -415,8 +412,8 @@ const Business: FC<BusinessProps> = ({
                             />
                           </InputGroup>
                           <ErrorMessage name="shopifyHomepage" />
-                        </Form.Group>
-                        <Form.Group>
+                        </FormGroup>
+                        <FormGroup>
                           <Label
                             description={
                               'Adding your Square website (if applicable) will enable you to upload your products to Locality from your Square website in the "Inventory" tab.'
@@ -425,7 +422,7 @@ const Business: FC<BusinessProps> = ({
                             Square Website
                           </Label>
                           <InputGroup>
-                            <FormControl
+                            <Input
                               aria-label="Square Website"
                               aria-details="Enter Square website here"
                               id="squareHomepage"
@@ -437,7 +434,7 @@ const Business: FC<BusinessProps> = ({
                             />
                           </InputGroup>
                           <ErrorMessage name="squareHomepage" />
-                        </Form.Group>
+                        </FormGroup>
                         {updateHomepagesStatus.error && (
                           <div style={{ color: "red" }}>
                             {updateHomepagesStatus.error}
@@ -455,7 +452,7 @@ const Business: FC<BusinessProps> = ({
                             isSubmitting={isSubmitting}
                           />
                         </Stack>
-                      </Form>
+                      </form>
                     )}
                   </Formik>
                 </div>

@@ -2,17 +2,18 @@ import dynamic from "next/dynamic";
 import * as yup from "yup";
 import { Formik } from "formik";
 
-import Form from "react-bootstrap/Form";
-import FormControl from "react-bootstrap/FormControl";
-import Button from "react-bootstrap/Button";
-import Tab from "react-bootstrap/Tab";
-import Tabs from "react-bootstrap/Tabs";
+import Button from "components/common/button/Button";
+import Tab from "components/common/tabs/Tab";
+import Tabs from "components/common/tabs/Tabs";
 
 import {
+  ErrorMessage,
+  FormGroup,
   InputGroup,
+  Input,
   Label,
   SubmitButton,
-  ErrorMessage,
+  TextArea,
 } from "components/common/form";
 import {
   EtsyUpdateUploadSettingsSchema,
@@ -57,7 +58,6 @@ export interface SettingsProps {
   businessIndex: number;
   departments: Array<string>;
   updateUploadSettingsStatus: UpdateStatus;
-  height: number;
   onBusinessClick: (index: number) => void;
   onSubmitEtsyUploadSettings: FormikConfig<EtsyUpdateUploadSettingsRequest>["onSubmit"];
   onSubmitShopifyUploadSettings: FormikConfig<ShopifyUpdateUploadSettingsRequest>["onSubmit"];
@@ -69,7 +69,6 @@ const Settings: FC<SettingsProps> = ({
   businessIndex,
   departments,
   updateUploadSettingsStatus,
-  height,
   onBusinessClick,
   onSubmitEtsyUploadSettings,
   onSubmitShopifyUploadSettings,
@@ -87,7 +86,7 @@ const Settings: FC<SettingsProps> = ({
         <BusinessList
           onBusinessClick={onBusinessClick}
           businesses={businesses}
-          height={height - 200}
+          height={600}
           index={businessIndex}
           width={260}
           style={{ marginRight: 32 }}
@@ -139,15 +138,15 @@ const Settings: FC<SettingsProps> = ({
                   handleSubmit,
                   setFieldValue,
                 }): JSX.Element => (
-                  <Form onSubmit={handleSubmit} style={{ marginTop: 12 }}>
+                  <form onSubmit={handleSubmit} style={{ marginTop: 12 }}>
                     <Stack direction="row" spacing={36}>
                       <Stack direction="column" style={{ width: 300 }}>
-                        <Form.Group>
+                        <FormGroup>
                           <Label description="When uploading products from Shopify, we will only upload products with at least one of the include tags. By default, we will include all products">
                             Tags to Include (comma list)
                           </Label>
                           <InputGroup>
-                            <FormControl
+                            <TextArea
                               as="textarea"
                               aria-label="Tags to Include"
                               aria-details="Enter tags to include here"
@@ -169,13 +168,13 @@ const Settings: FC<SettingsProps> = ({
                             }}
                           >{`${values.includeTags?.length ?? 0}/255`}</div>
                           <ErrorMessage name="includeTags" />
-                        </Form.Group>
-                        <Form.Group>
+                        </FormGroup>
+                        <FormGroup>
                           <Label description="When uploading products from Shopify, we will exclude products with at least one of the exclusion tags. If the same tag is added as both an inclusion and exclusion tag, the product will not be uploaded. By default, we will not exclude any products">
                             Tags to Exclude (comma list)
                           </Label>
                           <InputGroup>
-                            <FormControl
+                            <TextArea
                               as="textarea"
                               aria-label="Tags to Exclude"
                               aria-details="Enter tags to exclude here"
@@ -197,7 +196,7 @@ const Settings: FC<SettingsProps> = ({
                             }}
                           >{`${values.excludeTags?.length ?? 0}/255`}</div>
                           <ErrorMessage name="excludeTags" />
-                        </Form.Group>
+                        </FormGroup>
                         {updateUploadSettingsStatus.error && (
                           <div style={{ color: "red" }}>
                             {updateUploadSettingsStatus.error}
@@ -224,12 +223,12 @@ const Settings: FC<SettingsProps> = ({
                                 rowAlign="flex-end"
                                 spacing={12}
                               >
-                                <Form.Group>
+                                <FormGroup>
                                   <Label className={styles["sub-label"]}>
                                     {`Product Type ${index + 1}`}
                                   </Label>
                                   <InputGroup>
-                                    <FormControl
+                                    <Input
                                       aria-required
                                       aria-label={`Product Type ${index}`}
                                       aria-details="Enter product type here"
@@ -245,8 +244,8 @@ const Settings: FC<SettingsProps> = ({
                                   <ErrorMessage
                                     name={`departmentMapping[${index}].key`}
                                   />
-                                </Form.Group>
-                                <Form.Group>
+                                </FormGroup>
+                                <FormGroup>
                                   <Label className={styles["sub-label"]}>
                                     Departments
                                   </Label>
@@ -282,13 +281,18 @@ const Settings: FC<SettingsProps> = ({
                                       }}
                                     />
                                   </InputGroup>
-                                </Form.Group>
+                                </FormGroup>
                                 {index <
                                   (values.departmentMapping?.length ?? 0) && (
-                                  <Stack direction="column-reverse">
+                                  <Stack
+                                    direction="column-reverse"
+                                    columnAlign="center"
+                                    rowAlign="center"
+                                  >
                                     <div style={{ height: "1rem" }} />
                                     <Button
-                                      variant="danger"
+                                      style={{ padding: 10 }}
+                                      variant="light"
                                       onClick={(): void => {
                                         setFieldValue(
                                           "departmentMapping",
@@ -346,7 +350,7 @@ const Settings: FC<SettingsProps> = ({
                         </Stack>
                       </Stack>
                     </Stack>
-                  </Form>
+                  </form>
                 )}
               </Formik>
             </Tab>
@@ -373,14 +377,14 @@ const Settings: FC<SettingsProps> = ({
                   handleChange,
                   handleSubmit,
                 }): JSX.Element => (
-                  <Form onSubmit={handleSubmit} style={{ marginTop: 12 }}>
+                  <form onSubmit={handleSubmit} style={{ marginTop: 12 }}>
                     <Stack direction="column" style={{ width: 300 }}>
-                      <Form.Group>
+                      <FormGroup>
                         <Label description="When uploading products from Etsy, we will only upload products with at least one of the include tags. By default, we will include all products">
                           Tags to Include (comma list)
                         </Label>
                         <InputGroup>
-                          <FormControl
+                          <TextArea
                             as="textarea"
                             aria-label="Tags to Include"
                             aria-details="Enter tags to include here"
@@ -402,13 +406,13 @@ const Settings: FC<SettingsProps> = ({
                           }}
                         >{`${values.includeTags?.length ?? 0}/255`}</div>
                         <ErrorMessage name="includeTags" />
-                      </Form.Group>
-                      <Form.Group>
+                      </FormGroup>
+                      <FormGroup>
                         <Label description="When uploading products from Etsy, we will exclude products with at least one of the exclusion tags. If the same tag is added as both an inclusion and exclusion tag, the product will not be uploaded. By default, we will not exclude any products">
                           Tags to Exclude (comma list)
                         </Label>
                         <InputGroup>
-                          <FormControl
+                          <TextArea
                             as="textarea"
                             aria-label="Tags to Exclude"
                             aria-details="Enter tags to exclude here"
@@ -430,7 +434,7 @@ const Settings: FC<SettingsProps> = ({
                           }}
                         >{`${values.excludeTags?.length ?? 0}/255`}</div>
                         <ErrorMessage name="excludeTags" />
-                      </Form.Group>
+                      </FormGroup>
                       {updateUploadSettingsStatus.error && (
                         <div style={{ color: "red" }}>
                           {updateUploadSettingsStatus.error}
@@ -449,7 +453,7 @@ const Settings: FC<SettingsProps> = ({
                         />
                       </Stack>
                     </Stack>
-                  </Form>
+                  </form>
                 )}
               </Formik>
             </Tab>
@@ -495,15 +499,15 @@ const Settings: FC<SettingsProps> = ({
                   handleSubmit,
                   setFieldValue,
                 }): JSX.Element => (
-                  <Form onSubmit={handleSubmit} style={{ marginTop: 12 }}>
+                  <form onSubmit={handleSubmit} style={{ marginTop: 12 }}>
                     <Stack direction="row" spacing={36}>
                       <Stack direction="column" style={{ width: 300 }}>
-                        <Form.Group>
+                        <FormGroup>
                           <Label description="When uploading products from Square, we will only upload products with at least one of the include tags. By default, we will include all products">
                             Tags to Include (comma list)
                           </Label>
                           <InputGroup>
-                            <FormControl
+                            <TextArea
                               as="textarea"
                               aria-label="Tags to Include"
                               aria-details="Enter tags to include here"
@@ -525,13 +529,13 @@ const Settings: FC<SettingsProps> = ({
                             }}
                           >{`${values.includeTags?.length ?? 0}/255`}</div>
                           <ErrorMessage name="includeTags" />
-                        </Form.Group>
-                        <Form.Group>
+                        </FormGroup>
+                        <FormGroup>
                           <Label description="When uploading products from Square, we will exclude products with at least one of the exclusion tags. If the same tag is added as both an inclusion and exclusion tag, the product will not be uploaded. By default, we will not exclude any products">
                             Tags to Exclude (comma list)
                           </Label>
                           <InputGroup>
-                            <FormControl
+                            <TextArea
                               as="textarea"
                               aria-label="Tags to Exclude"
                               aria-details="Enter tags to exclude here"
@@ -553,7 +557,7 @@ const Settings: FC<SettingsProps> = ({
                             }}
                           >{`${values.excludeTags?.length ?? 0}/255`}</div>
                           <ErrorMessage name="excludeTags" />
-                        </Form.Group>
+                        </FormGroup>
                         {updateUploadSettingsStatus.error && (
                           <div style={{ color: "red" }}>
                             {updateUploadSettingsStatus.error}
@@ -580,12 +584,12 @@ const Settings: FC<SettingsProps> = ({
                                 rowAlign="flex-end"
                                 spacing={12}
                               >
-                                <Form.Group>
+                                <FormGroup>
                                   <Label className={styles["sub-label"]}>
                                     {`Category ${index + 1}`}
                                   </Label>
                                   <InputGroup>
-                                    <FormControl
+                                    <Input
                                       aria-required
                                       aria-label={`Category ${index}`}
                                       aria-details="Enter category here"
@@ -601,8 +605,8 @@ const Settings: FC<SettingsProps> = ({
                                   <ErrorMessage
                                     name={`departmentMapping[${index}].key`}
                                   />
-                                </Form.Group>
-                                <Form.Group>
+                                </FormGroup>
+                                <FormGroup>
                                   <Label className={styles["sub-label"]}>
                                     Departments
                                   </Label>
@@ -638,13 +642,14 @@ const Settings: FC<SettingsProps> = ({
                                       }}
                                     />
                                   </InputGroup>
-                                </Form.Group>
+                                </FormGroup>
                                 {index <
                                   (values.departmentMapping?.length ?? 0) && (
                                   <Stack direction="column-reverse">
                                     <div style={{ height: "1rem" }} />
                                     <Button
-                                      variant="danger"
+                                      style={{ padding: 10 }}
+                                      variant="light"
                                       onClick={(): void => {
                                         setFieldValue(
                                           "departmentMapping",
@@ -702,7 +707,7 @@ const Settings: FC<SettingsProps> = ({
                         </Stack>
                       </Stack>
                     </Stack>
-                  </Form>
+                  </form>
                 )}
               </Formik>
             </Tab>
