@@ -39,9 +39,7 @@ const BusinessSignUp: FC<BusinessSignUpProps> = ({ session }) => {
 
     // Need to refresh CSP
     window.location.assign(
-      user.isBusiness === true && (size.width ?? 0) > 840
-        ? "/dashboard?tab=inventory"
-        : "/"
+      user.isBusiness === true && (size.width ?? 0) > 840 ? "/dashboard" : "/"
     );
     return null;
   }

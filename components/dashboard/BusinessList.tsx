@@ -37,7 +37,14 @@ const BusinessList: FC<BusinessListProps> = (props) => {
           }}
           style={{ height: 49 }}
         >
-          {decode(props.businesses[index].name)}
+          <Stack
+            direction="column"
+            rowAlign="center"
+            columnAlign="center"
+            style={{ height: 49 }}
+          >
+            {decode(props.businesses[index].name)}
+          </Stack>
         </VirtualListItem>
       </div>
     );

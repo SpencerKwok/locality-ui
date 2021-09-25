@@ -7,8 +7,8 @@ export interface FormInputProps extends HTMLProps<HTMLInputElement> {
   required?: boolean;
 }
 
-const FormInputGroup: FC<FormInputProps> = ({ required, type, ...rest }) => {
-  if (type === "checkbox") {
+const FormInput: FC<FormInputProps> = ({ required, type, ...rest }) => {
+  if (type === "checkbox" || type === "file") {
     return <input type={type} {...rest} />;
   }
 
@@ -30,4 +30,4 @@ const FormInputGroup: FC<FormInputProps> = ({ required, type, ...rest }) => {
   );
 };
 
-export default FormInputGroup;
+export default FormInput;

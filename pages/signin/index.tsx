@@ -46,9 +46,7 @@ const Signin: FC<SignUpProps> = ({ session }) => {
     // Need to refresh CSP
 
     window.location.assign(
-      user.isBusiness === true && (size.width ?? 0) > 840
-        ? "/dashboard?tab=inventory"
-        : "/"
+      user.isBusiness === true && (size.width ?? 0) > 840 ? "/dashboard" : "/"
     );
   };
 
@@ -62,9 +60,7 @@ const Signin: FC<SignUpProps> = ({ session }) => {
 
     // Need to refresh CSP
     window.location.assign(
-      user.isBusiness === true && (size.width ?? 0) > 840
-        ? "/dashboard?tab=inventory"
-        : "/"
+      user.isBusiness === true && (size.width ?? 0) > 840 ? "/dashboard" : "/"
     );
     return null;
   }

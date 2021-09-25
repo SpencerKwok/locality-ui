@@ -22,7 +22,6 @@ export type NavigationType = "business" | "none" | "user";
 export interface NavigationProps {
   user?: any;
   scale: number;
-  width: number;
 }
 
 // TODO: Make all divs flex
@@ -30,7 +29,7 @@ const Div = styled.div`
   display: flex;
 `;
 
-const Navigation: FC<NavigationProps> = ({ user, scale, width }) => {
+const Navigation: FC<NavigationProps> = ({ user, scale }) => {
   const [useFallback, setUseFallback] = useState(false);
   const [transitionValue, setTransitionValue] = useState(0);
 
@@ -50,7 +49,7 @@ const Navigation: FC<NavigationProps> = ({ user, scale, width }) => {
 
   return (
     <ThemeContext.Consumer>
-      {({ color }): JSX.Element => {
+      {({ color, size }): JSX.Element => {
         const startR = parseInt(color.background.light.slice(1, 3), 16);
         const startG = parseInt(color.background.light.slice(3, 5), 16);
         const startB = parseInt(color.background.light.slice(5, 7), 16);
@@ -66,7 +65,7 @@ const Navigation: FC<NavigationProps> = ({ user, scale, width }) => {
               height: 100 * scale,
               position: "fixed",
               zIndex: 1,
-              width,
+              width: size.width,
             }}
           >
             <nav

@@ -18,7 +18,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
   const [prevPath, setPrevPath] = useState("/");
   const [session, setSession] = useState<Session | null>(null);
   const router = useRouter();
-  const size = useWindowSize();
+  const windowSize = useWindowSize();
 
   useEffect(() => {
     // By-pass waiting if user is transitioning
@@ -57,13 +57,17 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
   }
 
   const scale =
-    size.width !== undefined ? Math.round((size.width / 1519) * 10) / 10 : 0;
-  const clientSize = {
-    height: size.height !== undefined ? size.height : 0,
-    width: size.width !== undefined ? size.width : 0,
+    windowSize.width !== undefined
+      ? Math.round((windowSize.width / 1519) * 10) / 10
+      : 0;
+  const clientWindowSize = {
+    height: windowSize.height !== undefined ? windowSize.height : 0,
+    width: windowSize.width !== undefined ? windowSize.width : 0,
   };
   const isMobile =
-    size.width !== undefined ? IsMobile() || size.width <= 840 : false;
+    windowSize.width !== undefined
+      ? IsMobile() || windowSize.width <= 840
+      : false;
   return (
     <Fragment>
       <Head>
@@ -71,7 +75,12 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <ThemeContext.Provider
-        value={{ ...DefaultTheme, size: clientSize, scale, isMobile }}
+        value={{
+          ...DefaultTheme,
+          size: clientWindowSize,
+          scale,
+          isMobile,
+        }}
       >
         <Component {...pageProps} session={session} />
       </ThemeContext.Provider>
