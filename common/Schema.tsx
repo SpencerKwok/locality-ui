@@ -439,3 +439,14 @@ export interface SignInResponse extends BaseResponse {
   email: string;
   token: string;
 }
+
+export interface CheckoutResponse extends BaseResponse {
+  checkoutUrl: string;
+}
+
+export interface CouponsResponse extends BaseResponse {
+  coupons: Array<{
+    coupon: string;
+    isStackable: boolean;
+  }>;
+}

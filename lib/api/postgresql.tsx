@@ -184,7 +184,13 @@ const psql: {
   },
 };
 
-export type Tables = "businesses" | "products" | "tokens" | "users";
+export type Tables =
+  | "businesses"
+  | "checkout"
+  | "coupons"
+  | "products"
+  | "tokens"
+  | "users";
 
 export interface Delete {
   table: Tables;
