@@ -10,6 +10,7 @@
 const faker = require("faker");
 
 const domain = faker.internet.domainName();
+const origin = `https://${domain}`;
 const checkoutUrl = faker.internet.url();
 const log = jest.fn();
 describe("Get Checkout", () => {
@@ -44,9 +45,7 @@ describe("Get Checkout", () => {
       headers: {
         "content-type": "application/json",
         charset: "utf-8",
-      },
-      query: {
-        domain: domain,
+        origin,
       },
     });
     const mockRes = httpMocks.createResponse();
@@ -73,9 +72,7 @@ describe("Get Checkout", () => {
       headers: {
         "content-type": "application/json",
         charset: "utf-8",
-      },
-      query: {
-        domain: domain,
+        origin,
       },
     });
     const mockRes = httpMocks.createResponse();
@@ -109,9 +106,7 @@ describe("Get Checkout", () => {
       headers: {
         "content-type": "application/json",
         charset: "utf-8",
-      },
-      query: {
-        domain: domain,
+        origin,
       },
     });
     const mockRes = httpMocks.createResponse();
@@ -151,9 +146,7 @@ describe("Get Checkout", () => {
       headers: {
         "content-type": "application/json",
         charset: "utf-8",
-      },
-      query: {
-        domain: domain,
+        origin,
       },
     });
     const mockRes = httpMocks.createResponse();

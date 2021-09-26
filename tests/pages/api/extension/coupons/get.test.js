@@ -10,6 +10,7 @@
 const faker = require("faker");
 
 const domain = faker.internet.domainName();
+const origin = `https://${domain}`;
 const log = jest.fn();
 describe("Get Coupons", () => {
   beforeAll(() => {
@@ -45,9 +46,7 @@ describe("Get Coupons", () => {
       headers: {
         "content-type": "application/json",
         charset: "utf-8",
-      },
-      query: {
-        domain: domain,
+        origin,
       },
     });
     const mockRes = httpMocks.createResponse();
@@ -74,9 +73,7 @@ describe("Get Coupons", () => {
       headers: {
         "content-type": "application/json",
         charset: "utf-8",
-      },
-      query: {
-        domain: domain,
+        origin,
       },
     });
     const mockRes = httpMocks.createResponse();
@@ -122,9 +119,7 @@ describe("Get Coupons", () => {
       headers: {
         "content-type": "application/json",
         charset: "utf-8",
-      },
-      query: {
-        domain: domain,
+        origin,
       },
     });
     const mockRes = httpMocks.createResponse();
@@ -169,9 +164,7 @@ describe("Get Coupons", () => {
       headers: {
         "content-type": "application/json",
         charset: "utf-8",
-      },
-      query: {
-        domain: domain,
+        origin,
       },
     });
     const mockRes = httpMocks.createResponse();
