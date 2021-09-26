@@ -21,19 +21,21 @@ export default async function handler(
     return;
   }
 
-  const query: { domain?: string } = req.query;
-  if (typeof query.domain !== "string" || !query.domain) {
+  if (
+    typeof req.headers.origin !== "string" ||
+    req.headers.origin.split("//").length !== 2
+  ) {
     SumoLogic.log({
       level: "error",
-      method: "extension/checkout/get",
-      message: "Invalid query",
-      params: query,
+      method: "extension/coupons/get",
+      message: "Invalid origin",
+      params: { origin: req.headers.origin },
     });
     res.status(400).json({ error: "Invalid payload" });
     return;
   }
 
-  const domain = decodeURIComponent(query.domain);
+  const domain = req.headers.origin.split("//")[1];
   const checkoutUrl = await Psql.select<{
     checkout_url: string;
   }>({
