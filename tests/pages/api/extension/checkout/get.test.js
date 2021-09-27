@@ -13,7 +13,7 @@ const domain = faker.internet.domainName();
 const origin = `https://${domain}`;
 const checkoutUrl = faker.internet.url();
 const input = "#input";
-const submit = "#submit";
+const submit = "";
 const total = "#total";
 const log = jest.fn();
 describe("Get Checkout", () => {
@@ -126,9 +126,9 @@ describe("Get Checkout", () => {
     expect(mockRes.statusCode).toBe(200);
     expect(actual).toEqual({
       checkoutUrl,
-      input: input.split(","),
-      submit: submit.split(","),
-      total: total.split(","),
+      input: ["#input"],
+      submit: [],
+      total: ["#total"],
     });
   });
 

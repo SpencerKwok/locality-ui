@@ -66,9 +66,9 @@ export default async function handler(
 
   const body: CheckoutResponse = {
     checkoutUrl: checkoutData.rows[0].checkout_url,
-    input: checkoutData.rows[0].input.split(","),
-    submit: checkoutData.rows[0].submit.split(","),
-    total: checkoutData.rows[0].total.split(","),
+    input: checkoutData.rows[0].input.split(",").filter(Boolean),
+    submit: checkoutData.rows[0].submit.split(",").filter(Boolean),
+    total: checkoutData.rows[0].total.split(",").filter(Boolean),
   };
 
   res.status(200).json(body);
