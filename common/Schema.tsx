@@ -442,6 +442,9 @@ export interface SignInResponse extends BaseResponse {
 
 export interface CheckoutResponse extends BaseResponse {
   checkoutUrl: string;
+  input: Array<string>;
+  submit: Array<string>;
+  total: Array<string>;
 }
 
 export interface CouponsResponse extends BaseResponse {
