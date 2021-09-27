@@ -36,14 +36,17 @@ export default async function handler(
   }
 
   const domain = req.headers.origin.split("//")[1];
-  const checkoutUrl = await Psql.select<{
+  const checkoutData = await Psql.select<{
     checkout_url: string;
+    input: string;
+    submit: string;
+    total: string;
   }>({
     table: "checkout",
-    values: ["checkout_url"],
+    values: ["checkout_url", "input", "submit", "total"],
     conditions: SqlString.format("domain=E?", [domain]),
   });
-  if (!checkoutUrl) {
+  if (!checkoutData) {
     SumoLogic.log({
       level: "error",
       method: "extension/checkout/get",
@@ -51,7 +54,7 @@ export default async function handler(
     });
     res.status(500).json({ error: "Internal server error" });
     return;
-  } else if (checkoutUrl.rowCount !== 1) {
+  } else if (checkoutData.rowCount !== 1) {
     SumoLogic.log({
       level: "error",
       method: "extension/checkout/get",
@@ -62,7 +65,10 @@ export default async function handler(
   }
 
   const body: CheckoutResponse = {
-    checkoutUrl: checkoutUrl.rows[0].checkout_url,
+    checkoutUrl: checkoutData.rows[0].checkout_url,
+    input: checkoutData.rows[0].input.split(","),
+    submit: checkoutData.rows[0].submit.split(","),
+    total: checkoutData.rows[0].total.split(","),
   };
 
   res.status(200).json(body);

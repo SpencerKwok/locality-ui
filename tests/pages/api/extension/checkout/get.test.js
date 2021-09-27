@@ -12,6 +12,9 @@ const faker = require("faker");
 const domain = faker.internet.domainName();
 const origin = `https://${domain}`;
 const checkoutUrl = faker.internet.url();
+const input = "#input";
+const submit = "#submit";
+const total = "#total";
 const log = jest.fn();
 describe("Get Checkout", () => {
   beforeAll(() => {
@@ -93,7 +96,7 @@ describe("Get Checkout", () => {
       expect(params.conditions).toEqual(`domain=E'${domain}'`);
       return {
         rowCount: 1,
-        rows: [{ checkout_url: checkoutUrl }],
+        rows: [{ checkout_url: checkoutUrl, input, submit, total }],
       };
     });
     jest.doMock("lib/api/postgresql", () => ({
@@ -123,6 +126,9 @@ describe("Get Checkout", () => {
     expect(mockRes.statusCode).toBe(200);
     expect(actual).toEqual({
       checkoutUrl,
+      input: input.split(","),
+      submit: submit.split(","),
+      total: total.split(","),
     });
   });
 
