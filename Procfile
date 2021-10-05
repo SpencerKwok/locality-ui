@@ -1,2 +1,2 @@
- web: bin/start-nginx node server.js
- worker: python background/worker.py
+web: bin/start-nginx node server.js
+clock: python background/clock.py
