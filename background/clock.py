@@ -6,6 +6,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 
 sched = BlockingScheduler()
 
+
 def upload():
     with get_connection() as conn:
         with conn.cursor() as cursor:
@@ -32,9 +33,11 @@ def upload():
                         upload_settings["shopify"],
                     )
 
-@sched.scheduled_job('cron', day_of_week='mon', hour=20)
+
+@sched.scheduled_job("cron", day_of_week="mon", hour=20)
 def scheduled_job():
     print("Starting upload process...")
     upload()
+
 
 sched.start()

@@ -92,15 +92,27 @@ def upload(
             if len(product["images"]) == 0 or len(product["variants"]) == 0:
                 continue
 
-            product_types = list(map(
-                lambda x: html.escape(x.lower().strip()),
-                product["product_type"].split(","),
-            ))
+            product_types = list(
+                map(
+                    lambda x: html.escape(x.lower().strip()),
+                    product["product_type"].split(","),
+                )
+            )
             product_name = html.unescape(product["title"])
-            product_departments = [x for y in [department_mappings[x] for x in product_types if x in department_mappings] for x in y]
+            product_departments = [
+                x
+                for y in [
+                    department_mappings[x]
+                    for x in product_types
+                    if x in department_mappings
+                ]
+                for x in y
+            ]
             product_tags = [*product_types, *tags]
             product_description = (
-                product["body_html"].replace(r"/<br>/g", "\n").replace(r"/<[^>]*>/g", "")
+                product["body_html"]
+                .replace(r"/<br>/g", "\n")
+                .replace(r"/<[^>]*>/g", "")
             )
             product_link = f"{homepage}/products/{product['handle']}"
             product_price = float(product["variants"][0]["price"])
@@ -131,12 +143,12 @@ def upload(
             )
 
             next_product_id += 1
-        print(f"Successfully retrieved page {page}")    
+        print(f"Successfully retrieved page {page}")
         page += 1
 
     print("Done fetching new products!")
     print("Uploading products...")
-    
+
     with get_connection() as conn:
         with conn.cursor() as cursor:
             for product in products:
@@ -161,7 +173,12 @@ def upload(
 
                 cursor.execute(
                     "INSERT INTO products (business_id, id, name, preview) VALUES (%s, %s, %s, %s)",
-                    (str(business_id), product["id"], product["name"], variant_images[0]),
+                    (
+                        str(business_id),
+                        product["id"],
+                        product["name"],
+                        variant_images[0],
+                    ),
                 )
 
                 index.save_object(
@@ -172,19 +189,23 @@ def upload(
                         "business": html.unescape(business_name),
                         "description": html.unescape(product["description"]),
                         "description_length": len(
-                            html.unescape(product["description"]).replace(r"/\s+/gs", "")
+                            html.unescape(product["description"]).replace(
+                                r"/\s+/gs", ""
+                            )
                         ),
                         "departments": product["departments"],
                         "link": product["link"],
                         "price_range": product["price_range"],
                         "tags": product["tags"],
                         "tags_length": len(
-                            html.unescape("".join(product["tags"])).replace(r"/s+/gs", "")
+                            html.unescape("".join(product["tags"])).replace(
+                                r"/s+/gs", ""
+                            )
                         ),
                         "variant_images": variant_images,
-                        "variant_tags": list(map(
-                            lambda x: html.unescape(x), product["variant_tags"]
-                        )),
+                        "variant_tags": list(
+                            map(lambda x: html.unescape(x), product["variant_tags"])
+                        ),
                     },
                     {"autoGenerateObjectIDIfNotExist": False},
                 )
