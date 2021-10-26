@@ -5,6 +5,7 @@ import json
 import random
 import requests
 import time
+import os
 from lib.postgresql import get_connection
 from lib.algoliasearch import get_index
 from typing import Any
@@ -19,7 +20,7 @@ def upload(
     business_name: str,
     upload_settings: dict[str, Any],
 ):
-    print(f"Shopify upload from {homepage}")
+    print(f"Etsy upload from {homepage}")
     print("Deleting old products...")
 
     index = get_index()
@@ -48,16 +49,13 @@ def upload(
     exclude_tags = [
         html.unescape(x).lower().strip() for x in upload_settings["excludeTags"]
     ]
-    department_mappings = {
-        html.unescape(x["key"])
-        .lower()
-        .strip(): map(lambda x: x.lower().strip(), html.unescape(x["departments"]))
-        for x in upload_settings["departmentMapping"]
-    }
 
     latitudes = [float(x.strip()) for x in latitude.split(",")]
     longitudes = [float(x.strip()) for x in longitude.split(",")]
     geolocation = [{"lat": x[0], "lng": x[1]} for x in zip(latitudes, longitudes)]
+
+    homepageSections = homepage.split("/")
+    shopId = homepageSections[-1]
 
     page = 1
     products = []
@@ -66,68 +64,114 @@ def upload(
         # Throttle requests to at most 20 per minute
         time.sleep(random.uniform(3.0, 5.0))
 
-        r = requests.get(f"{homepage}/collections/all/products.json", {"page": page})
+        r = requests.get(
+            f"https://openapi.etsy.com/v2/shops/{shopId}/listings/active",
+            {"api_key": os.environ["ETSY_API_KEY"], "page": page},
+        )
         if r.status_code != 200:
             print(f"Failed to retrieve page {page}")
             done = True
             continue
 
-        data = json.loads(r.content)
-        raw_products = data["products"]
+        data_1 = json.loads(r.content)
+        raw_products = data_1["results"]
         if len(raw_products) == 0:
             done = True
             continue
 
-        for product in raw_products:
+        for product_listing in raw_products:
             should_include = True
             should_exclude = False
-            tags = [html.unescape(x).lower().strip() for x in product["tags"]]
+            product_tags = list(
+                filter(
+                    None,
+                    [html.unescape(x).lower().strip() for x in product_listing["tags"]],
+                )
+            )
             if len(include_tags) > 0:
-                should_include = len([tag for tag in tags if tag in include_tags]) > 0
+                should_include = (
+                    len([tag for tag in product_tags if tag in include_tags]) > 0
+                )
             if len(exclude_tags) > 0:
-                should_exclude = len([tag for tag in tags if tag in exclude_tags]) > 0
+                should_exclude = (
+                    len([tag for tag in product_tags if tag in exclude_tags]) > 0
+                )
             if should_exclude or not should_include:
                 continue
 
-            if len(product["images"]) == 0 or len(product["variants"]) == 0:
-                continue
-
-            product_types = list(
-                map(
-                    lambda x: html.escape(x.lower().strip()),
-                    product["product_type"].split(","),
-                )
+            r = requests.get(
+                f"http://openapi.etsy.com/v2/listings/{product_listing['listing_id']}",
+                {
+                    "api_key": os.environ["ETSY_API_KEY"],
+                    "includes": "MainImage,Variations",
+                },
             )
+            data_2 = json.loads(r.content)
+
+            product = data_2["results"][0]
             product_name = html.unescape(product["title"].strip())
-            product_departments = [
-                x
-                for y in [
-                    department_mappings[x]
-                    for x in product_types
-                    if x in department_mappings
-                ]
-                for x in y
-            ]
-            product_tags = [*product_types, *tags]
-            product_description = (
-                product["body_html"]
+            product_description = html.unescape(
+                product["description"]
+                .strip()
                 .replace(r"/<br>/g", "\n")
                 .replace(r"/<[^>]*>/g", "")
-                .strip()
             )
-            product_link = f"{homepage}/products/{product['handle']}"
-            product_price = float(product["variants"][0]["price"])
+            product_departments = list(
+                filter(
+                    None,
+                    map(lambda x: html.unescape(x.strip()), product["taxonomy_path"]),
+                )
+            )
+            product_link = product["url"].strip()
+            product_price = float(product["price"])
             product_price_range = [product_price, product_price]
-            for variant in product["variants"]:
-                variant_price = float(variant["price"])
-                product_price_range[0] = min(product_price_range[0], variant_price)
-                product_price_range[1] = max(product_price_range[1], variant_price)
-            product_variant_images = [
-                product["images"][0]["src"].replace(".jpg", "_400x.jpg")
-            ] * len(product["variants"])
             product_variant_tags = [
-                html.unescape(x["title"]).lower().strip() for x in product["variants"]
+                html.unescape(y["formatted_value"].strip())
+                for x in product["Variations"]
+                for y in x["options"]
             ]
+            if len(product_variant_tags) == 0:
+                product_variant_tags = [""]
+            if product["MainImage"]["url_570xN"]:
+                product_variant_images = [product["MainImage"]["url_570xN"]] * len(
+                    product_variant_tags
+                )
+            else:
+                product_variant_images = [product["MainImage"]["url_fullxfull"]] * len(
+                    product_variant_tags
+                )
+
+            r = requests.get(
+                f"http://openapi.etsy.com/v2/listings/{product_listing['listing_id']}/inventory",
+                {"api_key": os.environ["ETSY_API_KEY"]},
+            )
+            data_3 = json.loads(r.content)
+
+            variant_prices = [
+                y["price"]
+                for x in data_3["results"]["products"]
+                for y in x["offerings"]
+            ]
+            for variant_price in variant_prices:
+                before_conversion = variant_price["before_conversion"]
+                currency_formatted_raw = variant_price["currency_formatted_raw"]
+                original_currency_code = variant_price["original_currency_code"]
+                if original_currency_code == "USD":
+                    product_price_range[0] = min(
+                        product_price_range[0], float(currency_formatted_raw)
+                    )
+                    product_price_range[1] = max(
+                        product_price_range[1], float(currency_formatted_raw)
+                    )
+                else:
+                    currency_formatted_raw = before_conversion["currency_formatted_raw"]
+                    product_price_range[0] = min(
+                        product_price_range[0], float(currency_formatted_raw)
+                    )
+                    product_price_range[1] = max(
+                        product_price_range[1], float(currency_formatted_raw)
+                    )
+
             products.append(
                 {
                     "departments": product_departments,
@@ -149,6 +193,7 @@ def upload(
 
     print("Done fetching new products!")
     print("Uploading products...")
+    print(products[0])
 
     with get_connection() as conn:
         with conn.cursor() as cursor:

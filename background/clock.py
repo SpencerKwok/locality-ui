@@ -1,6 +1,7 @@
 import html
 import json
 import lib.shopify
+import lib.etsy
 from lib.postgresql import get_connection
 from apscheduler.schedulers.blocking import BlockingScheduler
 
@@ -22,7 +23,18 @@ def upload():
                 upload_settings = json.loads(html.unescape(record["upload_settings"]))
                 homepages = json.loads(html.unescape(record["homepages"]))
 
-                if homepages["shopifyHomepage"]:
+                if "shopifyHomepage" in homepages and homepages["shopifyHomepage"]:
+                    if "shopify" in upload_settings:
+                        upload_settings = upload_settings["shopify"]
+                    else:
+                        upload_settings = {}
+                    if "includeTags" not in upload_settings:
+                        upload_settings["includeTags"] = []
+                    if "excludeTags" not in upload_settings:
+                        upload_settings["excludeTags"] = []
+                    if "departmentMapping" not in upload_settings:
+                        upload_settings["departmentMapping"] = []
+
                     lib.shopify.upload(
                         business_id,
                         next_product_id,
@@ -30,7 +42,28 @@ def upload():
                         latitude,
                         longitude,
                         business_name,
-                        upload_settings["shopify"],
+                        upload_settings,
+                    )
+                elif "etsyHomepage" in homepages and homepages["etsyHomepage"]:
+                    if "etsy" in upload_settings:
+                        upload_settings = upload_settings["etsy"]
+                    else:
+                        upload_settings = {}
+                    if "includeTags" not in upload_settings:
+                        upload_settings["includeTags"] = []
+                    if "excludeTags" not in upload_settings:
+                        upload_settings["excludeTags"] = []
+                    if "departmentMapping" not in upload_settings:
+                        upload_settings["departmentMapping"] = []
+
+                    lib.etsy.upload(
+                        business_id,
+                        next_product_id,
+                        homepages["etsyHomepage"],
+                        latitude,
+                        longitude,
+                        business_name,
+                        upload_settings,
                     )
 
 
