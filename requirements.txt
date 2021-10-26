@@ -2,5 +2,5 @@ algoliasearch==2.5.0
 apscheduler==3.8.0
 cloudinary==1.26.0
 requests==2.25.1
-psycopg==3.0.1
+psycopg2==3.0.1
 tzlocal==2.1
