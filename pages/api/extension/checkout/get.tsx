@@ -27,7 +27,7 @@ export default async function handler(
   ) {
     SumoLogic.log({
       level: "error",
-      method: "extension/coupons/get",
+      method: "extension/checkout/get",
       message: "Invalid origin",
       params: { origin: req.headers.origin },
     });

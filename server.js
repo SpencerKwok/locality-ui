@@ -28,6 +28,7 @@ const extensionOrigins = new Set([
   "https://www.walmart.com",
   "https://www.thealfajorcompany.ca",
   "https://www.unimpressedofficial.com",
+  "https://shop.app",
 ]);
 
 void app.prepare().then(() => {

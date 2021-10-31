@@ -188,6 +188,7 @@ export type Tables =
   | "businesses"
   | "checkout"
   | "coupons"
+  | "domain"
   | "products"
   | "tokens"
   | "users";
