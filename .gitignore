@@ -101,3 +101,6 @@ dist
 
 # React type
 ./src/react-app-env.d.ts
+
+# Python
+__pycache__

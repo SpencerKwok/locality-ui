@@ -335,8 +335,8 @@ export default async function handler(
           nextProductId += data.products.length;
           page += 1;
 
-          // Cap Shopify API calls to 100 requests per second
-          await new Promise((resolve) => setTimeout(resolve, 10));
+          // Cap Shopify API calls to 2 requests per second
+          await new Promise((resolve) => setTimeout(resolve, 500));
         });
     } catch (err: unknown) {
       error = err as Error;

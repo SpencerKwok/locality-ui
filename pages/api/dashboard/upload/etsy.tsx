@@ -299,7 +299,7 @@ export default async function handler(
                   variantTags,
                 });
 
-                // Etsy API has a maximum of 5 requests per second
+                // Etsy API has a maximum of 2 requests per second
                 await new Promise((resolve) => setTimeout(resolve, 500));
               });
           }
@@ -307,7 +307,7 @@ export default async function handler(
           nextProductId += data.results.length;
           page += 1;
 
-          // Etsy API has a maximum of 5 requests per second
+          // Etsy API has a maximum of 2 requests per second
           await new Promise((resolve) => setTimeout(resolve, 500));
         });
     } catch (err: unknown) {
