@@ -88,7 +88,7 @@ export default async function handler(
     ],
     submit: ["cOfoK _3tFTe _10xhA mzPaI _3yT0X"],
     total: [
-      "#app > section > div._1dOw_ > div._1qfTa > div > div:nth-child(2) > div._39SW-._2dQzu._160BV.ioQcb > div > div:nth-child(3) > div._2Vp7v > span > div > span:nth-child(2)",
+      "#app > section > div._1dOw_ > div._1qfTa > div > div:nth-child(2) > div._39SW-._2dQzu._160BV.ioQcb > div > div:last-child > div._2Vp7v > span > div > span:nth-child(2)",
     ],
   };
 
