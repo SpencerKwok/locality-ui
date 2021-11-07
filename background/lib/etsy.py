@@ -27,7 +27,7 @@ def upload(
     with get_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute(
-                "SELECT id FROM products WHERE business_id=(%s)", (str(business_id))
+                "SELECT id FROM products WHERE business_id=(%s)", (str(business_id),)
             )
             oldProductIds = [f"{business_id}_{x['id']}" for x in cursor.fetchall()]
 
@@ -39,7 +39,7 @@ def upload(
 
             print("Removing from Postgres...")
             cursor.execute(
-                "DELETE FROM products WHERE business_id=(%s)", (str(business_id))
+                "DELETE FROM products WHERE business_id=(%s)", (str(business_id),)
             )
 
     print("Retrieve new products...")
