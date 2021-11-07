@@ -193,11 +193,13 @@ def upload(
 
     print("Done fetching new products!")
     print("Uploading products...")
-    print(products[0])
 
     with get_connection() as conn:
         with conn.cursor() as cursor:
             for product in products:
+                # Throttle requests to at most 20 per minute
+                time.sleep(random.uniform(3.0, 5.0))
+                
                 variant_images = []
                 variant_map = {}
                 for i, variant_image in enumerate(product["variant_images"]):

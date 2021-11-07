@@ -3,6 +3,7 @@ import cloudinary.uploader
 import html
 import json
 import random
+import re
 import requests
 import time
 from lib.postgresql import get_connection
@@ -66,7 +67,7 @@ def upload(
         # Throttle requests to at most 20 per minute
         time.sleep(random.uniform(3.0, 5.0))
 
-        r = requests.get(f"{homepage}/collections/all/products.json", {"page": page})
+        r = requests.get(re.sub(r"(?<!https:)//+", "/", f"{homepage}/collections/all/products.json"), {"page": page})
         if r.status_code != 200:
             print(f"Failed to retrieve page {page}")
             done = True
@@ -153,6 +154,9 @@ def upload(
     with get_connection() as conn:
         with conn.cursor() as cursor:
             for product in products:
+                # Throttle requests to at most 20 per minute
+                time.sleep(random.uniform(3.0, 5.0))
+
                 variant_images = []
                 variant_map = {}
                 for i, variant_image in enumerate(product["variant_images"]):

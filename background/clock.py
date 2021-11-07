@@ -66,8 +66,6 @@ def upload():
                         upload_settings,
                     )
 
-# TEMP
-upload()
 
 @sched.scheduled_job("cron", day_of_week="mon", hour=20)
 def scheduled_job():
