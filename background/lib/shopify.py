@@ -64,8 +64,8 @@ def upload(
     products = []
     done = False
     while not done:
-        # Throttle requests to at most 20 per minute
-        time.sleep(random.uniform(3.0, 5.0))
+        # Throttle requests to at most 12 per minute
+        time.sleep(random.uniform(5.0, 15.0))
 
         r = requests.get(re.sub(r"(?<!https:)//+", "/", f"{homepage}/collections/all/products.json"), {"page": page})
         if r.status_code != 200:
