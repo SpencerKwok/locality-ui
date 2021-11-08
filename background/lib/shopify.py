@@ -67,7 +67,10 @@ def upload(
         # Throttle requests to at most 12 per minute
         time.sleep(random.uniform(5.0, 15.0))
 
-        r = requests.get(re.sub(r"(?<!https:)//+", "/", f"{homepage}/collections/all/products.json"), {"page": page})
+        r = requests.get(
+            re.sub(r"(?<!https:)//+", "/", f"{homepage}/collections/all/products.json"),
+            {"page": page},
+        )
         if r.status_code != 200:
             print(f"Failed to retrieve page {page}")
             done = True

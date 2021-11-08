@@ -199,7 +199,7 @@ def upload(
             for product in products:
                 # Throttle requests to at most 20 per minute
                 time.sleep(random.uniform(3.0, 5.0))
-                
+
                 variant_images = []
                 variant_map = {}
                 for i, variant_image in enumerate(product["variant_images"]):

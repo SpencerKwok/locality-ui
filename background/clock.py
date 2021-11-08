@@ -1,7 +1,8 @@
 import html
 import json
-import lib.shopify
 import lib.etsy
+import lib.shopify
+import lib.sumologic
 from lib.postgresql import get_connection
 from apscheduler.schedulers.blocking import BlockingScheduler
 
@@ -35,15 +36,22 @@ def upload():
                     if "departmentMapping" not in upload_settings:
                         upload_settings["departmentMapping"] = []
 
-                    lib.shopify.upload(
-                        business_id,
-                        next_product_id,
-                        homepages["shopifyHomepage"],
-                        latitude,
-                        longitude,
-                        business_name,
-                        upload_settings,
-                    )
+                    try:
+                        lib.shopify.upload(
+                            business_id,
+                            next_product_id,
+                            homepages["shopifyHomepage"],
+                            latitude,
+                            longitude,
+                            business_name,
+                            upload_settings,
+                        )
+                        raise Exception("WTF ERROR TERRIBLE")
+                    except Exception as e:
+                        lib.sumologic.post(
+                            "error", str(e), "Shopify", {"name": business_name}
+                        )
+
                 elif "etsyHomepage" in homepages and homepages["etsyHomepage"]:
                     if "etsy" in upload_settings:
                         upload_settings = upload_settings["etsy"]
@@ -56,15 +64,20 @@ def upload():
                     if "departmentMapping" not in upload_settings:
                         upload_settings["departmentMapping"] = []
 
-                    lib.etsy.upload(
-                        business_id,
-                        next_product_id,
-                        homepages["etsyHomepage"],
-                        latitude,
-                        longitude,
-                        business_name,
-                        upload_settings,
-                    )
+                    try:
+                        lib.etsy.upload(
+                            business_id,
+                            next_product_id,
+                            homepages["etsyHomepage"],
+                            latitude,
+                            longitude,
+                            business_name,
+                            upload_settings,
+                        )
+                    except Exception as e:
+                        lib.sumologic.post(
+                            "error", str(e), "Etsy", {"name": business_name}
+                        )
 
 
 @sched.scheduled_job("cron", day_of_week="mon", hour=20)
