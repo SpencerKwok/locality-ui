@@ -80,7 +80,7 @@ def upload():
                         )
 
 
-@sched.scheduled_job("cron", day_of_week="mon", hour=20)
+@sched.scheduled_job("cron", day_of_week="mon", hour=21)
 def scheduled_job():
     print("Starting upload process...")
     upload()
