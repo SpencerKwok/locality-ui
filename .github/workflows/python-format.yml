@@ -22,7 +22,7 @@ jobs:
           python-version: 3.9
 
       - name: Get latest pip version
-        run: python3 -m pip install --upgrade
+        run: python3 -m pip install pip --upgrade
 
       - name: Install Black
         run: python3 -m pip install black
