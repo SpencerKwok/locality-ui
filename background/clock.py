@@ -46,7 +46,6 @@ def upload():
                             business_name,
                             upload_settings,
                         )
-                        raise Exception("WTF ERROR TERRIBLE")
                     except Exception as e:
                         lib.sumologic.post(
                             "error", str(e), "Shopify", {"name": business_name}
@@ -79,7 +78,6 @@ def upload():
                             "error", str(e), "Etsy", {"name": business_name}
                         )
 
-upload()
 
 @sched.scheduled_job("cron", day_of_week="mon", hour=20)
 def scheduled_job():
