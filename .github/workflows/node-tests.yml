@@ -1,11 +1,11 @@
-name: Format
+name: Node Tests
 
 on:
   push:
 
 jobs:
-  run-format:
-    name: Format
+  run-tests:
+    name: Tests
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -27,5 +27,5 @@ jobs:
       - name: Install Node.js dependencies
         run: npm ci
 
-      - name: Run Format
-        run: npm run format
+      - name: Run Tests
+        run: npm run test

@@ -1,0 +1,31 @@
+name: Python Format
+
+on:
+  push:
+
+jobs:
+  run-format:
+    name: Format
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Get latest pip version
+        run: python3 -m pip install --upgrade
+
+      - name: Install Black
+        run: python3 -m pip install black
+
+      - name: Run Format
+        run: python3 -m black background --check
