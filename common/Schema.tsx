@@ -447,6 +447,16 @@ export interface CheckoutResponse extends BaseResponse {
   total: Array<string>;
 }
 
+export interface ShopAppCheckoutResponse extends BaseResponse {
+  coupons: Array<{
+    coupon: string;
+    isStackable: boolean;
+  }>;
+  input: Array<string>;
+  submit: Array<string>;
+  total: Array<string>;
+}
+
 export interface CouponsResponse extends BaseResponse {
   coupons: Array<{
     coupon: string;
