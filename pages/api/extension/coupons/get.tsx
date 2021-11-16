@@ -38,7 +38,6 @@ export default async function handler(
   const domain = req.headers.origin.split("//")[1];
   const coupons = await Psql.select<{
     coupon: string;
-    is_stackable: boolean;
   }>({
     table: "coupons",
     values: ["coupon"],
