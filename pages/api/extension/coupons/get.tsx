@@ -41,8 +41,9 @@ export default async function handler(
     is_stackable: boolean;
   }>({
     table: "coupons",
-    values: ["coupon", "is_stackable"],
+    values: ["coupon"],
     conditions: SqlString.format("expiration > NOW() AND domain=E?", [domain]),
+    orderBy: '"order" ASC',
   });
   if (!coupons) {
     SumoLogic.log({
@@ -55,9 +56,8 @@ export default async function handler(
   }
 
   const body: CouponsResponse = {
-    coupons: coupons.rows.map(({ coupon, is_stackable }) => ({
+    coupons: coupons.rows.map(({ coupon }) => ({
       coupon,
-      isStackable: is_stackable,
     })),
   };
 
