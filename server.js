@@ -21,11 +21,16 @@ const handle = app.getRequestHandler();
 const extensionOrigins = new Set([
   "chrome-extension://cklipomamlgjpmihfhfdjmlhnbadnedl",
   "chrome-extension://ebjlpijabgjciopejnjlcmadiifkackn",
+
+  // Search
   "https://www.etsy.com",
   "https://www.amazon.ca",
   "https://www.amazon.com",
   "https://www.walmart.ca",
   "https://www.walmart.com",
+
+  // Coupons
+  "https://www.shophappybaby.ca",
   "https://www.thealfajorcompany.ca",
   "https://www.unimpressedofficial.com",
   "https://shop.app",
