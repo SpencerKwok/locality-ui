@@ -6,6 +6,7 @@ import random
 import requests
 import time
 import os
+import re
 from lib.postgresql import get_connection
 from lib.algoliasearch import get_index
 from typing import Any
@@ -111,10 +112,9 @@ def upload(
             product = data_2["results"][0]
             product_name = html.unescape(product["title"].strip())
             product_description = html.unescape(
-                product["description"]
-                .strip()
-                .replace(r"/<br>/g", "\n")
-                .replace(r"/<[^>]*>/g", "")
+                html.unescape(
+                    re.sub(r"\s+", " ", re.sub(r"<[^>]*>", " ", product["description"]))
+                ).strip()
             )
             product_departments = list(
                 filter(
@@ -145,6 +145,11 @@ def upload(
                 f"http://openapi.etsy.com/v2/listings/{product_listing['listing_id']}/inventory",
                 {"api_key": os.environ["ETSY_API_KEY"]},
             )
+            if r.status_code != 200:
+                print(f"Failed to retrieve page {page}")
+                done = True
+                continue
+
             data_3 = json.loads(r.content)
 
             variant_prices = [

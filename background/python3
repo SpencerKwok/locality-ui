@@ -1,5 +1,0 @@
-clock.py, emergency_scripts.py
-
-lib:
-__pycache__, algoliasearch.py, cloudinary.py, etsy.py, postgresql.py,
-shopify.py, sumologic.py
