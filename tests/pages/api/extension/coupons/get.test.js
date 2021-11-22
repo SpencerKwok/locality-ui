@@ -34,6 +34,7 @@ describe("Get Coupons", () => {
       expect(params.conditions).toContain(`domain=E'${domain}'`);
       expect(params.conditions).toContain("expiration > NOW()");
       expect(params.conditions).toContain("AND");
+      expect(params.orderBy).toContain('"order" ASC');
       return null;
     });
     jest.doMock("lib/api/postgresql", () => ({
@@ -92,11 +93,9 @@ describe("Get Coupons", () => {
     const coupons = [
       {
         coupon: faker.random.word(),
-        is_stackable: faker.datatype.boolean(),
       },
       {
         coupon: faker.random.word(),
-        is_stackable: faker.datatype.boolean(),
       },
     ];
     const select = jest.fn().mockImplementation(async (params) => {
