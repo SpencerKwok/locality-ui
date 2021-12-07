@@ -198,7 +198,9 @@ const Inventory: FC<InventoryProps> = ({
               <Tab
                 eventKey="0"
                 title={((): string => {
-                  let title = decode(product.variantTags[0] ?? "Original");
+                  let title = decode(
+                    product.variantTags[0] ? product.variantTags[0] : "Original"
+                  );
                   if (title.length > 16) {
                     title = `${title.substr(0, 14)}...`;
                   }

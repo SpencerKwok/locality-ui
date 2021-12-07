@@ -3,9 +3,10 @@ import cloudinary.uploader
 import html
 import json
 import random
-import re
 import requests
 import time
+import os
+import re
 from lib.postgresql import get_connection
 from lib.algoliasearch import get_index
 from typing import Any
@@ -20,9 +21,8 @@ def upload(
     business_name: str,
     upload_settings: dict[str, Any],
 ):
-    print(f"Shopify upload from {homepage}")
+    print(f"Square upload from {homepage}")
     print("Deleting old products...")
-
     index = get_index()
     with get_connection() as conn:
         with conn.cursor() as cursor:
@@ -60,31 +60,27 @@ def upload(
     longitudes = [float(x.strip()) for x in longitude.split(",")]
     geolocation = [{"lat": x[0], "lng": x[1]} for x in zip(latitudes, longitudes)]
 
-    page = 1
+    r = requests.get(f"{homepage}?format=json")
+    if r.status_code != 200:
+        raise Exception("Failed to retrieve website data")
+
+    website_data = json.loads(r.content)
+    shop_url_component = website_data["websiteSettings"]["storeSettings"][
+        "continueShoppingLinkUrl"
+    ]
+
+    r = requests.get(
+        re.sub(r"(?<!https:)//+", "/", f"{homepage}/{shop_url_component}?format=json")
+    )
+    if r.status_code != 200:
+        raise Exception("Failed to retrieve all products")
+
     products = []
-    done = False
-    while not done:
-        # Throttle requests to at most 12 per minute
-        time.sleep(random.uniform(5.0, 15.0))
-
-        r = requests.get(
-            re.sub(r"(?<!https:)//+", "/", f"{homepage}/collections/all/products.json"),
-            {"page": page},
-        )
-        if r.status_code != 200:
-            print(f"Failed to retrieve page {page}")
-            done = True
-            continue
-
-        data = json.loads(r.content)
-        raw_products = data["products"]
-        if len(raw_products) == 0:
-            done = True
-            continue
-
-        for product in raw_products:
-            should_include = True
-            should_exclude = False
+    collection_data = json.loads(r.content)
+    for product in collection_data["items"]:
+        should_include = True
+        should_exclude = False
+        if "tags" in product:
             tags = [html.unescape(x).lower().strip() for x in product["tags"]]
             if len(include_tags) > 0:
                 should_include = len([tag for tag in tags if tag in include_tags]) > 0
@@ -92,63 +88,61 @@ def upload(
                 should_exclude = len([tag for tag in tags if tag in exclude_tags]) > 0
             if should_exclude or not should_include:
                 continue
+        else:
+            tags = []
 
-            if len(product["images"]) == 0 or len(product["variants"]) == 0:
-                continue
-
-            product_types = list(
-                map(
-                    lambda x: html.escape(x.lower().strip()),
-                    product["product_type"].split(","),
-                )
+        product_types = list(
+            map(
+                lambda x: html.escape(x.lower().strip()),
+                product["categories"] if "categories" in product else [],
             )
-            product_name = html.unescape(product["title"].strip())
-            product_departments = [
-                x
-                for y in [
-                    department_mappings[x]
-                    for x in product_types
-                    if x in department_mappings
-                ]
-                for x in y
+        )
+        product_name = html.unescape(product["title"].strip())
+        product_departments = [
+            x
+            for y in [
+                department_mappings[x]
+                for x in product_types
+                if x in department_mappings
             ]
-            product_tags = [*[html.unescape(x) for x in product_types], *tags]
-            product_description = html.unescape(
-                re.sub(r"\s+", " ", re.sub(r"<[^>]*>", " ", product["body_html"]))
-            ).strip()
-            product_link = re.sub(
-                r"(?<!https:)//+", "/", f"{homepage}/products/{product['handle']}"
-            )
-            product_price = float(product["variants"][0]["price"])
-            product_price_range = [product_price, product_price]
-            for variant in product["variants"]:
-                variant_price = float(variant["price"])
-                product_price_range[0] = min(product_price_range[0], variant_price)
-                product_price_range[1] = max(product_price_range[1], variant_price)
-            product_variant_images = [
-                product["images"][0]["src"].replace(".jpg", "_400x.jpg")
-            ] * len(product["variants"])
-            product_variant_tags = [
-                html.unescape(x["title"]).lower().strip() for x in product["variants"]
-            ]
-            products.append(
-                {
-                    "departments": product_departments,
-                    "description": product_description,
-                    "id": str(next_product_id),
-                    "geolocation": geolocation,
-                    "link": product_link,
-                    "name": product_name,
-                    "price_range": product_price_range,
-                    "tags": product_tags,
-                    "variant_images": product_variant_images,
-                    "variant_tags": product_variant_tags,
-                }
-            )
+            for x in y
+        ]
+        product_tags = [*[html.unescape(x) for x in product_types], *tags]
+        product_description = html.unescape(
+            re.sub(r"\s+", " ", re.sub(r"<[^>]*>", " ", product["excerpt"]))
+        ).strip()
+        product_link = re.sub(
+            r"(?<!https:)//+",
+            "/",
+            f"{homepage}/{shop_url_component}/{product['urlId']}",
+        )
+        product_price = float(product["variants"][0]["price"]) / 100
+        product_price_range = [product_price, product_price]
+        product_variant_tags = []
+        for variant in product["variants"]:
+            variant_price = float(variant["price"]) / 100
+            product_price_range[0] = min(product_price_range[0], variant_price)
+            product_price_range[1] = max(product_price_range[1], variant_price)
+            product_variant_tags.append(", ".join(list(variant["attributes"].values())))
 
-            next_product_id += 1
-        print(f"Successfully retrieved page {page}")
-        page += 1
+        product_variant_images = [product["items"][0]["assetUrl"]] * len(
+            product["variants"]
+        )
+        products.append(
+            {
+                "departments": product_departments,
+                "description": product_description,
+                "id": str(next_product_id),
+                "geolocation": geolocation,
+                "link": product_link,
+                "name": product_name,
+                "price_range": product_price_range,
+                "tags": product_tags,
+                "variant_images": product_variant_images,
+                "variant_tags": product_variant_tags,
+            }
+        )
+        next_product_id += 1
 
     print("Done fetching new products!")
     print("Uploading products...")

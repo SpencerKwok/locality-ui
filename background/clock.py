@@ -2,6 +2,7 @@ import html
 import json
 import lib.etsy
 import lib.shopify
+import lib.square
 import lib.sumologic
 from lib.postgresql import get_connection
 from apscheduler.schedulers.blocking import BlockingScheduler
@@ -76,6 +77,33 @@ def upload():
                     except Exception as e:
                         lib.sumologic.post(
                             "error", str(e), "Etsy", {"name": business_name}
+                        )
+
+                elif "squareHomepage" in homepages and homepages["squareHomepage"]:
+                    if "square" in upload_settings:
+                        upload_settings = upload_settings["square"]
+                    else:
+                        upload_settings = {}
+                    if "includeTags" not in upload_settings:
+                        upload_settings["includeTags"] = []
+                    if "excludeTags" not in upload_settings:
+                        upload_settings["excludeTags"] = []
+                    if "departmentMapping" not in upload_settings:
+                        upload_settings["departmentMapping"] = []
+
+                    try:
+                        lib.square.upload(
+                            business_id,
+                            next_product_id,
+                            homepages["squareHomepage"],
+                            latitude,
+                            longitude,
+                            business_name,
+                            upload_settings,
+                        )
+                    except Exception as e:
+                        lib.sumologic.post(
+                            "error", str(e), "Square", {"name": business_name}
                         )
 
 
