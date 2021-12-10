@@ -58,6 +58,7 @@ export default async function handler(
       const clickData: ClickMonetizationRequest = {
         type: "click",
         isMobile: req.body.isMobile,
+        isExtension: req.body.isExtension,
         objectId: req.body.objectId,
       };
       const psqlErrorAddMonetization = await Psql.insert({
@@ -86,6 +87,7 @@ export default async function handler(
       const viewData: ViewMonetizationRequest = {
         type: "view",
         isMobile: req.body.isMobile,
+        isExtension: req.body.isExtension,
         objectId: req.body.objectId,
         offsetTop: req.body.offsetTop,
       };
