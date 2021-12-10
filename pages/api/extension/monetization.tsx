@@ -1,1 +1,1 @@
-monetization.tsx
+../monetization.tsx
