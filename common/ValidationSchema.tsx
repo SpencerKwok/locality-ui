@@ -401,3 +401,23 @@ export const SignInSchema = yup.object().shape({
     .min(8, "Too short")
     .max(255, "Too long"),
 });
+
+export const MonetizationMethodSchemas = {
+  click: yup.object().shape({
+    isMobile: yup.boolean().strict().required("Required"),
+    objectId: yup.string().required("Required").max(255, "Too long"),
+  }),
+  view: yup.object().shape({
+    isMobile: yup.boolean().strict().required("Required"),
+    objectId: yup
+      .string()
+      .required("Required")
+      .max(255, "Too long")
+      .matches(/^\d+_\d+$/g, "Invalid object id"),
+    offsetTop: yup
+      .number()
+      .required("Required")
+      .integer("Must be integer")
+      .min(0, "Must be non-negative"),
+  }),
+};

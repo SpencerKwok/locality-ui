@@ -61,6 +61,7 @@ const psql: {
               switch (typeof value) {
                 case "string":
                   return "E?";
+                case "boolean":
                 case "number":
                   return "?";
                 default:
@@ -78,6 +79,7 @@ const psql: {
             switch (typeof value) {
               case "string":
                 return encode(value);
+              case "boolean":
               case "number":
                 return value;
               default:
@@ -151,6 +153,7 @@ const psql: {
         switch (typeof value) {
           case "string":
             return SqlString.format(`${key}=E?`, [encode(value)]);
+          case "boolean":
           case "number":
             return SqlString.format(`${key}=?`, [value]);
           default:
@@ -189,6 +192,7 @@ export type Tables =
   | "checkout"
   | "coupons"
   | "domain"
+  | "monetization"
   | "products"
   | "tokens"
   | "users";
@@ -200,7 +204,7 @@ export interface Delete {
 
 export interface Insert {
   table: Tables;
-  values: NonEmptyArray<{ key: string; value: number | string }>;
+  values: NonEmptyArray<{ key: string; value: boolean | number | string }>;
 }
 
 export interface Select {

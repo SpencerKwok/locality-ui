@@ -23,7 +23,10 @@ export interface SearchProps {
   loggedIn: boolean;
   query: string;
   searchResults: SearchResults;
+  uniqueHits: Set<string>;
   onEnter: (query: string) => void;
+  onProductClick: (objectId: string) => void;
+  onProductView: (objectId: string, offsetTop: number) => void;
   onBottom: () => void;
   onToggleWishList: (objectId: string, value: boolean) => void;
 }
@@ -32,7 +35,10 @@ const Search: FC<SearchProps> = ({
   loggedIn,
   query,
   searchResults,
+  uniqueHits,
   onEnter,
+  onProductClick,
+  onProductView,
   onBottom,
   onToggleWishList,
 }) => {
@@ -86,7 +92,10 @@ const Search: FC<SearchProps> = ({
             align="center"
             hits={searchResults.hits}
             numEagerLoad={6}
+            uniqueHits={uniqueHits}
             onToggleWishList={onToggleWishList}
+            onProductClick={onProductClick}
+            onProductView={onProductView}
             style={{ marginRight: -12 }}
           />
         </Stack>

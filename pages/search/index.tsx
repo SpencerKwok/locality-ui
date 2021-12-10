@@ -114,6 +114,7 @@ const Search: FC<SearchProps> = ({ query, results, session }) => {
   const [data, setData] = useState(results);
   const [showAllBusinesses, setShowAllBusinesses] = useState(false);
   const [showAllDepartments, setShowAllDepartments] = useState(false);
+  const [uniqueHits] = useState(new Set<string>());
   const [userInput, setUserInput] = useState(new UserInput(query));
   const [isMobile, setIsMobile] = useState(false);
   const router = useRouter();
@@ -245,6 +246,23 @@ const Search: FC<SearchProps> = ({ query, results, session }) => {
     setShowAllDepartments(!showAllDepartments);
   };
 
+  const onProductClick = (objectId: string): void => {
+    void PostRpcClient.getInstance().call("ClickMonetization", {
+      type: "click",
+      isMobile,
+      objectId,
+    });
+  };
+
+  const onProductView = (objectId: string, offsetTop: number): void => {
+    void PostRpcClient.getInstance().call("ViewMonetization", {
+      type: "view",
+      isMobile,
+      objectId,
+      offsetTop,
+    });
+  };
+
   const business = new Map<string, number>();
   for (const name in data.facets.business) {
     business.set(name, data.facets.business[name]);
@@ -290,6 +308,9 @@ const Search: FC<SearchProps> = ({ query, results, session }) => {
               departments,
             },
           }}
+          uniqueHits={uniqueHits}
+          onProductClick={onProductClick}
+          onProductView={onProductView}
           onBottom={onBottom}
           onEnter={onEnter}
           onToggleWishList={onToggleWishList}
@@ -310,12 +331,15 @@ const Search: FC<SearchProps> = ({ query, results, session }) => {
           }}
           userInput={userInput}
           width={size.width ?? 0}
+          uniqueHits={uniqueHits}
           onUserInputChange={{
             business: createOnFacetClick("business"),
             departments: createOnFacetClick("departments"),
             page: onPageClick,
           }}
           onEnter={onEnter}
+          onProductClick={onProductClick}
+          onProductView={onProductView}
           onToggleWishList={onToggleWishList}
           onToggleShowAllBusinesses={onToggleShowAllBusinesses}
           onToggleShowAllDepartments={onToggleShowAllDepartments}

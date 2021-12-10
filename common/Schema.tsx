@@ -83,6 +83,16 @@ export interface PostMethods {
     request: VariantDeleteRequest;
     response: VariantDeleteResponse;
   };
+
+  // Monetization
+  ClickMonetization: {
+    request: ClickMonetizationRequest;
+    response: ClickMonetizationResponse;
+  };
+  ViewMonetization: {
+    request: ViewMonetizationRequest;
+    response: ViewMonetizationResponse;
+  };
 }
 
 export interface BaseResponse {
@@ -428,6 +438,23 @@ export const EmptySearchResponse: SearchResponse = {
 export interface WishListResponse extends BaseResponse {
   products: Array<Product>;
 }
+
+/// Monetization
+export interface ClickMonetizationRequest {
+  type: "click";
+  isMobile: boolean;
+  objectId: string;
+}
+
+export interface ViewMonetizationRequest {
+  type: "view";
+  isMobile: boolean;
+  objectId: string;
+  offsetTop: number;
+}
+
+export interface ClickMonetizationResponse extends BaseResponse {}
+export interface ViewMonetizationResponse extends BaseResponse {}
 
 /// Extension Interfaces
 export interface SignInRequest {
