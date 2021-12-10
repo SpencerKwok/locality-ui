@@ -31,6 +31,7 @@ const WishList: FC<WishListProps> = ({ products, onToggleWishList }) => {
               name={product.name}
               objectId={product.objectId}
               onToggleWishList={onToggleWishList}
+              onProductClick={(): void => {}}
               priceRange={product.priceRange}
               variantImages={product.variantImages}
               variantIndex={product.variantIndex}

@@ -24,6 +24,8 @@ const endpoints = new Map<keyof PostMethods, string>([
   ["VariantAdd", "/api/dashboard/variant/add"],
   ["VariantDelete", "/api/dashboard/variant/delete"],
   ["VariantUpdate", "/api/dashboard/variant/update"],
+  ["ClickMonetization", "/api/monetization"],
+  ["ViewMonetization", "/api/monetization"],
 ]);
 
 let postRpcClient: PostRpcClient | null = null;

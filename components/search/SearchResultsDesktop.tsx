@@ -39,7 +39,10 @@ export interface SearchProps {
   userInput: UserInput;
   onUserInputChange: UserInputChange;
   width: number;
+  uniqueHits: Set<string>;
   onEnter: (query: string) => void;
+  onProductClick: (objectId: string) => void;
+  onProductView: (objectId: string, offsetTop: number) => void;
   onToggleWishList: (objectId: string, value: boolean) => void;
   onToggleShowAllBusinesses: () => void;
   onToggleShowAllDepartments: () => void;
@@ -54,7 +57,10 @@ const Search: FC<SearchProps> = ({
   userInput,
   onUserInputChange,
   width,
+  uniqueHits,
   onEnter,
+  onProductClick,
+  onProductView,
   onToggleWishList,
   onToggleShowAllBusinesses,
   onToggleShowAllDepartments,
@@ -289,7 +295,10 @@ const Search: FC<SearchProps> = ({
                       hits={searchResults.hits}
                       numEagerLoad={12}
                       query={query}
+                      uniqueHits={uniqueHits}
                       onToggleWishList={onToggleWishList}
+                      onProductClick={onProductClick}
+                      onProductView={onProductView}
                     />
                   </Stack>
                 </Stack>
