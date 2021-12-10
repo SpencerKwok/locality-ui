@@ -404,11 +404,13 @@ export const SignInSchema = yup.object().shape({
 
 export const MonetizationMethodSchemas = {
   click: yup.object().shape({
-    isMobile: yup.boolean().strict().required("Required"),
+    isMobile: yup.boolean().strict().optional(),
+    isExtension: yup.boolean().strict().optional(),
     objectId: yup.string().required("Required").max(255, "Too long"),
   }),
   view: yup.object().shape({
-    isMobile: yup.boolean().strict().required("Required"),
+    isMobile: yup.boolean().strict().optional(),
+    isExtension: yup.boolean().strict().optional(),
     objectId: yup
       .string()
       .required("Required")

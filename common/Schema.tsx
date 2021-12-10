@@ -442,13 +442,15 @@ export interface WishListResponse extends BaseResponse {
 /// Monetization
 export interface ClickMonetizationRequest {
   type: "click";
-  isMobile: boolean;
+  isMobile?: boolean;
+  isExtension?: boolean;
   objectId: string;
 }
 
 export interface ViewMonetizationRequest {
   type: "view";
-  isMobile: boolean;
+  isMobile?: boolean;
+  isExtension?: boolean;
   objectId: string;
   offsetTop: number;
 }

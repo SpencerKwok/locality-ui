@@ -64,7 +64,8 @@ export default async function handler(
         table: "monetization",
         values: [
           { key: "type", value: clickData.type },
-          { key: "is_mobile", value: clickData.isMobile },
+          { key: "is_mobile", value: clickData.isMobile ?? false },
+          { key: "is_extension", value: clickData.isExtension ?? false },
           { key: "business_id", value: clickData.objectId.split("_")[0] },
           { key: "product_id", value: clickData.objectId.split("_")[1] },
         ],
@@ -92,7 +93,8 @@ export default async function handler(
         table: "monetization",
         values: [
           { key: "type", value: viewData.type },
-          { key: "is_mobile", value: viewData.isMobile },
+          { key: "is_mobile", value: viewData.isMobile ?? false },
+          { key: "is_extension", value: viewData.isExtension ?? false },
           { key: "business_id", value: viewData.objectId.split("_")[0] },
           { key: "product_id", value: viewData.objectId.split("_")[1] },
           { key: "offset_top", value: viewData.offsetTop },
