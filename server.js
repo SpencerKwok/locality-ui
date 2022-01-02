@@ -30,6 +30,7 @@ const extensionOrigins = new Set([
   "https://www.walmart.com",
 
   // Coupons
+  "https://www.cantiqliving.com",
   "https://www.shophappybaby.ca",
   "https://www.thealfajorcompany.ca",
   "https://www.unimpressedofficial.com",
