@@ -114,7 +114,7 @@ def upload(
             ]
             product_tags = [*[html.unescape(x) for x in product_types], *tags]
             product_description = html.unescape(
-                re.sub(r"\s+", " ", re.sub(r"<[^>]*>", " ", product["body_html"]))
+                re.sub(r"\s+", " ", re.sub(r"<[^>]*>", " ", product["body_html"] or ""))
             ).strip()
             product_link = re.sub(
                 r"(?<!https:)//+", "/", f"{homepage}/products/{product['handle']}"
