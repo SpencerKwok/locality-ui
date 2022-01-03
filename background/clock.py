@@ -106,9 +106,7 @@ def upload():
                             "error", str(e), "Square", {"name": business_name}
                         )
 
-upload()
 
-"""
 @sched.scheduled_job("cron", day_of_week="mon", hour=20)
 def scheduled_job():
     print("Starting upload process...")
@@ -116,4 +114,3 @@ def scheduled_job():
 
 
 sched.start()
-"""
