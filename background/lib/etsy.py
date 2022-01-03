@@ -158,9 +158,18 @@ def upload(
                 for y in x["offerings"]
             ]
             for variant_price in variant_prices:
-                before_conversion = variant_price["before_conversion"]
+                if "before_conversion" in variant_price:
+                    before_conversion = variant_price["before_conversion"]
+                    original_currency_code = variant_price["original_currency_code"]
+                else:
+                    before_conversion = {
+                        "currency_formatted_raw": variant_price[
+                            "currency_formatted_raw"
+                        ]
+                    }
+                    original_currency_code = variant_price["currency_code"]
+
                 currency_formatted_raw = variant_price["currency_formatted_raw"]
-                original_currency_code = variant_price["original_currency_code"]
                 if original_currency_code == "USD":
                     product_price_range[0] = min(
                         product_price_range[0], float(currency_formatted_raw)
