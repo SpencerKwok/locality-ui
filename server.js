@@ -35,6 +35,9 @@ const extensionOrigins = new Set([
   "https://www.thealfajorcompany.ca",
   "https://www.unimpressedofficial.com",
   "https://shop.app",
+
+  // BC Market Place
+  "https://marketplacebc.ca/marketplace/laid-back-snacks/",
 ]);
 
 void app.prepare().then(() => {
