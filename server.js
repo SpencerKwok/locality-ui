@@ -37,7 +37,7 @@ const extensionOrigins = new Set([
   "https://shop.app",
 
   // BC Market Place
-  "https://marketplacebc.ca/marketplace/laid-back-snacks/",
+  "https://marketplacebc.ca",
 ]);
 
 void app.prepare().then(() => {
