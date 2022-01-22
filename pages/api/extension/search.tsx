@@ -29,7 +29,7 @@ export default async function handler(
     "x-forwarded-for"?: string;
   } = req.headers as IncomingHttpHeaders & { "x-forwarded-for"?: string };
 
-  if (typeof query.q !== "string" || !query.q) {
+  if (typeof query.q !== "string") {
     SumoLogic.log({
       level: "warning",
       method: "extension/search",
@@ -39,7 +39,7 @@ export default async function handler(
     res.status(400).json({ error: "Invalid payload" });
     return;
   }
-  const q = decode(Xss(query.q));
+  const q = decode(Xss(query.q || ""));
 
   let filters = "";
   if (typeof query.filters === "string" && query.filters) {
